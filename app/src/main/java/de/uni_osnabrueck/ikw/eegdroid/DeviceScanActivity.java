@@ -205,7 +205,8 @@ public class DeviceScanActivity extends ListActivity {
 //        intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_NAME, device.getName());
 //        intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, device.getAddress());
 //        startActivity(intent);
-        Intent intent = new Intent(DeviceScanActivity.this, Record.class);
+        //Intent intent = new Intent(DeviceScanActivity.this, Record.class); //Maybe here is the problem
+        Intent intent = new Intent();
         intent.putExtra(Record.EXTRAS_DEVICE_NAME, device.getName());
         intent.putExtra(Record.EXTRAS_DEVICE_ADDRESS, device.getAddress());
         setResult(RESULT_OK, intent);

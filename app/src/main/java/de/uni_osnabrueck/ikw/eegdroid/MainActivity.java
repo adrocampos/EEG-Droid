@@ -29,9 +29,7 @@ import java.io.File;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private Intent placeholder;
-    private TextView mConnectionState;
-    private boolean deviceConnected;
+
     private static File dirSessions;
     private ManageSessions ManageSessions = new ManageSessions();
     private String nameDir = "/sessions_EEG";
@@ -57,29 +55,14 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        mConnectionState = (TextView) findViewById(R.id.connection_state_main);
-        mConnectionState.setText(R.string.no_device);
-        deviceConnected = false;
 
-        //Change the button of the menu
-        Drawable drawable = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_bluetooth_white_24dp);
-        toolbar.setOverflowIcon(drawable);
+
+//        //Change the button of the menu
+//        Drawable drawable = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_bluetooth_white_24dp);
+//        toolbar.setOverflowIcon(drawable);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        // Check which request we're responding to
-        if (requestCode == 1200) {
-            // Make sure the request was successful
-            if (resultCode == RESULT_OK) {
-                // The user picked a contact.
-                // The Intent's data Uri identifies which contact was selected
-                placeholder = intent;
-                mConnectionState.setText(R.string.device_found);
-                deviceConnected = true;
-            }
-        }
-  }
+
 
     @Override
     public void onBackPressed() {
@@ -91,30 +74,13 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        return true;
+//    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        if (id == R.id.scan) {
-            Intent intent = new Intent(this, DeviceScanActivity.class);
-            startActivityForResult(intent,1200);
-        }
-        if (id == R.id.disconnect) {
-            //mBluetoothLeService.disconnect(); //FIX THIS
-            //mConnected = false; //FIX THIS
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -123,12 +89,8 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.record) {
-            if (deviceConnected == true){
-                //Intent intent = new Intent(this, Record.class);
-                startActivity(placeholder);
-            } else {
-                Toast.makeText(this, "Please connect a device first.", Toast.LENGTH_LONG).show();
-            }
+            Intent intent = new Intent(this, Record.class);
+            startActivity(intent);
 
         } else if (id == R.id.display) {
 

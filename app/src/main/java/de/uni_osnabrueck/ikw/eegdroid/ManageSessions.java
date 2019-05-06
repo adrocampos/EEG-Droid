@@ -66,6 +66,24 @@ public class ManageSessions extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_manage, menu);
+//        final int position = adapter.getSelectedPos();
+//        if (position == -1) {
+//            menu.setGroupVisible(0, );
+//        }
+//
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        if (!mScanning) {
+//            menu.findItem(R.id.stop_button).setVisible(false);
+//            menu.findItem(R.id.scan_button).setVisible(true);
+//            menu.findItem(R.id.refresh_button).setActionView(null);
+//        } else {
+//            menu.findItem(R.id.stop_button).setVisible(true);
+//            menu.findItem(R.id.scan_button).setVisible(false);
+//            menu.findItem(R.id.refresh_button).setActionView(
+//                    R.layout.actionbar_indeterminate_progress);
+//        }
+//        return true;
+//    }
         return true;
     }
 

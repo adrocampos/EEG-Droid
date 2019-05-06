@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.bytedeco.javacpp-presets:fftw:3.3.8-1.4.2@jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.bytedeco.javacpp-presets/fftw/3.3.8-1.4.2/652dc3f5a5632bf291614638080d9f7ba44b6a60/fftw-3.3.8-1.4.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.bytedeco.javacpp-presets/fftw/3.3.8-1.4.2/30c1f10d29803d80a4d77bf99926f613b39394c0/fftw-3.3.8-1.4.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

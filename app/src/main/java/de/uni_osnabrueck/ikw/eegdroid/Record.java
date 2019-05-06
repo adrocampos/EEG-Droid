@@ -16,6 +16,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.AdapterView;
@@ -62,7 +64,6 @@ public class Record extends AppCompatActivity {
     private ExpandableListView mGattServicesList;
     private BluetoothLeService mBluetoothLeService;
     private ArrayList<ArrayList<BluetoothGattCharacteristic>> mGattCharacteristics = new ArrayList<ArrayList<BluetoothGattCharacteristic>>();
-    private boolean mConnected = false;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
     private final String LIST_NAME = "NAME";
     private final String LIST_UUID = "UUID";
@@ -143,6 +144,7 @@ public class Record extends AppCompatActivity {
     private long end_timestamp;
     private Thread thread;
     private long plotting_start;
+    private boolean deviceConnected;
 
 
     // Code to manage Service lifecycle.
@@ -161,11 +163,13 @@ public class Record extends AppCompatActivity {
                     mBluetoothLeService.connect(mDeviceAddress);
                 }
             }, CONNECT_DELAY);  // connect with a defined delay
+            deviceConnected = true;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mBluetoothLeService = null;
+            deviceConnected = false;
         }
     };
 
@@ -227,11 +231,11 @@ public class Record extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
-                mConnected = true;
                 mConnectionState.setText(R.string.device_connected);
+                //deviceConnected = true;
 
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
-                mConnected = false;
+                //deviceConnected = false;
                 mConnectionState.setText(R.string.device_connected);
                 switch_plots.setEnabled(false);
                 gain_spinner.setEnabled(false);
@@ -343,6 +347,7 @@ public class Record extends AppCompatActivity {
                 leftAxis.setAxisMaximum(max);
                 leftAxis.setAxisMinimum(-max);
                 leftAxis.setLabelCount(13, false);
+                buttons_nodata();
             }
 
             @Override
@@ -358,15 +363,13 @@ public class Record extends AppCompatActivity {
         imageButtonSave.setOnClickListener(imageSaveOnClickListener);
         imageButtonDiscard.setOnClickListener(imageDiscardOnClickListener);
         switch_plots.setOnCheckedChangeListener(switchPlotsOnCheckedChangeListener);
-        buttons_prerecording();
+
 
         // Sets up UI references.
         mConnectionState = (TextView) findViewById(R.id.connection_state);
 
         // Extract the info from the intent
-        mDeviceName = getIntent().getStringExtra(EXTRAS_DEVICE_NAME);
-        mDeviceAddress = getIntent().getStringExtra(EXTRAS_DEVICE_ADDRESS);
-        mConnectionState.setText(R.string.device_found);
+
         //Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         //bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
@@ -493,9 +496,10 @@ public class Record extends AppCompatActivity {
             }
         });
         mDataResolution = findViewById(R.id.resolution_value);
-        Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
-        bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
         setChart();
+        deviceConnected = false;
+//        mDeviceName = "";
+//        mDeviceAddress = "";
 
     }
 
@@ -522,7 +526,66 @@ public class Record extends AppCompatActivity {
         mBluetoothLeService.disconnect();
         mBluetoothLeService = null;
         mConnectionState.setText(R.string.disconnected);
+        deviceConnected = false;
+        buttons_nodata();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.bluethoot_conect, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.scan) {
+            if (!deviceConnected) {
+                Intent intent = new Intent(this, DeviceScanActivity.class);
+                startActivityForResult(intent, 1200);
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.already_connected, Toast.LENGTH_LONG).show();
+            }
+        }
+        if (id == R.id.disconnect) {
+            if (deviceConnected) {
+                mBluetoothLeService.disconnect(); //FIX THIS
+                deviceConnected = false; //FIX THIS
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.no_connected, Toast.LENGTH_LONG).show();
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+//    public void connect_disconnect_menu(boolean b, Menu menu) {
+//        MenuItem item = menu.findItem(R.id.scan);
+//        item.
+//    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        // Check which request we're responding to
+        if (requestCode == 1200) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                // The user picked a contact.
+                // The Intent's data Uri identifies which contact was selected
+                mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
+                mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
+                Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
+                bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+                buttons_prerecording();
+                deviceConnected = true;
+
+            }
+        }
+    }
+
 
     private void writeGattCharacteristic(List<BluetoothGattService> gattServices) {
         if (gattServices == null) return;
@@ -1038,6 +1101,16 @@ public class Record extends AppCompatActivity {
                 }
             }
         }).start();
+    }
+
+    private void buttons_nodata(){
+        imageButtonRecord.setImageResource(R.drawable.ic_fiber_manual_record_pink_24dp);
+        imageButtonRecord.setEnabled(false);
+        imageButtonSave.setImageResource(R.drawable.ic_save_gray_24dp);
+        imageButtonSave.setEnabled(false);
+        imageButtonDiscard.setImageResource(R.drawable.ic_delete_gray_24dp);
+        imageButtonDiscard.setEnabled(false);
+
     }
 
     private void buttons_prerecording(){
