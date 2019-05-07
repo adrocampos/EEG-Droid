@@ -19,6 +19,8 @@ import android.view.MenuItem;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -132,7 +134,8 @@ public class ManageSessions extends AppCompatActivity {
                             .setMessage(getResources().getString(R.string.ask_new_name) + " " + arrayListOfFiles.get(position).getName() + ":")
                             .setPositiveButton(R.string.rename, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialogBox, int id) {
-                                    File newName = new File(dirSessions, userInputDialogEditText.getText().toString() + ".csv");
+                                    String oldName = arrayListOfFiles.get(position).getName().substring(0, 20);
+                                    File newName = new File(dirSessions, oldName + userInputDialogEditText.getText().toString() + ".csv");
                                     //Check if exist another file with this name
                                     if (arrayListOfFiles.contains(newName)) {
                                         Toast.makeText(getApplicationContext(), R.string.warning_rename, Toast.LENGTH_LONG).show();
@@ -141,7 +144,9 @@ public class ManageSessions extends AppCompatActivity {
                                     } else {
                                         arrayListOfFiles.get(position).renameTo(newName);
                                         arrayListOfFiles.set(position, newName);
-                                        adapter.notifyItemChanged(position);
+                                        Collections.sort(arrayListOfFiles, Collections.reverseOrder());
+                                        //adapter.notifyItemChanged(position);
+                                        adapter.notifyDataSetChanged();
                                         adapter.resetSelectedPos();
                                     }
                                 }
@@ -200,6 +205,7 @@ public class ManageSessions extends AppCompatActivity {
     //Returns a list of recordings in directory
     public void readDirectory(File dir){
         arrayListOfFiles = new ArrayList<>(Arrays.asList(dir.listFiles()));
+        Collections.sort(arrayListOfFiles, Collections.reverseOrder());
         //Add if here?
     }
 
