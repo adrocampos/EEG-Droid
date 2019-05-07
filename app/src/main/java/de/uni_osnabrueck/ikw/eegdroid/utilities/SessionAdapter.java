@@ -17,6 +17,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
+import de.uni_osnabrueck.ikw.eegdroid.ManageSessions;
 import de.uni_osnabrueck.ikw.eegdroid.R;
 
 
@@ -26,8 +27,6 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.PlanetVi
     ArrayList<File> arrayListFiles;
     public SessionAdapter(ArrayList<File> arrayListFiles, Context context) { this.arrayListFiles = arrayListFiles; }
     private int selectedPos = RecyclerView.NO_POSITION;
-
-
 
     @Override
     public SessionAdapter.PlanetViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -62,7 +61,7 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.PlanetVi
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Position = ", Integer.toString(position));
+                Log.d("Adapter.getSelectedPos() ", Integer.toString(position));
                 notifyItemChanged(selectedPos);
                 selectedPos = position;
                 notifyItemChanged(selectedPos);

@@ -173,7 +173,9 @@ public class Record extends AppCompatActivity {
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
+            if (mBluetoothLeService != null) {
             mBluetoothLeService = null;
+            }
         }
     };
 
@@ -543,9 +545,9 @@ public class Record extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(mServiceConnection);
-        mBluetoothLeService.disconnect();
-        mBluetoothLeService = null;
+        if (deviceConnected) {
+            unbindService(mServiceConnection);
+        }
     }
 
     @Override
