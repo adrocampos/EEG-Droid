@@ -9,10 +9,5 @@
         android:title="@string/menu_scan"
         android:icon="@drawable/ic_bluetooth_searching_white_24dp"
         app:showAsAction="always"/>
-    <item
-        android:id="@+id/disconnect"
-        android:orderInCategory="100"
-        android:title="@string/menu_disconnect"
-        android:icon="@drawable/ic_bluetooth_disabled_white_24dp"
-        app:showAsAction="always" />
+
 </menu>

@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -16,6 +17,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +26,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -31,6 +34,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -59,6 +63,7 @@ public class Record extends AppCompatActivity {
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
     private TextView mConnectionState;
+    private TextView viewDeviceAddress;
     private String mDeviceName;
     private String mDeviceAddress;
     private ExpandableListView mGattServicesList;
@@ -139,12 +144,12 @@ public class Record extends AppCompatActivity {
     private String end_time;
     private long start_watch;
     private String recording_time;
-    private String session_label;
     private long start_timestamp;
     private long end_timestamp;
     private Thread thread;
     private long plotting_start;
-    private boolean deviceConnected;
+    private boolean deviceConnected = false;
+    private Menu menu;
 
 
     // Code to manage Service lifecycle.
@@ -163,13 +168,12 @@ public class Record extends AppCompatActivity {
                     mBluetoothLeService.connect(mDeviceAddress);
                 }
             }, CONNECT_DELAY);  // connect with a defined delay
-            deviceConnected = true;
+
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mBluetoothLeService = null;
-            deviceConnected = false;
         }
     };
 
@@ -195,16 +199,35 @@ public class Record extends AppCompatActivity {
     private final View.OnClickListener imageSaveOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            askForLabel();
-            if (session_label == null) saveSession();
-            else saveSession(session_label);
-            session_label = null;
-            Toast.makeText(
-                getApplicationContext(),
-                "Your EEG session was successfully stored.",
-                Toast.LENGTH_LONG
-            ).show();
+            LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getApplicationContext());
+            View mView = layoutInflaterAndroid.inflate(R.layout.input_dialog_string, null);
+            AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(Record.this);
+            alertDialogBuilderUserInput.setView(mView);
+
+            final EditText userInputLabel = (EditText) mView.findViewById(R.id.input_dialog_string_Input);
+
+            alertDialogBuilderUserInput
+                    .setCancelable(false)
+                    .setTitle(R.string.session_label_title)
+                    .setMessage(getResources().getString(R.string.enter_session_label))
+                    .setPositiveButton(R.string.save_with_label, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialogBox, int id) {
+                            saveSession(userInputLabel.getText().toString());
+                            Toast.makeText( getApplicationContext(), "Your EEG session was successfully stored.", Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .setNegativeButton(R.string.default_name,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialogBox, int id) {
+                                    saveSession();
+                                    Toast.makeText(getApplicationContext(), "Your EEG session was successfully stored.", Toast.LENGTH_LONG).show();
+                                }
+                            });
+
+            AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
+            alertDialogAndroid.show();
             buttons_prerecording();
+
 
         }
     };
@@ -231,14 +254,10 @@ public class Record extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
-                mConnectionState.setText(R.string.device_connected);
-                //deviceConnected = true;
+                buttons_prerecording();
 
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
-                //deviceConnected = false;
-                mConnectionState.setText(R.string.device_connected);
-                switch_plots.setEnabled(false);
-                gain_spinner.setEnabled(false);
+                setConnectionStatus(false);
                 clearUI();
                 disableCheckboxes();
 
@@ -252,9 +271,7 @@ public class Record extends AppCompatActivity {
                 System.out.println(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
                 data_cnt++;
                 long last_data = System.currentTimeMillis();
-                switch_plots.setEnabled(true);
-                //imageButtonRecord.setEnabled(true);
-                gain_spinner.setEnabled(true);
+
                 enableCheckboxes();
                 List<Float> microV = transData(intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA));
                 displayData(microV);
@@ -274,6 +291,14 @@ public class Record extends AppCompatActivity {
                 @SuppressLint("DefaultLocale") String resolution = String.format("%.2f", res_time) + "ms - ";
                 String content = resolution + hertz;
                 mDataResolution.setText(content);
+                setConnectionStatus(true);
+                if (recording){
+                    mConnectionState.setText(R.string.recording);
+                    mConnectionState.setTextColor(Color.RED);
+                } else {
+                    mConnectionState.setText(R.string.device_connected);
+                    mConnectionState.setTextColor(Color.GREEN);
+                }
             }
         }
     };
@@ -373,7 +398,7 @@ public class Record extends AppCompatActivity {
         //Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         //bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
-        ((TextView) findViewById(R.id.device_address)).setText(mDeviceAddress);
+        viewDeviceAddress = (TextView) findViewById(R.id.device_address);
         mConnectionState = findViewById(R.id.connection_state);
         mCh1 = findViewById(R.id.ch1);
         mCh2 = findViewById(R.id.ch2);
@@ -497,10 +522,6 @@ public class Record extends AppCompatActivity {
         });
         mDataResolution = findViewById(R.id.resolution_value);
         setChart();
-        deviceConnected = false;
-//        mDeviceName = "";
-//        mDeviceAddress = "";
-
     }
 
     @Override
@@ -525,15 +546,13 @@ public class Record extends AppCompatActivity {
         unbindService(mServiceConnection);
         mBluetoothLeService.disconnect();
         mBluetoothLeService = null;
-        mConnectionState.setText(R.string.disconnected);
-        deviceConnected = false;
-        buttons_nodata();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.bluethoot_conect, menu);
+        this.menu = menu;
         return true;
     }
 
@@ -548,24 +567,12 @@ public class Record extends AppCompatActivity {
                 Intent intent = new Intent(this, DeviceScanActivity.class);
                 startActivityForResult(intent, 1200);
             } else {
-                Toast.makeText(getApplicationContext(), R.string.already_connected, Toast.LENGTH_LONG).show();
-            }
-        }
-        if (id == R.id.disconnect) {
-            if (deviceConnected) {
-                mBluetoothLeService.disconnect(); //FIX THIS
-                deviceConnected = false; //FIX THIS
-            } else {
-                Toast.makeText(getApplicationContext(), R.string.no_connected, Toast.LENGTH_LONG).show();
+                mBluetoothLeService.disconnect();
             }
         }
         return super.onOptionsItemSelected(item);
     }
 
-//    public void connect_disconnect_menu(boolean b, Menu menu) {
-//        MenuItem item = menu.findItem(R.id.scan);
-//        item.
-//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -579,9 +586,6 @@ public class Record extends AppCompatActivity {
                 mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
                 Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
                 bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
-                buttons_prerecording();
-                deviceConnected = true;
-
             }
         }
     }
@@ -669,19 +673,11 @@ public class Record extends AppCompatActivity {
     };
 
     private void askForLabel() {
-        new MaterialDialog.Builder(this)
-                .title("Please, enter the session label")
-                .inputType(InputType.TYPE_CLASS_TEXT)
-                .input("E.g. walking, eating, sleeping, etc.",
-                        "", new MaterialDialog.InputCallback() {
-                            @Override
-                            public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-                                session_label = input.toString();
-                            }
-                        }).show();
+
+
+
+
     }
-
-
 
 
     private void readGattCharacteristic(List<BluetoothGattService> gattServices) {
@@ -1138,6 +1134,30 @@ public class Record extends AppCompatActivity {
         imageButtonDiscard.setEnabled(true);
         imageButtonDiscard.setImageResource(R.drawable.ic_delete_black_24dp);
 
+    }
+
+    private void setConnectionStatus(boolean b){
+        MenuItem menuItem = menu.findItem(R.id.scan);
+        if (b){
+            deviceConnected = true;
+            menuItem.setIcon(R.drawable.ic_bluetooth_connected_blue_24dp);
+            mConnectionState.setText(R.string.device_connected);
+            mConnectionState.setTextColor(Color.GREEN);
+            switch_plots.setEnabled(true);
+            gain_spinner.setEnabled(true);
+            viewDeviceAddress.setText(mDeviceAddress);
+
+        } else {
+            deviceConnected = false;
+            menuItem.setIcon(R.drawable.ic_bluetooth_searching_white_24dp);
+            mConnectionState.setText(R.string.no_device);
+            mConnectionState.setTextColor(Color.LTGRAY);
+            buttons_nodata();
+            switch_plots.setEnabled(false);
+            gain_spinner.setEnabled(false);
+            viewDeviceAddress.setText(R.string.no_address);
+
+        }
     }
 
 }
