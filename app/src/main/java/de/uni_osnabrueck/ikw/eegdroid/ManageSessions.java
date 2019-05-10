@@ -190,5 +190,13 @@ public class ManageSessions extends AppCompatActivity {
         //Add if here?
     }
 
+    //Returns a ListArray of the files in the directory
+    public ArrayList<File> getArrayListOfFiles() {
+        readDirectory(MainActivity.getDirSessions());
+        return arrayListOfFiles;
+    }
+
+
+
 
 }

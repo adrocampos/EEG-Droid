@@ -94,17 +94,9 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.display) {
 
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(dirUri, "resource/folder");
-            if (intent.resolveActivityInfo(getPackageManager(), 0) != null) {
-                startActivity(intent);
-            } else {
-                intent = getPackageManager().getLaunchIntentForPackage("com.google.android.apps.nbu.files"); //We overwrite here the last intent
-                intent.setAction("ACTION_VIEW");
-                intent.setDataAndType(dirUri, "resource/folder");
-                Intent intent1 = Intent.createChooser(intent, "Open With");
-                startActivity(intent1);
-            }
+            Intent intent = new Intent(this, Display.class);
+            intent.putExtra("dirString", dirSessions.getPath());
+            startActivity(intent);
 
         } else if (id == R.id.manage) {
             Intent intent = new Intent(this, ManageSessions.class);

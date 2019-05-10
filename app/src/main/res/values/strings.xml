@@ -178,6 +178,7 @@
     <string name="save_with_label">Save with label</string>
     <string name="default_name">Use default name</string>
 
+    <string name="select_recording">Select a session to plot</string>
 
 
 </resources>
