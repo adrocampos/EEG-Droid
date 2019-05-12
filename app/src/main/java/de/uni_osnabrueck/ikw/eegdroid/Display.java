@@ -92,48 +92,30 @@ public class Display extends AppCompatActivity implements SeekBar.OnSeekBarChang
 
     }
 
-
+    //Fills lineDataSets with the content of CSV files
     private void loadData (File file) {
 
         lineDataSets = new LineDataSet[nChannels];
 
-        ArrayList<float[]> data_rows = new ArrayList<>();
         try {
             // create csvReader object and skip first 3 Lines
             CSVReader csvReader = new CSVReaderBuilder(new FileReader(file)).withSkipLines(3).build();
 
-            String[] values;
-            while ((values = csvReader.readNext()) != null) {
+            List<String[]> values_strings = csvReader.readAll();
 
-                float[] intFloats = new float[values.length];
-                for (int i=0; i < values.length-1; i++) {
-                    intFloats[i] = Float.parseFloat(values[i]);
+            //Ignore the first column (time) and the last one (empty)
+            for (int j=1; j < values_strings.get(0).length-1; j++) {
+                ArrayList<Entry> arrayOfEntry = new ArrayList<>();
+                for (int k=0; k < values_strings.size(); k++){
+                    arrayOfEntry.add(new Entry(Float.parseFloat(values_strings.get(k)[0]), Float.parseFloat(values_strings.get(k)[j])));
                 }
-                data_rows.add(intFloats);
+                String nameLineDataSet = "Channel " + j;
+                lineDataSets[j-1] = new LineDataSet(arrayOfEntry, nameLineDataSet);
             }
         }
         catch (Exception e) {
             e.printStackTrace();
         }
-
-
-
-        for (int j=0; j < nChannels; j++) {
-            ArrayList<Entry> data_temp = new ArrayList<>();
-
-            for (int k=0; k < data_rows.size(); k++){
-                data_temp.add(new Entry(data_rows.get(k)[0], data_rows.get(k)[j]  ));
-            }
-
-            String nameLineDataSet = "Channel " + Integer.toString(j);
-            lineDataSets[j] = new LineDataSet(data_temp, nameLineDataSet);
-        }
-
-        Log.d("LineDataSets[] LEN", Integer.toString(lineDataSets.length));
-        Log.d("LineDataSet entries", Integer.toString(lineDataSets[0].getEntryCount()));
-        Log.d("DataRow len", Integer.toString(data_rows.size()));
-
-
     }
 
 
