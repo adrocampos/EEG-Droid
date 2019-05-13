@@ -37,7 +37,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".Record" />
-        <activity android:name=".Display" />
+        <activity android:name=".Display"
+            android:configChanges="orientation|screenSize"/>
         <activity android:name=".TFAnalysis" />
         <activity android:name=".Epibot" />
         <activity
