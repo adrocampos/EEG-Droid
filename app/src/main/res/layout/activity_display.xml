@@ -1,54 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".Display">
-
-
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chart"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="9">
-
-
-    </com.github.mikephil.charting.charts.LineChart>
+    android:layout_margin="10dp"
+    android:orientation="vertical">
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="horizontal">
-
-        <SeekBar
-            android:id="@+id/seekBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_weight="8"
-            android:max="500"
-            android:paddingBottom="12dp" />
+        android:orientation="horizontal"
+        android:layout_weight="9">
 
         <TextView
-            android:id="@+id/tvX"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_weight="2"
-            android:text="woo"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:id="@+id/YAxis_title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:rotation="-90"
+            android:text="@string/YAxis_label"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/chart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </com.github.mikephil.charting.charts.LineChart>
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/XAxis_title"
+        android:layout_width="match_parent"
+        android:layout_height="16dp"
+        android:gravity="center"
+        android:text="@string/XAxis_label"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:layout_weight="1"/>
 
 
 </LinearLayout>

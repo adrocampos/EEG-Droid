@@ -674,12 +674,6 @@ public class Record extends AppCompatActivity {
         }
     };
 
-    private void askForLabel() {
-
-
-
-
-    }
 
 
     private void readGattCharacteristic(List<BluetoothGattService> gattServices) {

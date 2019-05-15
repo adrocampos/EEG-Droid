@@ -2,16 +2,21 @@ package de.uni_osnabrueck.ikw.eegdroid;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.DataSet;
@@ -29,21 +34,20 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class Display extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener,
-        OnChartValueSelectedListener {
+public class Display extends AppCompatActivity {
 
     private ArrayList<File> arrayListOfFiles;
     private String[] arrayOfNames;
     private File fileToPlot;
-    List<Entry[]> data;
-
     private LineChart chart;
-    private SeekBar seekBarX;
-    private TextView tvX;
-
     private LineDataSet[] lineDataSets;
     private int nChannels = 8;
+    private Timer timer;
+    private int fps = 30;
+    private Float max_in_X;
 
 
     @Override
@@ -60,63 +64,88 @@ public class Display extends AppCompatActivity implements SeekBar.OnSeekBarChang
             arrayOfNames[i] = arrayListOfFiles.get(i).getName();
         }
 
-        tvX = findViewById(R.id.tvX);
-        seekBarX = findViewById(R.id.seekBar);
+
+        OnChartValueSelectedListener ol = new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry entry, Highlight h) {
+                //entry.getData() returns null here
+            }
+
+            @Override
+            public void onNothingSelected() {
+
+            }
+        };
 
         chart = findViewById(R.id.chart);
-//        chart.setOnChartValueSelectedListener(this);
-//        chart.getDescription().setEnabled(false);
-//        chart.setTouchEnabled(true);
-//        chart.setDragDecelerationFrictionCoef(0.9f);
-//        chart.setDragEnabled(true);
-//        chart.setScaleEnabled(true);
-//        chart.setDrawGridBackground(false);
+        chart.setOnChartValueSelectedListener(ol);
+        chart.getDescription().setEnabled(false);
+        chart.setTouchEnabled(true);
+        chart.setDragDecelerationFrictionCoef(0.9f);
+        chart.setDragEnabled(true);
+        chart.setScaleEnabled(true);
+        chart.setDrawGridBackground(false);
 //        chart.setHighlightPerDragEnabled(true);
-//        chart.setPinchZoom(true);
+        chart.setPinchZoom(true);
 //        chart.setBackgroundColor(Color.LTGRAY);
-
-        seekBarX.setProgress(30);
-
-        chart.animateX(1500);
+//
+//        seekBarX.setProgress(30);
+//
+//        chart.animateX(1500);
 
         // get the legend (only possible after setting data)
         Legend l = chart.getLegend();
 
         // modify the legend ...
         l.setForm(Legend.LegendForm.LINE);
-        l.setTextSize(11f);
-        l.setTextColor(Color.WHITE);
-        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
-        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
-        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
-        l.setDrawInside(false);
-//        l.setYOffset(11f);
+//        l.setTextSize(11f);
+        l.setTextColor(Color.BLACK);
+//        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+//        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+//        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+//        l.setDrawInside(false);
+////        l.setYOffset(11f);
+//
 
-        XAxis xAxis = chart.getXAxis();
-        //xAxis.setTypeface(tfLight);
-        xAxis.setTextSize(11f);
-        xAxis.setTextColor(Color.WHITE);
-        xAxis.setDrawGridLines(false);
-        xAxis.setDrawAxisLine(false);
-
+//
         YAxis leftAxis = chart.getAxisLeft();
-        //leftAxis.setTypeface(tfLight);
-        leftAxis.setTextColor(ColorTemplate.getHoloBlue());
-        leftAxis.setAxisMaximum(200f);
-        leftAxis.setAxisMinimum(0f);
+        leftAxis.setTextColor(Color.GRAY);
+        //leftAxis.setAxisMaximum(30f);
+        //leftAxis.setAxisMinimum(-30f);
+        leftAxis.setLabelCount(13, true);
         leftAxis.setDrawGridLines(true);
-        leftAxis.setGranularityEnabled(true);
+        leftAxis.setGridColor(Color.WHITE);
 
+//
         YAxis rightAxis = chart.getAxisRight();
-        //rightAxis.setTypeface(tfLight);
-        rightAxis.setTextColor(Color.RED);
-        rightAxis.setAxisMaximum(900);
-        rightAxis.setAxisMinimum(-200);
-        rightAxis.setDrawGridLines(false);
-        rightAxis.setDrawZeroLine(false);
-        rightAxis.setGranularityEnabled(false);
+        rightAxis.setEnabled(false);
+//        //rightAxis.setTypeface(tfLight);
+//        rightAxis.setTextColor(Color.RED);
+//        rightAxis.setAxisMaximum(900);
+//        rightAxis.setAxisMinimum(-200);
+//        rightAxis.setDrawGridLines(false);
+//        rightAxis.setDrawZeroLine(false);
+//        rightAxis.setGranularityEnabled(false);
+
+        XAxis bottomAxis = chart.getXAxis();
+        bottomAxis.setLabelCount(5, true);
+        bottomAxis.setValueFormatter(new MyXAxisValueFormatter());
+        bottomAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        bottomAxis.setGridColor(Color.WHITE);
+        bottomAxis.setTextColor(Color.GRAY);
 
 
+
+        LimitLine current = new LimitLine(0, "here");
+        current.setLineColor(Color.BLUE);
+        current.setLineWidth(2f);
+
+        bottomAxis.addLimitLine(current);
+//        //xAxis.setTypeface(tfLight);
+//        xAxis.setTextSize(11f);
+//        xAxis.setTextColor(Color.WHITE);
+//        xAxis.setDrawGridLines(false);
+//        xAxis.setDrawAxisLine(false);
 
 
 
@@ -132,13 +161,52 @@ public class Display extends AppCompatActivity implements SeekBar.OnSeekBarChang
                         setData();
                         dialog.dismiss();
                         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                        Log.d("finish", "finisg");
+                        Log.d("finish", "finish");
 
 
                     }
                 });
         alert.show();
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.display_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        class UpdateChart extends TimerTask {
+            float position_in_x= 0;
+            public void run() {
+                position_in_x = position_in_x + 1000 / fps;
+                if (position_in_x > max_in_X){
+                    timer.cancel();
+                    timer.purge();
+                }
+                chart.moveViewToX(position_in_x);
+                Log.d("positionX", Float.toString(position_in_x));
+            }
+        }
+
+
+        switch (item.getItemId()) {
+
+            case R.id.play:
+                timer = new Timer();
+                chart.moveViewToX(0);
+                TimerTask updateChart = new UpdateChart();
+                timer.schedule(updateChart, 1000, 1000 / fps);
+                chart.moveViewToX(lineDataSets[0].getXMax());
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
     }
 
     //Fills lineDataSets with the content of CSV files
@@ -173,63 +241,36 @@ public class Display extends AppCompatActivity implements SeekBar.OnSeekBarChang
 
     private void setData (){
 
-        lineDataSets[0].setAxisDependency(YAxis.AxisDependency.LEFT);
-        lineDataSets[1].setAxisDependency(YAxis.AxisDependency.LEFT);
-
-        Log.d("lineDataSets[0]", Integer.toString(lineDataSets[0].getEntryCount()));
-        Log.d("lineDataSets[0]", Float.toString(lineDataSets[0].getValues().get(5).getX()) + "_"+  Float.toString(lineDataSets[0].getValues().get(5).getY() ) );
-
-        // create a data object with the data sets
-
         List<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
 
-        dataSets.add(lineDataSets[0]);
-        dataSets.add(lineDataSets[1]);
+        int[] colors = {ContextCompat.getColor(getApplicationContext(), R.color.aqua),
+                ContextCompat.getColor(getApplicationContext(), R.color.fuchsia),
+                ContextCompat.getColor(getApplicationContext(), R.color.green),
+                ContextCompat.getColor(getApplicationContext(), android.R.color.holo_purple),
+                ContextCompat.getColor(getApplicationContext(), R.color.orange),
+                ContextCompat.getColor(getApplicationContext(), R.color.red),
+                ContextCompat.getColor(getApplicationContext(), R.color.yellow),
+                ContextCompat.getColor(getApplicationContext(), R.color.black)
+        };
 
-        LineData data2 = new LineData(dataSets);
+        for (int i=0; i < lineDataSets.length ; i++) {
+            lineDataSets[i].setAxisDependency(YAxis.AxisDependency.LEFT);
+            lineDataSets[i].setColor(colors[i]);
+            lineDataSets[i].setValueTextColor(colors[i]);
+            lineDataSets[i].setDrawCircles(false);
+            lineDataSets[i].setLineWidth(1f);
+            lineDataSets[i].setVisible(true);
+            dataSets.add(lineDataSets[i]);
+        }
 
-
-        chart.setData(data2);
+        chart.setData(new LineData(dataSets));
         chart.invalidate();
-
-
+        chart.setVisibleXRangeMaximum(1000); //Shows a maximum of 1 sec per screen
+        max_in_X = lineDataSets[0].getXMax();
     }
 
 
-    private void setData(List<Float[]> data) {
 
-
-    }
-
-    @Override
-    public void onValueSelected(Entry e, Highlight h) {
-        Log.i("Entry selected", e.toString());
-
-        chart.centerViewToAnimated(e.getX(), e.getY(), chart.getData().getDataSetByIndex(h.getDataSetIndex())
-                .getAxisDependency(), 500);
-    }
-
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-        tvX.setText(String.valueOf(seekBarX.getProgress()));
-
-//        setData(seekBarX.getProgress(), seekBarY.getProgress());
-
-        // redraw
-        chart.invalidate();
-    }
-
-    @Override
-    public void onNothingSelected() {
-        Log.i("Nothing selected", "Nothing selected.");
-    }
-
-    @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {}
-
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {}
 
 
 }
