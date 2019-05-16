@@ -3,16 +3,16 @@
     android:id="@+id/linear_layout_session_row"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:layout_margin="1dp"
-    android:background="@drawable/selector">
+    android:background="@drawable/selector"
+    android:orientation="vertical">
 
 
     <TextView
         android:id="@+id/text_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Session name"
+        android:text="@string/session_name"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textSize="18sp" />
 
@@ -26,14 +26,13 @@
             android:id="@+id/session_created_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Date: "
+            android:text="@string/session_date"
             android:textStyle="italic" />
 
         <TextView
             android:id="@+id/session_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="XX.XX.XXX"
             android:textStyle="italic" />
 
         <Space
@@ -45,14 +44,13 @@
             android:id="@+id/session_created_hour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Start time : "
+            android:text="@string/session_start_time"
             android:textStyle="italic" />
 
         <TextView
             android:id="@+id/session_hour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="XX:XX"
             android:textStyle="italic" />
 
         <Space
@@ -64,14 +62,13 @@
             android:id="@+id/session_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="File size: "
+            android:text="@string/file_size"
             android:textStyle="italic" />
 
         <TextView
             android:id="@+id/session_kbs"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="XX"
             android:textStyle="italic" />
 
         <TextView
@@ -79,7 +76,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight=".1"
-            android:text="Kbs"
+            android:text="@string/kbs"
             android:textStyle="italic" />
 
 

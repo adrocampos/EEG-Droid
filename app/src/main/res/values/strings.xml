@@ -180,5 +180,12 @@
 
     <string name="select_recording">Select a session to plot</string>
 
+    <string name="session_name">Session name: </string>
+    <string name="session_date">Session date: </string>
+    <string name="session_start_time">Start time: </string>
+    <string name="session_finish_time">Finish time: </string>
+
+    <string name="kbs">Kbs</string>
+    <string name="file_size">File size: </string>
 
 </resources>

@@ -11,31 +11,38 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import de.uni_osnabrueck.ikw.eegdroid.MyXAxisValueFormatter;
+import de.uni_osnabrueck.ikw.eegdroid.utilities.MyXAxisValueFormatterTime;
 
 public class Display extends AppCompatActivity {
 
@@ -48,6 +55,11 @@ public class Display extends AppCompatActivity {
     private Timer timer;
     private int fps = 30;
     private Float max_in_X;
+    private TextView nameTextView;
+    private TextView dateTextView;
+    private TextView startTextView;
+    private TextView finishTextView;
+    private BasicFileAttributes attrs;
 
 
     @Override
@@ -68,7 +80,16 @@ public class Display extends AppCompatActivity {
         OnChartValueSelectedListener ol = new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry entry, Highlight h) {
-                //entry.getData() returns null here
+
+                ZonedDateTime point_in_time = attrs.creationTime().toInstant().atZone(ZoneId.systemDefault());
+                point_in_time = point_in_time.plusSeconds(Math.round(entry.getX()/1000));
+
+                Toast.makeText(
+                        getApplicationContext(),
+                        Integer.toString( + point_in_time.getHour()) + ":" + Integer.toString(point_in_time.getMinute()) + ":" + Integer.toString(point_in_time.getSecond()),
+                        Toast.LENGTH_LONG
+                ).show();
+
             }
 
             @Override
@@ -76,6 +97,10 @@ public class Display extends AppCompatActivity {
 
             }
         };
+        nameTextView = (TextView) findViewById(R.id.name_file);
+        dateTextView = (TextView) findViewById(R.id.session_date_file);
+        startTextView = (TextView) findViewById(R.id.start_time_file);
+        finishTextView = (TextView) findViewById(R.id.finish_time_file);
 
         chart = findViewById(R.id.chart);
         chart.setOnChartValueSelectedListener(ol);
@@ -127,20 +152,24 @@ public class Display extends AppCompatActivity {
 //        rightAxis.setDrawZeroLine(false);
 //        rightAxis.setGranularityEnabled(false);
 
-        XAxis bottomAxis = chart.getXAxis();
+        final XAxis bottomAxis = chart.getXAxis();
         bottomAxis.setLabelCount(5, true);
-        bottomAxis.setValueFormatter(new MyXAxisValueFormatter());
+        //bottomAxis.setValueFormatter(new MyXAxisValueFormatter());
         bottomAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         bottomAxis.setGridColor(Color.WHITE);
         bottomAxis.setTextColor(Color.GRAY);
 
 
 
-        LimitLine current = new LimitLine(0, "here");
-        current.setLineColor(Color.BLUE);
-        current.setLineWidth(2f);
 
-        bottomAxis.addLimitLine(current);
+
+
+
+//        LimitLine current = new LimitLine(0, "here");
+//        current.setLineColor(Color.BLUE);
+//        current.setLineWidth(2f);
+//
+//        bottomAxis.addLimitLine(current);
 //        //xAxis.setTypeface(tfLight);
 //        xAxis.setTextSize(11f);
 //        xAxis.setTextColor(Color.WHITE);
@@ -155,10 +184,28 @@ public class Display extends AppCompatActivity {
                 .setItems(arrayOfNames, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
-                        Log.d("test", arrayListOfFiles.get(which).getName()); // Here we access to the file
                         fileToPlot = arrayListOfFiles.get(which);
                         loadData(fileToPlot);
                         setData();
+
+
+                        Path path = arrayListOfFiles.get(which).toPath();
+
+                        try {
+                            attrs = Files.readAttributes(path, BasicFileAttributes.class);
+                        } catch (IOException ex) {
+                            attrs = null;
+                        }
+
+                        Log.d("test", arrayListOfFiles.get(which).getName()); // Here we access to the file
+                        nameTextView.setText(arrayListOfFiles.get(which).getName());
+                        ZonedDateTime creationTime = attrs.creationTime().toInstant().atZone(ZoneId.systemDefault());
+                        dateTextView.setText(creationTime.toLocalDate().toString());
+                        startTextView.setText(creationTime.toLocalTime().toString());
+                        finishTextView.setText(creationTime.toLocalTime().plusSeconds(Math.round(max_in_X/1000)).toString());
+
+                        bottomAxis.setValueFormatter(new MyXAxisValueFormatterTime(creationTime));
+
                         dialog.dismiss();
                         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                         Log.d("finish", "finish");
@@ -179,6 +226,8 @@ public class Display extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
+
+
         class UpdateChart extends TimerTask {
             float position_in_x= 0;
             public void run() {
@@ -196,11 +245,14 @@ public class Display extends AppCompatActivity {
         switch (item.getItemId()) {
 
             case R.id.play:
-                timer = new Timer();
-                chart.moveViewToX(0);
-                TimerTask updateChart = new UpdateChart();
-                timer.schedule(updateChart, 1000, 1000 / fps);
-                chart.moveViewToX(lineDataSets[0].getXMax());
+
+                    item.setEnabled(false);
+                    timer = new Timer();
+                    chart.moveViewToX(0);
+                    TimerTask updateChart = new UpdateChart();
+                    timer.schedule(updateChart, 1000, 1000 / fps);
+
+
                 return true;
 
             default:
@@ -268,6 +320,8 @@ public class Display extends AppCompatActivity {
         chart.setVisibleXRangeMaximum(1000); //Shows a maximum of 1 sec per screen
         max_in_X = lineDataSets[0].getXMax();
     }
+
+
 
 
 
