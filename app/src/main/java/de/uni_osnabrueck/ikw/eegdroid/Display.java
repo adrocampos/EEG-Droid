@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -41,7 +40,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import de.uni_osnabrueck.ikw.eegdroid.MyXAxisValueFormatter;
 import de.uni_osnabrueck.ikw.eegdroid.utilities.MyXAxisValueFormatterTime;
 
 public class Display extends AppCompatActivity {
@@ -108,10 +106,11 @@ public class Display extends AppCompatActivity {
         chart.setTouchEnabled(true);
         chart.setDragDecelerationFrictionCoef(0.9f);
         chart.setDragEnabled(true);
-        chart.setScaleEnabled(true);
+        //chart.setScaleEnabled(true);
         chart.setDrawGridBackground(false);
 //        chart.setHighlightPerDragEnabled(true);
         chart.setPinchZoom(true);
+
 //        chart.setBackgroundColor(Color.LTGRAY);
 //
 //        seekBarX.setProgress(30);
@@ -149,7 +148,7 @@ public class Display extends AppCompatActivity {
 //        rightAxis.setAxisMaximum(900);
 //        rightAxis.setAxisMinimum(-200);
 //        rightAxis.setDrawGridLines(false);
-//        rightAxis.setDrawZeroLine(false);
+        rightAxis.setDrawZeroLine(true);
 //        rightAxis.setGranularityEnabled(false);
 
         final XAxis bottomAxis = chart.getXAxis();
@@ -276,7 +275,10 @@ public class Display extends AppCompatActivity {
             for (int j=1; j < values_strings.get(0).length-1; j++) {
                 ArrayList<Entry> arrayOfEntry = new ArrayList<>();
                 for (int k=0; k < values_strings.size(); k++){
-                    arrayOfEntry.add(new Entry(Float.parseFloat(values_strings.get(k)[0]), Float.parseFloat(values_strings.get(k)[j])));
+                    if (k % 100 == 0){
+                        arrayOfEntry.add(new Entry(Float.parseFloat(values_strings.get(k)[0]), Float.parseFloat(values_strings.get(k)[j])));
+                    }
+
                 }
                 String nameLineDataSet = "Channel_" + j;
                 lineDataSets[j-1] = new LineDataSet(arrayOfEntry, nameLineDataSet);
@@ -317,7 +319,7 @@ public class Display extends AppCompatActivity {
 
         chart.setData(new LineData(dataSets));
         chart.invalidate();
-        chart.setVisibleXRangeMaximum(1000); //Shows a maximum of 1 sec per screen
+        chart.setVisibleXRangeMaximum(5000); //Shows a maximum of 1 sec per screen
         max_in_X = lineDataSets[0].getXMax();
     }
 
