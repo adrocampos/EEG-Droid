@@ -134,6 +134,7 @@ public class Epibot extends AppCompatActivity {
             }
         });
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
 
@@ -309,25 +310,39 @@ public class Epibot extends AppCompatActivity {
 
         if (generic.getResponseType().equals("text")) {
 
+//            final String text = outputData.getText().get(0);
+//            final String[] textSplit = text.split(Pattern.quote(". "));
+//            final List<String> texts = Arrays.asList(textSplit);
+//
+//            for (final String element : texts) {
+//
+//                delay(element, 750);
+//                vibration(100);
+//
+//                handler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        String[] user_msj_link = {botsname, element, "text"};
+//                        messages.add(user_msj_link);
+//                        msgView.setAdapter(adapter);
+//                        context = mssg.getContext();
+//                    }
+//                });
+//            }
+
+
             final String text = outputData.getText().get(0);
-            final String[] textSplit = text.split(Pattern.quote(". "));
-            final List<String> texts = Arrays.asList(textSplit);
+            vibration(100);
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    String[] user_msj_link = {botsname, text, "text"};
+                    messages.add(user_msj_link);
+                    msgView.setAdapter(adapter);
+                    context = mssg.getContext();
+                }
+            });
 
-            for (final String element : texts) {
-
-                delay(element, 750);
-                vibration(100);
-
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        String[] user_msj_link = {botsname, element, "text"};
-                        messages.add(user_msj_link);
-                        msgView.setAdapter(adapter);
-                        context = mssg.getContext();
-                    }
-                });
-            }
 
         } else if (generic.getResponseType().equals("image")) {
 

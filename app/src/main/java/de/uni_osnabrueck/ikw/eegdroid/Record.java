@@ -160,6 +160,7 @@ public class Record extends AppCompatActivity {
                 Log.e(TAG, "Unable to initialize Bluetooth");
                 finish();
             }
+
             // hack for ensuring a successful connection
             handler.postDelayed(new Runnable() {
                 @Override
@@ -256,6 +257,8 @@ public class Record extends AppCompatActivity {
             final String action = intent.getAction();
             if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
                 buttons_prerecording();
+                setConnectionStatus(true);
+
 
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 setConnectionStatus(false);
@@ -269,6 +272,8 @@ public class Record extends AppCompatActivity {
                 }
 
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
+
+
                 System.out.println(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
                 data_cnt++;
                 long last_data = System.currentTimeMillis();
@@ -292,7 +297,7 @@ public class Record extends AppCompatActivity {
                 @SuppressLint("DefaultLocale") String resolution = String.format("%.2f", res_time) + "ms - ";
                 String content = resolution + hertz;
                 mDataResolution.setText(content);
-                setConnectionStatus(true);
+                //setConnectionStatus(true);
                 if (recording){
                     mConnectionState.setText(R.string.recording);
                     mConnectionState.setTextColor(Color.RED);
@@ -523,6 +528,7 @@ public class Record extends AppCompatActivity {
         });
         mDataResolution = findViewById(R.id.resolution_value);
         setChart();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -570,6 +576,11 @@ public class Record extends AppCompatActivity {
             } else {
                 mBluetoothLeService.disconnect();
             }
+        }
+
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -704,7 +715,7 @@ public class Record extends AppCompatActivity {
                         mBluetoothLeService.setCharacteristicNotification(
                                 gattCharacteristic, true);
                     }
-                    mBluetoothLeService.disconnect();
+                    //mBluetoothLeService.disconnect();
                     mBluetoothLeService.connect(mDeviceAddress);
                 }
             }

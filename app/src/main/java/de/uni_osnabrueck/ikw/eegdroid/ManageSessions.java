@@ -57,6 +57,8 @@ public class ManageSessions extends AppCompatActivity {
         // Receive the directory of the EEG Sessions
         Intent intent = getIntent();
         dirSessions = intent.getExtras().getString("dirString");
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
 
@@ -79,6 +81,11 @@ public class ManageSessions extends AppCompatActivity {
 
         //Handles if no session has been selected
         if (position == -1) {
+            switch (item.getItemId()) {
+                case android.R.id.home:
+                    onBackPressed();
+                    return true;
+            }
             Toast.makeText(getApplicationContext(), R.string.warning_select_session, Toast.LENGTH_LONG).show();
             return super.onOptionsItemSelected(item);
 
@@ -170,6 +177,8 @@ public class ManageSessions extends AppCompatActivity {
                     alert.show();
                     adapter.resetSelectedPos();
                     return true;
+
+
 
                 default:
                     return super.onOptionsItemSelected(item);

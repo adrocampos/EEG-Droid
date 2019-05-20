@@ -6,6 +6,8 @@ import android.os.Environment;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
@@ -88,6 +90,7 @@ public class TFAnalysis extends AppCompatActivity {
         setupOverlapSpinner();
         setupWidthSpinner();
         setupChannelSpinner();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private double[] generateDummyData(){
@@ -141,6 +144,7 @@ public class TFAnalysis extends AppCompatActivity {
                     case "0":
                         newOVERLAP = 0;
                         break;
+
                 }
                 if(newOVERLAP!=OVERLAP){
                     OVERLAP = newOVERLAP;
@@ -247,5 +251,21 @@ public class TFAnalysis extends AppCompatActivity {
             Toast.makeText(this, "The specified file was not found", Toast.LENGTH_SHORT).show();
         }
         return eegData;
+    }
+
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // API 5+ solution
+                onBackPressed();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

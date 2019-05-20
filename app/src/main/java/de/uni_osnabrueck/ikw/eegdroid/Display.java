@@ -252,9 +252,13 @@ public class Display extends AppCompatActivity {
         bottomAxis.setGridColor(Color.WHITE);
         bottomAxis.setTextColor(Color.GRAY);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
         //Dialog for choosing the session to plot
         AlertDialog.Builder alert = new AlertDialog.Builder(this)
                 .setTitle(R.string.select_recording)
+                .setCancelable(false)
                 .setItems(arrayOfNames, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
@@ -368,6 +372,10 @@ public class Display extends AppCompatActivity {
                 chart.invalidate();
                 return true;
 
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -438,8 +446,9 @@ public class Display extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        timer.cancel();
-        timer.purge();
+        if (timer != null){
+            timer.cancel();
+            timer.purge();
+        }
     }
-
 }
