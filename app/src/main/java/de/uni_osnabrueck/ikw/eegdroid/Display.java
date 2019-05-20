@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,13 +53,25 @@ public class Display extends AppCompatActivity {
     private LineDataSet[] lineDataSets;
     private int nChannels = 8;
     private Timer timer;
-    private int fps = 30;
+    private int period = 1;
+    private int jump_x = 1;
+    private int density = 10;
     private Float max_in_X;
     private TextView nameTextView;
     private TextView dateTextView;
     private TextView startTextView;
     private TextView finishTextView;
     private BasicFileAttributes attrs;
+    private CheckBox chckbx_ch1;
+    private CheckBox chckbx_ch2;
+    private CheckBox chckbx_ch3;
+    private CheckBox chckbx_ch4;
+    private CheckBox chckbx_ch5;
+    private CheckBox chckbx_ch6;
+    private CheckBox chckbx_ch7;
+    private CheckBox chckbx_ch8;
+    private MenuItem menu_play;
+    private MenuItem menu_rewind;
 
 
     @Override
@@ -70,7 +84,7 @@ public class Display extends AppCompatActivity {
 
         //Create the list of names for display in dialog
         arrayOfNames = new String[arrayListOfFiles.size()];
-        for(int i=0; i < arrayOfNames.length; i++) {
+        for (int i = 0; i < arrayOfNames.length; i++) {
             arrayOfNames[i] = arrayListOfFiles.get(i).getName();
         }
 
@@ -80,11 +94,11 @@ public class Display extends AppCompatActivity {
             public void onValueSelected(Entry entry, Highlight h) {
 
                 ZonedDateTime point_in_time = attrs.creationTime().toInstant().atZone(ZoneId.systemDefault());
-                point_in_time = point_in_time.plusSeconds(Math.round(entry.getX()/1000));
+                point_in_time = point_in_time.plusSeconds(Math.round(entry.getX() / 1000));
 
                 Toast.makeText(
                         getApplicationContext(),
-                        Integer.toString( + point_in_time.getHour()) + ":" + Integer.toString(point_in_time.getMinute()) + ":" + Integer.toString(point_in_time.getSecond()),
+                        Integer.toString(+point_in_time.getHour()) + ":" + Integer.toString(point_in_time.getMinute()) + ":" + Integer.toString(point_in_time.getSecond()),
                         Toast.LENGTH_LONG
                 ).show();
 
@@ -100,82 +114,143 @@ public class Display extends AppCompatActivity {
         startTextView = (TextView) findViewById(R.id.start_time_file);
         finishTextView = (TextView) findViewById(R.id.finish_time_file);
 
+
+        chckbx_ch1 = findViewById(R.id.checkBox_ch1_display);
+        chckbx_ch2 = findViewById(R.id.checkBox_ch2_display);
+        chckbx_ch3 = findViewById(R.id.checkBox_ch3_display);
+        chckbx_ch4 = findViewById(R.id.checkBox_ch4_display);
+        chckbx_ch5 = findViewById(R.id.checkBox_ch5_display);
+        chckbx_ch6 = findViewById(R.id.checkBox_ch6_display);
+        chckbx_ch7 = findViewById(R.id.checkBox_ch7_display);
+        chckbx_ch8 = findViewById(R.id.checkBox_ch8_display);
+
+
+        chckbx_ch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (isChecked) {
+                    lineDataSets[0].setVisible(true);
+                } else {
+                    lineDataSets[0].setVisible(false);
+                }
+                chart.invalidate();
+            }
+        });
+
+        chckbx_ch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (isChecked) {
+                    lineDataSets[1].setVisible(true);
+                } else {
+                    lineDataSets[1].setVisible(false);
+                }
+                chart.invalidate();
+            }
+        });
+
+        chckbx_ch3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (isChecked) {
+                    lineDataSets[2].setVisible(true);
+                } else {
+                    lineDataSets[2].setVisible(false);
+                }
+                chart.invalidate();
+            }
+        });
+
+        chckbx_ch4.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (isChecked) {
+                    lineDataSets[3].setVisible(true);
+                } else {
+                    lineDataSets[3].setVisible(false);
+                }
+                chart.invalidate();
+            }
+        });
+
+        chckbx_ch5.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (isChecked) {
+                    lineDataSets[4].setVisible(true);
+                } else {
+                    lineDataSets[4].setVisible(false);
+                }
+                chart.invalidate();
+            }
+        });
+
+        chckbx_ch6.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (isChecked) {
+                    lineDataSets[5].setVisible(true);
+                } else {
+                    lineDataSets[5].setVisible(false);
+                }
+                chart.invalidate();
+            }
+        });
+
+        chckbx_ch7.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (isChecked) {
+                    lineDataSets[6].setVisible(true);
+                } else {
+                    lineDataSets[6].setVisible(false);
+                }
+                chart.invalidate();
+            }
+        });
+
+        chckbx_ch8.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (isChecked) {
+                    lineDataSets[7].setVisible(true);
+                } else {
+                    lineDataSets[7].setVisible(false);
+                }
+                chart.invalidate();
+            }
+        });
+
+
         chart = findViewById(R.id.chart);
         chart.setOnChartValueSelectedListener(ol);
         chart.getDescription().setEnabled(false);
         chart.setTouchEnabled(true);
         chart.setDragDecelerationFrictionCoef(0.9f);
         chart.setDragEnabled(true);
-        //chart.setScaleEnabled(true);
+        chart.setScaleEnabled(true);
         chart.setDrawGridBackground(false);
-//        chart.setHighlightPerDragEnabled(true);
         chart.setPinchZoom(true);
 
-//        chart.setBackgroundColor(Color.LTGRAY);
-//
-//        seekBarX.setProgress(30);
-//
-//        chart.animateX(1500);
-
-        // get the legend (only possible after setting data)
         Legend l = chart.getLegend();
-
-        // modify the legend ...
         l.setForm(Legend.LegendForm.LINE);
-//        l.setTextSize(11f);
         l.setTextColor(Color.BLACK);
-//        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
-//        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
-//        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
-//        l.setDrawInside(false);
-////        l.setYOffset(11f);
-//
 
-//
         YAxis leftAxis = chart.getAxisLeft();
         leftAxis.setTextColor(Color.GRAY);
-        //leftAxis.setAxisMaximum(30f);
-        //leftAxis.setAxisMinimum(-30f);
         leftAxis.setLabelCount(13, true);
         leftAxis.setDrawGridLines(true);
         leftAxis.setGridColor(Color.WHITE);
 
-//
         YAxis rightAxis = chart.getAxisRight();
         rightAxis.setEnabled(false);
-//        //rightAxis.setTypeface(tfLight);
-//        rightAxis.setTextColor(Color.RED);
-//        rightAxis.setAxisMaximum(900);
-//        rightAxis.setAxisMinimum(-200);
-//        rightAxis.setDrawGridLines(false);
         rightAxis.setDrawZeroLine(true);
-//        rightAxis.setGranularityEnabled(false);
 
         final XAxis bottomAxis = chart.getXAxis();
         bottomAxis.setLabelCount(5, true);
-        //bottomAxis.setValueFormatter(new MyXAxisValueFormatter());
         bottomAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         bottomAxis.setGridColor(Color.WHITE);
         bottomAxis.setTextColor(Color.GRAY);
-
-
-
-
-
-
-
-//        LimitLine current = new LimitLine(0, "here");
-//        current.setLineColor(Color.BLUE);
-//        current.setLineWidth(2f);
-//
-//        bottomAxis.addLimitLine(current);
-//        //xAxis.setTypeface(tfLight);
-//        xAxis.setTextSize(11f);
-//        xAxis.setTextColor(Color.WHITE);
-//        xAxis.setDrawGridLines(false);
-//        xAxis.setDrawAxisLine(false);
-
-
 
         //Dialog for choosing the session to plot
         AlertDialog.Builder alert = new AlertDialog.Builder(this)
@@ -196,20 +271,16 @@ public class Display extends AppCompatActivity {
                             attrs = null;
                         }
 
-                        Log.d("test", arrayListOfFiles.get(which).getName()); // Here we access to the file
                         nameTextView.setText(arrayListOfFiles.get(which).getName());
                         ZonedDateTime creationTime = attrs.creationTime().toInstant().atZone(ZoneId.systemDefault());
                         dateTextView.setText(creationTime.toLocalDate().toString());
                         startTextView.setText(creationTime.toLocalTime().toString());
-                        finishTextView.setText(creationTime.toLocalTime().plusSeconds(Math.round(max_in_X/1000)).toString());
+                        finishTextView.setText(creationTime.toLocalTime().plusSeconds(Math.round(max_in_X / 1000)).toString());
 
                         bottomAxis.setValueFormatter(new MyXAxisValueFormatterTime(creationTime));
 
                         dialog.dismiss();
                         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                        Log.d("finish", "finish");
-
-
                     }
                 });
         alert.show();
@@ -219,49 +290,91 @@ public class Display extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.display_menu, menu);
+        menu_play = menu.findItem(R.id.play);
+        menu_rewind = menu.findItem(R.id.rewind);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-
-
         class UpdateChart extends TimerTask {
-            float position_in_x= 0;
+            float position_x = 0;
+
             public void run() {
-                position_in_x = position_in_x + 1000 / fps;
-                if (position_in_x > max_in_X){
+                if (position_x > max_in_X) {
+
                     timer.cancel();
                     timer.purge();
                 }
-                chart.moveViewToX(position_in_x);
-                Log.d("positionX", Float.toString(position_in_x));
+                chart.moveViewToX(position_x);
+                position_x = position_x + jump_x;
+
             }
         }
-
 
         switch (item.getItemId()) {
 
             case R.id.play:
+                item.setEnabled(false);
+                menu_rewind.setEnabled(true);
+                timer = new Timer();
+                chart.moveViewToX(0);
+                TimerTask updateChart = new UpdateChart();
+                timer.scheduleAtFixedRate(updateChart, 0, period);
+                return true;
 
-                    item.setEnabled(false);
-                    timer = new Timer();
-                    chart.moveViewToX(0);
-                    TimerTask updateChart = new UpdateChart();
-                    timer.schedule(updateChart, 1000, 1000 / fps);
+            case R.id.rewind:
+                item.setEnabled(false);
+                menu_play.setEnabled(true);
+                timer.cancel();
+                timer.purge();
+                chart.moveViewToX(0);
+                return true;
 
+            case R.id.speed_quarter:
+                jump_x = 1;
+                period = 4;
+                chart.invalidate();
+                return true;
 
+            case R.id.speed_half:
+                jump_x = 1;
+                period = 2;
+                chart.invalidate();
+                return true;
+
+            case R.id.speed_normal:
+                jump_x = 1;
+                period = 1;
+                chart.invalidate();
+                return true;
+
+            case R.id.speed_x2:
+                jump_x = 2;
+                period = 1;
+                chart.invalidate();
+                return true;
+
+            case R.id.speed_x4:
+                jump_x = 4;
+                period = 1;
+                chart.invalidate();
+                return true;
+
+            case R.id.speed_8:
+                jump_x = 8;
+                period = 1;
+                chart.invalidate();
                 return true;
 
             default:
                 return super.onOptionsItemSelected(item);
-
         }
     }
 
     //Fills lineDataSets with the content of CSV files
-    private void loadData (File file) {
+    private void loadData(File file) {
 
         lineDataSets = new LineDataSet[nChannels];
 
@@ -272,28 +385,27 @@ public class Display extends AppCompatActivity {
             List<String[]> values_strings = csvReader.readAll();
 
             //Ignore the first column (time) and the last one (empty)
-            for (int j=1; j < values_strings.get(0).length-1; j++) {
+            for (int j = 1; j < values_strings.get(0).length - 1; j++) {
                 ArrayList<Entry> arrayOfEntry = new ArrayList<>();
-                for (int k=0; k < values_strings.size(); k++){
-                    if (k % 100 == 0){
+                for (int k = 0; k < values_strings.size(); k++) {
+                    if (k % density == 0) {
                         arrayOfEntry.add(new Entry(Float.parseFloat(values_strings.get(k)[0]), Float.parseFloat(values_strings.get(k)[j])));
                     }
 
                 }
                 String nameLineDataSet = "Channel_" + j;
-                lineDataSets[j-1] = new LineDataSet(arrayOfEntry, nameLineDataSet);
+                lineDataSets[j - 1] = new LineDataSet(arrayOfEntry, nameLineDataSet);
             }
 
             csvReader.close();
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
-    private void setData (){
+    private void setData() {
 
         List<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
 
@@ -307,7 +419,7 @@ public class Display extends AppCompatActivity {
                 ContextCompat.getColor(getApplicationContext(), R.color.black)
         };
 
-        for (int i=0; i < lineDataSets.length ; i++) {
+        for (int i = 0; i < lineDataSets.length; i++) {
             lineDataSets[i].setAxisDependency(YAxis.AxisDependency.LEFT);
             lineDataSets[i].setColor(colors[i]);
             lineDataSets[i].setValueTextColor(colors[i]);
@@ -323,10 +435,11 @@ public class Display extends AppCompatActivity {
         max_in_X = lineDataSets[0].getXMax();
     }
 
-
-
-
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        timer.cancel();
+        timer.purge();
+    }
 
 }
