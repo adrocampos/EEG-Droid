@@ -296,6 +296,7 @@ public class Display extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.display_menu, menu);
         menu_play = menu.findItem(R.id.play);
         menu_rewind = menu.findItem(R.id.rewind);
+        menu_rewind.setEnabled(false);
         return true;
     }
 

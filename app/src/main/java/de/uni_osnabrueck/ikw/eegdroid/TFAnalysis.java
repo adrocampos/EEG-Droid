@@ -1,8 +1,12 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
 
+import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.os.Environment;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,23 +23,41 @@ import android.widget.TableLayout;
 import android.widget.Toast;
 
 import org.apache.commons.math3.complex.Complex;
+import org.apache.commons.math3.linear.MatrixUtils;
+
+import de.uni_osnabrueck.ikw.eegdroid.utilities.MyXAxisValueFormatterTime;
 import de.uni_osnabrueck.ikw.eegdroid.utilities.Utilities;
 import de.uni_osnabrueck.ikw.eegdroid.utilities.CustomFFT;
 import de.uni_osnabrueck.ikw.eegdroid.utilities.FFTWWrapper;
 import de.uni_osnabrueck.ikw.eegdroid.utilities.ZoomableImageView;
+
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TFAnalysis extends AppCompatActivity {
 
     //ZoomableImageView bmpView;
+    private ArrayList<File> arrayListOfFiles;
     private Spinner widthSpinner;
     private Spinner channelSpinner;
     private Spinner overlapSpinner;
     private ImageView bmpView;
-    private static final String[] channels = {"1", "2", "3", "4", "5", "6","7", "8"};
+    private static final String[] channels = {"1", "2", "3", "4", "5", "6" ,"7", "8"};
     private static final String[] widths = {"1", "2", "3", "4", "5"};
     private static final String[] overlaps = {"0", "1/4", "1/3", "1/2"};
     private static int FS = 225;
@@ -47,6 +69,10 @@ public class TFAnalysis extends AppCompatActivity {
     public static String WINDOW = "hanning";
     private static int MAX_CHART_HEIGHT;
     private static int MAX_CHART_WIDTH;
+    private int density = 10;
+    private String[] arrayOfNames;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,50 +81,100 @@ public class TFAnalysis extends AppCompatActivity {
         bmpView = findViewById(R.id.spectogram);
         //bmpView = (ZoomableImageView)findViewById(R.id.spectogram);
 
+        ManageSessions manager = new ManageSessions();
+        arrayListOfFiles = manager.getArrayListOfFiles();
+
+        //Create the list of names for display in dialog
+        arrayOfNames = new String[arrayListOfFiles.size()];
+        for (int i = 0; i < arrayOfNames.length; i++) {
+            arrayOfNames[i] = arrayListOfFiles.get(i).getName();
+        }
+
         // GENERATE DUMMY DATA
         //double[] sinesData = generateDummyData();
 
         //LOAD REAL DATA
-        eegData = loadEEGFromResourceCSV("eeg_data.csv");
 
-        final LinearLayout parent = (LinearLayout) bmpView.getParent();
-        parent.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                parent.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                int padding = 20*2;
-                MAX_CHART_HEIGHT = parent.getHeight()-padding - 200;
-                MAX_CHART_WIDTH = parent.getWidth()-padding - 150;//height is ready
+        //Dialog for choosing the session to plot
+        AlertDialog.Builder alert = new AlertDialog.Builder(this)
+                .setTitle(R.string.select_recording)
+                .setCancelable(false)
+                .setItems(arrayOfNames, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
 
-                Bitmap spectogram = Utilities.getSpectrogramBitmap(eegData[CHANNEL], FS, WIDTH, OVERLAP,
-                        WINDOW, true, MAXHERTZ, true);
+                        loadData(arrayListOfFiles.get(which));
 
-                int width = spectogram.getWidth();
-                int height = spectogram.getHeight();
-                float wScale = (float) MAX_CHART_WIDTH/width;
-                float hScale = (float) MAX_CHART_HEIGHT/2/height;
-                hScale = Math.min(wScale,hScale);
-                spectogram = Bitmap.createScaledBitmap(spectogram, (int) (wScale*width), (int) (hScale*height), false);
 
-                // get real spectogram
-                Bitmap chart = Utilities.addAxisAndLabels(spectogram, MAXHERTZ, eegData[CHANNEL].length/FS);
+                            final LinearLayout parent = (LinearLayout) bmpView.getParent();
+                            parent.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                                @Override
+                                public void onGlobalLayout() {
+                                    parent.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                    MAX_CHART_HEIGHT = parent.getWidth();
+                                    MAX_CHART_WIDTH = parent.getHeight();//height is ready
 
-                bmpView.setImageBitmap(chart);
-            }
-        });
+                                    try {
+                                        Bitmap spectogram = Utilities.getSpectrogramBitmap(eegData[CHANNEL], FS, WIDTH, OVERLAP,
+                                                WINDOW, true, MAXHERTZ, true);
+                                        int width = spectogram.getWidth();
+                                        int height = spectogram.getHeight();
+                                        float wScale = (float) MAX_CHART_WIDTH / width;
+                                        float hScale = (float) MAX_CHART_HEIGHT / 2 / height;
+                                        hScale = Math.min(wScale, hScale);
+                                        spectogram = Bitmap.createScaledBitmap(spectogram, (int) (wScale * width), (int) (hScale * height), false);
 
-        setupOverlapSpinner();
-        setupWidthSpinner();
-        setupChannelSpinner();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+                                        int test = eegData[CHANNEL].length / FS;
+                                        Log.d("zero?", Integer.toString(test));
+                                        // get real spectogram
+                                        Bitmap chart = Utilities.addAxisAndLabels(spectogram, MAXHERTZ, eegData[CHANNEL].length / FS);
+
+
+                                        bmpView.setImageBitmap(chart);
+
+                                    } catch (ArithmeticException e) {
+
+                                        Toast.makeText(getApplicationContext(), R.string.warning_too_short, Toast.LENGTH_LONG).show();
+
+                                        Log.d("EXCEPTION", "Dividing by zero");
+                                        onBackPressed();
+                                    }
+
+
+                                }
+                            });
+
+                        setupOverlapSpinner();
+                        setupWidthSpinner();
+                        setupChannelSpinner();
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                        dialog.dismiss();
+                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+
+
+
+
+
+
+
+                    }
+                });
+        alert.show();
+
+
+
     }
 
-    private double[] generateDummyData(){
-        int[] freqs = {10, 20, 30, 40, 50};
-        int fs = 256; //225
-        int secs = 100; // 5
-        double[] sinesData = Utilities.genSinWaves(freqs, fs, secs);
-        return sinesData;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void generateSpectogram(){
@@ -226,46 +302,31 @@ public class TFAnalysis extends AppCompatActivity {
         channelSpinner.setSelection(spinnerPosition);
     }
 
-    public double[][] loadEEGFromResourceCSV(String filename){
-        double[][] eegData = new double[0][0];
-        try{
-            InputStreamReader is = new InputStreamReader(getAssets()
-                    .open(filename));
-            File csvfile = new File(Environment.getExternalStorageDirectory() + "/csvfile.csv");
-            CSVReader reader = new CSVReader(is);
-            String [] nextLine;
-            nextLine = reader.readNext();
-            int numChannels = Integer.parseInt(nextLine[0]);
-            int numData = Integer.parseInt(nextLine[1]);
-            eegData = new double[numChannels][numData];
-            int i=0;
-            while ((nextLine = reader.readNext()) != null) {
-                // nextLine[] is an array of values from the line
-                for (int j=0; j<nextLine.length; j++){
-                    eegData[j][i] = Double.parseDouble(nextLine[j]);
-                };
-                i+=1;
+    //Fills lineDataSets with the content of CSV files
+    private void loadData(File file) {
+
+        try {
+            // create csvReader object and skip first 3 Lines
+            CSVReader csvReader = new CSVReaderBuilder(new FileReader(file)).withSkipLines(3).build();
+
+            List<double[]> list = new ArrayList<>();
+            String[] line;
+            while ((line = csvReader.readNext()) != null) {
+                double[] parsed = new double[line.length - 2];
+                //Ignore the first and last entry of every list
+                for (int i = 1; i < line.length - 1; i++) {
+                    parsed[i - 1] = Double.parseDouble(line[i]);
+                }
+                list.add(parsed);
             }
-        }catch(Exception e){
+
+            //Convert the list in double[][] and transpose the data
+            eegData = MatrixUtils.createRealMatrix(list.toArray(new double[][]{})).transpose().getData();
+            csvReader.close();
+
+        } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(this, "The specified file was not found", Toast.LENGTH_SHORT).show();
-        }
-        return eegData;
-    }
-
-
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // API 5+ solution
-                onBackPressed();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
         }
     }
+
 }

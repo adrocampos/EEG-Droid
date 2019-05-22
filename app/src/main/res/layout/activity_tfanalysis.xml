@@ -21,45 +21,50 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="16dp"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <!-- ADD A DROPDOWN TO SET ANALYSIS PROPERTIES-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="20px">
+        android:layout_weight="1"
+        android:orientation="horizontal">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="channel"/>
+            android:layout_weight="1"
+            android:text="@string/Channel" />
 
         <Spinner
             android:id="@+id/channel_dropdown"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="sec"/>
+            android:layout_weight="1"
+            android:text="@string/XAxis_label" />
 
         <Spinner
             android:id="@+id/width_dropdown"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="overlap"/>
+            android:layout_weight="1"
+            android:text="@string/Overlap" />
 
         <Spinner
             android:id="@+id/overlap_dropdown"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
     </LinearLayout>
 
@@ -79,8 +84,8 @@
 
     <ImageView
         android:id="@+id/spectogram"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="20px"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="9" />
 
 </LinearLayout>

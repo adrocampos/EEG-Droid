@@ -8,6 +8,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.data.Entry;
@@ -255,6 +256,9 @@ public class Utilities {
 
     public static int[][] getTicks(int numTicks, int maxVal, int axisLength, int labelLength, int minSpace){
         int tickDif = maxVal/numTicks;
+        Log.d("maxVal", Integer.toString(maxVal));
+        Log.d("numTicks", Integer.toString(numTicks));
+        Log.d("tickDif", Integer.toString(tickDif));
         tickDif -= tickDif%5;
         numTicks = maxVal/tickDif;
         numTicks = Math.min(numTicks, axisLength/(labelLength+minSpace));

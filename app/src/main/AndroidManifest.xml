@@ -39,7 +39,8 @@
         <activity android:name=".Record" />
         <activity android:name=".Display"
             android:configChanges="orientation|screenSize"/>
-        <activity android:name=".TFAnalysis" />
+        <activity android:name=".TFAnalysis"
+            android:configChanges="orientation|screenSize"/>
         <activity android:name=".Epibot" />
         <activity
             android:name=".SettingsActivity"
