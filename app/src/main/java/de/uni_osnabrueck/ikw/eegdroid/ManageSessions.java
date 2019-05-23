@@ -93,6 +93,10 @@ public class ManageSessions extends AppCompatActivity {
 
             switch (item.getItemId()) {
 
+                case android.R.id.home:
+                    onBackPressed();
+                    return true;
+
                 case R.id.send_session:
 
                     Intent intent = new Intent(Intent.ACTION_SEND);

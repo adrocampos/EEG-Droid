@@ -109,13 +109,17 @@ public class TFAnalysis extends AppCompatActivity {
                             parent.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                                 @Override
                                 public void onGlobalLayout() {
-                                    parent.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                                    MAX_CHART_HEIGHT = parent.getWidth();
-                                    MAX_CHART_WIDTH = parent.getHeight();//height is ready
 
                                     try {
+                                        parent.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                        MAX_CHART_HEIGHT = parent.getWidth();
+                                        MAX_CHART_WIDTH = parent.getHeight();//height is ready
+                                        //Bitmap spectogram = Bitmap.createBitmap(0, 0, Bitmap.Config.ARGB_8888);
+
                                         Bitmap spectogram = Utilities.getSpectrogramBitmap(eegData[CHANNEL], FS, WIDTH, OVERLAP,
                                                 WINDOW, true, MAXHERTZ, true);
+
+
                                         int width = spectogram.getWidth();
                                         int height = spectogram.getHeight();
                                         float wScale = (float) MAX_CHART_WIDTH / width;
@@ -129,17 +133,16 @@ public class TFAnalysis extends AppCompatActivity {
                                         // get real spectogram
                                         Bitmap chart = Utilities.addAxisAndLabels(spectogram, MAXHERTZ, eegData[CHANNEL].length / FS);
 
-
                                         bmpView.setImageBitmap(chart);
 
-                                    } catch (ArithmeticException e) {
+                                    } catch (Exception e) {
 
+                                        finish();
                                         Toast.makeText(getApplicationContext(), R.string.warning_too_short, Toast.LENGTH_LONG).show();
-
                                         Log.d("EXCEPTION", "Dividing by zero");
-                                        onBackPressed();
-                                    }
 
+
+                                    }
 
                                 }
                             });
@@ -150,12 +153,6 @@ public class TFAnalysis extends AppCompatActivity {
                         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                         dialog.dismiss();
                         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
-
-
-
-
-
 
 
                     }

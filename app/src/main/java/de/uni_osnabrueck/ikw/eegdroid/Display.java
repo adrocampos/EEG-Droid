@@ -391,20 +391,41 @@ public class Display extends AppCompatActivity {
             // create csvReader object and skip first 3 Lines
             CSVReader csvReader = new CSVReaderBuilder(new FileReader(file)).withSkipLines(3).build();
 
-            List<String[]> values_strings = csvReader.readAll();
+            ArrayList<Entry> arrayOfEntry1 = new ArrayList<>();
+            ArrayList<Entry> arrayOfEntry2 = new ArrayList<>();
+            ArrayList<Entry> arrayOfEntry3 = new ArrayList<>();
+            ArrayList<Entry> arrayOfEntry4 = new ArrayList<>();
+            ArrayList<Entry> arrayOfEntry5 = new ArrayList<>();
+            ArrayList<Entry> arrayOfEntry6 = new ArrayList<>();
+            ArrayList<Entry> arrayOfEntry7 = new ArrayList<>();
+            ArrayList<Entry> arrayOfEntry8 = new ArrayList<>();
 
-            //Ignore the first column (time) and the last one (empty)
-            for (int j = 1; j < values_strings.get(0).length - 1; j++) {
-                ArrayList<Entry> arrayOfEntry = new ArrayList<>();
-                for (int k = 0; k < values_strings.size(); k++) {
-                    if (k % density == 0) {
-                        arrayOfEntry.add(new Entry(Float.parseFloat(values_strings.get(k)[0]), Float.parseFloat(values_strings.get(k)[j])));
-                    }
 
+            String[] line;
+            int count = 0;
+            while ((line = csvReader.readNext()) != null) {
+
+                if (count % density == 0) {
+                    arrayOfEntry1.add(new Entry(Float.parseFloat(line[0]), Float.parseFloat(line[1])));
+                    arrayOfEntry2.add(new Entry(Float.parseFloat(line[0]), Float.parseFloat(line[2])));
+                    arrayOfEntry3.add(new Entry(Float.parseFloat(line[0]), Float.parseFloat(line[3])));
+                    arrayOfEntry4.add(new Entry(Float.parseFloat(line[0]), Float.parseFloat(line[4])));
+                    arrayOfEntry5.add(new Entry(Float.parseFloat(line[0]), Float.parseFloat(line[5])));
+                    arrayOfEntry6.add(new Entry(Float.parseFloat(line[0]), Float.parseFloat(line[6])));
+                    arrayOfEntry7.add(new Entry(Float.parseFloat(line[0]), Float.parseFloat(line[7])));
+                    arrayOfEntry8.add(new Entry(Float.parseFloat(line[0]), Float.parseFloat(line[8])));
                 }
-                String nameLineDataSet = "Channel_" + j;
-                lineDataSets[j - 1] = new LineDataSet(arrayOfEntry, nameLineDataSet);
+                count++;
             }
+
+            lineDataSets[0] = new LineDataSet(arrayOfEntry1, "Channel_1");
+            lineDataSets[1] = new LineDataSet(arrayOfEntry2, "Channel_2");
+            lineDataSets[2] = new LineDataSet(arrayOfEntry3, "Channel_3");
+            lineDataSets[3] = new LineDataSet(arrayOfEntry4, "Channel_4");
+            lineDataSets[4] = new LineDataSet(arrayOfEntry5, "Channel_5");
+            lineDataSets[5] = new LineDataSet(arrayOfEntry6, "Channel_6");
+            lineDataSets[6] = new LineDataSet(arrayOfEntry7, "Channel_7");
+            lineDataSets[7] = new LineDataSet(arrayOfEntry8, "Channel_8");
 
             csvReader.close();
 

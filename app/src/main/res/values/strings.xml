@@ -175,7 +175,7 @@
     <string name="session_label_title">Session label</string>
     <string name="enter_session_label">Please enter the session label</string>
     <string name="example_session_label">E.g. walking, eating, sleeping, etc.</string>
-    <string name="save_with_label">Save with label</string>
+    <string name="save">Save</string>
     <string name="default_name">Use default name</string>
 
     <string name="select_recording">Select a session to plot</string>

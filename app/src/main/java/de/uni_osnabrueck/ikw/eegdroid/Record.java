@@ -212,19 +212,17 @@ public class Record extends AppCompatActivity {
                     .setCancelable(false)
                     .setTitle(R.string.session_label_title)
                     .setMessage(getResources().getString(R.string.enter_session_label))
-                    .setPositiveButton(R.string.save_with_label, new DialogInterface.OnClickListener() {
+                    .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialogBox, int id) {
-                            saveSession(userInputLabel.getText().toString());
-                            Toast.makeText( getApplicationContext(), "Your EEG session was successfully stored.", Toast.LENGTH_LONG).show();
+                            if (!userInputLabel.getText().toString().isEmpty()) {
+                                saveSession(userInputLabel.getText().toString());
+                                Toast.makeText(getApplicationContext(), "Your EEG session was successfully stored.", Toast.LENGTH_LONG).show();
+                            } else {
+                                saveSession();
+                                Toast.makeText(getApplicationContext(), "Your EEG session was successfully stored.", Toast.LENGTH_LONG).show();
+                            }
                         }
-                    })
-                    .setNegativeButton(R.string.default_name,
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialogBox, int id) {
-                                    saveSession();
-                                    Toast.makeText(getApplicationContext(), "Your EEG session was successfully stored.", Toast.LENGTH_LONG).show();
-                                }
-                            });
+                    });
 
             AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
             alertDialogAndroid.show();

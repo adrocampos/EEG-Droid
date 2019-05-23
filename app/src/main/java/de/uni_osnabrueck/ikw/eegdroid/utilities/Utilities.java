@@ -23,6 +23,8 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uni_osnabrueck.ikw.eegdroid.R;
+
 public class Utilities {
 
     public static Bitmap getSpectrogramBitmap(double []eegData, int fs, int width, int overlap,
@@ -157,6 +159,8 @@ public class Utilities {
                 vector[y*w+x] = Color.HSVToColor(hsv_color);
             }
         }
+
+
         // vector is your int[] of ARGB
         bitmap.copyPixelsFromBuffer(IntBuffer.wrap(vector));
         return bitmap;
@@ -254,24 +258,26 @@ public class Utilities {
         }
     }
 
-    public static int[][] getTicks(int numTicks, int maxVal, int axisLength, int labelLength, int minSpace){
-        int tickDif = maxVal/numTicks;
+    public static int[][] getTicks(int numTicks, int maxVal, int axisLength, int labelLength, int minSpace) {
+
+        int tickDif = maxVal / numTicks;
         Log.d("maxVal", Integer.toString(maxVal));
         Log.d("numTicks", Integer.toString(numTicks));
         Log.d("tickDif", Integer.toString(tickDif));
-        tickDif -= tickDif%5;
-        numTicks = maxVal/tickDif;
-        numTicks = Math.min(numTicks, axisLength/(labelLength+minSpace));
-        tickDif = maxVal/numTicks;
-        tickDif -= tickDif%5;
-        int [][] ticks = new int[numTicks+1][2];
+        tickDif -= tickDif % 5;
+        numTicks = maxVal / tickDif;
+        numTicks = Math.min(numTicks, axisLength / (labelLength + minSpace));
+        tickDif = maxVal / numTicks;
+        tickDif -= tickDif % 5;
+        int[][] ticks = new int[numTicks + 1][2];
         ticks[0][0] = 0;
         ticks[0][1] = 0;
-        float pxPerVal = (float)axisLength/maxVal;
-        for (int i=1; i<numTicks+1; i++){
-            ticks[i][0] = (int)(pxPerVal * tickDif * i);;
-            ticks[i][1] = i*tickDif;
+        float pxPerVal = (float) axisLength / maxVal;
+        for (int i = 1; i < numTicks + 1; i++) {
+            ticks[i][0] = (int) (pxPerVal * tickDif * i);
+            ticks[i][1] = i * tickDif;
         }
+
         return ticks;
     }
 
