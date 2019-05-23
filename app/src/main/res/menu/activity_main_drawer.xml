@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="single"
+        android:title="Utilities">
         <item
             android:id="@+id/record"
             android:icon="@drawable/ic_voicemail_black_24dp"
@@ -11,7 +12,7 @@
         <item
             android:id="@+id/display"
             android:icon="@drawable/ic_video_library_black_24dp"
-            android:title="Show recordings" />
+            android:title="Play recordings" />
         <item
             android:id="@+id/manage"
             android:icon="@drawable/ic_save_black_24dp"
@@ -20,22 +21,44 @@
             android:id="@+id/tfanalysis"
             android:icon="@drawable/ic_gradient_black_24dp"
             android:title="Time-frequancy analysis" />
-        <item
-            android:id="@+id/epibot"
-            android:icon="@drawable/ic_chat_black_24dp"
-            android:title="Epibot" />
+
     </group>
+
+
+    <item android:title="Learn">
+        <menu>
+
+            <item
+                android:id="@+id/epilepsy"
+                android:icon="@drawable/ic_learn2"
+                android:title="Learn about Epilepsy" />
+            <item
+                android:id="@+id/traumschreiber"
+                android:icon="@drawable/ic_chip2"
+                android:title="EEG Tutorial" />
+
+            <item
+                android:id="@+id/epibot"
+                android:icon="@drawable/ic_doctor2"
+                android:title="Ask Epibot" />
+        </menu>
+    </item>
 
     <item android:title="Settings">
         <menu>
             <item
                 android:id="@+id/user_details"
-                android:icon="@drawable/ic_person_black_24dp"
+                android:icon="@drawable/ic_account_box_black_24dp"
                 android:title="User details" />
             <item
                 android:id="@+id/settings"
                 android:icon="@drawable/ic_menu_manage"
                 android:title="Settings" />
+
+            <item
+                android:id="@+id/info"
+                android:icon="@drawable/ic_info_black_24dp"
+                android:title="Info" />
         </menu>
     </item>
 
