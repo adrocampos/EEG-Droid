@@ -20,7 +20,7 @@
         <item
             android:id="@+id/tfanalysis"
             android:icon="@drawable/ic_gradient_black_24dp"
-            android:title="Time-frequancy analysis" />
+            android:title="Time-frequency analysis" />
 
     </group>
 

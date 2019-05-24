@@ -56,7 +56,8 @@ public class Display extends AppCompatActivity {
     private int period = 1;
     private int jump_x = 1;
     private int density = 10;
-    private Float max_in_X;
+    private float max_in_X;
+    private float position_x = 0;
     private TextView nameTextView;
     private TextView dateTextView;
     private TextView startTextView;
@@ -72,6 +73,8 @@ public class Display extends AppCompatActivity {
     private CheckBox chckbx_ch8;
     private MenuItem menu_play;
     private MenuItem menu_rewind;
+    private boolean playing = false;
+    private TimerTask updateChart;
 
 
     @Override
@@ -113,7 +116,6 @@ public class Display extends AppCompatActivity {
         dateTextView = (TextView) findViewById(R.id.session_date_file);
         startTextView = (TextView) findViewById(R.id.start_time_file);
         finishTextView = (TextView) findViewById(R.id.finish_time_file);
-
 
         chckbx_ch1 = findViewById(R.id.checkBox_ch1_display);
         chckbx_ch2 = findViewById(R.id.checkBox_ch2_display);
@@ -255,6 +257,10 @@ public class Display extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
+        timer = new Timer();
+
+
+
         //Dialog for choosing the session to plot
         AlertDialog.Builder alert = new AlertDialog.Builder(this)
                 .setTitle(R.string.select_recording)
@@ -296,45 +302,42 @@ public class Display extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.display_menu, menu);
         menu_play = menu.findItem(R.id.play);
         menu_rewind = menu.findItem(R.id.rewind);
-        menu_rewind.setEnabled(false);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        class UpdateChart extends TimerTask {
-            float position_x = 0;
 
-            public void run() {
-                if (position_x > max_in_X) {
-
-                    timer.cancel();
-                    timer.purge();
-                }
-                chart.moveViewToX(position_x);
-                position_x = position_x + jump_x;
-
-            }
-        }
 
         switch (item.getItemId()) {
 
+
             case R.id.play:
-                item.setEnabled(false);
-                menu_rewind.setEnabled(true);
-                timer = new Timer();
-                chart.moveViewToX(0);
-                TimerTask updateChart = new UpdateChart();
-                timer.scheduleAtFixedRate(updateChart, 0, period);
-                return true;
+
+                if (!playing) {
+                    item.setIcon(R.drawable.ic_pause_white_24dp);
+                    playing = true;
+                    timer = new Timer();
+                    updateChart = new UpdateChart();
+                    timer.scheduleAtFixedRate(updateChart, 0, period);
+                    return true;
+
+                } else {
+                    timer.cancel();
+                    playing = false;
+                    item.setIcon(R.drawable.ic_play_arrow_white_24dp);
+                    return true;
+                }
+
 
             case R.id.rewind:
-                item.setEnabled(false);
-                menu_play.setEnabled(true);
-                timer.cancel();
-                timer.purge();
-                chart.moveViewToX(0);
+                if (!playing) {
+                    timer.cancel();
+                    timer.purge();
+                    chart.moveViewToX(0);
+                    position_x = 0;
+                }
                 return true;
 
             case R.id.speed_quarter:
@@ -471,6 +474,18 @@ public class Display extends AppCompatActivity {
         if (timer != null){
             timer.cancel();
             timer.purge();
+        }
+    }
+
+    class UpdateChart extends TimerTask {
+
+        public void run() {
+            if (position_x > max_in_X) {
+                timer.cancel();
+                timer.purge();
+            }
+            chart.moveViewToX(position_x);
+            position_x = position_x + jump_x;
         }
     }
 }
