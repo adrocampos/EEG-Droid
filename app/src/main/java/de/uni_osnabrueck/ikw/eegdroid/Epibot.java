@@ -304,7 +304,6 @@ public class Epibot extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-
     public void conversationAPI(String input, Context context, String workspaceId) {
 
         InputData.Builder inputDataBuilder = new InputData.Builder(input);

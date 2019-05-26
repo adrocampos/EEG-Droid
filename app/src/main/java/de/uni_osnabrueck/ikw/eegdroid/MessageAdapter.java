@@ -4,6 +4,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import android.graphics.Color;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +18,8 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import android.text.Html;
 import android.os.Build;
+
+import org.w3c.dom.Text;
 
 
 public class MessageAdapter extends ArrayAdapter<String[]> {
@@ -34,6 +40,13 @@ public class MessageAdapter extends ArrayAdapter<String[]> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         //return super.getView(position, convertView, parent);
 
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        convertView = inflater.inflate(mResource, parent, false);
+        TextView tvEpibot = (TextView) convertView.findViewById(R.id.AdapterEpibotTextView);
+        TextView tvUser = (TextView) convertView.findViewById(R.id.AdapterUserTextView);
+        TextView tvMsj = (TextView) convertView.findViewById(R.id.AdapterMessageTextView);
+        ImageView ivIma = (ImageView) convertView.findViewById(R.id.AdapterImageView);
+
         String user = getItem(position)[0];
         String type = getItem(position)[2];
         String msj = "";
@@ -47,18 +60,26 @@ public class MessageAdapter extends ArrayAdapter<String[]> {
         }
 
 
-        LayoutInflater inflater = LayoutInflater.from(mContext);
-        convertView = inflater.inflate(mResource, parent, false);
-        TextView tvUser = (TextView) convertView.findViewById(R.id.AdapterUserTextView);
-        TextView tvMsj = (TextView) convertView.findViewById(R.id.AdapterMessageTextView);
-        ImageView ivIma = (ImageView) convertView.findViewById(R.id.AdapterImageView);
-
         try {
             image = new DownloadImageTask(ivIma).execute(ima).get();
         } catch (InterruptedException e) {
             image = null;
         } catch (ExecutionException e) {
             image = null;
+        }
+
+        if (user.equals("epibot")) {
+            tvEpibot.setVisibility(View.VISIBLE);
+            tvUser.setVisibility(View.INVISIBLE);
+            tvMsj.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+
+        } else {
+            tvEpibot.setVisibility(View.INVISIBLE);
+            tvUser.setVisibility(View.VISIBLE);
+            tvUser.setGravity(Gravity.RIGHT);
+            tvMsj.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
+            tvMsj.setTextColor(Color.rgb(0, 51, 153));
+
         }
 
         ivIma.setImageBitmap(image);
