@@ -14,43 +14,56 @@ package de.uni_osnabrueck.ikw.eegdroid;
  */
 
 
-import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
-import android.os.Handler;
-import android.os.Vibrator;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.os.VibrationEffect;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
-import java.util.regex.Pattern;;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.ibm.watson.developer_cloud.android.library.audio.MicrophoneHelper;
 import com.ibm.watson.developer_cloud.android.library.audio.MicrophoneInputStream;
 import com.ibm.watson.developer_cloud.android.library.audio.StreamPlayer;
 import com.ibm.watson.developer_cloud.android.library.audio.utils.ContentType;
+import com.ibm.watson.developer_cloud.conversation.v1.Conversation;
+import com.ibm.watson.developer_cloud.conversation.v1.model.Context;
+import com.ibm.watson.developer_cloud.conversation.v1.model.DialogRuntimeResponseGeneric;
+import com.ibm.watson.developer_cloud.conversation.v1.model.InputData;
+import com.ibm.watson.developer_cloud.conversation.v1.model.MessageOptions;
+import com.ibm.watson.developer_cloud.conversation.v1.model.MessageRequest;
+import com.ibm.watson.developer_cloud.conversation.v1.model.MessageResponse;
 import com.ibm.watson.developer_cloud.conversation.v1.model.OutputData;
+import com.ibm.watson.developer_cloud.http.ServiceCallback;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.RecognizeOptions;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechRecognitionResults;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.websocket.BaseRecognizeCallback;
-import com.ibm.watson.developer_cloud.conversation.v1.Conversation;
-import com.ibm.watson.developer_cloud.conversation.v1.model.MessageRequest;
-import com.ibm.watson.developer_cloud.conversation.v1.model.MessageResponse;
-import com.ibm.watson.developer_cloud.http.ServiceCallback;
-import com.ibm.watson.developer_cloud.conversation.v1.model.InputData;
-import com.ibm.watson.developer_cloud.conversation.v1.model.Context;
-import android.os.Build;
-import com.ibm.watson.developer_cloud.conversation.v1.model.MessageOptions;
-import com.ibm.watson.developer_cloud.conversation.v1.model.DialogRuntimeResponseGeneric;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+
+;
 
 public class Epibot extends AppCompatActivity {
 
@@ -66,13 +79,16 @@ public class Epibot extends AppCompatActivity {
     private boolean listening = false;
     private Handler handler = new Handler();
     public ListView msgView;
-    public ArrayAdapter<String> msgList;
-    public ArrayList<String[]> messages;
-    public MessageAdapter adapter;
-    public Context context;
-    public int counter_interactions;
-    public String usersname;
-    public String botsname;
+    private ArrayAdapter<String> msgList;
+    private ArrayList<String[]> messages;
+    private MessageAdapter adapter;
+    private Context context;
+    private int counter_interactions;
+    private String usersname;
+    private String botsname;
+    private File conversation_file;
+    private String conversation_name = "/conversation.tmp";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +108,22 @@ public class Epibot extends AppCompatActivity {
         conv = (ImageButton) findViewById(R.id.imageButton);
         MessageResponse response = null;
         conversationAPI(String.valueOf(input.getText()), context, inputWorkspaceId);
-        messages = new ArrayList<String[]>();
+
+        conversation_file = new File(getFilesDir().getPath() + conversation_name);
+
+        try {
+            FileInputStream fis = new FileInputStream(conversation_file);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            messages = (ArrayList<String[]>) ois.readObject();
+            ois.close();
+        } catch (FileNotFoundException e) {
+            messages = new ArrayList<String[]>();
+            Log.d("onCreate", e.getMessage());
+        } catch (Exception e) {
+            messages = new ArrayList<String[]>();
+            Log.d("onCreate", e.getMessage());
+        }
+
         adapter = new MessageAdapter(this, R.layout.adapter_view_layout, messages);
         usersname = getString(R.string.usersname);
         botsname = getString(R.string.botsname);;
@@ -137,6 +168,11 @@ public class Epibot extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.epibot_menu, menu);
+        return true;
+    }
 
     private void showError(final Exception e) {
         runOnUiThread(new Runnable() {
@@ -298,9 +334,6 @@ public class Epibot extends AppCompatActivity {
         });
     }
 
-    ;
-
-
     public void displayMsg(MessageResponse msg) {
         final MessageResponse mssg = msg;
         OutputData outputData = new OutputData();
@@ -347,7 +380,7 @@ public class Epibot extends AppCompatActivity {
         } else if (generic.getResponseType().equals("image")) {
 
             final String text = generic.getSource();
-            delay("abcdefghiklmnopqrstvwxyz", 750);
+            //delay("abcdefghiklmnopqrstvwxyz", 750);
             vibration(100);
 
             handler.post(new Runnable() {
@@ -385,6 +418,55 @@ public class Epibot extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+
+            case R.id.clear_conversation:
+
+                //Handles the Dialog to confirm the file delete
+                AlertDialog.Builder alert = new AlertDialog.Builder(this)
+                        .setTitle(R.string.clear_conversation)
+                        .setMessage(getResources().getString(R.string.clear_conversation_message));
+                alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        messages.clear();
+                        msgList.notifyDataSetChanged();
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+                alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // close dialog
+                        dialog.cancel();
+                    }
+                });
+                alert.show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            FileOutputStream fos = new FileOutputStream(conversation_file);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(messages);
+            oos.close();
+        } catch (FileNotFoundException e) {
+            Log.d("onDestroy", e.getMessage());
+        } catch (Exception e) {
+            Log.d("onDestroy", e.getMessage());
+
+        }
+    }
 }
 

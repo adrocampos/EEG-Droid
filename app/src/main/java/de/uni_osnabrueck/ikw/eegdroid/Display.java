@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CheckBox;
@@ -71,8 +70,6 @@ public class Display extends AppCompatActivity {
     private CheckBox chckbx_ch6;
     private CheckBox chckbx_ch7;
     private CheckBox chckbx_ch8;
-    private MenuItem menu_play;
-    private MenuItem menu_rewind;
     private boolean playing = false;
     private TimerTask updateChart;
 
@@ -104,13 +101,10 @@ public class Display extends AppCompatActivity {
                         Integer.toString(+point_in_time.getHour()) + ":" + Integer.toString(point_in_time.getMinute()) + ":" + Integer.toString(point_in_time.getSecond()),
                         Toast.LENGTH_LONG
                 ).show();
-
             }
 
             @Override
-            public void onNothingSelected() {
-
-            }
+            public void onNothingSelected() {}
         };
         nameTextView = (TextView) findViewById(R.id.name_file);
         dateTextView = (TextView) findViewById(R.id.session_date_file);
@@ -125,7 +119,6 @@ public class Display extends AppCompatActivity {
         chckbx_ch6 = findViewById(R.id.checkBox_ch6_display);
         chckbx_ch7 = findViewById(R.id.checkBox_ch7_display);
         chckbx_ch8 = findViewById(R.id.checkBox_ch8_display);
-
 
         chckbx_ch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -223,7 +216,6 @@ public class Display extends AppCompatActivity {
             }
         });
 
-
         chart = findViewById(R.id.chart);
         chart.setOnChartValueSelectedListener(ol);
         chart.getDescription().setEnabled(false);
@@ -256,10 +248,7 @@ public class Display extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
         timer = new Timer();
-
-
 
         //Dialog for choosing the session to plot
         AlertDialog.Builder alert = new AlertDialog.Builder(this)
@@ -300,36 +289,29 @@ public class Display extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.display_menu, menu);
-        menu_play = menu.findItem(R.id.play);
-        menu_rewind = menu.findItem(R.id.rewind);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-
-
         switch (item.getItemId()) {
 
-
             case R.id.play:
-
                 if (!playing) {
-                    item.setIcon(R.drawable.ic_pause_white_24dp);
                     playing = true;
                     timer = new Timer();
                     updateChart = new UpdateChart();
                     timer.scheduleAtFixedRate(updateChart, 0, period);
+                    item.setIcon(R.drawable.ic_pause_white_24dp);
                     return true;
 
                 } else {
-                    timer.cancel();
                     playing = false;
+                    timer.cancel();
                     item.setIcon(R.drawable.ic_play_arrow_white_24dp);
                     return true;
                 }
-
 
             case R.id.rewind:
                 if (!playing) {
@@ -436,7 +418,6 @@ public class Display extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
 
     private void setData() {
 

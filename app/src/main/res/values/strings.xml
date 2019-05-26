@@ -201,4 +201,7 @@
     <string name="Overlap">Overlap</string>
     <string name="warning_too_short">Your EEG session is too short to perform a TF Analysis. Please select another.</string>
 
+    <string name="clear_conversation">Clear conversation</string>
+    <string name="clear_conversation_message">Do you want to clear the conversation?</string>
+
 </resources>
