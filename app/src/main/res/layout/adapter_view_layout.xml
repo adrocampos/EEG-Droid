@@ -30,8 +30,7 @@
             android:layout_height="wrap_content"
             android:gravity="left"
             android:text="Message"
-            android:textSize="14sp"
-            android:textStyle="italic" />
+            android:textSize="14sp" />
 
         <ImageView
             android:id="@+id/AdapterImageView"

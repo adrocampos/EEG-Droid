@@ -8,10 +8,10 @@
         <item name="colorAccent">@color/design_default_color_primary</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <style name="AppThemeDark" parent="ThemeOverlay.AppCompat.Dark">
+        <!-- Customize your theme here. -->
     </style>
+
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 

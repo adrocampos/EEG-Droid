@@ -98,7 +98,7 @@ public class Display extends AppCompatActivity {
 
                 Toast.makeText(
                         getApplicationContext(),
-                        Integer.toString(+point_in_time.getHour()) + ":" + Integer.toString(point_in_time.getMinute()) + ":" + Integer.toString(point_in_time.getSecond()),
+                        "Time point: " + Integer.toString(+point_in_time.getHour()) + ":" + Integer.toString(point_in_time.getMinute()) + ":" + Integer.toString(point_in_time.getSecond()),
                         Toast.LENGTH_LONG
                 ).show();
             }
@@ -227,8 +227,9 @@ public class Display extends AppCompatActivity {
         chart.setPinchZoom(true);
 
         Legend l = chart.getLegend();
-        l.setForm(Legend.LegendForm.LINE);
-        l.setTextColor(Color.BLACK);
+        l.setEnabled(false);
+//        l.setForm(Legend.LegendForm.LINE);
+//        l.setTextColor(Color.BLACK);
 
         YAxis leftAxis = chart.getAxisLeft();
         leftAxis.setTextColor(Color.GRAY);
@@ -260,7 +261,6 @@ public class Display extends AppCompatActivity {
                         fileToPlot = arrayListOfFiles.get(which);
                         loadData(fileToPlot);
                         setData();
-
 
                         Path path = arrayListOfFiles.get(which).toPath();
 

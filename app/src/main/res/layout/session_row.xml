@@ -14,7 +14,8 @@
         android:layout_height="wrap_content"
         android:text="@string/session_name"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,58 +27,76 @@
             android:id="@+id/session_created_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/session_date"
-            android:textStyle="italic" />
+            android:text="@string/session_date" />
+
+        <Space
+            android:layout_width="5dp"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/session_date"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="italic" />
+            android:layout_height="wrap_content" />
 
-        <Space
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:text="@string/separator" />
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="wrap_content" />
+
 
         <TextView
             android:id="@+id/session_created_hour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/session_start_time"
-            android:textStyle="italic" />
+            android:text="@string/session_start_time" />
+
+        <Space
+            android:layout_width="5dp"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/session_hour"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="italic" />
+            android:layout_height="wrap_content" />
 
-        <Space
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:text="@string/separator" />
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="wrap_content" />
+
 
         <TextView
             android:id="@+id/session_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/file_size"
-            android:textStyle="italic" />
+            android:text="@string/file_size" />
+
+        <Space
+            android:layout_width="5dp"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/session_kbs"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="italic" />
+            android:layout_height="wrap_content" />
+
+        <Space
+            android:layout_width="5dp"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight=".1"
-            android:text="@string/kbs"
-            android:textStyle="italic" />
+            android:text="@string/kbs" />
 
 
     </LinearLayout>

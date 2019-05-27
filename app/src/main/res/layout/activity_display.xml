@@ -3,88 +3,133 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="5dp"
+    android:layout_margin="10dp"
     android:orientation="vertical">
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/session_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/session_info"
+            android:textStyle="bold" />
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="@string/session_name"
             android:textAlignment="viewStart"
             android:textSize="12sp"
             android:visibility="visible" />
 
+        <Space
+            android:layout_width="5dp"
+            android:layout_height="wrap_content" />
+
         <TextView
             android:id="@+id/name_file"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:textAlignment="viewStart"
             android:textSize="12sp"
             android:visibility="visible" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/separator"/>
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/session_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="@string/session_date"
             android:textAlignment="viewStart"
             android:textSize="12sp"
             android:visibility="visible" />
 
+        <Space
+            android:layout_width="5dp"
+            android:layout_height="wrap_content" />
+
         <TextView
             android:id="@+id/session_date_file"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:textAlignment="viewStart"
             android:textSize="12sp"
             android:visibility="visible" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/separator"/>
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/start_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="@string/session_start_time"
             android:textAlignment="viewStart"
             android:textSize="12sp"
             android:visibility="visible" />
 
+        <Space
+            android:layout_width="5dp"
+            android:layout_height="wrap_content" />
+
         <TextView
             android:id="@+id/start_time_file"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:textAlignment="viewStart"
             android:textSize="12sp"
             android:visibility="visible" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/separator"/>
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/finish_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="@string/session_finish_time"
             android:textAlignment="viewStart"
             android:textSize="12sp"
             android:visibility="visible" />
 
+        <Space
+            android:layout_width="5dp"
+            android:layout_height="wrap_content" />
+
         <TextView
             android:id="@+id/finish_time_file"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:textSize="12sp"
             android:visibility="visible" />
 
@@ -93,8 +138,19 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/show_hide_channels"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/show_hide_channels"
+            android:textStyle="bold" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
         <CheckBox
             android:id="@+id/checkBox_ch1_display"
@@ -206,9 +262,8 @@
         android:id="@+id/XAxis_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:gravity="center"
-        android:text="@string/XAxis_label"
+        android:text="@string/time_recording"
         android:textSize="12sp"
         android:textStyle="bold"
         android:visibility="visible" />

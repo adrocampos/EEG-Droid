@@ -180,10 +180,10 @@
 
     <string name="select_recording">Select a session to plot</string>
 
-    <string name="session_name">Session name: </string>
-    <string name="session_date">Session date: </string>
-    <string name="session_start_time">Start time: </string>
-    <string name="session_finish_time">Finish time: </string>
+    <string name="session_name">Name: </string>
+    <string name="session_date">Date: </string>
+    <string name="session_start_time">Start: </string>
+    <string name="session_finish_time">Finish: </string>
 
     <string name="kbs">Kbs</string>
     <string name="file_size">File size: </string>
@@ -203,5 +203,11 @@
 
     <string name="clear_conversation">Clear conversation</string>
     <string name="clear_conversation_message">Do you want to clear the conversation?</string>
+    <string name="EEGDroid">EEGDroid</string>
+    <string name="session_info">Session information:</string>
+    <string name="show_hide_channels">Show/hide channels:</string>
+    <string name="time_recording">Time of recording</string>
+
+    <string name="separator">,</string>
 
 </resources>

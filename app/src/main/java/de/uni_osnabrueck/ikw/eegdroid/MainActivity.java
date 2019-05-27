@@ -1,7 +1,9 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -15,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import java.io.File;
 
@@ -27,6 +30,9 @@ public class MainActivity extends AppCompatActivity
     private ManageSessions ManageSessions = new ManageSessions();
     private String nameDir = "/sessions_EEG";
     private Uri dirUri;
+    private TextView appName;
+    private TextView appVersion;
+    private ApplicationInfo applicationInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +55,13 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        appName = (TextView) findViewById(R.id.main_app_name);
+        appVersion = (TextView) findViewById(R.id.main_app_version);
 
-//        //Change the button of the menu
-//        Drawable drawable = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_bluetooth_white_24dp);
-//        toolbar.setOverflowIcon(drawable);
+        applicationInfo = getApplicationInfo();
+        appName.setText(applicationInfo.loadLabel(getPackageManager()));
+        appVersion.setText(BuildConfig.VERSION_NAME);
+
     }
 
 
