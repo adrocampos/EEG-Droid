@@ -209,5 +209,27 @@
     <string name="time_recording">Time of recording</string>
 
     <string name="separator">,</string>
+    <string name="version">Version:</string>
+
+    <string name="intro">Welcome to the EEGDroid App. The goal of this App is allow you to record, plot, storage and manage your own EEG brain signals. With this App you are able to:</string>
+    <string name="outro">Please open the side menu to start using the App.</string>
+
+    <string name="activity_name_recordEEG">Record</string>
+    <string name="activity_name_play">Play</string>
+    <string name="activity_name_manage_recordings">Manage</string>
+    <string name="activity_name_TFAnalysis">TF Analysis</string>
+    <string name="activity_name_learn">Learn</string>
+    <string name="activity_name_eeg_tutorial">EEG turorial</string>
+    <string name="activity_name_epibot">Ask Epibot</string>
+
+
+
+    <string name="activity_description_recordEEG">Record EEG sessions: Plot, record and save the EEG signals transmited by the Traumschreiber.</string>
+    <string name="activity_description_play">Play EEG sessions: Reproduce EEG sessions previously taken for the user.</string>
+    <string name="activity_description_manage">Manage sessions: send, rename or delete sessions.</string>
+    <string name="activity_description_TFAnalysis">Time-frequency Analysis: display a Time-Frequency analysis of the selected session.</string>
+    <string name="activity_description_learn">Learn: access to reliable information about Epilepsy.</string>
+    <string name="activity_description_eeg_tutorial">Tutorial: learn how to operate the Traumschreiber and record your own brain activity.</string>
+    <string name="activity_description_epibot">Chat: ask all your questions to our chatbot expert in Epilepsy.</string>
 
 </resources>

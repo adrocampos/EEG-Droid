@@ -10,7 +10,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_weight="3"
-        android:drawableTop="@drawable/ic_doctor2"
+        android:drawableTop="@drawable/ic_forum_black_24dp"
         android:text="Epibot"
         android:textAlignment="center"
         android:textColor="#000000"
