@@ -24,31 +24,36 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".ManageSessions"></activity>
+        <activity android:name=".Settings"></activity>
+        <activity android:name=".Tutorial" />
+        <activity android:name=".Learn" />
+        <activity android:name=".ManageSessions" />
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".Record" />
-        <activity android:name=".Display"
-            android:configChanges="orientation|screenSize"/>
-        <activity android:name=".TFAnalysis"
-            android:configChanges="orientation|screenSize"/>
-        <activity android:name=".Epibot"
-            android:configChanges="orientation|screenSize"/>
+        <activity
+            android:name=".Display"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".TFAnalysis"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".Epibot"
+            android:configChanges="orientation|screenSize" />
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity
             android:name=".DeviceScanActivity"
-            android:label="@string/app_name">
-        </activity>
+            android:label="@string/app_name" />
 
         <service
             android:name=".BluetoothLeService"

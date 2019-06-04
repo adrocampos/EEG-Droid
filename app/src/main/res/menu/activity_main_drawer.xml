@@ -3,8 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single"
-        android:title="Utilities">
+
+    <item android:title="Utilities">
+        <menu>
+
         <item
             android:id="@+id/record"
             android:icon="@drawable/ic_voicemail_black_24dp"
@@ -17,23 +19,19 @@
             android:id="@+id/manage"
             android:icon="@drawable/ic_save_black_24dp"
             android:title="Manage recordings" />
-        <item
-            android:id="@+id/tfanalysis"
-            android:icon="@drawable/ic_gradient_black_24dp"
-            android:title="Time-frequency analysis" />
 
-    </group>
+        </menu>
+    </item>
 
 
     <item android:title="Learn">
         <menu>
-
             <item
-                android:id="@+id/epilepsy"
+                android:id="@+id/learn"
                 android:icon="@drawable/ic_import_contacts_black_24dp"
                 android:title="Learn about Epilepsy" />
             <item
-                android:id="@+id/traumschreiber"
+                android:id="@+id/tutorial"
                 android:icon="@drawable/ic_memory_black_24dp"
                 android:title="EEG Tutorial" />
 
@@ -44,12 +42,12 @@
         </menu>
     </item>
 
-    <item android:title="Settings">
+    <item android:title="Extras">
         <menu>
             <item
-                android:id="@+id/user_details"
-                android:icon="@drawable/ic_account_box_black_24dp"
-                android:title="User details" />
+                android:id="@+id/tfanalysis"
+                android:icon="@drawable/ic_gradient_black_24dp"
+                android:title="Time-frequency analysis" />
             <item
                 android:id="@+id/settings"
                 android:icon="@drawable/ic_menu_manage"

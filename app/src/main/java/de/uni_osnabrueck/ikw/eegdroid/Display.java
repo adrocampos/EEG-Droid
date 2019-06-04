@@ -254,7 +254,7 @@ public class Display extends AppCompatActivity {
         //Dialog for choosing the session to plot
         AlertDialog.Builder alert = new AlertDialog.Builder(this)
                 .setTitle(R.string.select_recording)
-                .setCancelable(false)
+                //.setCancelable(false)
                 .setItems(arrayOfNames, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
@@ -280,6 +280,12 @@ public class Display extends AppCompatActivity {
 
                         dialog.dismiss();
                         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+                    }
+                }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        finish();
                     }
                 });
         alert.show();

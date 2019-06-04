@@ -212,7 +212,7 @@
     <string name="version">Version:</string>
 
     <string name="intro">Welcome to the EEGDroid App. The goal of this App is allow you to record, plot, storage and manage your own EEG brain signals. With this App you are able to:</string>
-    <string name="outro">Please open the side menu to start using the App.</string>
+    <string name="outro">Please touch one of the options or open the side menu to start using the App.</string>
 
     <string name="activity_name_recordEEG">Record</string>
     <string name="activity_name_play">Play</string>
@@ -221,7 +221,6 @@
     <string name="activity_name_learn">Learn</string>
     <string name="activity_name_eeg_tutorial">EEG turorial</string>
     <string name="activity_name_epibot">Ask Epibot</string>
-
 
 
     <string name="activity_description_recordEEG">Record EEG sessions: Plot, record and save the EEG signals transmited by the Traumschreiber.</string>

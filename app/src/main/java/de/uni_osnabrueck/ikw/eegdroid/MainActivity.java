@@ -3,21 +3,22 @@ package de.uni_osnabrueck.ikw.eegdroid;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TableRow;
+import android.widget.TextView;
 
-import com.google.android.material.navigation.NavigationView;
-
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
-import android.view.MenuItem;
-import android.widget.TextView;
+import com.google.android.material.navigation.NavigationView;
+import com.google.flatbuffers.Table;
 
 import java.io.File;
 
@@ -33,6 +34,13 @@ public class MainActivity extends AppCompatActivity
     private TextView appName;
     private TextView appVersion;
     private ApplicationInfo applicationInfo;
+    private TableRow tableRowRecord;
+    private TableRow tableRowDisplay;
+    private TableRow tableRowManage;
+    private TableRow tableRowLearn;
+    private TableRow tableRowTutorial;
+    private TableRow tableRowEpibot;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +70,65 @@ public class MainActivity extends AppCompatActivity
         appName.setText(applicationInfo.loadLabel(getPackageManager()));
         appVersion.setText(BuildConfig.VERSION_NAME);
 
+        tableRowRecord = (TableRow) findViewById(R.id.tableRowRecord);
+        tableRowDisplay = (TableRow) findViewById(R.id.tableRowDisplay);
+        tableRowManage = (TableRow) findViewById(R.id.tableRowManage);
+        tableRowLearn = (TableRow) findViewById(R.id.tableRowLearn);
+        tableRowTutorial = (TableRow) findViewById(R.id.tableRowTutorial);
+        tableRowEpibot = (TableRow) findViewById(R.id.tableRowEpibot);
+
+        tableRowRecord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getBaseContext(), Record.class);
+                startActivity(intent);
+            }
+        });
+
+        tableRowDisplay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getBaseContext(), Display.class);
+                intent.putExtra("dirString", dirSessions.getPath());
+                startActivity(intent);
+            }
+        });
+
+        tableRowManage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getBaseContext(), ManageSessions.class);
+                intent.putExtra("dirString", dirSessions.getPath());
+                startActivity(intent);
+            }
+        });
+
+
+
+        tableRowLearn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getBaseContext(), Learn.class);
+                startActivity(intent);
+            }
+        });
+
+        tableRowTutorial.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getBaseContext(), Tutorial.class);
+                startActivity(intent);
+            }
+        });
+
+        tableRowEpibot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getBaseContext(), Epibot.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
 
@@ -75,13 +142,6 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.main, menu);
-//        return true;
-//    }
 
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -109,13 +169,22 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(this, TFAnalysis.class);
             startActivity(intent);
 
+        } else if (id == R.id.learn) {
+            Intent intent = new Intent(this, Learn.class);
+            startActivity(intent);
+
+        } else if (id == R.id.tutorial) {
+            Intent intent = new Intent(this, Tutorial.class);
+            startActivity(intent);
+
         } else if (id == R.id.epibot) {
             Intent intent = new Intent(this, Epibot.class);
             startActivity(intent);
 
-        } else if (id == R.id.user_details) {
 
         } else if (id == R.id.settings) {
+            Intent intent = new Intent(this, Settings.class);
+            startActivity(intent);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -123,7 +192,5 @@ public class MainActivity extends AppCompatActivity
     }
 
     public static File getDirSessions() { return dirSessions; }
-
-
 
 }

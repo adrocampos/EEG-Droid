@@ -66,6 +66,7 @@
             android:showDividers="middle">
 
             <TableRow
+                android:id="@+id/tableRowRecord"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -108,6 +109,7 @@
             </TableRow>
 
             <TableRow
+                android:id="@+id/tableRowDisplay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -150,6 +152,7 @@
             </TableRow>
 
             <TableRow
+                android:id="@+id/tableRowManage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -191,49 +194,9 @@
 
             </TableRow>
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:padding="5dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        app:srcCompat="@drawable/ic_gradient_black_24dp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/activity_name_TFAnalysis"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <Space
-                    android:layout_width="10dp"
-                    android:layout_height="match_parent" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="@string/activity_description_TFAnalysis"
-                    android:textAlignment="viewStart"
-                    android:visibility="visible" />
-
-            </TableRow>
 
             <TableRow
+                android:id="@+id/tableRowLearn"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -276,6 +239,7 @@
             </TableRow>
 
             <TableRow
+                android:id="@+id/tableRowTutorial"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -318,6 +282,7 @@
             </TableRow>
 
             <TableRow
+                android:id="@+id/tableRowEpibot"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
