@@ -7,7 +7,7 @@
     <item
         android:id="@+id/play"
         android:icon="@drawable/ic_play_arrow_white_24dp"
-        android:title="TITLE"
+        android:title="Play"
         app:showAsAction="always" />
 
     <item

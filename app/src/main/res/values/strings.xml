@@ -153,7 +153,7 @@
     <string name="XAxis_label">Time (s)</string>
     <string name="traumschreiber_filter_title">Only showing Traumschreiber devices here:</string>
 
-    <string name="menu_manage_send">Send</string>
+    <string name="menu_manage_send">Share</string>
     <string name="menu_manage_rename">Rename</string>
     <string name="menu_manage_delete">Delete</string>
 

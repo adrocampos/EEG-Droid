@@ -2,8 +2,9 @@ package de.uni_osnabrueck.ikw.eegdroid;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.widget.ShareActionProvider;
 import androidx.core.content.FileProvider;
+import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,6 +37,7 @@ public class ManageSessions extends AppCompatActivity {
     private String dirSessions;
     private ArrayList<File> arrayListOfFiles;
     private DividerItemDecoration mDividerItemDecoration;
+    private ShareActionProvider shareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +68,8 @@ public class ManageSessions extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_manage, menu);
+        MenuItem item = menu.findItem(R.id.send_session);
+        shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
         return true;
     }
 
@@ -105,9 +109,16 @@ public class ManageSessions extends AppCompatActivity {
                     Log.d("Auth", getApplicationContext().getPackageName().toString());
                     Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".fileprovider", arrayListOfFiles.get(position));
                     intent.putExtra(Intent.EXTRA_STREAM, uri);
-                    if (intent.resolveActivity(getPackageManager()) != null) {
-                        startActivity(intent);
+//                    if (intent.resolveActivity(getPackageManager()) != null) {
+//                        startActivity(intent);
+//                    }
+
+
+                    if (shareActionProvider != null) {
+
+                        shareActionProvider.setShareIntent(intent);
                     }
+
                     adapter.resetSelectedPos();
                     //adapter.notifyDataSetChanged();
                     return true;

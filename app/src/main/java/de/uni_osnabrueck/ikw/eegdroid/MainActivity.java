@@ -104,7 +104,6 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-
         tableRowLearn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -155,7 +154,6 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
 
         } else if (id == R.id.display) {
-
             Intent intent = new Intent(this, Display.class);
             intent.putExtra("dirString", dirSessions.getPath());
             startActivity(intent);
@@ -180,7 +178,6 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.epibot) {
             Intent intent = new Intent(this, Epibot.class);
             startActivity(intent);
-
 
         } else if (id == R.id.settings) {
             Intent intent = new Intent(this, Settings.class);
