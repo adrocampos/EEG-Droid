@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Tutorial">
+    tools:context=".Info">
 
     <us.feras.mdv.MarkdownView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="5dp"
-        android:id="@+id/markdownTutorial"/>
+        android:id="@+id/markdownInfo"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

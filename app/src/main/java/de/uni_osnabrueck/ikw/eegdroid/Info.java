@@ -6,14 +6,14 @@ import android.os.Bundle;
 
 import us.feras.mdv.MarkdownView;
 
-public class Learn extends AppCompatActivity {
+public class Info extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_learn);
+        setContentView(R.layout.activity_info);
 
-        MarkdownView markdownView = (MarkdownView) findViewById(R.id.markdownLearn);
+        MarkdownView markdownView = (MarkdownView) findViewById(R.id.markdownInfo);
         markdownView.loadMarkdownFile("https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/markdown/epilepsy.md");
     }
 }
