@@ -14,6 +14,6 @@ public class Info extends AppCompatActivity {
         setContentView(R.layout.activity_info);
 
         MarkdownView markdownView = (MarkdownView) findViewById(R.id.markdownInfo);
-        markdownView.loadMarkdownFile("https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/markdown/epilepsy.md");
+        markdownView.loadMarkdownFile("https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/README.md");
     }
 }

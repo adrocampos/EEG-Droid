@@ -13,7 +13,7 @@ public class Tutorial extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial);
 
-        MarkdownView markdownView = (MarkdownView) findViewById(R.id.markdownLearn);
+        MarkdownView markdownView = (MarkdownView) findViewById(R.id.markdownTutorial);
         markdownView.loadMarkdownFile("https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/markdown/tutorial.md");
     }
 }
