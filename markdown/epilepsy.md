@@ -24,13 +24,12 @@ Focal onset: originating within the networks of one hemisphere of the brain. Foc
 A seizure may be “unclassified” if there is not enough information or inability to place it in other categories.
 
 ### What causes seizures?
-It is very important to identify the origin of a seizure for treatment and prognostication. Some of the epilepsies may fit into more than one category. [[2](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_2)]
-Seizures can be caused by:
-- **Genetic causes**: around 15% of people with epilepsy have a first-degree relative with epilepsy. The risk of suffering epilepsy is three times higher if a first-degree relative has epilepsy. Genetic epilepsies account for 15-20% of all epilepsies. [6]
-- **Metabolic causes**: epilepsy is common in disorders from inborn errors of metabolism (for example vitamin B responsive disorders or disorders of amino acid). Many metabolic epilepsies are also considered epileptic encephalopathies, in which the the seizures may contribute to severe cognitive and behavioral impairments. [2](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_2)]
+It is very important to identify the origin of a seizure for treatment and prognostication. Some of the epilepsies may fit into more than one category. [[2](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_2)] Seizures can be caused by:
+- **Genetic causes**: around 15% of people with epilepsy have a first-degree relative with epilepsy. The risk of suffering epilepsy is three times higher if a first-degree relative has epilepsy. Genetic epilepsies account for 15-20% of all epilepsies. [[6](https://www.ncbi.nlm.nih.gov/pubmed/16302871)]
+- **Metabolic causes**: epilepsy is common in disorders from inborn errors of metabolism (for example vitamin B responsive disorders or disorders of amino acid). Many metabolic epilepsies are also considered epileptic encephalopathies, in which the the seizures may contribute to severe cognitive and behavioral impairments. [[2](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_2)]
 - **Structural**: some structural problems are associated with seizures, for example, malformations of cortical development, hippocampal sclerosis, tuberous sclerosis complex, brain tumors, vascular events (hypoxic-ischemic injury, subarachnoid hemorrhage, stroke) and traumatic brain injury.
-- **Central nervous system infections**: some infections are related to the development of epilepsy (meningitis, encephalitis, neurocysticercosis and cerebral abscess). [2](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_2)]
-- **Autoimmune causes**: some autoimmune diseases as multiple sclerosis and Ramussen encephalitis can provoque seizures. [2](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_2)]
+- **Central nervous system infections**: some infections are related to the development of epilepsy (meningitis, encephalitis, neurocysticercosis and cerebral abscess). [[2](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_2)]
+- **Autoimmune causes**: some autoimmune diseases as multiple sclerosis and Ramussen encephalitis can provoque seizures. [[2](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_2)]
 
 ### What is a provoked seizure?
 Provoked seizures occur as the result of the seizure threshold being transiently lowered by some disturbance. They do not count toward a diagnosis of epilepsy. Some causes of provoked seizures could be medications, recreational drugs, alcohol withdrawal, barbiturate or benzodiazepine withdrawal and metabolic. [[1](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_1)]
