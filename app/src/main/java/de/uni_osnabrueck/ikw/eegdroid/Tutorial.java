@@ -14,6 +14,6 @@ public class Tutorial extends AppCompatActivity {
         setContentView(R.layout.activity_tutorial);
 
         MarkdownView markdownView = (MarkdownView) findViewById(R.id.markdownTutorial);
-        markdownView.loadMarkdownFile("https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/markdown/tutorial.md");
+        markdownView.loadMarkdownFile("https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/learning/tutorial.md");
     }
 }

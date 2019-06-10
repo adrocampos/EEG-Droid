@@ -14,6 +14,6 @@ public class Learn extends AppCompatActivity {
         setContentView(R.layout.activity_learn);
 
         MarkdownView markdownView = (MarkdownView) findViewById(R.id.markdownLearn);
-        markdownView.loadMarkdownFile("https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/markdown/epilepsy.md");
+        markdownView.loadMarkdownFile("https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/learning/epilepsy.md");
     }
 }
