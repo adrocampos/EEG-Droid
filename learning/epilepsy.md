@@ -64,15 +64,21 @@ Seizures are treated with antiepileptic drugs (AED). For this is important to id
 Some antiepileptic drugs may cause serious life-threatening reactions, especially worsening depression and suicidal ideation.
 
 ##### Vagus nerve stimulation:
-![Vagus nerve stimulation](images/vagus_nerve_stimulation.png)
+![vagus_nerve_stimulation](./images/vagus_nerve_stimulation.png)
+*Vagus nerve stimulation. Taken from [[7](#Bibliography)]*
+
 Additionally, other types of treatment can be used to fight seizures. For example, the vagus nerve stimulation. This stimulation consists of placing subcutaneously a small pulse generator in the left chest with a lead attached to the left vagus nerve. This nerve is stimulated at regular intervals.
 
 ##### Responsive neurostimulation:
-![Responsive neuroestimulation](images/responsive_neurostimulation.png)
+![Responsive neuroestimulation](./images/responsive_neurostimulation.png)
+*Rsponsive neuroestimulation. Taken from [[7](#Bibliography)]*
+
 Consist of a closed-loop system that continuously records the electrocorticographic activity and provides responsive electrical stimulation when certain patterns are detected. The neurostimulator should be implanted cranially and connected to one or two depth or subdural cortical strip leads.
 
 ##### Deep brain stimulation
-![Deep brain stimulation](images/deep_brain_stimulation.png)
+![Deep brain stimulation](./images/deep_brain_stimulation.png)
+*Deep brain stimulation. Taken from [[7](#Bibliography)]*
+
 Bilateral electrodes are implanted in the anterior nucleus of the thalamus. It has proved to be effective, but its mechanism is unknown. It can help with reducing the seizure severity, improvement in the quality of life and neurological measures.
 
 ##### Diet Therapy
