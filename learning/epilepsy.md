@@ -1,6 +1,8 @@
 ## Learn about Epilepsy
 In the next paragraphs, we write some anwers to the most usually ask questions about seizures & epilepsy. All the information collected here is obtained from scientific sources, and we try to provide reliable and clear information about these topics. This guide leaves a lot of details out and should be considered only as an overview of the matter. If you have doubts about your health or think that you may suffer from seizures or epilepsy, it is necessary to visit a doctor. Only a physician can establish a reliable diagnostic of your symptoms. Early detection of this condition could help to improve the quality of life and minimizing the risk.
 
+<a href="biblio">#Bibliography</a>
+
 ### What is a seizure?
 An epileptic seizure is a transient occurrence of signs and/or symptoms due
 to abnormal excessive or synchronous neuronal activity in the brain [[3](https://www.ncbi.nlm.nih.gov/pubmed/15816939)]. The period during which the seizure actually occurs is called the ictus period. The aura is the earliest part of the seizure recognized (and often the only part remembered by the patient) and it could act as a warning. The period immediately after a seizure is the postictical period [[10](https://www.bookdepository.com/Handbook-Epilepsy-Thomas-R-Browne/9780781773973)].
@@ -98,9 +100,10 @@ There is a lot of information on the internet about Epilepsy. However, it is imp
 - [National Health Service (United Kingdom)](https://www.nhs.uk/conditions/epilepsy/)
 
 ### Bibliography
-<a name="1">
+<a name="1"> wololo </a>
+
 ###### [1] [Sazgar M., Young M.G. (2019) What Is Not a Seizure?. In: Absolute Epilepsy and EEG Rotation Review. Springer, Cham](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_1)
-</a>
+
 ###### [2] [Sazgar M., Young M.G. (2019) Seizures and Epilepsy. In: Absolute Epilepsy and EEG Rotation Review. Springer, Cham](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_2)
 ###### [3] [Fisher RS, van Emde Boas W, Blume W, et al. Epileptic seizures and epilepsy: definitions proposed by the International League Against Epilepsy (ILAE) and the International Bureau for Epilepsy (IBE). Epilepsia. 2005;46(4):470–2.](https://www.ncbi.nlm.nih.gov/pubmed/15816939)
 ###### [4] [Fisher RS, Acevedo C, Arzimanoglou A, et al. ILAE official report: a practical clinical definition of epilepsy. Epilepsia. 2014;55(4):475–82.](https://www.ncbi.nlm.nih.gov/pubmed/24730690)
