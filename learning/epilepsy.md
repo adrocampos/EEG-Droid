@@ -23,7 +23,7 @@ Seizures are usually named by how they begin and develop:
 - A seizure may be **“unclassified”** if there is not enough information or inability to place it in other categories.
 
 ### What causes seizures?
-It is very important to identify the origin of a seizure for treatment and prognostication. Some of the epilepsies may fit into more than one category [[2](#Bibliography)](#Bibliography)].
+It is very important to identify the origin of a seizure for treatment and prognostication. Some of the epilepsies may fit into more than one category [[2](#Bibliography)].
 Seizures can be caused by:
 - **Genetic causes**: around 15% of people with epilepsy have a first-degree relative with epilepsy. The risk of suffering epilepsy is three times higher if a first-degree relative has epilepsy. Genetic epilepsies account for 15-20% of all epilepsies [[6](#Bibliography)].
 - **Metabolic causes**: epilepsy is common in disorders from inborn errors of metabolism (for example vitamin B responsive disorders or disorders of amino acid). Many metabolic epilepsies are also considered epileptic encephalopathies, in which the seizures may contribute to severe cognitive and behavioral impairments [[2](#Bibliography)].
@@ -59,6 +59,7 @@ Some of the factors that could increase the probability of developing epilepsy a
 
 ### How can seizures be treated? [[7](#Bibliography)]
 There is a wide range of treatments to prevent seizures. Here we describe the most usual ones.
+
 ##### Antiepileptic drugs:
 Seizures are treated with antiepileptic drugs (AED). For this is important to identify the type of epilepsy (generalized vs. focal). The is narrow spectrum AEDs are indicated for focal epilepsies but may exacerbate genetic generalized epilepsies. Some of the medications used in generalized epilepsy are benzodiazepines, felbamate, lamotrigine, levetiracetam, perampanel, rufinamide, topiramate, valproic acid, and zonisamide. On the other hand, the drugs used for focal epilepsies are carbamazepine, eslicarbazepine, ezogabine, gabapentin, lacosamide, oxcarbazepine, phenobarbital, phenytoin, pregabalin, tiagabine.
 Some antiepileptic drugs may cause serious life-threatening reactions, especially worsening depression and suicidal ideation.
