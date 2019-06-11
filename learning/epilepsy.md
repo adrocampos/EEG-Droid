@@ -5,7 +5,7 @@ In the next paragraphs, we write some anwers to the most usually ask questions a
 An epileptic seizure is a transient occurrence of signs and/or symptoms due
 to abnormal excessive or synchronous neuronal activity in the brain [[3](https://www.ncbi.nlm.nih.gov/pubmed/15816939)]. The period during which the seizure actually occurs is called the ictus period. The aura is the earliest part of the seizure recognized (and often the only part remembered by the patient) and it could act as a warning. The period immediately after a seizure is the postictical period [[10](https://www.bookdepository.com/Handbook-Epilepsy-Thomas-R-Browne/9780781773973)].
 
-### What is not a seizure? [[[1](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_1)](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_1)]
+### What is not a seizure? [[[1](https://github.com/adrocampos/EEG-Droid/blob/master/learning/epilepsy.md#1-sazgar-m-young-mg-2019-what-is-not-a-seizure-in-absolute-epilepsy-and-eeg-rotation-review-springer-cham)]
 Not every episode of shaking or loss of awareness is necessarily a seizure. Several different conditions can produce episodes of shaking or loss of consciousness,  for example, syncopes, migraines, transient ischemic attacks, and sleep disorders. To evaluate an episode it should be taken into account:
 - **Precipitating factors**: what were the circumstances before the event?
 - **Prodrome**: what did the patient experience prior to the event?
@@ -32,7 +32,7 @@ Seizures can be caused by:
 - **Autoimmune causes**: some autoimmune diseases as multiple sclerosis and Ramussen encephalitis can provoque seizures [[2](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_2)].
 
 ### What is a provoked seizure?
-Provoked seizures occur as the result of the seizure threshold being transiently lowered by some disturbance. They do not count toward a diagnosis of epilepsy. Some causes of provoked seizures could be medications, recreational drugs, alcohol withdrawal, barbiturate or benzodiazepine withdrawal and metabolic [[1](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_1)].
+Provoked seizures occur as the result of the seizure threshold being transiently lowered by some disturbance. They do not count toward a diagnosis of epilepsy. Some causes of provoked seizures could be medications, recreational drugs, alcohol withdrawal, barbiturate or benzodiazepine withdrawal and metabolic [[1](https://github.com/adrocampos/EEG-Droid/blob/master/learning/epilepsy.md#1-sazgar-m-young-mg-2019-what-is-not-a-seizure-in-absolute-epilepsy-and-eeg-rotation-review-springer-cham)].
 
 ### What is epilepsy?
 Epilepsy is a complex symptom caused by a variety of pathologic processes in the brain [[10](https://www.bookdepository.com/Handbook-Epilepsy-Thomas-R-Browne/9780781773973)]. Epilepsy is characterized by an enduring predisposition to generate epileptic seizures, and by the neurobiological, cognitive, psychological, and social consequences of this condition. The definition of epilepsy requires the occurrence of at least one epileptic seizure [[3](https://www.ncbi.nlm.nih.gov/pubmed/15816939)]. This means, that epilepsy is a disease of the brain defined by any of the following conditions [[4](https://www.ncbi.nlm.nih.gov/pubmed/24730690)]:
