@@ -98,15 +98,13 @@ There is a lot of information on the internet about Epilepsy. However, it is imp
 - [National Health Service (United Kingdom)](https://www.nhs.uk/conditions/epilepsy/)
 
 ### Bibliography
-- [1] [Sazgar M., Young M.G. (2019) What Is Not a Seizure?. In: Absolute Epilepsy and EEG Rotation Review. Springer, Cham](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_1)
-- [2] [Sazgar M., Young M.G. (2019) Seizures and Epilepsy. In: Absolute Epilepsy and EEG Rotation Review. Springer, Cham](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_2)
-- [3] [Fisher RS, van Emde Boas W, Blume W, et al. Epileptic seizures and epilepsy: definitions
-proposed by the International League Against Epilepsy (ILAE) and the International Bureau
-for Epilepsy (IBE). Epilepsia. 2005;46(4):470–2.](https://www.ncbi.nlm.nih.gov/pubmed/15816939)
-- [4] [Fisher RS, Acevedo C, Arzimanoglou A, et al. ILAE official report: a practical clinical definition of epilepsy. Epilepsia. 2014;55(4):475–82.](https://www.ncbi.nlm.nih.gov/pubmed/24730690)
-- [5] [Fisher RS, Cross JH, D’Souza C, et al. Instruction manual for the ILAE 2017 operational classification of seizure types. Epilepsia. 2017;58(4):531–42](https://www.ncbi.nlm.nih.gov/pubmed/28276064)
-- [6] [Jallon P, Latour P. Epidemiology of idiopathic generalized epilepsies. Epilepsia. 2005;46(Suppl 9):10–4.](https://www.ncbi.nlm.nih.gov/pubmed/16302871)
-- [7] [Sazgar M., Young M.G. (2019) Treatment of Seizures. In: Absolute Epilepsy and EEG Rotation Review. Springer, Cham](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_3)
-- [8] [Aronica, E., Mühlebner, A. (2017). Neuropathology of epilepsy. In Handbook of Clinical Neurology.](https://www.sciencedirect.com/handbook/handbook-of-clinical-neurology)
-- [9] [Birbeck, G. (2010). Epilepsy care in developing countries: part I of II. Current Review in Clinical Science, 10(4).](https://journals.sagepub.com/doi/10.1111/j.1535-7511.2010.01362.x)
-- [10] [Browne, Th. & Holmes, G. (2008). Handbook of Epilepsy (4th edition). Wolters Kluwer](https://www.bookdepository.com/Handbook-Epilepsy-Thomas-R-Browne/9780781773973)
+###### [1] [Sazgar M., Young M.G. (2019) What Is Not a Seizure?. In: Absolute Epilepsy and EEG Rotation Review. Springer, Cham](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_1)
+###### [2] [Sazgar M., Young M.G. (2019) Seizures and Epilepsy. In: Absolute Epilepsy and EEG Rotation Review. Springer, Cham](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_2)
+###### [3] [Fisher RS, van Emde Boas W, Blume W, et al. Epileptic seizures and epilepsy: definitions proposed by the International League Against Epilepsy (ILAE) and the International Bureau for Epilepsy (IBE). Epilepsia. 2005;46(4):470–2.](https://www.ncbi.nlm.nih.gov/pubmed/15816939)
+###### [4] [Fisher RS, Acevedo C, Arzimanoglou A, et al. ILAE official report: a practical clinical definition of epilepsy. Epilepsia. 2014;55(4):475–82.](https://www.ncbi.nlm.nih.gov/pubmed/24730690)
+###### [5] [Fisher RS, Cross JH, D’Souza C, et al. Instruction manual for the ILAE 2017 operational classification of seizure types. Epilepsia. 2017;58(4):531–42](https://www.ncbi.nlm.nih.gov/pubmed/28276064)
+###### [6] [Jallon P, Latour P. Epidemiology of idiopathic generalized epilepsies. Epilepsia. 2005;46(Suppl 9):10–4.](https://www.ncbi.nlm.nih.gov/pubmed/16302871)
+###### [7] [Sazgar M., Young M.G. (2019) Treatment of Seizures. In: Absolute Epilepsy and EEG Rotation Review. Springer, Cham](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_3)
+###### [8] [Aronica, E., Mühlebner, A. (2017). Neuropathology of epilepsy. In Handbook of Clinical Neurology.](https://www.sciencedirect.com/handbook/handbook-of-clinical-neurology)
+###### [9] [Birbeck, G. (2010). Epilepsy care in developing countries: part I of II. Current Review in Clinical Science, 10(4).](https://journals.sagepub.com/doi/10.1111/j.1535-7511.2010.01362.x)
+###### [10] [Browne, Th. & Holmes, G. (2008). Handbook of Epilepsy (4th edition). Wolters Kluwer](https://www.bookdepository.com/Handbook-Epilepsy-Thomas-R-Browne/9780781773973)
