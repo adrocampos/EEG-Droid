@@ -1,7 +1,7 @@
 ## Learn about Epilepsy
 In the next paragraphs, we write some anwers to the most usually ask questions about seizures & epilepsy. All the information collected here is obtained from scientific sources, and we try to provide reliable and clear information about these topics. This guide leaves a lot of details out and should be considered only as an overview of the matter. If you have doubts about your health or think that you may suffer from seizures or epilepsy, it is necessary to visit a doctor. Only a physician can establish a reliable diagnostic of your symptoms. Early detection of this condition could help to improve the quality of life and minimizing the risk.
 
-<a href="biblio">#Bibliography</a>
+<a href="#Bibliography">go to bib</a>
 
 ### What is a seizure?
 An epileptic seizure is a transient occurrence of signs and/or symptoms due
