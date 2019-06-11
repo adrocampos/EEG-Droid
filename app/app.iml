@@ -191,6 +191,7 @@
     <orderEntry type="library" name="Gradle: org.nd4j:nd4j-native:1.0.0-beta@jar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.drawerlayout:drawerlayout:1.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.localbroadcastmanager:localbroadcastmanager:1.0.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: com.atlassian.commonmark:commonmark:0.12.1@jar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.multidex:multidex:2.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: org.nd4j:nd4j-common:1.0.0-beta@jar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.cardview:cardview:1.0.0@aar" level="project" />
@@ -198,6 +199,7 @@
     <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-runtime:2.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.github.PhilJay:MPAndroidChart:v3.1.0-alpha@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-livedata-core:2.0.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: ru.noties.markwon:core:3.0.1@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.squareup.okhttp3:logging-interceptor:3.8.0@jar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.cursoradapter:cursoradapter:1.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: org.nd4j:nd4j-native-api:1.0.0-beta@jar" level="project" />
@@ -256,7 +258,6 @@
     <orderEntry type="library" name="Gradle: com.google.android.material:material:1.0.0-beta01@aar" level="project" />
     <orderEntry type="library" name="Gradle: org.bytedeco.javacpp-presets:openblas:0.3.0-1.4.2:android-x86@jar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.collection:collection:1.0.0@jar" level="project" />
-    <orderEntry type="module" module-name="library_epibot" />
     <orderEntry type="module" module-name="library_epibot" />
   </component>
 </module>
