@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Gradle: ru.noties.markwon:core:3.0.1@aar">
+    <ANNOTATIONS>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/49484eb8c27a2993db970d91da75867d/annotations.zip!/" />
+    </ANNOTATIONS>
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/49484eb8c27a2993db970d91da75867d/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/49484eb8c27a2993db970d91da75867d/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/ru.noties.markwon/core/3.0.1/2c5b94c9df3ca5888418e5505106918c91705386/core-3.0.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

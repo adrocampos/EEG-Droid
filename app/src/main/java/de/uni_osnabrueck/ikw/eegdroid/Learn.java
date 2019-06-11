@@ -15,6 +15,6 @@ public class Learn extends AppCompatActivity {
         setContentView(R.layout.activity_learn);
 
         webView = (WebView) findViewById(R.id.webViewLearn);
-        webView.loadUrl("https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/learning/epilepsy.html");
+        webView.loadUrl("https://adrocampos.github.io/EEG-Droid/epilepsy.html");
     }
 }

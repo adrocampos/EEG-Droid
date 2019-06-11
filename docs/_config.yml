@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+theme: jekyll-theme-slate
+>>>>>>> 4f99899add6e90e82a70fc1ebe90e887695cc651
 plugins:
   - jekyll-relative-links
 relative_links:
