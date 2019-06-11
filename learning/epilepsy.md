@@ -1,11 +1,11 @@
 ## Learn about Epilepsy
-In the next paragraphs, we write some anwers to the most usually ask questions about seizures & epilepsy. All the information collected here is obtained from scientific sources, and we try to provide reliable and clear information about these topics. This guide leaves a lot of details out and should be considered only as an overview of the matter. If you have doubts about your health or think that you may suffer from seizures or epilepsy, it is necessary to visit a doctor. Only a physician can establish a reliable diagnostic of your symptoms. Early detection of this condition could help to improve the quality of life and minimizing the risk.
+In the next paragraphs, we write some answers to the most usually ask questions about seizures & epilepsy. All the information collected here is obtained from scientific sources, and we try to provide reliable and clear information about these topics. This guide leaves a lot of details out and should be considered only as an overview of the matter. If you have doubts about your health or think that you may suffer from seizures or epilepsy, it is necessary to visit a doctor. Only a physician can establish a reliable diagnostic of your symptoms. Early detection of this condition could help to improve the quality of life and minimizing the risk.
 
 ### What is a seizure?
 An epileptic seizure is a transient occurrence of signs and/or symptoms due
 to abnormal excessive or synchronous neuronal activity in the brain [[3](#Bibliography)]. The period during which the seizure actually occurs is called the ictus period. The aura is the earliest part of the seizure recognized (and often the only part remembered by the patient) and it could act as a warning. The period immediately after a seizure is the postictical period [[10](#Bibliography)].
 
-### What is not a seizure? [[[1](#Bibliography)]
+### What is not a seizure? [[1](#Bibliography)]
 Not every episode of shaking or loss of awareness is necessarily a seizure. Several different conditions can produce episodes of shaking or loss of consciousness,  for example, syncopes, migraines, transient ischemic attacks, and sleep disorders. To evaluate an episode it should be taken into account:
 - **Precipitating factors**: what were the circumstances before the event?
 - **Prodrome**: what did the patient experience prior to the event?
@@ -23,10 +23,10 @@ Seizures are usually named by how they begin and develop:
 - A seizure may be **“unclassified”** if there is not enough information or inability to place it in other categories.
 
 ### What causes seizures?
-It is very important to identify the origin of a seizure for treatment and prognostication. Some of the epilepsies may fit into more than one category [[[2](#Bibliography)](#Bibliography)].
+It is very important to identify the origin of a seizure for treatment and prognostication. Some of the epilepsies may fit into more than one category [[2](#Bibliography)](#Bibliography)].
 Seizures can be caused by:
-- **Genetic causes**: around 15% of people with epilepsy have a first-degree relative with epilepsy. The risk of suffering epilepsy is three times higher if a first-degree relative has epilepsy. Genetic epilepsies account for 15-20% of all epilepsies [[6](#Bibliography)].
-- **Metabolic causes**: epilepsy is common in disorders from inborn errors of metabolism (for example vitamin B responsive disorders or disorders of amino acid). Many metabolic epilepsies are also considered epileptic encephalopathies, in which the seizures may contribute to severe cognitive and behavioral impairments [[[2](#Bibliography)].
+- **Genetic causes**: around 15% of people with epilepsy have a first-degree relative with epilepsy. The risk of suffering epilepsy is three times higher if a first-degree relative has epilepsy. Genetic epilepsies account for 15-20% of all epilepsies [6](#Bibliography)].
+- **Metabolic causes**: epilepsy is common in disorders from inborn errors of metabolism (for example vitamin B responsive disorders or disorders of amino acid). Many metabolic epilepsies are also considered epileptic encephalopathies, in which the seizures may contribute to severe cognitive and behavioral impairments [[2](#Bibliography)].
 - **Structural**: some structural problems are associated with seizures, for example, malformations of cortical development, hippocampal sclerosis, tuberous sclerosis complex, brain tumors, vascular events (hypoxic-ischemic injury, subarachnoid hemorrhage, stroke) and traumatic brain injury [[2](#Bibliography)].
 - **Central nervous system infections**: some infections are related to the development of epilepsy (meningitis, encephalitis, neurocysticercosis and cerebral abscess) [[2](#Bibliography)].
 - **Autoimmune causes**: some autoimmune diseases as multiple sclerosis and Ramussen encephalitis can provoque seizures [[2](#Bibliography)].
@@ -63,19 +63,16 @@ There is a wide range of treatments to prevent seizures. Here we describe the mo
 Seizures are treated with antiepileptic drugs (AED). For this is important to identify the type of epilepsy (generalized vs. focal). The is narrow spectrum AEDs are indicated for focal epilepsies but may exacerbate genetic generalized epilepsies. Some of the medications used in generalized epilepsy are benzodiazepines, felbamate, lamotrigine, levetiracetam, perampanel, rufinamide, topiramate, valproic acid, and zonisamide. On the other hand, the drugs used for focal epilepsies are carbamazepine, eslicarbazepine, ezogabine, gabapentin, lacosamide, oxcarbazepine, phenobarbital, phenytoin, pregabalin, tiagabine.
 Some antiepileptic drugs may cause serious life-threatening reactions, especially worsening depression and suicidal ideation.
 
-
 ##### Vagus nerve stimulation:
-
-[Taken from 7]
+![Vagus nerve stimulation](images/vagus_nerve_stimulation.png)
 Additionally, other types of treatment can be used to fight seizures. For example, the vagus nerve stimulation. This stimulation consists of placing subcutaneously a small pulse generator in the left chest with a lead attached to the left vagus nerve. This nerve is stimulated at regular intervals.
 
 ##### Responsive neurostimulation:
+![Responsive neuroestimulation](images/responsive_neurostimulation.png)
 Consist of a closed-loop system that continuously records the electrocorticographic activity and provides responsive electrical stimulation when certain patterns are detected. The neurostimulator should be implanted cranially and connected to one or two depth or subdural cortical strip leads.
 
-
-[Taken from 7]
-
-##### Deep Brain Stimulation
+##### Deep brain stimulation
+![Deep brain stimulation](images/deep_brain_stimulation.png)
 Bilateral electrodes are implanted in the anterior nucleus of the thalamus. It has proved to be effective, but its mechanism is unknown. It can help with reducing the seizure severity, improvement in the quality of life and neurological measures.
 
 ##### Diet Therapy
