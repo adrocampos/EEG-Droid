@@ -105,7 +105,6 @@ There is a lot of information on the internet about Epilepsy. However, it is imp
 - [National Health Service (United Kingdom)](https://www.nhs.uk/conditions/epilepsy/)
 
 ### Bibliography
-(#Bibliography)
 - [1] [Sazgar M., Young M.G. (2019) What Is Not a Seizure?. In: Absolute Epilepsy and EEG Rotation Review. Springer, Cham](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_1)
 - [2] [Sazgar M., Young M.G. (2019) Seizures and Epilepsy. In: Absolute Epilepsy and EEG Rotation Review. Springer, Cham](https://link.springer.com/chapter/10.1007%2F978-3-030-03511-2_2)
 - [3] [Fisher RS, van Emde Boas W, Blume W, et al. Epileptic seizures and epilepsy: definitions proposed by the International League Against Epilepsy (ILAE) and the International Bureau for Epilepsy (IBE). Epilepsia. 2005;46(4):470–2.](https://www.ncbi.nlm.nih.gov/pubmed/15816939)
