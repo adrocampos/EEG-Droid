@@ -14,6 +14,8 @@ Table of contents:
 - [How can epilepsy be treated?](#treatment_epilepsy)
 - [How many people suffer Epilepsy?](#epidemiology_epilepsy)
 - [Where can I learn more?](#learn_more)
+- [Bibliography](#bib)
+
 
 <a name="introduction"></a>
 ### Introduction
