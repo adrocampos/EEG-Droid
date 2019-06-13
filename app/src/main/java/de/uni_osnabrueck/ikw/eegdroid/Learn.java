@@ -29,8 +29,6 @@ public class Learn extends AppCompatActivity {
             webView.loadUrl("file:///android_asset/docs/epilepsy.html");
         }
 
-        webView.
-
 
     }
 
