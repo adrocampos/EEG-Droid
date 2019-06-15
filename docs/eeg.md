@@ -34,7 +34,7 @@ EEG is the most useful diagnostic procedure for Epilepsy. Epilepsy causes abnorm
 ### How can I use the Traumschreiber?
 In the next video, we show you how you can operate the Traumschreiber: how you should put the electrodes in your scalp and how you can take them off after the experiment.
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/HiCFjKNMv0I" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/HiCFjKNMv0I" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="allowfullscreen"></iframe>
 
 <a name="bib"></a>
 ### Bibliography

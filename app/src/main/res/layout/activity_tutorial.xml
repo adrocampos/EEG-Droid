@@ -6,10 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".Tutorial">
 
-    <us.feras.mdv.MarkdownView
+    <WebView
+        android:id="@+id/webViewTutorial"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="5dp"
-        android:id="@+id/markdownTutorial"/>
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp"
+        android:padding="5dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

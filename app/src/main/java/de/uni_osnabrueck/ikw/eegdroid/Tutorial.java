@@ -21,6 +21,9 @@ public class Tutorial extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        webView = (WebView) findViewById(R.id.webViewTutorial);
+        webView.getSettings().setJavaScriptEnabled(true);
+
         if (isNetworkAvailable()==true) {
             webView.loadUrl("https://adrocampos.github.io/EEG-Droid/eeg.html");
         } else {

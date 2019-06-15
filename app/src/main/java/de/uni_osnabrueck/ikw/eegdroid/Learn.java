@@ -22,6 +22,7 @@ public class Learn extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         webView = (WebView) findViewById(R.id.webViewLearn);
+        webView.getSettings().setJavaScriptEnabled(true);
 
         if (isNetworkAvailable()==true) {
             webView.loadUrl("https://adrocampos.github.io/EEG-Droid/epilepsy.html");

@@ -21,6 +21,9 @@ public class Info extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        webView = (WebView) findViewById(R.id.webViewInfo);
+        webView.getSettings().setJavaScriptEnabled(true);
+
         if (isNetworkAvailable()==true) {
             webView.loadUrl("https://adrocampos.github.io/EEG-Droid/index.html");
         } else {
