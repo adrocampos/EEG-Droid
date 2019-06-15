@@ -1,7 +1,10 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -191,6 +194,15 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public static File getDirSessions() { return dirSessions; }
+    public static File getDirSessions() {
+        return dirSessions;
+    }
+
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
 
 }
