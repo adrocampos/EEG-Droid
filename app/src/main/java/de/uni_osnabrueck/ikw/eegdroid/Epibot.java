@@ -84,7 +84,7 @@ public class Epibot extends AppCompatActivity {
     private MessageAdapter adapter;
     private Context context;
     private int counter_interactions;
-    private String usersname;
+    private String username;
     private String botsname;
     private File conversation_file;
     private String conversation_name = "/conversation.tmp";
@@ -125,7 +125,7 @@ public class Epibot extends AppCompatActivity {
         }
 
         adapter = new MessageAdapter(this, R.layout.adapter_view_layout, messages);
-        usersname = getString(R.string.usersname);
+        username = getString(R.string.username);
         botsname = getString(R.string.botsname);;
 
 
@@ -313,7 +313,7 @@ public class Epibot extends AppCompatActivity {
         newMessage.setContext(context);
 
         if (input.trim().length() > 0) {
-            String[] user_input_null = {usersname, input, "text"};
+            String[] user_input_null = {username, input, "text"};
             messages.add(user_input_null);
             msgView.setAdapter(adapter);
         }

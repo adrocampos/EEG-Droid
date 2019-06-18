@@ -25,9 +25,9 @@ public class Info extends AppCompatActivity {
         webView.getSettings().setJavaScriptEnabled(true);
 
         if (isNetworkAvailable()==true) {
-            webView.loadUrl("https://adrocampos.github.io/EEG-Droid/index.html");
+            webView.loadUrl("https://adrocampos.github.io/EEG-Droid/README.html");
         } else {
-            webView.loadUrl("file:///android_asset/docs/index.html");
+            webView.loadUrl("file:///android_asset/docs/readme.html");
         }
 
     }

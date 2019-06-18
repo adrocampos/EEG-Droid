@@ -34,7 +34,7 @@ public class ManageSessions extends AppCompatActivity {
     private RecyclerView recyclerView;
     private SessionAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
-    private String dirSessions;
+    private String saveDir;
     private ArrayList<File> arrayListOfFiles;
     private DividerItemDecoration mDividerItemDecoration;
     private ShareActionProvider shareActionProvider;
@@ -58,7 +58,7 @@ public class ManageSessions extends AppCompatActivity {
 
         // Receive the directory of the EEG Sessions
         Intent intent = getIntent();
-        dirSessions = intent.getExtras().getString("dirString");
+        saveDir = intent.getExtras().getString("dirString");
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
@@ -138,7 +138,7 @@ public class ManageSessions extends AppCompatActivity {
                             .setPositiveButton(R.string.rename, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialogBox, int id) {
                                     String oldName = arrayListOfFiles.get(position).getName().substring(0, 20);
-                                    File newName = new File(dirSessions, oldName + userInputDialogEditText.getText().toString() + ".csv");
+                                    File newName = new File(saveDir, oldName + userInputDialogEditText.getText().toString() + ".csv");
                                     //Check if exist another file with this name
                                     if (arrayListOfFiles.contains(newName)) {
                                         Toast.makeText(getApplicationContext(), R.string.warning_rename, Toast.LENGTH_LONG).show();

@@ -2,12 +2,14 @@ package de.uni_osnabrueck.ikw.eegdroid;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,10 +34,13 @@ public class MainActivity extends AppCompatActivity
 
     private static File dirSessions;
     private ManageSessions ManageSessions = new ManageSessions();
-    private String nameDir = "/sessions_EEG";
+
     private Uri dirUri;
     private TextView appName;
     private TextView appVersion;
+    private TextView textViewUsername;
+    private TextView textViewUserID;
+    private TextView textViewSaveDir;
     private ApplicationInfo applicationInfo;
     private TableRow tableRowRecord;
     private TableRow tableRowDisplay;
@@ -43,7 +48,10 @@ public class MainActivity extends AppCompatActivity
     private TableRow tableRowLearn;
     private TableRow tableRowTutorial;
     private TableRow tableRowEpibot;
-
+    private SharedPreferences sharedPreferences;
+    private String saveDir;
+    private String username;
+    private String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +60,20 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // File object to save the directory to save the EEG recordings
-        dirSessions = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS + nameDir);
-        ManageSessions.createDirectory(dirSessions);
-        dirUri = Uri.parse(Environment.getExternalStorageDirectory() + "/sessions_EEG/"); //Uri to open the folder with sessions //ToDo Make relative
-        Log.d("Main", dirUri.getPath());
+        //Retrieve saveDir, username & userID from sharedPreferences
+        sharedPreferences = getSharedPreferences("userPreferences", MODE_PRIVATE);
+        //If sharedPreferences not found (first time usage), use default values
+        saveDir = sharedPreferences.getString("saveDir",getResources().getString(R.string.default_folder));
+        username = sharedPreferences.getString("username", getResources().getString(R.string.default_username));
+        userID = sharedPreferences.getString("userID", getResources().getString(R.string.default_userID));
 
+        // File object to save the directory to save the EEG recordings
+        dirSessions = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS + saveDir);
+        ManageSessions.createDirectory(dirSessions);
+        dirUri = Uri.parse(Environment.getExternalStorageDirectory() + saveDir + "/"); //Uri to open the folder with sessions
+        Log.d("Main Directory", dirUri.getPath());
+
+        //Sets the lateral Menu
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -66,8 +82,15 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        //Shows basic information about the App
         appName = (TextView) findViewById(R.id.main_app_name);
         appVersion = (TextView) findViewById(R.id.main_app_version);
+        textViewUsername = (TextView) findViewById(R.id.textViewUsername);
+        textViewUsername.setText(username);
+        textViewUserID = (TextView) findViewById(R.id.textViewUserID);
+        textViewUserID.setText(userID);
+        textViewSaveDir = (TextView) findViewById(R.id.textViewSaveDir);
+        textViewSaveDir.setText(Environment.getExternalStorageDirectory() + saveDir + "/");
 
         applicationInfo = getApplicationInfo();
         appName.setText(applicationInfo.loadLabel(getPackageManager()));
@@ -80,6 +103,7 @@ public class MainActivity extends AppCompatActivity
         tableRowTutorial = (TableRow) findViewById(R.id.tableRowTutorial);
         tableRowEpibot = (TableRow) findViewById(R.id.tableRowEpibot);
 
+        //Allows initialize activity when click in home
         tableRowRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,9 +154,7 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
             }
         });
-
     }
-
 
 
     @Override
@@ -196,13 +218,6 @@ public class MainActivity extends AppCompatActivity
 
     public static File getDirSessions() {
         return dirSessions;
-    }
-
-    public boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 }

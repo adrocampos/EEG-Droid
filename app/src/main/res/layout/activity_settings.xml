@@ -6,4 +6,38 @@
     android:layout_height="match_parent"
     tools:context=".Settings">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp">
+
+        <EditText
+            android:id="@+id/editText_saveDir"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"/>
+
+        <EditText
+            android:id="@+id/editText_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"/>
+
+        <EditText
+            android:id="@+id/editText_userID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/settings_apply_changes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Apply changes" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

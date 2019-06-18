@@ -45,7 +45,7 @@
         android:layout_height="50dp"
         android:layout_weight="3"
         android:drawableTop="@drawable/ic_account_box_black_24dp"
-        android:text="User"
+        android:text="@string/username"
         android:textAlignment="center"
         android:textColor="#000000"
         android:textSize="14sp"
