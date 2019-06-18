@@ -27,7 +27,7 @@ public class Tutorial extends AppCompatActivity {
         if (isNetworkAvailable()==true) {
             webView.loadUrl("https://adrocampos.github.io/EEG-Droid/eeg.html");
         } else {
-            webView.loadUrl("file:///android_asset/docs/eeg.html");
+            webView.loadUrl("file:///android_asset/docs/eeg_tutorial.html");
         }
     }
 

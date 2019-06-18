@@ -218,7 +218,7 @@
     <string name="activity_name_manage_recordings">Manage</string>
     <string name="activity_name_TFAnalysis">TF Analysis</string>
     <string name="activity_name_learn">Learn</string>
-    <string name="activity_name_eeg_tutorial">EEG turorial</string>
+    <string name="activity_name_eeg_tutorial">EEG tutorial</string>
     <string name="activity_name_epibot">Ask Epibot</string>
 
 
