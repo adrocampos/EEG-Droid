@@ -211,7 +211,7 @@
     <string name="version">Version:</string>
 
     <string name="intro">Welcome to the EEGDroid App. The goal of this App is allow you to record, plot, storage and manage your own EEG brain signals. With this App you are able to:</string>
-    <string name="outro">Please touch one of the options or open the side menu to start using the App.</string>
+    <string name="outro">Please touch one of the options or open the side menu to start using the App. Did you found a bug? Please report it to: rrojascampos@uos.de</string>
 
     <string name="activity_name_recordEEG">Record</string>
     <string name="activity_name_play">Play</string>
@@ -237,6 +237,11 @@
     <string name="default_userID">12345678</string>
     <string name="default_folder">/sessions_EEG</string>
     <string name="settings_saved">Settings saved</string>
+
+    <string name="settings_username">Username of identify patient:</string>
+    <string name="settings_userID">User ID providen by the health services:</string>
+    <string name="settings_directory">Folder to save the EEG sessions in Downloads/:</string>
+
 
 
 </resources>

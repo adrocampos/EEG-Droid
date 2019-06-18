@@ -1036,7 +1036,9 @@ public class Record extends AppCompatActivity {
 
     //Saves the data at the end of session
     private void saveSession(final String tag) {
-        final String top_header = "Session ID,Session Tag,Date,Shape (rows x columns)," +
+        final String username = getSharedPreferences("userPreferences", 0).getString("username", "user");
+        final String userID = getSharedPreferences("userPreferences", 0).getString("userID", "12345678");
+        final String top_header = "Username, User ID, Session ID,Session Tag,Date,Shape (rows x columns)," +
                 "Duration (ms),Starting Time,Ending Time,Resolution (ms),Resolution (Hz)," +
                 "Unit Measure,Starting Timestamp,Ending Timestamp";
         final String dp_header = "Time,Ch-1,Ch-2,Ch-3,Ch-4,Ch-5,Ch-6,Ch-7,Ch-8";
@@ -1058,6 +1060,10 @@ public class Record extends AppCompatActivity {
                     int cols = main_data.get(0).length;
                     fileWriter.append(top_header);
                     fileWriter.append(break_line);
+                    fileWriter.append(username);
+                    fileWriter.append(delimiter);
+                    fileWriter.append(userID);
+                    fileWriter.append(delimiter);
                     fileWriter.append(id.toString());
                     fileWriter.append(delimiter);
                     fileWriter.append(tag);

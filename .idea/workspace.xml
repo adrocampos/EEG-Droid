@@ -18,16 +18,10 @@
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/app/app.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/assets/docs/eeg.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/assets/docs/epilepsy.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/assets/docs/epilepsy.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/assets/docs/images/deep_brain_stimulation.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/assets/docs/images/eeg_example.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/assets/docs/images/responsive_neurostimulation.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/assets/docs/images/traumschreiber.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/assets/docs/images/vagus_nerve_stimulation.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Learn.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Learn.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Tutorial.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Tutorial.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Record.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Record.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/content_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/content_main.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -46,24 +40,32 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Learn.java">
+        <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="308">
-              <caret line="58" column="64" selection-start-line="58" selection-start-column="64" selection-end-line="58" selection-end-column="64" />
+            <state relative-caret-position="317">
+              <caret line="30" column="49" selection-start-line="30" selection-start-column="49" selection-end-line="30" selection-end-column="49" />
+            </state>
+          </provider>
+          <provider editor-type-id="android-designer2" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="213">
+              <caret line="212" column="150" selection-start-line="212" selection-start-column="150" selection-end-line="212" selection-end-column="150" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Tutorial.java">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/content_main.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="390">
-              <caret line="30" column="9" selection-start-line="30" selection-start-column="9" selection-end-line="30" selection-end-column="9" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="558">
+              <caret line="108" selection-start-line="108" selection-end-line="108" />
             </state>
           </provider>
+          <provider editor-type-id="android-designer2" />
         </entry>
       </file>
     </leaf>
@@ -85,11 +87,12 @@
       <find>EEG</find>
       <find>pref_title</find>
       <find>example</find>
-      <find>username</find>
       <find>onResu</find>
       <find>textViewSaveDir</find>
       <find>ID</find>
       <find>toast</find>
+      <find>break_line</find>
+      <find>username</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -108,13 +111,14 @@
         <option value="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/ManageSessions.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/xml/user_settings.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/menu/settings_menu.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/content_main.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Settings.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/MainActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Learn.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Tutorial.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Learn.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Record.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/content_main.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
       </list>
     </option>
   </component>
@@ -178,7 +182,20 @@
               <item name="EEG-Droid" type="1abcf292:AndroidViewProjectNode" />
               <item name="app" type="feadf853:AndroidModuleNode" />
               <item name="res" type="d4f16f75:AndroidResFolderNode" />
+              <item name="layout" type="ddeffd01:AndroidResFolderTypeNode" />
+            </path>
+            <path>
+              <item name="EEG-Droid" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+              <item name="res" type="d4f16f75:AndroidResFolderNode" />
               <item name="values" type="ddeffd01:AndroidResFolderTypeNode" />
+            </path>
+            <path>
+              <item name="EEG-Droid" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+              <item name="res" type="d4f16f75:AndroidResFolderNode" />
+              <item name="values" type="ddeffd01:AndroidResFolderTypeNode" />
+              <item name="styles" type="c431d0b8:AndroidResGroupNode" />
             </path>
           </expand>
           <select />
@@ -281,7 +298,7 @@
     <editor active="true" />
     <layout>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
-      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.17944622" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.17944622" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info id="Build Variants" order="4" side_tool="true" />
@@ -290,7 +307,7 @@
       <window_info id="Resources Explorer" order="7" weight="0.32967034" />
       <window_info id="Capture Tool" order="8" />
       <window_info anchor="bottom" id="Run" order="0" />
-      <window_info active="true" anchor="bottom" id="Logcat" order="1" visible="true" weight="0.16831683" />
+      <window_info anchor="bottom" id="Logcat" order="1" visible="true" weight="0.16831683" />
       <window_info anchor="bottom" id="TODO" order="2" />
       <window_info anchor="bottom" id="Debug" order="3" />
       <window_info anchor="bottom" id="Terminal" order="4" weight="0.15204081" />
@@ -455,13 +472,6 @@
       </provider>
       <provider editor-type-id="android-designer2" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Record.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3486">
-          <caret line="58" column="13" selection-start-line="58" selection-start-column="13" selection-end-line="58" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Connect.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
@@ -484,25 +494,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/content_main.xml">
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="1455">
-          <caret line="343" column="39" selection-start-line="343" selection-start-column="39" selection-end-line="343" selection-end-column="39" />
-        </state>
-      </provider>
-      <provider selected="true" editor-type-id="android-designer2" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/SettingsActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2382">
           <caret line="34" column="13" selection-start-line="34" selection-start-column="13" selection-end-line="34" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Settings.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1230">
-          <caret line="113" column="48" selection-start-line="113" selection-start-column="48" selection-end-line="113" selection-end-column="48" />
         </state>
       </provider>
     </entry>
@@ -513,33 +508,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="64" column="59" selection-start-line="64" selection-start-column="59" selection-end-line="64" selection-end-column="59" />
-          <folding>
-            <element signature="e#2184#2233#0" expanded="true" />
-            <element signature="e#2295#2346#0" expanded="true" />
-            <element signature="e#2404#2453#0" expanded="true" />
-            <element signature="e#8651#8652#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/ManageSessions.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="443">
           <caret line="184" column="40" selection-start-line="184" selection-start-column="40" selection-end-line="184" selection-end-column="40" />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml">
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="600">
-          <caret line="40" column="39" selection-start-line="40" selection-start-column="39" selection-end-line="40" selection-end-column="39" />
-        </state>
-      </provider>
-      <provider selected="true" editor-type-id="android-designer2" />
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
       <provider selected="true" editor-type-id="text-editor">
@@ -556,22 +530,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="353">
-          <caret line="218" column="64" lean-forward="true" selection-start-line="218" selection-start-column="64" selection-end-line="218" selection-end-column="64" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/assets/docs/eeg.html">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Learn.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="58" column="64" selection-start-line="58" selection-start-column="64" selection-end-line="58" selection-end-column="64" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Epibot.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -580,13 +540,72 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Learn.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="750">
+          <caret line="69" column="4" lean-forward="true" selection-start-line="69" selection-start-column="4" selection-end-line="69" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Tutorial.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
+        <state relative-caret-position="343">
           <caret line="30" column="9" selection-start-line="30" selection-start-column="9" selection-end-line="30" selection-end-column="9" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Record.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="244">
+          <caret line="1065" column="49" selection-start-line="1065" selection-start-column="49" selection-end-line="1065" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="351">
+          <caret line="64" column="59" selection-start-line="64" selection-start-column="59" selection-end-line="64" selection-end-column="59" />
+          <folding>
+            <element signature="e#8617#8618#0" expanded="true" />
+            <element signature="e#8651#8652#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Settings.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="785">
+          <caret line="113" column="48" selection-start-line="113" selection-start-column="48" selection-end-line="113" selection-end-column="48" />
+          <folding>
+            <element signature="e#4722#4959#0" expanded="true" />
+            <element signature="e#4958#4959#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/content_main.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="558">
+          <caret line="108" selection-start-line="108" selection-end-line="108" />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer2" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="317">
+          <caret line="30" column="49" selection-start-line="30" selection-start-column="49" selection-end-line="30" selection-end-column="49" />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer2" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="213">
+          <caret line="212" column="150" selection-start-line="212" selection-start-column="150" selection-end-line="212" selection-end-column="150" />
         </state>
       </provider>
     </entry>

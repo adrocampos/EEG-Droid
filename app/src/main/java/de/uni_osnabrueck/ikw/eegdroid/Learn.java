@@ -25,7 +25,6 @@ import java.util.ArrayList;
 public class Learn extends AppCompatActivity {
 
     private WebView webView;
-    private File webView_file;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,31 +36,15 @@ public class Learn extends AppCompatActivity {
         webView = (WebView) findViewById(R.id.webViewLearn);
         webView.getSettings().setJavaScriptEnabled(true);
 
-        //File to save the webView
-        webView_file = new File(getFilesDir().getPath() + "/learnWebView.tmp");
 
         // If connection: load newest info
         if (isNetworkAvailable()==true) {
             webView.loadUrl("https://adrocampos.github.io/EEG-Droid/epilepsy.html");
 
-       // If no connection: read last webView
+       // If no connection: read from local
         } else {
-//            try {
-//                FileInputStream fis = new FileInputStream(webView_file);
-//                ObjectInputStream ois = new ObjectInputStream(fis);
-//                webView = (WebView) ois.readObject();
-//                ois.close();
-//            } catch (FileNotFoundException e) {
-//                Log.d("onCreate", e.getMessage());
-//            } catch (Exception e) {
-//                Log.d("onCreate", e.getMessage());
-//            }
             webView.loadUrl("file:///android_asset/docs/epilepsy.html");
         }
-
-
-
-
     }
 
     @Override
@@ -85,19 +68,4 @@ public class Learn extends AppCompatActivity {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        try {
-            FileOutputStream fos = new FileOutputStream(webView_file);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(webView);
-            oos.close();
-        } catch (FileNotFoundException e) {
-            Log.d("onDestroy", e.getMessage());
-        } catch (Exception e) {
-            Log.d("onDestroy", e.getMessage());
-
-        }
-    }
 }

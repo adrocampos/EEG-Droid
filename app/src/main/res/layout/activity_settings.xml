@@ -13,12 +13,10 @@
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="8dp">
 
-        <EditText
-            android:id="@+id/editText_saveDir"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"/>
+            android:text="@string/settings_username" />
 
         <EditText
             android:id="@+id/editText_username"
@@ -27,6 +25,11 @@
             android:ems="10"
             android:inputType="textPersonName"/>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_userID" />
+
         <EditText
             android:id="@+id/editText_userID"
             android:layout_width="match_parent"
@@ -34,10 +37,24 @@
             android:ems="10"
             android:inputType="textPersonName" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_directory" />
+
+        <EditText
+            android:id="@+id/editText_saveDir"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"/>
+
         <Button
             android:id="@+id/settings_apply_changes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Apply changes" />
+
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
