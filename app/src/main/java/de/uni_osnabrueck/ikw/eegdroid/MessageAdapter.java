@@ -1,6 +1,7 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +21,8 @@ import android.text.Html;
 import android.os.Build;
 
 import org.w3c.dom.Text;
+
+import static android.content.Context.MODE_PRIVATE;
 
 
 public class MessageAdapter extends ArrayAdapter<String[]> {
@@ -78,12 +81,12 @@ public class MessageAdapter extends ArrayAdapter<String[]> {
             tvUser.setVisibility(View.VISIBLE);
             tvUser.setGravity(Gravity.RIGHT);
             tvMsj.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
-            tvMsj.setTextColor(Color.rgb(0, 51, 153));
-
+            tvMsj.setTextColor(mContext.getResources().getColor(R.color.colorPrimary));
         }
 
         ivIma.setImageBitmap(image);
-        tvUser.setText(user);
+        //tvUser.setText(user);
+        tvUser.setText(mContext.getSharedPreferences("userPreferences", MODE_PRIVATE).getString("username", "user"));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             tvMsj.setText(Html.fromHtml(msj, Html.FROM_HTML_MODE_LEGACY));
         } else {

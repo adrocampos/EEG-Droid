@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity
         textViewUserID = (TextView) findViewById(R.id.textViewUserID);
         textViewUserID.setText(userID);
         textViewSaveDir = (TextView) findViewById(R.id.textViewSaveDir);
-        textViewSaveDir.setText(Environment.getExternalStorageDirectory() + saveDir + "/");
+        textViewSaveDir.setText( "Downloads"+ saveDir + "/");
 
         applicationInfo = getApplicationInfo();
         appName.setText(applicationInfo.loadLabel(getPackageManager()));

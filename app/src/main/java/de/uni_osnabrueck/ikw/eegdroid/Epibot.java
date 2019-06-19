@@ -17,6 +17,8 @@ package de.uni_osnabrueck.ikw.eegdroid;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -70,7 +72,7 @@ public class Epibot extends AppCompatActivity {
     private final String TAG = "MainActivity";
     private EditText input;
     private ImageButton mic;
-    private ImageButton conv;
+    private ImageButton send;
     private SpeechToText speechToText;
     private static Conversation conversationService;
     private StreamPlayer player = new StreamPlayer();
@@ -105,7 +107,7 @@ public class Epibot extends AppCompatActivity {
         msgView.setAdapter(msgList);
         input = (EditText) findViewById(R.id.input);
         mic = (ImageButton) findViewById(R.id.mic);
-        conv = (ImageButton) findViewById(R.id.imageButton);
+        send = (ImageButton) findViewById(R.id.send);
         MessageResponse response = null;
         conversationAPI(String.valueOf(input.getText()), context, inputWorkspaceId);
 
@@ -125,8 +127,9 @@ public class Epibot extends AppCompatActivity {
         }
 
         adapter = new MessageAdapter(this, R.layout.adapter_view_layout, messages);
+        msgView.setAdapter(adapter);
         username = getString(R.string.username);
-        botsname = getString(R.string.botsname);;
+        botsname = getString(R.string.botsname);
 
 
         mic.setOnClickListener(new View.OnClickListener() {
@@ -154,7 +157,7 @@ public class Epibot extends AppCompatActivity {
         });
 
 
-        conv.setOnClickListener(new View.OnClickListener() {
+        send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //pressing the [Send] button passes the text to the WCS conversation service
@@ -166,6 +169,12 @@ public class Epibot extends AppCompatActivity {
         });
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if (!isNetworkAvailable()){
+            mic.setEnabled(false);
+            send.setEnabled(false);
+            input.setEnabled(false);
+        }
     }
 
     @Override
@@ -178,7 +187,8 @@ public class Epibot extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(Epibot.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(Epibot.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(Epibot.this, getResources().getText(R.string.epibot_no_internet), Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }
         });
@@ -466,6 +476,13 @@ public class Epibot extends AppCompatActivity {
             Log.d("onDestroy", e.getMessage());
 
         }
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(android.content.Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }
 
