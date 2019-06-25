@@ -94,7 +94,10 @@ public class MainActivity extends AppCompatActivity
 
         applicationInfo = getApplicationInfo();
         appName.setText(applicationInfo.loadLabel(getPackageManager()));
+        appName.setTextColor(getColor(R.color.colorPrimary));
         appVersion.setText(BuildConfig.VERSION_NAME);
+
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         tableRowRecord = (TableRow) findViewById(R.id.tableRowRecord);
         tableRowDisplay = (TableRow) findViewById(R.id.tableRowDisplay);

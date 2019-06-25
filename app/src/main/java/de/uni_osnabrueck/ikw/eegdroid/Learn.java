@@ -1,9 +1,11 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -43,7 +45,18 @@ public class Learn extends AppCompatActivity {
 
        // If no connection: read from local
         } else {
-            webView.loadUrl("file:///android_asset/docs/epilepsy.html");
+
+            AlertDialog.Builder alert = new AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.no_internet))
+                    .setMessage(getString(R.string.no_internet_message));
+
+            alert.setPositiveButton(getString(R.string.access_offline), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    webView.loadUrl("file:///android_asset/docs/epilepsy.html");
+                }
+            });
+            alert.show();
+
         }
     }
 

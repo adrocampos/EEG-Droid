@@ -16,15 +16,15 @@ public class FFTWWrapper {
     public static int NUM_POINTS = 1024;
     private static final int REAL = 0;
     private static final int IMAG = 1;
-    private static boolean FFTW_LOADED=false;
+    private static boolean FFTW_LOADED = false;
 
-    public static Complex[] fftw(double[] x){
-        if(!(FFTW_LOADED)){
+    public static Complex[] fftw(double[] x) {
+        if (!(FFTW_LOADED)) {
             Loader.load(fftw3.class);
             FFTW_LOADED = true;
         }
         int n = x.length;
-        if(n!=NUM_POINTS){
+        if (n != NUM_POINTS) {
             NUM_POINTS = n;
         }
 
@@ -32,7 +32,7 @@ public class FFTWWrapper {
         DoublePointer result = new DoublePointer(2 * NUM_POINTS);
 
         fftw_plan plan = fftw_plan_dft_1d(NUM_POINTS, signal, result,
-                FFTW_FORWARD, (int)FFTW_ESTIMATE);
+                FFTW_FORWARD, (int) FFTW_ESTIMATE);
 
         updateSignal(x, signal);
         fftw_execute(plan);
@@ -44,7 +44,7 @@ public class FFTWWrapper {
     private static void updateSignal(double[] x, DoublePointer signal) {
         /* Generate two sine waves of different frequencies and amplitudes. */
 
-        double[] s = new double[(int)signal.capacity()];
+        double[] s = new double[(int) signal.capacity()];
         for (int i = 0; i < NUM_POINTS; i++) {
             s[2 * i + REAL] = x[i];
             s[2 * i + IMAG] = 0;
@@ -52,8 +52,8 @@ public class FFTWWrapper {
         signal.put(s);
     }
 
-    private static Complex [] convertResult(DoublePointer result) {
-        double[] r = new double[(int)result.capacity()];
+    private static Complex[] convertResult(DoublePointer result) {
+        double[] r = new double[(int) result.capacity()];
         result.get(r);
         Complex[] res = new Complex[NUM_POINTS];
         for (int i = 0; i < NUM_POINTS; i++) {

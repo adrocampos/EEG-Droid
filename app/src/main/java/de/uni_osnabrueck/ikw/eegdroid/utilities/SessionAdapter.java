@@ -7,7 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,20 +19,23 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
-import de.uni_osnabrueck.ikw.eegdroid.ManageSessions;
-import de.uni_osnabrueck.ikw.eegdroid.R;
 
+import de.uni_osnabrueck.ikw.eegdroid.R;
 
 
 public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.PlanetViewHolder> {
 
     ArrayList<File> arrayListFiles;
-    public SessionAdapter(ArrayList<File> arrayListFiles, Context context) { this.arrayListFiles = arrayListFiles; }
+
+    public SessionAdapter(ArrayList<File> arrayListFiles, Context context) {
+        this.arrayListFiles = arrayListFiles;
+    }
+
     private int selectedPos = RecyclerView.NO_POSITION;
 
     @Override
     public SessionAdapter.PlanetViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.session_row,parent,false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.session_row, parent, false);
         PlanetViewHolder viewHolder = new PlanetViewHolder(v);
         return viewHolder;
     }
@@ -65,7 +70,6 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.PlanetVi
                 notifyItemChanged(selectedPos);
                 selectedPos = position;
                 notifyItemChanged(selectedPos);
-
             }
         });
 
@@ -76,7 +80,9 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.PlanetVi
         return arrayListFiles.size();
     }
 
-    public int getSelectedPos() { return selectedPos; }
+    public int getSelectedPos() {
+        return selectedPos;
+    }
 
     public void resetSelectedPos() {
         selectedPos = RecyclerView.NO_POSITION;

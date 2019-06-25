@@ -43,6 +43,9 @@ import java.util.TimerTask;
 
 import de.uni_osnabrueck.ikw.eegdroid.utilities.MyXAxisValueFormatterTime;
 
+/**
+ * Activity for display and reproduce EEG Sessions
+ */
 public class Display extends AppCompatActivity {
 
     private ArrayList<File> arrayListOfFiles;
@@ -104,7 +107,8 @@ public class Display extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingSelected() {}
+            public void onNothingSelected() {
+            }
         };
         nameTextView = (TextView) findViewById(R.id.name_file);
         dateTextView = (TextView) findViewById(R.id.session_date_file);
@@ -228,8 +232,6 @@ public class Display extends AppCompatActivity {
 
         Legend l = chart.getLegend();
         l.setEnabled(false);
-//        l.setForm(Legend.LegendForm.LINE);
-//        l.setTextColor(Color.BLACK);
 
         YAxis leftAxis = chart.getAxisLeft();
         leftAxis.setTextColor(Color.GRAY);
@@ -251,10 +253,9 @@ public class Display extends AppCompatActivity {
 
         timer = new Timer();
 
-        //Dialog for choosing the session to plot
+        // Dialog for choosing the session to plot
         AlertDialog.Builder alert = new AlertDialog.Builder(this)
                 .setTitle(R.string.select_recording)
-                //.setCancelable(false)
                 .setItems(arrayOfNames, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
@@ -373,7 +374,7 @@ public class Display extends AppCompatActivity {
         }
     }
 
-    //Fills lineDataSets with the content of CSV files
+    // Fills lineDataSets with the content of CSV files
     private void loadData(File file) {
 
         lineDataSets = new LineDataSet[nChannels];
@@ -458,14 +459,16 @@ public class Display extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (timer != null){
+        if (timer != null) {
             timer.cancel();
             timer.purge();
         }
     }
 
+    /**
+     * Uses a thread to play the session.
+     */
     class UpdateChart extends TimerTask {
-
         public void run() {
             if (position_x > max_in_X) {
                 timer.cancel();

@@ -1,8 +1,10 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -24,10 +26,21 @@ public class Tutorial extends AppCompatActivity {
         webView = (WebView) findViewById(R.id.webViewTutorial);
         webView.getSettings().setJavaScriptEnabled(true);
 
-        if (isNetworkAvailable()==true) {
+        if (isNetworkAvailable() == true) {
             webView.loadUrl("https://adrocampos.github.io/EEG-Droid/eeg.html");
         } else {
-            webView.loadUrl("file:///android_asset/docs/eeg_tutorial.html");
+
+            AlertDialog.Builder alert = new AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.no_internet))
+                    .setMessage(getString(R.string.no_internet_message));
+
+            alert.setPositiveButton(getString(R.string.access_offline), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    webView.loadUrl("file:///android_asset/docs/eeg_tutorial.html");
+                }
+            });
+            alert.show();
+
         }
     }
 

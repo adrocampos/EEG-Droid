@@ -247,5 +247,8 @@
 
     <string name="epibot_no_internet">Talking with Epibot requires an internet connection.</string>
 
+    <string name="no_internet">No internet connection!</string>
+    <string name="access_offline">Go to offline material</string>
+    <string name="no_internet_message">You are opening the offline material. To access to a better and up-to-date material, please try again with an internet connection.</string>
 
 </resources>

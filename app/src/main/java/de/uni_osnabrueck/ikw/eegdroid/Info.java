@@ -1,8 +1,10 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -27,7 +29,17 @@ public class Info extends AppCompatActivity {
         if (isNetworkAvailable()==true) {
             webView.loadUrl("https://adrocampos.github.io/EEG-Droid/README.html");
         } else {
-            webView.loadUrl("file:///android_asset/docs/readme.html");
+
+            AlertDialog.Builder alert = new AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.no_internet))
+                    .setMessage(getString(R.string.no_internet_message));
+
+            alert.setPositiveButton(getString(R.string.access_offline), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    webView.loadUrl("file:///android_asset/docs/readme.html");
+                }
+            });
+            alert.show();
         }
 
     }

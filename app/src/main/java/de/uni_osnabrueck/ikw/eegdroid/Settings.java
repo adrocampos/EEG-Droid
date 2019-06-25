@@ -58,29 +58,31 @@ public class Settings extends AppCompatActivity {
         editText_userID = (EditText) findViewById(R.id.editText_userID);
         applyChangesButton = (Button) findViewById(R.id.settings_apply_changes);
 
+        editText_saveDir.setText(saveDir);
+        editText_username.setText(username);
+        editText_userID.setText(userID);
+
         //Button to apply changes introduced in EditText
         applyChangesButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
+                //Write the new data in sharedPreferences
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("saveDir", editText_saveDir.getText().toString());
                 editor.putString("username", editText_username.getText().toString());
                 editor.putString("userID", editText_userID.getText().toString());
                 editor.apply();
 
+                //Notifies the user
                 Toast.makeText(getApplicationContext(), R.string.settings_saved, Toast.LENGTH_LONG).show();
 
-                //Intent to restart the App
+                //Restart the App
                 Intent restartIntent = getBaseContext().getPackageManager()
                         .getLaunchIntentForPackage(getBaseContext().getPackageName());
                 restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(restartIntent);
             }
         });
-
-        editText_saveDir.setText(saveDir);
-        editText_username.setText(username);
-        editText_userID.setText(userID);
     }
 
     @Override

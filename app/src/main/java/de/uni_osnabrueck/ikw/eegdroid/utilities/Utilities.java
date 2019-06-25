@@ -27,29 +27,29 @@ import de.uni_osnabrueck.ikw.eegdroid.R;
 
 public class Utilities {
 
-    public static Bitmap getSpectrogramBitmap(double []eegData, int fs, int width, int overlap,
+    public static Bitmap getSpectrogramBitmap(double[] eegData, int fs, int width, int overlap,
                                               String window, boolean mean, double maxHertz,
-                                              boolean fftw){
+                                              boolean fftw) {
         int n = eegData.length;
-        int windowStepSize = width-overlap;
-        int windowSteps = (int)((n-width)/(windowStepSize));
-        int frCount = (int) Math.ceil((double) width/2);
-        double hertzPerVal = (double)fs/width;
-        double yLim = (frCount-1) * hertzPerVal; // hertz
-        if(maxHertz < yLim){
-            frCount = (int) Math.ceil(maxHertz/hertzPerVal);
+        int windowStepSize = width - overlap;
+        int windowSteps = (int) ((n - width) / (windowStepSize));
+        int frCount = (int) Math.ceil((double) width / 2);
+        double hertzPerVal = (double) fs / width;
+        double yLim = (frCount - 1) * hertzPerVal; // hertz
+        if (maxHertz < yLim) {
+            frCount = (int) Math.ceil(maxHertz / hertzPerVal);
         }
-        int minFr = (int) Math.ceil(1/hertzPerVal);
-        double xLim = n/fs; //seconds
-        double [][] spectogramData = new double [frCount][windowSteps+1];
-        double [] fftData = new double[width];
-        Complex [] fftRes = new Complex[width];
+        int minFr = (int) Math.ceil(1 / hertzPerVal);
+        double xLim = n / fs; //seconds
+        double[][] spectogramData = new double[frCount][windowSteps + 1];
+        double[] fftData = new double[width];
+        Complex[] fftRes = new Complex[width];
 
-        for (int count=0, offset=0; count<=windowSteps; count++, offset+=windowStepSize) {
-            for (int j=0; j<width; j++) {
+        for (int count = 0, offset = 0; count <= windowSteps; count++, offset += windowStepSize) {
+            for (int j = 0; j < width; j++) {
                 fftData[j] = eegData[offset + j];
             }
-            switch(window){
+            switch (window) {
                 case "hanning":
                     applyHanningWindow(fftData);
                     break;
@@ -59,104 +59,104 @@ public class Utilities {
                 default:
                     break;
             }
-            if(mean) subtractMean(fftData);
-            if(fftw){
+            if (mean) subtractMean(fftData);
+            if (fftw) {
                 fftRes = FFTWWrapper.fftw(fftData);
             } else {
                 fftRes = CustomFFT.fft(fftData);
             }
-            for (int i=0; i<width; i++){
+            for (int i = 0; i < width; i++) {
                 fftData[i] = fftRes[i].abs();
             }
-            for (int i=minFr; i<frCount; i++){
-                spectogramData[frCount-1-i][count] = fftData[i];
+            for (int i = minFr; i < frCount; i++) {
+                spectogramData[frCount - 1 - i][count] = fftData[i];
             }
         }
         return spectogramBitMap(spectogramData);
     }
 
-    public static Bitmap getSpectrogramBitmap(double []eegData, int fs, int width, int overlap,
-                                              String window, boolean mean, int maxHertz){
+    public static Bitmap getSpectrogramBitmap(double[] eegData, int fs, int width, int overlap,
+                                              String window, boolean mean, int maxHertz) {
         return getSpectrogramBitmap(eegData, fs, width, overlap, window, mean, maxHertz, true);
     }
 
-    public static Bitmap getSpectrogramBitmap(double []eegData, int fs, int width, int overlap,
-                                              String window, boolean mean, boolean fftw){
+    public static Bitmap getSpectrogramBitmap(double[] eegData, int fs, int width, int overlap,
+                                              String window, boolean mean, boolean fftw) {
         return getSpectrogramBitmap(eegData, fs, width, overlap, window, mean, 60, fftw);
     }
 
-    public static Bitmap getSpectrogramBitmap(double []eegData, int fs, int width, int overlap,
-                                              String window, boolean mean){
+    public static Bitmap getSpectrogramBitmap(double[] eegData, int fs, int width, int overlap,
+                                              String window, boolean mean) {
         return getSpectrogramBitmap(eegData, fs, width, overlap, window, mean, 60, true);
     }
 
-    public static void applyHanningWindow(double[] x){
-        int n = x.length-1;
-        for (int i=0; i<x.length; i++){
-            x[i] *= (0.5-0.5*Math.cos(2*i*Math.PI/n));
+    public static void applyHanningWindow(double[] x) {
+        int n = x.length - 1;
+        for (int i = 0; i < x.length; i++) {
+            x[i] *= (0.5 - 0.5 * Math.cos(2 * i * Math.PI / n));
         }
     }
 
-    public static void applyHammingWindow(double[] x){
-        int n = x.length-1;
+    public static void applyHammingWindow(double[] x) {
+        int n = x.length - 1;
         double meanX = mean(x);
-        for (int i=0; i<x.length; i++){
-            x[i] *= (0.54-0.46*Math.cos(2*i*Math.PI/n));
+        for (int i = 0; i < x.length; i++) {
+            x[i] *= (0.54 - 0.46 * Math.cos(2 * i * Math.PI / n));
         }
     }
 
-    public static double mean(double[] x){
+    public static double mean(double[] x) {
         double mean = 0;
-        for (double i_x: x){
+        for (double i_x : x) {
             mean += i_x;
         }
         mean /= x.length;
         return mean;
     }
 
-    public static double max(double[][] x){
+    public static double max(double[][] x) {
         double max = 0;
-        for (double[] row: x){
-            for (double ij_x: row){
-                if(ij_x>max) max = ij_x;
+        for (double[] row : x) {
+            for (double ij_x : row) {
+                if (ij_x > max) max = ij_x;
             }
         }
         return max;
     }
 
-    public static double min(double[][] x){
+    public static double min(double[][] x) {
         double min = Double.POSITIVE_INFINITY;
-        for (double[] row: x){
-            for (double ij_x: row){
-                if(ij_x<min) min = ij_x;
+        for (double[] row : x) {
+            for (double ij_x : row) {
+                if (ij_x < min) min = ij_x;
             }
         }
         return min;
     }
 
-    public static void subtractMean(double[] x){
+    public static void subtractMean(double[] x) {
         double meanX = mean(x);
-        for (int i=0; i<x.length; i++){
+        for (int i = 0; i < x.length; i++) {
             x[i] -= meanX;
         }
     }
 
-    public static Bitmap spectogramBitMap( double [][] spectogram){
+    public static Bitmap spectogramBitMap(double[][] spectogram) {
         // You are using RGBA that's why Config is ARGB.8888
         int w = spectogram[0].length;
         int h = spectogram.length;
         Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        float[] hsv_color = {0,1,1};
-        int[] vector = new int[w*h];
+        float[] hsv_color = {0, 1, 1};
+        int[] vector = new int[w * h];
         double min = min(spectogram);
-        double max = (max(spectogram)-min);
+        double max = (max(spectogram) - min);
         double scaledSpec;
-        for (int y=0; y<h; y++){
-            for (int x=0; x<w; x++){
-                scaledSpec = ((spectogram[y][x]-min)/max);
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                scaledSpec = ((spectogram[y][x] - min) / max);
                 hsv_color[0] = (float) (scaledSpec * 250);
-                hsv_color[2] = (float) -Math.pow(1.6*(scaledSpec-0.5), 4)+1;
-                vector[y*w+x] = Color.HSVToColor(hsv_color);
+                hsv_color[2] = (float) -Math.pow(1.6 * (scaledSpec - 0.5), 4) + 1;
+                vector[y * w + x] = Color.HSVToColor(hsv_color);
             }
         }
 
@@ -166,23 +166,23 @@ public class Utilities {
         return bitmap;
     }
 
-    public static double[] genSinWaves(int[]freqs, int fs, int sec){
-        int N = sec*fs;
+    public static double[] genSinWaves(int[] freqs, int fs, int sec) {
+        int N = sec * fs;
         double[] vals = new double[N];
         float y;
-        for (int i=0; i<N; i++) {
+        for (int i = 0; i < N; i++) {
             y = 0;
-            for (int freq: freqs){
-                y += (float) Math.sin(2*Math.PI*freq*i/fs);
+            for (int freq : freqs) {
+                y += (float) Math.sin(2 * Math.PI * freq * i / fs);
             }
             vals[i] = y;
         }
         return vals;
     }
 
-    public static LineDataSet genLineDataSet(double[] y){
+    public static LineDataSet genLineDataSet(double[] y) {
         List<Entry> entries = new ArrayList<>();
-        for (int i=0; i<y.length; i++) {
+        for (int i = 0; i < y.length; i++) {
             entries.add(new Entry(i, (float) y[i]));
         }
         LineDataSet dataSet = new LineDataSet(entries, "Label"); // add entries to dataset
@@ -190,9 +190,9 @@ public class Utilities {
         return dataSet;
     }
 
-    public static LineDataSet genLineDataSet(double[] x, double[] y){
+    public static LineDataSet genLineDataSet(double[] x, double[] y) {
         List<Entry> entries = new ArrayList<>();
-        for (int i=0; i<y.length; i++) {
+        for (int i = 0; i < y.length; i++) {
             entries.add(new Entry((float) x[i], (float) y[i]));
         }
         LineDataSet dataSet = new LineDataSet(entries, "Label"); // add entries to dataset
@@ -200,10 +200,10 @@ public class Utilities {
         return dataSet;
     }
 
-    public static void fftShift(double []x){
+    public static void fftShift(double[] x) {
         int step = x.length / 2;
         double rem;
-        if(x.length%2==1) {
+        if (x.length % 2 == 1) {
             int shift = (int) Math.ceil((double) x.length / 2);
             double set = x[shift];
             int idx = 0;
@@ -214,19 +214,19 @@ public class Utilities {
                 set = rem;
             }
         } else {
-            for (int idx=0, swapIdx; idx<step; idx++) {
+            for (int idx = 0, swapIdx; idx < step; idx++) {
                 rem = x[idx];
-                swapIdx = (idx+step)%x.length;
+                swapIdx = (idx + step) % x.length;
                 x[idx] = x[swapIdx];
                 x[swapIdx] = rem;
             }
         }
     }
 
-    public static void fftShift(Complex []x){
+    public static void fftShift(Complex[] x) {
         int step = x.length / 2;
         Complex rem;
-        if(x.length%2==1) {
+        if (x.length % 2 == 1) {
             int shift = (int) Math.ceil((double) x.length / 2);
             Complex set = x[shift];
             int idx = 0;
@@ -237,24 +237,24 @@ public class Utilities {
                 set = rem;
             }
         } else {
-            for (int idx=0, swapIdx; idx<step; idx++) {
+            for (int idx = 0, swapIdx; idx < step; idx++) {
                 rem = x[idx];
-                swapIdx = (idx+step)%x.length;
+                swapIdx = (idx + step) % x.length;
                 x[idx] = x[swapIdx];
                 x[swapIdx] = rem;
             }
         }
     }
 
-    public static void testFFTs(){
+    public static void testFFTs() {
         int[] freqs = {10};
         double[] sines = genSinWaves(freqs, 254, 1);
-        Complex[] customFFTRes= CustomFFT.fft(sines);
-        Complex[] FFTWRes= FFTWWrapper.fftw(sines);
+        Complex[] customFFTRes = CustomFFT.fft(sines);
+        Complex[] FFTWRes = FFTWWrapper.fftw(sines);
         // compute magnitude
         for (int i = 0; i < 45; i++) {
-            System.out.println("CUSTOM " + i + ":" + String.format("%4.3f" , customFFTRes[i].abs()));
-            System.out.println("FFTW " + i + ":" + String.format("%4.3f" , FFTWRes[i].abs()));
+            System.out.println("CUSTOM " + i + ":" + String.format("%4.3f", customFFTRes[i].abs()));
+            System.out.println("FFTW " + i + ":" + String.format("%4.3f", FFTWRes[i].abs()));
         }
     }
 
@@ -289,31 +289,31 @@ public class Utilities {
         paint.setAntiAlias(true);
         paint.setColor(Color.BLACK);
         paint.setTextSize(46);
-        int [] sizes = getCurTextLengthInPixels(paint, Integer.toString(1));
+        int[] sizes = getCurTextLengthInPixels(paint, Integer.toString(1));
         int labelHeight = sizes[1];
         paint.setTextSize(40);
-        int absMax = Math.max(maxY,maxX);
+        int absMax = Math.max(maxY, maxX);
 
         sizes = getCurTextLengthInPixels(paint, Integer.toString(absMax));
         int textLength = sizes[0];
         int textHeight = sizes[1];
         int maxLetters = Integer.toString(absMax).length();
-        int letterLength = textLength/maxLetters;
+        int letterLength = textLength / maxLetters;
         int space = 10;
         int tickSize = 20;
 
-        int labelSizeLeft = strokeWidth+2*space+textLength+tickSize;
-        int labelSizeTop = 2*space+labelHeight+textHeight;
-        int labelSizeBottom = strokeWidth+tickSize+3*space+ textHeight + labelHeight;
-        int labelSizeRight = textLength/2 + space;
-        int bottom = labelSizeTop+bitmap.getHeight()+labelSizeBottom;
-        int right = bitmap.getWidth()+labelSizeLeft;
-        int heightOfX = bottom-labelSizeBottom;
-        int widthOfY = labelSizeLeft-strokeWidth;
+        int labelSizeLeft = strokeWidth + 2 * space + textLength + tickSize;
+        int labelSizeTop = 2 * space + labelHeight + textHeight;
+        int labelSizeBottom = strokeWidth + tickSize + 3 * space + textHeight + labelHeight;
+        int labelSizeRight = textLength / 2 + space;
+        int bottom = labelSizeTop + bitmap.getHeight() + labelSizeBottom;
+        int right = bitmap.getWidth() + labelSizeLeft;
+        int heightOfX = bottom - labelSizeBottom;
+        int widthOfY = labelSizeLeft - strokeWidth;
 
 
-        Bitmap output = Bitmap.createBitmap(bitmap.getWidth()+labelSizeLeft + labelSizeRight,
-                bitmap.getHeight()+labelSizeBottom+labelSizeTop, Bitmap.Config.ARGB_8888);
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth() + labelSizeLeft + labelSizeRight,
+                bitmap.getHeight() + labelSizeBottom + labelSizeTop, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(output);
 
         int desTicks = 5;
@@ -324,28 +324,28 @@ public class Utilities {
         String xLabel = "Time in sec";
 
         // DRAW Y AXIS
-        canvas.drawLine(widthOfY, labelSizeTop, widthOfY, bottom-labelSizeBottom+strokeWidth, paint);
+        canvas.drawLine(widthOfY, labelSizeTop, widthOfY, bottom - labelSizeBottom + strokeWidth, paint);
         // DRAW X AXIS
         canvas.drawLine(widthOfY, heightOfX, right, heightOfX, paint);
         String tickLabel;
-        for(int i=0; i < yTicks.length ; i++) {
-            canvas.drawLine(widthOfY-tickSize, heightOfX-yTicks[i][0],widthOfY, heightOfX-yTicks[i][0], paint);
+        for (int i = 0; i < yTicks.length; i++) {
+            canvas.drawLine(widthOfY - tickSize, heightOfX - yTicks[i][0], widthOfY, heightOfX - yTicks[i][0], paint);
             tickLabel = Integer.toString(yTicks[i][1]);
-            canvas.drawText(tickLabel, space+(maxLetters-tickLabel.length())*letterLength, heightOfX-yTicks[i][0]+textHeight/2, paint);
+            canvas.drawText(tickLabel, space + (maxLetters - tickLabel.length()) * letterLength, heightOfX - yTicks[i][0] + textHeight / 2, paint);
         }
 
-        for(int i=0; i < xTicks.length ; i++) {
-            canvas.drawLine(widthOfY+xTicks[i][0], heightOfX, widthOfY+xTicks[i][0], heightOfX+tickSize, paint);
+        for (int i = 0; i < xTicks.length; i++) {
+            canvas.drawLine(widthOfY + xTicks[i][0], heightOfX, widthOfY + xTicks[i][0], heightOfX + tickSize, paint);
             tickLabel = Integer.toString(xTicks[i][1]);
-            canvas.drawText(tickLabel, widthOfY+xTicks[i][0]-tickLabel.length()*letterLength/2, heightOfX+tickSize+space+textHeight, paint);
+            canvas.drawText(tickLabel, widthOfY + xTicks[i][0] - tickLabel.length() * letterLength / 2, heightOfX + tickSize + space + textHeight, paint);
         }
         paint.setTextSize(46);
         canvas.drawText(yLabel, 0, labelHeight + space, paint);
-        canvas.drawText(xLabel, widthOfY+bitmap.getWidth()/2-yLabel.length()*letterLength/2, bottom-space, paint);
+        canvas.drawText(xLabel, widthOfY + bitmap.getWidth() / 2 - yLabel.length() * letterLength / 2, bottom - space, paint);
 
         //plot_array_list(canvas , data_2_plot , labels , "the title" , 0 );
         paint.setStyle(Paint.Style.FILL_AND_STROKE);
-        final Rect rect2 = new Rect(widthOfY+strokeWidth, labelSizeTop+strokeWidth , output.getWidth()-labelSizeRight, heightOfX-strokeWidth);
+        final Rect rect2 = new Rect(widthOfY + strokeWidth, labelSizeTop + strokeWidth, output.getWidth() - labelSizeRight, heightOfX - strokeWidth);
         //canvas.drawRect( rect2, paint);
         canvas.drawBitmap(bitmap, null, rect2, paint);
 
@@ -357,7 +357,7 @@ public class Utilities {
         Paint.FontMetrics tp = this_paint.getFontMetrics();
         Rect rect = new Rect();
         this_paint.getTextBounds(this_text, 0, this_text.length(), rect);
-        int [] sizes = {rect.width(), rect.height()};
+        int[] sizes = {rect.width(), rect.height()};
         return sizes;
     }
 }
