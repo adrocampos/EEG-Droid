@@ -178,6 +178,7 @@
     <string name="default_name">Use default name</string>
 
     <string name="select_recording">Select a session to plot</string>
+    <string name="select_tf_analysis">Select a session to analyse</string>
 
     <string name="session_name">Name: </string>
     <string name="session_date">Date: </string>
@@ -210,8 +211,8 @@
     <string name="separator">,</string>
     <string name="version">Version:</string>
 
-    <string name="intro">Welcome to the EEGDroid App. The goal of this App is allow you to record, plot, storage and manage your own EEG brain signals. With this App you are able to:</string>
-    <string name="outro">Please touch one of the options or open the side menu to start using the App.</string>
+    <string name="intro">Welcome to the EEGDroid App. The goal of this App is allow you to record, plot, storage and manage EEG brain signals. With this App you are able to:</string>
+    <string name="outro">Please select one of the options or open the side menu</string>
     <string name="bugs">Did you found a bug? Please report it to: rrojascampos@uos.de</string>
 
     <string name="activity_name_recordEEG">Record</string>
@@ -223,24 +224,23 @@
     <string name="activity_name_epibot">Ask Epibot</string>
 
 
-    <string name="activity_description_recordEEG">Record EEG sessions: Plot, record and save the EEG signals transmited by the Traumschreiber.</string>
-    <string name="activity_description_play">Play EEG sessions: Reproduce EEG sessions previously taken for the user.</string>
-    <string name="activity_description_manage">Manage sessions: send, rename or delete sessions.</string>
-    <string name="activity_description_TFAnalysis">Time-frequency Analysis: display a Time-Frequency analysis of the selected session.</string>
-    <string name="activity_description_learn">Learn: access to reliable information about Epilepsy.</string>
-    <string name="activity_description_eeg_tutorial">Tutorial: learn how to operate the Traumschreiber and record your own brain activity.</string>
-    <string name="activity_description_epibot">Chat: ask all your questions to our chatbot expert in Epilepsy.</string>
+    <string name="activity_description_recordEEG">Plot, record and save the EEG signals</string>
+    <string name="activity_description_play">Reproduce EEG sessions previously taken</string>
+    <string name="activity_description_manage">Share, rename or delete EEG sessions</string>
+    <string name="activity_description_learn">Access to reliable information about Epilepsy</string>
+    <string name="activity_description_eeg_tutorial">Learn how to operate a Traumschreiber</string>
+    <string name="activity_description_epibot">Ask all your questions about Epilepsy</string>
 
     <string name="botsname">epibot</string>
     <string name="username">username</string>
 
-    <string name="default_username">user</string>
-    <string name="default_userID">12345678</string>
+    <string name="default_username">MaxMustermann</string>
+    <string name="default_userID">1220000430</string>
     <string name="default_folder">/sessions_EEG</string>
     <string name="settings_saved">Settings saved</string>
 
-    <string name="settings_username">Username to identify patient:</string>
-    <string name="settings_userID">User ID providen by the health services:</string>
+    <string name="settings_username">Username to identify user:</string>
+    <string name="settings_userID">Users ID (provided by health services):</string>
     <string name="settings_directory">Folder to save the EEG sessions in Downloads/:</string>
 
     <string name="manage_list">List of EEG sessions found in the folder:</string>

@@ -19,7 +19,7 @@ Table of contents:
 
 <a name="introduction"></a>
 ### Introduction
-In the next paragraphs, we write some answers to the most usually ask questions about seizures & epilepsy. All the information collected here is obtained from scientific sources, and we try to provide reliable and clear information about these topics. This guide leaves a lot of details out and should be considered only as an overview of the matter. If you have doubts about your health or think that you may suffer from seizures or epilepsy, it is necessary to visit a doctor. Only a physician can establish a reliable diagnostic of your symptoms. Early detection of this condition could help to improve the quality of life and minimizing the risk.
+In the next paragraphs, we write some answers to the most usually ask questions about seizures & epilepsy. All the information collected here is obtained from scientific sources, and we try to provide reliable and clear information about these topics. However, this guide leaves a lot of details out and should be considered only as an overview of the matter. If you have doubts about your health or think that you may suffer from seizures or epilepsy, you should visit a doctor. Only a physician can establish a reliable diagnostic of your symptoms. Early detection of this condition could help to improve the quality of life and minimize the risk of further complications.
 
 <a name="what_is_a_seizure"></a>
 ### What is a seizure?

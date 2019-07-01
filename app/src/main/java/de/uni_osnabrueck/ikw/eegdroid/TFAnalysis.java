@@ -97,7 +97,7 @@ public class TFAnalysis extends AppCompatActivity {
 
         //Dialog for choosing the session to plot
         AlertDialog.Builder alert = new AlertDialog.Builder(this)
-                .setTitle(R.string.select_recording)
+                .setTitle(R.string.select_tf_analysis)
                 .setItems(arrayOfNames, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
