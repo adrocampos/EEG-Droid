@@ -14,5 +14,5 @@ include:
   - CONTRIBUTING.md
   - ISSUE_TEMPLATE.md
   - PULL_REQUEST_TEMPLATE.md
-  - epilepsy.md
-  - eeg.md
+  - learn.md
+  - tutorial.md

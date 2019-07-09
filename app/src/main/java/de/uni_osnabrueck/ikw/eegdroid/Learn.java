@@ -41,7 +41,7 @@ public class Learn extends AppCompatActivity {
 
         // If connection: load newest info
         if (isNetworkAvailable()==true) {
-            webView.loadUrl("https://adrocampos.github.io/EEG-Droid/epilepsy.html");
+            webView.loadUrl("https://adrocampos.github.io/EEG-Droid/learn.html");
 
        // If no connection: read from local
         } else {
@@ -52,7 +52,7 @@ public class Learn extends AppCompatActivity {
 
             alert.setPositiveButton(getString(R.string.access_offline), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-                    webView.loadUrl("file:///android_asset/docs/epilepsy.html");
+                    webView.loadUrl("file:///android_asset/docs/learn.html");
                 }
             });
             alert.show();

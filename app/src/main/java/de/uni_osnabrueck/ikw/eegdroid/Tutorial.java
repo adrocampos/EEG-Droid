@@ -27,7 +27,7 @@ public class Tutorial extends AppCompatActivity {
         webView.getSettings().setJavaScriptEnabled(true);
 
         if (isNetworkAvailable() == true) {
-            webView.loadUrl("https://adrocampos.github.io/EEG-Droid/eeg.html");
+            webView.loadUrl("https://adrocampos.github.io/EEG-Droid/tutorial.html");
         } else {
 
             AlertDialog.Builder alert = new AlertDialog.Builder(this)
@@ -36,7 +36,7 @@ public class Tutorial extends AppCompatActivity {
 
             alert.setPositiveButton(getString(R.string.access_offline), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-                    webView.loadUrl("file:///android_asset/docs/eeg_tutorial.html");
+                    webView.loadUrl("file:///android_asset/docs/tutorial.html");
                 }
             });
             alert.show();
