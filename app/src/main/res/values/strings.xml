@@ -234,7 +234,7 @@
     <string name="botsname">epibot</string>
     <string name="username">username</string>
 
-    <string name="default_username">MaxMustermann</string>
+    <string name="default_username">User</string>
     <string name="default_userID">1220000430</string>
     <string name="default_folder">/sessions_EEG</string>
     <string name="settings_saved">Settings saved</string>
@@ -251,4 +251,7 @@
     <string name="access_offline">Go to offline material</string>
     <string name="no_internet_message">You are opening the offline material. To access to a better and up-to-date material, please try again with an internet connection.</string>
 
+    <string name="confirmation_close_record"> If Record is closed, the recording will be interrupted and the saved data will be lost. Do you want to proceed?</string>
+
+    <string name="confirmation_disconnect">Do you want to disconnect the Traumschreiber?</string>
 </resources>

@@ -572,12 +572,52 @@ public class Record extends AppCompatActivity {
                 Intent intent = new Intent(this, DeviceScanActivity.class);
                 startActivityForResult(intent, 1200);
             } else {
-                mBluetoothLeService.disconnect();
+
+                //Handles the Dialog to confirm the closing of the activity
+                AlertDialog.Builder alert = new AlertDialog.Builder(this)
+                        .setTitle(R.string.dialog_title)
+                        .setMessage(getResources().getString(R.string.confirmation_disconnect));
+                alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        mBluetoothLeService.disconnect();
+                    }
+                });
+                alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // close dialog
+                        dialog.cancel();
+                    }
+                });
+                alert.show();
             }
         }
 
         if (id == android.R.id.home) {
-            onBackPressed();
+
+            if (recording) {
+
+                //Handles the Dialog to confirm the closing of the activity
+                AlertDialog.Builder alert = new AlertDialog.Builder(this)
+                        .setTitle(R.string.dialog_title)
+                        .setMessage(getResources().getString(R.string.confirmation_close_record));
+                alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        onBackPressed();
+                    }
+                });
+                alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // close dialog
+                        dialog.cancel();
+                    }
+                });
+                alert.show();
+            } else {
+                onBackPressed();
+            }
+
             return true;
         }
         return super.onOptionsItemSelected(item);
