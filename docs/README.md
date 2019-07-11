@@ -13,6 +13,11 @@ We integrate different apps in one single project:
 ## Screenshots
 
 ![app_architecture](./images/architecture.png)
-
+![main_activity](./images/main_menu.png)
+![record_activity](./images/record_recording.png)
+![play_activity](./images/play_speeds.png)
+![manage_activity](./images/manage_share.png)
+![learn_activity](./images/learn_more.png)
+![settings_activity](./images/settings_content.png)
 
 *A project of the [Neuroinformatics Research Group](https://www.ikw.uni-osnabrueck.de/en/research_groups/neuroinformatics/overview.html) of the [Institute of Cognitive Science](https://www.ikw.uni-osnabrueck.de/en/home.html) at the [University of Osnabrück](https://www.uni-osnabrueck.de/en/home.html).*
