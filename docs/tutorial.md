@@ -22,7 +22,7 @@ Electroencephalography, shortened as EEG, it is an electrophysiological monitori
 <a name="how_eeg_works"></a>
 ### How EEG works?
 A typical EEG display graphs voltages on the vertical axis and time on the horizontal axis, providing a near real-time display of ongoing cerebral activity.
-![eeg_example](./images/eeg_example.png)
+![eeg_example](./images/play_normal.png)
 To record the signals, EEG uses the principle of differential amplification. The recording is made from voltage differences between different points, using a pair of electrodes that compares one active site with another site of reference. Through the measure of differences in electrical potentials are discernible EEG waveforms generated [[6](#bib)].
 
 <a name="why_is_eeg_important"></a>
