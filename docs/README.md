@@ -16,6 +16,7 @@ We integrate different apps in one single project:
 <img src="https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/docs/images/main_menu.png" height="500">
 <img src="https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/docs/images/record_recording.png" height="500">
 <img src="https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/docs/images/manage_share.png" height="500">
+<img src="https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/docs/images/epibot_content.png" height="500">
 <img src="https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/docs/images/learn_more.png" height="500">
 <img src="https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/docs/images/settings_content.png" height="500">
 
