@@ -36,7 +36,7 @@ public class Info extends AppCompatActivity {
 
             alert.setPositiveButton(getString(R.string.access_offline), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-                    webView.loadUrl("file:///android_asset/docs/readme.html");
+                    webView.loadUrl("file:///android_asset/docs/README.html");
                 }
             });
             alert.show();
