@@ -17,7 +17,7 @@ The use of the Traumschreiber is still experimental, however, we have found good
 
 <a name="what_is_eeg"></a>
 ### What is EEG?
-Electroencephalography, shortened as EEG, it is an electrophysiological monitoring method for the brain. In other words, is a test used to record the electrical activity of the brain neurons. It is noninvasive and requires the use of electrodes placed along the scalp. Those electrodes measure the postsynaptic potentials of the neurons. [[3](#bib)]
+Electroencephalography, shortened as EEG, it is an electrophysiological monitoring method for the brain. In other words, it is a test used to record the electrical activity of the neurons in the brain. It is noninvasive and requires the use of electrodes placed along the scalp. Those electrodes measure the postsynaptic potentials of the neurons. [[3](#bib)]
 
 <a name="how_eeg_works"></a>
 ### How EEG works?
@@ -25,10 +25,12 @@ A typical EEG display graphs voltages on the vertical axis and time on the horiz
 ![eeg_example](./images/play_normal.png)
 To record the signals, EEG uses the principle of differential amplification. The recording is made from voltage differences between different points, using a pair of electrodes that compares one active site with another site of reference. Through the measure of differences in electrical potentials are discernible EEG waveforms generated [[6](#bib)].
 
+
+
 <a name="why_is_eeg_important"></a>
 ### Why is EEG important?
 Why is EEG important?
-EEG is the most useful diagnostic procedure for Epilepsy. Epilepsy causes abnormalities in the EEG readings and during a stroke, a special behavior in the brain signals is recorded [[4](#bib)]. EEG confirms the presence of abnormal electrical activity and gives information regarding the type of seizure disorder and the location of the seizure focus [[5](#bib)]. Epilepsy allows answering the following questions: Does the patient have epilepsy? Where is the epileptogenic zone of the brain? How good is therapy?
+EEG is the most useful diagnostic procedure for Epilepsy. Epilepsy causes abnormalities in the EEG readings, and during a stroke, unusual behavior in the brain signals is recorded [[4](#bib)]. EEG confirms the presence of abnormal electrical activity and gives information regarding the type of seizure disorder and the location of the seizure focus [[5](#bib)]. Epilepsy allows answering the following questions: Does the patient have epilepsy? Where is the epileptogenic zone of the brain? How good is therapy?
 
 <a name="how_use_traumschreiber"></a>
 ### How can I use the Traumschreiber?

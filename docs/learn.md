@@ -23,8 +23,7 @@ In the next paragraphs, we write some answers to the most usually ask questions 
 
 <a name="what_is_a_seizure"></a>
 ### What is a seizure?
-An epileptic seizure is a transient occurrence of signs and/or symptoms due
-to abnormal excessive or synchronous neuronal activity in the brain [[3](#bib)]. The period during which the seizure actually occurs is called the ictus period. The aura is the earliest part of the seizure recognized (and often the only part remembered by the patient) and it could act as a warning. The period immediately after a seizure is the postictical period [[10](#bib)].
+An epileptic seizure is a transient occurrence of signs and symptoms due to abnormal excessive or synchronous neuronal activity in the brain [[3](#bib)]. The period during which the seizure occurs is called the ictus period. The aura is the earliest part of the seizure recognized (and often the only part remembered by the patient), and it could act as a warning. The period immediately after a seizure is the postictical period [[10](#bib)].
 
 <a name="what_is_not_a_seizure"></a>
 ### What is not a seizure? [[1](#bib)]
