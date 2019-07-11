@@ -6,16 +6,15 @@ An architecture was design with a total of 10 different modules. In this archite
 
 ## Important links
 We integrate different apps in one single project:
-- https://github.com/StatefulMind/eegdroid/
-- https://github.com/mvidaldp/Traumschreiber-mobileEEG
-- [Download the app](https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/EEGDroid.apk) 
+- [https://github.com/StatefulMind/eegdroid/](https://github.com/StatefulMind/eegdroid/)
+- [https://github.com/mvidaldp/Traumschreiber-mobileEEG](https://github.com/mvidaldp/Traumschreiber-mobileEEG)
+- [Download the app](https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/EEGDroid.apk)
 
 ## Screenshots
 
 <img src="https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/docs/images/architecture.png" height="500">
 <img src="https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/docs/images/main_menu.png" height="500">
 <img src="https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/docs/images/record_recording.png" height="500">
-<img src="https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/docs/images/play_speeds.png "width="500">
 <img src="https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/docs/images/manage_share.png" height="500">
 <img src="https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/docs/images/learn_more.png" height="500">
 <img src="https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/docs/images/settings_content.png" height="500">
