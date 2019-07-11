@@ -1,4 +1,4 @@
-## Learn about Epilepsy
+## EEG tutorial
 
 Table of contents:
 - [What is the Traumschreiber?](#what_is_traumschreiber)
