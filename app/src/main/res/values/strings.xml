@@ -237,11 +237,15 @@
     <string name="default_username">User</string>
     <string name="default_userID">1220000430</string>
     <string name="default_folder">/sessions_EEG</string>
+    <string name="default_IP">192.168.1.125</string>
+    <string name="default_port">65432</string>
     <string name="settings_saved">Settings saved</string>
 
     <string name="settings_username">Username to identify user:</string>
     <string name="settings_userID">Users ID (provided by health services):</string>
     <string name="settings_directory">Folder to save the EEG sessions in Downloads/:</string>
+    <string name="settings_IP">IP address to cast:</string>
+    <string name="settings_port">Port to cast:</string>
 
     <string name="manage_list">List of EEG sessions found in the folder:</string>
 
@@ -254,4 +258,9 @@
     <string name="confirmation_close_record"> If Record is closed, the recording will be interrupted and the saved data will be lost. Do you want to proceed?</string>
 
     <string name="confirmation_disconnect">Do you want to disconnect the Traumschreiber?</string>
+
+    <string name="menu_record_connect">Connect</string>
+    <string name="menu_record_cast">Cast</string>
+
+
 </resources>

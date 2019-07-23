@@ -33,9 +33,13 @@ public class Settings extends AppCompatActivity {
     private String saveDir;
     private String username;
     private String userID;
+    private String IP;
+    private String port;
     private EditText editText_saveDir;
     private EditText editText_username;
     private EditText editText_userID;
+    private EditText editText_IP;
+    private EditText editText_port;
     private Button applyChangesButton;
     private SharedPreferences sharedPreferences;
 
@@ -52,15 +56,21 @@ public class Settings extends AppCompatActivity {
         saveDir = sharedPreferences.getString("saveDir", getResources().getString(R.string.default_folder));
         username = sharedPreferences.getString("username", getResources().getString(R.string.default_username));
         userID = sharedPreferences.getString("userID", getResources().getString(R.string.default_userID));
+        IP = sharedPreferences.getString("IP", "192.168.1.125");
+        port = sharedPreferences.getString("port", "65432");
 
         editText_saveDir = (EditText) findViewById(R.id.editText_saveDir);
         editText_username = (EditText) findViewById(R.id.editText_username);
         editText_userID = (EditText) findViewById(R.id.editText_userID);
+        editText_IP = (EditText) findViewById(R.id.editText_IP);
+        editText_port = (EditText) findViewById(R.id.editText_port);
         applyChangesButton = (Button) findViewById(R.id.settings_apply_changes);
 
         editText_saveDir.setText(saveDir);
         editText_username.setText(username);
         editText_userID.setText(userID);
+        editText_IP.setText(IP);
+        editText_port.setText(port);
 
         //Button to apply changes introduced in EditText
         applyChangesButton.setOnClickListener(new View.OnClickListener() {
@@ -71,6 +81,8 @@ public class Settings extends AppCompatActivity {
                 editor.putString("saveDir", editText_saveDir.getText().toString());
                 editor.putString("username", editText_username.getText().toString());
                 editor.putString("userID", editText_userID.getText().toString());
+                editor.putString("IP", editText_IP.getText().toString());
+                editor.putString("port", editText_port.getText().toString());
                 editor.apply();
 
                 //Notifies the user
@@ -111,6 +123,8 @@ public class Settings extends AppCompatActivity {
                         editText_saveDir.setText(getResources().getString(R.string.default_folder));
                         editText_username.setText(getResources().getString(R.string.default_username));
                         editText_userID.setText(getResources().getString(R.string.default_userID));
+                        editText_IP.setText(getResources().getString(R.string.default_IP));
+                        editText_port.setText(getResources().getString(R.string.default_port));
                     }
                 });
                 alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {

@@ -50,6 +50,31 @@
             android:ems="10"
             android:inputType="textPersonName"/>
 
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_IP" />
+
+        <EditText
+            android:id="@+id/editText_IP"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_port" />
+
+        <EditText
+            android:id="@+id/editText_port"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number" />
+
         <Button
             android:id="@+id/settings_apply_changes"
             android:layout_width="match_parent"

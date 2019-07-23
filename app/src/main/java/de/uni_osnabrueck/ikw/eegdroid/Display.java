@@ -74,6 +74,7 @@ public class Display extends AppCompatActivity {
     private CheckBox chckbx_ch7;
     private CheckBox chckbx_ch8;
     private boolean playing = false;
+
     private TimerTask updateChart;
 
 

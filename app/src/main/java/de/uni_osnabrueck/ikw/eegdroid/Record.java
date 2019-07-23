@@ -45,8 +45,15 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -148,7 +155,13 @@ public class Record extends AppCompatActivity {
     private Thread thread;
     private long plotting_start;
     private boolean deviceConnected = false;
+    private boolean casting = false;
     private Menu menu;
+    private Socket socket;
+    private PrintWriter out;
+    private BufferedReader in;
+    private List<Float> microV;
+    private PrimeThread caster;
 
 
     // Code to manage Service lifecycle.
@@ -174,7 +187,7 @@ public class Record extends AppCompatActivity {
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             if (mBluetoothLeService != null) {
-            mBluetoothLeService = null;
+                mBluetoothLeService = null;
             }
         }
     };
@@ -277,7 +290,7 @@ public class Record extends AppCompatActivity {
                 long last_data = System.currentTimeMillis();
 
                 enableCheckboxes();
-                List<Float> microV = transData(intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA));
+                microV = transData(intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA));
                 displayData(microV);
                 if (plotting) {
                     long plotting_elapsed = last_data - plotting_start;
@@ -296,7 +309,7 @@ public class Record extends AppCompatActivity {
                 String content = resolution + hertz;
                 mDataResolution.setText(content);
                 //setConnectionStatus(true);
-                if (recording){
+                if (recording) {
                     mConnectionState.setText(R.string.recording);
                     mConnectionState.setTextColor(Color.RED);
                 } else {
@@ -566,6 +579,7 @@ public class Record extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
         if (id == R.id.scan) {
             if (!deviceConnected) {
@@ -619,6 +633,25 @@ public class Record extends AppCompatActivity {
             }
 
             return true;
+        }
+
+        if (id == R.id.cast) {
+
+            MenuItem menuItemCast = menu.findItem(R.id.cast);
+
+            if (!casting ) {
+                casting = true;
+                caster = new PrimeThread();
+                caster.start();
+                menuItemCast.setIcon(R.drawable.ic_cast_blue_24dp);
+
+            } else {
+                casting = false;
+                caster.staph();
+                menuItemCast.setIcon(R.drawable.ic_cast_white_24dp);
+
+            }
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -721,7 +754,6 @@ public class Record extends AppCompatActivity {
             }
         }
     };
-
 
 
     private void readGattCharacteristic(List<BluetoothGattService> gattServices) {
@@ -1149,7 +1181,7 @@ public class Record extends AppCompatActivity {
         }).start();
     }
 
-    private void buttons_nodata(){
+    private void buttons_nodata() {
         imageButtonRecord.setImageResource(R.drawable.ic_fiber_manual_record_pink_24dp);
         imageButtonRecord.setEnabled(false);
         imageButtonSave.setImageResource(R.drawable.ic_save_gray_24dp);
@@ -1159,7 +1191,7 @@ public class Record extends AppCompatActivity {
 
     }
 
-    private void buttons_prerecording(){
+    private void buttons_prerecording() {
         imageButtonRecord.setImageResource(R.drawable.ic_fiber_manual_record_red_24dp);
         imageButtonRecord.setEnabled(true);
         imageButtonSave.setImageResource(R.drawable.ic_save_gray_24dp);
@@ -1186,9 +1218,10 @@ public class Record extends AppCompatActivity {
 
     }
 
-    private void setConnectionStatus(boolean b){
+    private void setConnectionStatus(boolean b) {
         MenuItem menuItem = menu.findItem(R.id.scan);
-        if (b){
+        MenuItem menuItemCast = menu.findItem(R.id.cast);
+        if (b) {
             deviceConnected = true;
             menuItem.setIcon(R.drawable.ic_bluetooth_connected_blue_24dp);
             mConnectionState.setText(R.string.device_connected);
@@ -1196,6 +1229,7 @@ public class Record extends AppCompatActivity {
             switch_plots.setEnabled(true);
             gain_spinner.setEnabled(true);
             viewDeviceAddress.setText(mDeviceAddress);
+            menuItemCast.setVisible(true);
 
         } else {
             deviceConnected = false;
@@ -1206,8 +1240,59 @@ public class Record extends AppCompatActivity {
             switch_plots.setEnabled(false);
             gain_spinner.setEnabled(false);
             viewDeviceAddress.setText(R.string.no_address);
-
+            menuItemCast.setVisible(false);
         }
     }
+
+
+    class PrimeThread extends Thread {
+
+        private volatile boolean exit = false;
+        String IP = getSharedPreferences("userPreferences", 0).getString("IP", getResources().getString(R.string.default_IP));
+        String port = getSharedPreferences("userPreferences", 0).getString("port", getResources().getString(R.string.default_port));
+        int portint = Integer.parseInt(port);
+
+        public void run() {
+
+            while (!exit) {
+                try {
+                    try {
+                        socket = new Socket(IP, portint);
+                        out = new PrintWriter(socket.getOutputStream(), true);
+                        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+                        while (true) {
+                            if (microV != null) {
+                                String toSend = "";
+                                for (Float value : microV) {
+                                    toSend = toSend + value + ";";
+                                }
+                                out.println(toSend);
+                            }
+                        }
+
+                    } catch (UnknownHostException e) {
+                        System.out.println("Unknown host: 192.168.1.125");
+                        System.out.println(e.getMessage());
+                        System.exit(1);
+                    } catch (IOException e) {
+                        System.out.println("No I/O");
+                        System.out.println(e.getMessage());
+                        System.exit(1);
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
+        public void staph() {
+            exit = true;
+        }
+
+    }
+
 
 }
