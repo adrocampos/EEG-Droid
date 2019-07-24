@@ -640,10 +640,17 @@ public class Record extends AppCompatActivity {
             MenuItem menuItemCast = menu.findItem(R.id.cast);
 
             if (!casting ) {
-                casting = true;
-                caster = new PrimeThread();
-                caster.start();
-                menuItemCast.setIcon(R.drawable.ic_cast_blue_24dp);
+
+                try {
+
+                    casting = true;
+                    caster = new PrimeThread();
+                    caster.start();
+                    menuItemCast.setIcon(R.drawable.ic_cast_blue_24dp);
+                } catch (Exception e) {
+
+                }
+
 
             } else {
                 casting = false;
@@ -1274,11 +1281,20 @@ public class Record extends AppCompatActivity {
                     } catch (UnknownHostException e) {
                         System.out.println("Unknown host: 192.168.1.125");
                         System.out.println(e.getMessage());
-                        System.exit(1);
+                        Toast.makeText(
+                                getApplicationContext(),
+                                "ERROR: Unknown host " + getSharedPreferences("userPreferences", MODE_PRIVATE).getString("IP", "192.168.1.125"),
+                                Toast.LENGTH_LONG
+                        ).show();
+
                     } catch (IOException e) {
                         System.out.println("No I/O");
+                        Toast.makeText(
+                                getApplicationContext(),
+                                "ERROR: NO I/O",
+                                Toast.LENGTH_LONG
+                        ).show();
                         System.out.println(e.getMessage());
-                        System.exit(1);
                     }
 
                 } catch (Exception e) {
