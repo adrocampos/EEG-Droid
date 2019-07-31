@@ -161,7 +161,7 @@ public class Record extends AppCompatActivity {
     private PrintWriter out;
     private BufferedReader in;
     private List<Float> microV;
-    private PrimeThread caster;
+    private CastThread caster;
 
 
     // Code to manage Service lifecycle.
@@ -639,18 +639,12 @@ public class Record extends AppCompatActivity {
 
             MenuItem menuItemCast = menu.findItem(R.id.cast);
 
-            if (!casting ) {
+            if (!casting) {
 
-                try {
-
-                    casting = true;
-                    caster = new PrimeThread();
-                    caster.start();
-                    menuItemCast.setIcon(R.drawable.ic_cast_blue_24dp);
-                } catch (Exception e) {
-
-                }
-
+                casting = true;
+                caster = new CastThread();
+                caster.start();
+                menuItemCast.setIcon(R.drawable.ic_cast_blue_24dp);
 
             } else {
                 casting = false;
@@ -1252,49 +1246,40 @@ public class Record extends AppCompatActivity {
     }
 
 
-    class PrimeThread extends Thread {
+    class CastThread extends Thread {
 
         private volatile boolean exit = false;
         String IP = getSharedPreferences("userPreferences", 0).getString("IP", getResources().getString(R.string.default_IP));
         String port = getSharedPreferences("userPreferences", 0).getString("port", getResources().getString(R.string.default_port));
-        int portint = Integer.parseInt(port);
 
         public void run() {
 
             while (!exit) {
                 try {
                     try {
-                        socket = new Socket(IP, portint);
+                        socket = new Socket(IP, Integer.parseInt(port));
                         out = new PrintWriter(socket.getOutputStream(), true);
                         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                        Log.d("CastThread", "sending");
 
                         while (true) {
                             if (microV != null) {
                                 String toSend = "";
+                                //microV.size() == 8
                                 for (Float value : microV) {
-                                    toSend = toSend + value + ";";
+                                    toSend = toSend + value + ",";
                                 }
+                                Log.d("LENMICRO", Integer.toString(toSend.length()));
                                 out.println(toSend);
                             }
                         }
 
+
                     } catch (UnknownHostException e) {
-                        System.out.println("Unknown host: 192.168.1.125");
-                        System.out.println(e.getMessage());
-                        Toast.makeText(
-                                getApplicationContext(),
-                                "ERROR: Unknown host " + getSharedPreferences("userPreferences", MODE_PRIVATE).getString("IP", "192.168.1.125"),
-                                Toast.LENGTH_LONG
-                        ).show();
+                        Log.d("CastThread", "unknown host " + e.getMessage());
 
                     } catch (IOException e) {
-                        System.out.println("No I/O");
-                        Toast.makeText(
-                                getApplicationContext(),
-                                "ERROR: NO I/O",
-                                Toast.LENGTH_LONG
-                        ).show();
-                        System.out.println(e.getMessage());
+                        Log.d("CastThread", "no I/O " + e.getMessage());
                     }
 
                 } catch (Exception e) {
@@ -1305,7 +1290,18 @@ public class Record extends AppCompatActivity {
         }
 
         public void staph() {
+
+            Log.d("CastThread", "Stopped");
             exit = true;
+            if (out != null) {
+                out.close();
+            }
+            //maybe when activity closes
+//            try {
+//                socket.close();
+//            } catch (IOException e){
+//            }
+
         }
 
     }
