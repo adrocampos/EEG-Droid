@@ -13,12 +13,6 @@ Content of learn activity and tutorial activity:
 - [Learn activity](https://adrocampos.github.io/EEG-Droid/learn.html)
 - [Tutorial activity](https://adrocampos.github.io/EEG-Droid/tutorial.html)
 
-Downloads:
-- [Download the app](https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/EEGDroid.apk)
-- [Download the complete report]
-
-
-
 ## Screenshots
 
 <img src="https://raw.githubusercontent.com/adrocampos/EEG-Droid/master/docs/images/architecture.png" height="500">
