@@ -177,10 +177,16 @@
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/classAnalysis.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/gradle_models.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/gradle_models.ser" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/app/app.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Display.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Display.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/MainActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/ManageSessions.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/ManageSessions.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/library_epibot/library_epibot.iml" beforeDir="false" afterPath="$PROJECT_DIR$/library_epibot/library_epibot.iml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -198,10 +204,46 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Record.java">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="726">
-              <caret line="1298" column="22" selection-start-line="1298" selection-start-column="22" selection-end-line="1298" selection-end-column="22" />
+            <state relative-caret-position="1050">
+              <caret line="127" column="77" selection-start-line="127" selection-start-column="77" selection-end-line="127" selection-end-column="77" />
+              <folding>
+                <element signature="e#5776#5812#0" expanded="true" />
+                <element signature="e#6198#6999#0" expanded="true" />
+                <element signature="e#6601#6637#0" expanded="true" />
+                <element signature="e#6998#6999#0" expanded="true" />
+                <element signature="e#10011#10047#0" expanded="true" />
+                <element signature="e#10652#10688#0" expanded="true" />
+                <element signature="e#12047#12048#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Display.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="161">
+              <caret line="85" column="50" selection-start-line="85" selection-start-column="50" selection-end-line="85" selection-end-column="50" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/ManageSessions.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="270">
+              <caret line="48" column="58" selection-start-line="48" selection-start-column="58" selection-end-line="48" selection-end-column="58" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="665">
+              <caret line="263" column="80" selection-start-line="263" selection-start-column="80" selection-end-line="263" selection-end-column="80" />
             </state>
           </provider>
         </entry>
@@ -217,7 +259,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>main_data</find>
       <find>plot</find>
       <find>please</find>
       <find>tableRow</find>
@@ -240,13 +281,14 @@
       <find>record</find>
       <find>recording</find>
       <find>shared</find>
-      <find>toast</find>
       <find>getP</find>
       <find>recei</find>
       <find>caster</find>
       <find>PrimeThread</find>
       <find>flush</find>
       <find>getOutputStream</find>
+      <find>REQUEST_WRITE_EXTERNAL_STORAGE</find>
+      <find>toast</find>
     </findStrings>
   </component>
   <component name="GenerateSignedApkSettings">
@@ -261,7 +303,6 @@
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_info.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_tutorial.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/adapter_view_layout.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/ManageSessions.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/xml/user_settings.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/menu/settings_menu.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_manage_sessions.xml" />
@@ -277,7 +318,6 @@
         <option value="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/utilities/Utilities.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/utilities/ZoomableImageView.java" />
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/MainActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/TFAnalysis.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/content_main.xml" />
@@ -287,11 +327,13 @@
         <option value="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Info.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/menu/record_menu.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/menu/bluethoot_conect.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Display.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Settings.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Record.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/ManageSessions.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Display.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/MainActivity.java" />
       </list>
     </option>
   </component>
@@ -307,10 +349,49 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="ProjectPane" />
       <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="AndroidView">
         <subPane>
           <expand>
+            <path>
+              <item name="EEG-Droid" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+            </path>
+            <path>
+              <item name="EEG-Droid" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+              <item name="manifests" type="f94875db:AndroidManifestsGroupNode" />
+            </path>
+            <path>
+              <item name="EEG-Droid" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
+            </path>
+            <path>
+              <item name="EEG-Droid" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
+              <item name="eegdroid" type="cbb59c9e:AndroidPsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="EEG-Droid" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+              <item name="res" type="d4f16f75:AndroidResFolderNode" />
+            </path>
+            <path>
+              <item name="EEG-Droid" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+              <item name="res" type="d4f16f75:AndroidResFolderNode" />
+              <item name="menu" type="ddeffd01:AndroidResFolderTypeNode" />
+            </path>
+            <path>
+              <item name="EEG-Droid" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="feadf853:AndroidModuleNode" />
+              <item name="res" type="d4f16f75:AndroidResFolderNode" />
+              <item name="values" type="ddeffd01:AndroidResFolderTypeNode" />
+            </path>
             <path>
               <item name="EEG-Droid" type="1abcf292:AndroidViewProjectNode" />
               <item name="Gradle Scripts" type="ae0cef3a:AndroidBuildScriptsGroupNode" />
@@ -319,8 +400,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="ProjectPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -451,7 +530,7 @@
       <window_info anchor="bottom" id="Event Log" order="5" sideWeight="0.50183153" side_tool="true" weight="0.36020407" />
       <window_info anchor="bottom" id="Version Control" order="6" weight="0.32959184" />
       <window_info active="true" anchor="bottom" id="Build" order="7" sideWeight="0.4993895" visible="true" weight="0.15816326" />
-      <window_info anchor="bottom" id="Android Profiler" order="8" show_stripe_button="false" weight="0.32959184" />
+      <window_info anchor="bottom" id="Android Profiler" order="8" weight="0.32959184" />
       <window_info anchor="bottom" id="Find" order="9" weight="0.32959184" />
       <window_info anchor="right" id="Device File Explorer" order="0" side_tool="true" />
       <window_info anchor="right" id="Capture Analysis" order="1" />
@@ -645,13 +724,6 @@
     <entry file="file://$PROJECT_DIR$/app/src/main/res/mipmap-anydpi-v26/ic_launcher2.xml">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/DeviceScanActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="28" selection-start-line="28" selection-end-line="30" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/values/drawables.xml">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -762,35 +834,6 @@
     <entry file="file://$PROJECT_DIR$/app/build.gradle">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="29" column="45" lean-forward="true" selection-start-line="29" selection-start-column="45" selection-end-line="29" selection-end-column="45" />
-        </state>
-      </provider>
-      <provider editor-type-id="android-manifest" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Display.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="237">
-          <caret line="282" column="30" selection-start-line="282" selection-start-column="24" selection-end-line="282" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/ManageSessions.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="569">
-          <caret line="191" column="33" selection-start-line="170" selection-start-column="20" selection-end-line="191" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="386">
-          <caret line="245" column="55" selection-start-line="245" selection-start-column="55" selection-end-line="245" selection-end-column="55" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml">
       <provider editor-type-id="text-editor">
         <state relative-caret-position="492">
@@ -810,13 +853,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="209">
-          <caret line="63" column="49" selection-start-line="63" selection-start-column="49" selection-end-line="63" selection-end-column="80" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/BluetoothLeService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="219">
@@ -824,10 +860,62 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="399">
+          <caret line="28" column="44" selection-start-line="28" selection-start-column="44" selection-end-line="28" selection-end-column="44" />
+        </state>
+      </provider>
+      <provider editor-type-id="android-manifest" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/DeviceScanActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="250">
+          <caret line="40" column="4" selection-start-line="40" selection-start-column="4" selection-end-line="40" selection-end-column="64" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Record.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="726">
-          <caret line="1298" column="22" selection-start-line="1298" selection-start-column="22" selection-end-line="1298" selection-end-column="22" />
+        <state relative-caret-position="250">
+          <caret line="200" selection-start-line="200" selection-end-line="204" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="665">
+          <caret line="263" column="80" selection-start-line="263" selection-start-column="80" selection-end-line="263" selection-end-column="80" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/ManageSessions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="48" column="58" selection-start-line="48" selection-start-column="58" selection-end-line="48" selection-end-column="58" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/Display.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="161">
+          <caret line="85" column="50" selection-start-line="85" selection-start-column="50" selection-end-line="85" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/uni_osnabrueck/ikw/eegdroid/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1050">
+          <caret line="127" column="77" selection-start-line="127" selection-start-column="77" selection-end-line="127" selection-end-column="77" />
+          <folding>
+            <element signature="e#5776#5812#0" expanded="true" />
+            <element signature="e#6198#6999#0" expanded="true" />
+            <element signature="e#6601#6637#0" expanded="true" />
+            <element signature="e#6998#6999#0" expanded="true" />
+            <element signature="e#10011#10047#0" expanded="true" />
+            <element signature="e#10652#10688#0" expanded="true" />
+            <element signature="e#12047#12048#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

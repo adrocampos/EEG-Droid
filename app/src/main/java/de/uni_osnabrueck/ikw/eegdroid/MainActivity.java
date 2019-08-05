@@ -1,9 +1,11 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -15,10 +17,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -52,6 +57,7 @@ public class MainActivity extends AppCompatActivity
     private String saveDir;
     private String username;
     private String userID;
+    private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,18 +124,40 @@ public class MainActivity extends AppCompatActivity
         tableRowDisplay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getBaseContext(), Display.class);
-                intent.putExtra("dirString", dirSessions.getPath());
-                startActivity(intent);
+
+                if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(
+                            getApplicationContext(),
+                            getText(R.string.permission_storage),
+                            Toast.LENGTH_LONG
+                    ).show();
+                } else {
+                    Intent intent = new Intent(getBaseContext(), Display.class);
+                    intent.putExtra("dirString", dirSessions.getPath());
+                    startActivity(intent);}
             }
         });
 
         tableRowManage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getBaseContext(), ManageSessions.class);
-                intent.putExtra("dirString", dirSessions.getPath());
-                startActivity(intent);
+
+                if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(
+                            getApplicationContext(),
+                            getText(R.string.permission_storage),
+                            Toast.LENGTH_LONG
+                    ).show();
+                } else {
+                    Intent intent = new Intent(getBaseContext(), ManageSessions.class);
+                    intent.putExtra("dirString", dirSessions.getPath());
+                    startActivity(intent);
+
+                }
             }
         });
 
@@ -157,6 +185,35 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
             }
         });
+
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Permission is not granted
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed; request the permission
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        REQUEST_WRITE_EXTERNAL_STORAGE);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        } else {
+            // Permission has already been granted
+        }
     }
 
 
@@ -182,14 +239,36 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
 
         } else if (id == R.id.display) {
-            Intent intent = new Intent(this, Display.class);
-            intent.putExtra("dirString", dirSessions.getPath());
-            startActivity(intent);
+
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(
+                        getApplicationContext(),
+                        getText(R.string.permission_storage),
+                        Toast.LENGTH_LONG
+                ).show();
+            } else {
+                Intent intent = new Intent(this, Display.class);
+                intent.putExtra("dirString", dirSessions.getPath());
+                startActivity(intent);
+            }
 
         } else if (id == R.id.manage) {
-            Intent intent = new Intent(this, ManageSessions.class);
-            intent.putExtra("dirString", dirSessions.getPath());
-            startActivity(intent);
+
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(
+                        getApplicationContext(),
+                        getText(R.string.permission_storage),
+                        Toast.LENGTH_LONG
+                ).show();
+            } else {
+                Intent intent = new Intent(this, ManageSessions.class);
+                intent.putExtra("dirString", dirSessions.getPath());
+                startActivity(intent);
+            }
 
         } else if (id == R.id.tfanalysis) {
             Intent intent = new Intent(this, TFAnalysis.class);
