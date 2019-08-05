@@ -93,7 +93,6 @@ public class Display extends AppCompatActivity {
             arrayOfNames[i] = arrayListOfFiles.get(i).getName();
         }
 
-
         OnChartValueSelectedListener ol = new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry entry, Highlight h) {

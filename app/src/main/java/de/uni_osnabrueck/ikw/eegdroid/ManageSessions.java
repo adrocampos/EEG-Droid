@@ -77,10 +77,6 @@ public class ManageSessions extends AppCompatActivity {
         return true;
     }
 
-//    @Override
-//    public boolean onPrepareOptionsMenu(Menu menu) {
-//        return super.onPrepareOptionsMenu(menu);
-//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -113,18 +109,12 @@ public class ManageSessions extends AppCompatActivity {
                     Log.d("Auth", getApplicationContext().getPackageName().toString());
                     Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".fileprovider", arrayListOfFiles.get(position));
                     intent.putExtra(Intent.EXTRA_STREAM, uri);
-//                    if (intent.resolveActivity(getPackageManager()) != null) {
-//                        startActivity(intent);
-//                    }
-
 
                     if (shareActionProvider != null) {
-
                         shareActionProvider.setShareIntent(intent);
                     }
 
                     adapter.resetSelectedPos();
-                    //adapter.notifyDataSetChanged();
                     return true;
 
                 case R.id.rename_session:
@@ -223,8 +213,6 @@ public class ManageSessions extends AppCompatActivity {
         readDirectory(MainActivity.getDirSessions());
         return arrayListOfFiles;
     }
-
-
 
 
 }
