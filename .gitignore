@@ -93,3 +93,7 @@ com_crashlytics_export_strings.xml
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# ignore idea and gradle folders
+.idea/
+.gradle/
