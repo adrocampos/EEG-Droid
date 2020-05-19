@@ -46,6 +46,10 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
+import net.ericaro.neoitertools.generators.primitives.IntegerGenerator;
+
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -1251,6 +1255,9 @@ public class Record extends AppCompatActivity {
         private volatile boolean exit = false;
         String IP = getSharedPreferences("userPreferences", 0).getString("IP", getResources().getString(R.string.default_IP));
         String port = getSharedPreferences("userPreferences", 0).getString("port", getResources().getString(R.string.default_port));
+        // best way found until now to encode the values, a stringified JSON. Looks like:
+        JSONObject toSend = new JSONObject();
+        // {'pkg': 1, 'time': 1589880540884, '1': -149.85352, '2': -18.530273, '3': 191.74805, '4': -305.34668, '5': 0, '6': -142.60254, '7': -1.6113281, '8': -29.80957}
 
         public void run() {
 
@@ -1261,16 +1268,25 @@ public class Record extends AppCompatActivity {
                         out = new PrintWriter(socket.getOutputStream(), true);
                         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                         Log.d("CastThread", "sending");
-
+                        List<Float> lastV = null; // store last octet of EEG values
+                        int pkg = 0;
                         while (true) {
-                            if (microV != null) {
-                                String toSend = "";
-                                //microV.size() == 8
-                                for (Float value : microV) {
-                                    toSend = toSend + value + ",";
+                            // ensure not sending the same as the last one (since while true)
+                            // optimally the socket should be open and sending every time it has a
+                            // new octet of values instead of using a while true
+                            if (microV != null && lastV != microV) {
+                                toSend = new JSONObject();
+                                // timestamp in milliseconds since January 1, 1970, 00:00:00 GMT
+                                long time = new Date().getTime();
+                                toSend.put("pkg", pkg); // add pkg number
+                                toSend.put("time", time); // add time
+                                for (int i = 0; i < microV.size(); i++) {
+                                    // add voltage amplitudes
+                                    toSend.put(Integer.toString(i + 1), microV.get(i));
                                 }
-                                Log.d("LENMICRO", Integer.toString(toSend.length()));
-                                out.println(toSend);
+                                out.println(toSend); // send data
+                                lastV = microV; // store current as last
+                                pkg++; // increase package counter
                             }
                         }
 
