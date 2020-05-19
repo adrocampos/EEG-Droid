@@ -95,5 +95,4 @@ ehthumbs.db
 Thumbs.db
 
 # ignore idea and gradle folders
-.idea/
-.gradle/
+.idea
