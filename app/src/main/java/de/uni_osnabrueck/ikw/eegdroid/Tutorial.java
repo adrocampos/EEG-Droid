@@ -6,10 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.webkit.WebView;
+
+import java.util.Objects;
 
 
 public class Tutorial extends AppCompatActivity {
@@ -61,7 +62,7 @@ public class Tutorial extends AppCompatActivity {
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        assert connectivityManager != null;
+        return Objects.requireNonNull(connectivityManager.getActiveNetworkInfo()).isConnected();
     }
 }

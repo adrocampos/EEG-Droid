@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import androidx.core.app.ActivityCompat;
+import android.content.Context;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import android.util.Log;
@@ -50,6 +51,7 @@ public final class CameraHelper {
   public static final int REQUEST_PERMISSION = 3000;
   private final String TAG = CameraHelper.class.getName();
   private Activity activity;
+  private Context context;
   private String currentPhotoPath;
 
   /**
@@ -59,6 +61,7 @@ public final class CameraHelper {
    */
   public CameraHelper(Activity activity) {
     this.activity = activity;
+    context = activity.getApplicationContext();
   }
 
   /**
@@ -114,7 +117,7 @@ public final class CameraHelper {
     // Create an image file name
     String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
     String imageFileName = "JPEG_" + timeStamp + "_";
-    File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+    File storageDir = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "");
     File image = File.createTempFile(imageFileName, /* prefix */
             ".jpg", /* suffix */
             storageDir /* directory */

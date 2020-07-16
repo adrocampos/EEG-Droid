@@ -46,8 +46,6 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
-import net.ericaro.neoitertools.generators.primitives.IntegerGenerator;
-
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
