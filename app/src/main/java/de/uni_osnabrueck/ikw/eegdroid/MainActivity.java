@@ -1,17 +1,13 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,9 +24,9 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
-import com.google.flatbuffers.Table;
 
 import java.io.File;
+import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity
@@ -74,7 +70,7 @@ public class MainActivity extends AppCompatActivity
         userID = sharedPreferences.getString("userID", getResources().getString(R.string.default_userID));
 
         // File object to save the directory to save the EEG recordings
-        dirSessions = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS + saveDir);
+        dirSessions = new File(Objects.requireNonNull(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)).getAbsolutePath() + saveDir);
         ManageSessions.createDirectory(dirSessions);
         dirUri = Uri.parse(Environment.getExternalStorageDirectory() + saveDir + "/"); //Uri to open the folder with sessions
         Log.d("Main Directory", dirUri.getPath());

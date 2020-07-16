@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.text.HtmlCompat;
 
 import android.graphics.Color;
 import android.util.Log;
@@ -81,17 +83,15 @@ public class MessageAdapter extends ArrayAdapter<String[]> {
             tvUser.setVisibility(View.VISIBLE);
             tvUser.setGravity(Gravity.RIGHT);
             tvMsj.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
-            tvMsj.setTextColor(mContext.getResources().getColor(R.color.colorPrimary));
+            tvMsj.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimary));
         }
 
         ivIma.setImageBitmap(image);
         //tvUser.setText(user);
         tvUser.setText(mContext.getSharedPreferences("userPreferences", MODE_PRIVATE).getString("username", "user"));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            tvMsj.setText(Html.fromHtml(msj, Html.FROM_HTML_MODE_LEGACY));
-        } else {
-            tvMsj.setText(Html.fromHtml(msj));
-        }
+            tvMsj.setText(HtmlCompat.fromHtml(msj, HtmlCompat.FROM_HTML_MODE_LEGACY));
+        } else tvMsj.setText(Html.fromHtml(msj));
         return convertView;
     }
 

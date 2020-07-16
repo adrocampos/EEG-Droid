@@ -59,7 +59,7 @@ public class CustomFFT {
         } else if (n == FFT_THRES) {
             return dftThres(x);
         } else {
-            int n_half = (int) (n / 2);
+            int n_half = n / 2;
             double[] even = new double[n_half];
             double[] odd = new double[n_half];
             for (int i = 0, j = 0; i < n_half; i++, j += 2) {
@@ -69,8 +69,8 @@ public class CustomFFT {
             Complex[] fftEven = fftRecursive(even);
             Complex[] fftOdd = fftRecursive(odd);
             Complex[] fftRes = new Complex[n];
-            int facSteps = (int) (FFT_SIZE / n);
-            int fs_half = (int) (FFT_SIZE / 2);
+            int facSteps = FFT_SIZE / n;
+            int fs_half = FFT_SIZE / 2;
             for (int i = 0, fi = 0; i < n_half; i++, fi += facSteps) {
                 fftRes[i] = fftEven[i].add(FFT_FACTORS[fi].multiply(fftOdd[i]));
                 fftRes[n_half + i] = fftEven[i].add(FFT_FACTORS[fs_half + fi].multiply(fftOdd[i]));

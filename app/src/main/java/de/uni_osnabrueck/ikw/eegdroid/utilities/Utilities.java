@@ -5,25 +5,16 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.Typeface;
-import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.opencsv.CSVReader;
 
 import org.apache.commons.math3.complex.Complex;
 
-import java.io.File;
-import java.io.InputStreamReader;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
-
-import de.uni_osnabrueck.ikw.eegdroid.R;
 
 public class Utilities {
 
@@ -32,7 +23,7 @@ public class Utilities {
                                               boolean fftw) {
         int n = eegData.length;
         int windowStepSize = width - overlap;
-        int windowSteps = (int) ((n - width) / (windowStepSize));
+        int windowSteps = (n - width) / (windowStepSize);
         int frCount = (int) Math.ceil((double) width / 2);
         double hertzPerVal = (double) fs / width;
         double yLim = (frCount - 1) * hertzPerVal; // hertz
