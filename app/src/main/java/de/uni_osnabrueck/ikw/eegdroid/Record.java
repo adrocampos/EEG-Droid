@@ -582,69 +582,79 @@ public class Record extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
 
-        switch (item.getItemId()) {
-            case R.id.scan:
-                if (!deviceConnected) {
-                    Intent intent = new Intent(this, DeviceScanActivity.class);
-                    startActivityForResult(intent, 1200);
-                } else {
+        int id = item.getItemId();
+        if (id == R.id.scan) {
+            if (!deviceConnected) {
+                Intent intent = new Intent(this, DeviceScanActivity.class);
+                startActivityForResult(intent, 1200);
+            } else {
 
-                    //Handles the Dialog to confirm the closing of the activity
-                    AlertDialog.Builder alert = new AlertDialog.Builder(this)
-                            .setTitle(R.string.dialog_title)
-                            .setMessage(getResources().getString(R.string.confirmation_disconnect));
-                    alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                //Handles the Dialog to confirm the closing of the activity
+                AlertDialog.Builder alert = new AlertDialog.Builder(this)
+                        .setTitle(R.string.dialog_title)
+                        .setMessage(getResources().getString(R.string.confirmation_disconnect));
+                alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
-                        public void onClick(DialogInterface dialog, int which) {
-                            mBluetoothLeService.disconnect();
-                        }
-                    });
-                    alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // close dialog
-                            dialog.cancel();
-                        }
-                    });
-                    alert.show();
-                }
-            case android.R.id.home:
-                if (recording) {
+                    public void onClick(DialogInterface dialog, int which) {
+                        mBluetoothLeService.disconnect();
+                    }
+                });
+                alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // close dialog
+                        dialog.cancel();
+                    }
+                });
+                alert.show();
+            }
+        }
 
-                    //Handles the Dialog to confirm the closing of the activity
-                    AlertDialog.Builder alert = new AlertDialog.Builder(this)
-                            .setTitle(R.string.dialog_title)
-                            .setMessage(getResources().getString(R.string.confirmation_close_record));
-                    alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+        if (id == android.R.id.home) {
 
-                        public void onClick(DialogInterface dialog, int which) {
-                            onBackPressed();
-                        }
-                    });
-                    alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // close dialog
-                            dialog.cancel();
-                        }
-                    });
-                    alert.show();
-                } else onBackPressed();
-                return true;
-            case R.id.cast:
-                MenuItem menuItemCast = menu.findItem(R.id.cast);
+            if (recording) {
 
-                if (!casting) {
+                //Handles the Dialog to confirm the closing of the activity
+                AlertDialog.Builder alert = new AlertDialog.Builder(this)
+                        .setTitle(R.string.dialog_title)
+                        .setMessage(getResources().getString(R.string.confirmation_close_record));
+                alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
-                    casting = true;
-                    caster = new CastThread();
-                    caster.start();
-                    menuItemCast.setIcon(R.drawable.ic_cast_blue_24dp);
+                    public void onClick(DialogInterface dialog, int which) {
+                        onBackPressed();
+                    }
+                });
+                alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // close dialog
+                        dialog.cancel();
+                    }
+                });
+                alert.show();
+            } else {
+                onBackPressed();
+            }
 
-                } else {
-                    casting = false;
-                    caster.staph();
-                    menuItemCast.setIcon(R.drawable.ic_cast_white_24dp);
+            return true;
+        }
 
-                }
+        if (id == R.id.cast) {
+
+            MenuItem menuItemCast = menu.findItem(R.id.cast);
+
+            if (!casting) {
+
+                casting = true;
+                caster = new CastThread();
+                caster.start();
+                menuItemCast.setIcon(R.drawable.ic_cast_blue_24dp);
+
+            } else {
+                casting = false;
+                caster.staph();
+                menuItemCast.setIcon(R.drawable.ic_cast_white_24dp);
+
+            }
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -777,8 +787,9 @@ public class Record extends AppCompatActivity {
                     }
                     if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
                         mNotifyCharacteristic = gattCharacteristic;
-//                        mBluetoothLeService.setCharacteristicNotification(
-//                                gattCharacteristic, true);  // THOMAS'
+                        // THOMAS' commented this, incoming data is not read for the old T otherwise
+                        mBluetoothLeService.setCharacteristicNotification(
+                                gattCharacteristic, true);
                     }
                     //mBluetoothLeService.disconnect();
                     mBluetoothLeService.connect(mDeviceAddress);
