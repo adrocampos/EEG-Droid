@@ -86,8 +86,7 @@ public class DeviceScanActivity extends ListActivity {
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             List<BluetoothGattService> services = gatt.getServices();
             Log.i("onServicesDiscovered", services.toString());
-            gatt.readCharacteristic(services.get(0).getCharacteristics().get
-                    (0));
+            gatt.readCharacteristic(services.get(0).getCharacteristics().get(0));
         }
 
         @Override
@@ -164,13 +163,11 @@ public class DeviceScanActivity extends ListActivity {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         } else {
-            if (Build.VERSION.SDK_INT >= 21) {
-                mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
-                settings = new ScanSettings.Builder()
-                        .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                        .build();
-                filters = new ArrayList<>();
-            }
+            mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
+            settings = new ScanSettings.Builder()
+                    .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                    .build();
+            filters = new ArrayList<>();
             // Initializes list view adapter.
             mLeDeviceListAdapter = new LeDeviceListAdapter();
             setListAdapter(mLeDeviceListAdapter);
@@ -335,20 +332,19 @@ public class DeviceScanActivity extends ListActivity {
 
         public LeDeviceListAdapter() {
             super();
-            mLeDevices = new ArrayList<BluetoothDevice>();
+            mLeDevices = new ArrayList<>();
             mInflator = DeviceScanActivity.this.getLayoutInflater();
         }
 
         public void addDevice(BluetoothDevice device) {
-            if (TraumschreiberService.isTraumschreiberAddress(device.getAddress())){
+            if (device.getName() != null && TraumschreiberService.isTraumschreiberDevice(device.getName())){
                 Log.d(TAG, "addDevice: Found a Traumschreiber with ID " + device.getAddress());
-                TraumschreiberService traumschreiberService = new TraumschreiberService(device.getAddress());
 
                 if(!mLeDevices.contains(device)) {
                     mLeDevices.add(device);
                 }
             } else {
-                Log.d(TAG, "addDevice: Found a device which is not a Traumschreiber with ID " + device.getAddress());
+                Log.d(TAG, "addDevice: Found a device which is not a Traumschreiber with ID " + device.getAddress() + " and name " + device.getName());
             }
         }
 
@@ -385,26 +381,16 @@ public class DeviceScanActivity extends ListActivity {
                 viewHolder.deviceAddress = (TextView) view.findViewById(R.id.device_address);
                 viewHolder.deviceName = (TextView) view.findViewById(R.id.device_name);
                 view.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) view.getTag();
-            }
+            } else viewHolder = (ViewHolder) view.getTag();
 
             BluetoothDevice device = mLeDevices.get(i);
             final String deviceName = device.getName();
             if (deviceName != null && deviceName.length() > 0)
                 viewHolder.deviceName.setText(deviceName);
-            else
-                viewHolder.deviceName.setText(R.string.unknown_device);
+            else viewHolder.deviceName.setText(R.string.unknown_device);
             viewHolder.deviceAddress.setText(device.getAddress());
 
             return view;
-        }
-    }
-
-    private void connectToDevice(BluetoothDevice device) {
-        if (mGatt == null) {
-            mGatt = device.connectGatt(this, false, gattCallback);
-            scanLeDevice(false); // will stop after first device detection
         }
     }
 
@@ -420,16 +406,13 @@ public class DeviceScanActivity extends ListActivity {
             Log.i("callbackType", String.valueOf(callbackType));
             Log.i("result", result.toString());
             BluetoothDevice btDevice = result.getDevice();
-            connectToDevice(btDevice);
             mLeDeviceListAdapter.addDevice(btDevice);
             mLeDeviceListAdapter.notifyDataSetChanged();
         }
 
         @Override
         public void onBatchScanResults(List<ScanResult> results) {
-            for (ScanResult sr : results) {
-                Log.i("ScanResult - Results", sr.toString());
-            }
+            for (ScanResult sr : results) Log.i("ScanResult - Results", sr.toString());
         }
 
         @Override
