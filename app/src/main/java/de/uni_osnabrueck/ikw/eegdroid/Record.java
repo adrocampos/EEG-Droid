@@ -63,7 +63,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import de.uni_osnabrueck.ikw.eegdroid.MyXAxisValueFormatter;
 
 public class Record extends AppCompatActivity {
 
@@ -164,6 +163,7 @@ public class Record extends AppCompatActivity {
     private BufferedReader in;
     private List<Float> microV;
     private CastThread caster;
+//    private List<List<Float>> recentlyDisplayedData;  // THOMAS' for auto scale adjusting of plot
 
 
     // Code to manage Service lifecycle.
@@ -242,8 +242,6 @@ public class Record extends AppCompatActivity {
             AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
             alertDialogAndroid.show();
             buttons_prerecording();
-
-
         }
     };
     private final View.OnClickListener imageDiscardOnClickListener = new View.OnClickListener() {
@@ -295,12 +293,13 @@ public class Record extends AppCompatActivity {
                 microV = transData(intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA));
                 displayData(microV);
                 if (plotting) {
+                    accumulated.add(microV);
                     long plotting_elapsed = last_data - plotting_start;
                     if (plotting_elapsed > ACCUM_PLOT) {
                         addEntries(accumulated);
                         accumulated.clear();
                         plotting_start = System.currentTimeMillis();
-                    } else accumulated.add(microV);
+                    }
                 }
                 if (recording) storeData(microV);
                 if (start_data == 0) start_data = System.currentTimeMillis();
@@ -325,6 +324,7 @@ public class Record extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter()); // THOMAS'
         setContentView(R.layout.activity_record);
 
         ch1_color = ContextCompat.getColor(getApplicationContext(), R.color.aqua);
@@ -547,7 +547,7 @@ public class Record extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+//        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter()); // THOMAS commented it
         if (mBluetoothLeService != null) {
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
             Log.d(TAG, "Connect request result=" + result);
@@ -557,7 +557,7 @@ public class Record extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(mGattUpdateReceiver);
+//        unregisterReceiver(mGattUpdateReceiver); // THOMAS commented it
     }
 
     @Override
@@ -582,79 +582,69 @@ public class Record extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
 
-        int id = item.getItemId();
-        if (id == R.id.scan) {
-            if (!deviceConnected) {
-                Intent intent = new Intent(this, DeviceScanActivity.class);
-                startActivityForResult(intent, 1200);
-            } else {
+        switch (item.getItemId()) {
+            case R.id.scan:
+                if (!deviceConnected) {
+                    Intent intent = new Intent(this, DeviceScanActivity.class);
+                    startActivityForResult(intent, 1200);
+                } else {
 
-                //Handles the Dialog to confirm the closing of the activity
-                AlertDialog.Builder alert = new AlertDialog.Builder(this)
-                        .setTitle(R.string.dialog_title)
-                        .setMessage(getResources().getString(R.string.confirmation_disconnect));
-                alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    //Handles the Dialog to confirm the closing of the activity
+                    AlertDialog.Builder alert = new AlertDialog.Builder(this)
+                            .setTitle(R.string.dialog_title)
+                            .setMessage(getResources().getString(R.string.confirmation_disconnect));
+                    alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
-                    public void onClick(DialogInterface dialog, int which) {
-                        mBluetoothLeService.disconnect();
-                    }
-                });
-                alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // close dialog
-                        dialog.cancel();
-                    }
-                });
-                alert.show();
-            }
-        }
+                        public void onClick(DialogInterface dialog, int which) {
+                            mBluetoothLeService.disconnect();
+                        }
+                    });
+                    alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // close dialog
+                            dialog.cancel();
+                        }
+                    });
+                    alert.show();
+                }
+            case android.R.id.home:
+                if (recording) {
 
-        if (id == android.R.id.home) {
+                    //Handles the Dialog to confirm the closing of the activity
+                    AlertDialog.Builder alert = new AlertDialog.Builder(this)
+                            .setTitle(R.string.dialog_title)
+                            .setMessage(getResources().getString(R.string.confirmation_close_record));
+                    alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
-            if (recording) {
+                        public void onClick(DialogInterface dialog, int which) {
+                            onBackPressed();
+                        }
+                    });
+                    alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // close dialog
+                            dialog.cancel();
+                        }
+                    });
+                    alert.show();
+                } else onBackPressed();
+                return true;
+            case R.id.cast:
+                MenuItem menuItemCast = menu.findItem(R.id.cast);
 
-                //Handles the Dialog to confirm the closing of the activity
-                AlertDialog.Builder alert = new AlertDialog.Builder(this)
-                        .setTitle(R.string.dialog_title)
-                        .setMessage(getResources().getString(R.string.confirmation_close_record));
-                alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                if (!casting) {
 
-                    public void onClick(DialogInterface dialog, int which) {
-                        onBackPressed();
-                    }
-                });
-                alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // close dialog
-                        dialog.cancel();
-                    }
-                });
-                alert.show();
-            } else {
-                onBackPressed();
-            }
+                    casting = true;
+                    caster = new CastThread();
+                    caster.start();
+                    menuItemCast.setIcon(R.drawable.ic_cast_blue_24dp);
 
-            return true;
-        }
+                } else {
+                    casting = false;
+                    caster.staph();
+                    menuItemCast.setIcon(R.drawable.ic_cast_white_24dp);
 
-        if (id == R.id.cast) {
-
-            MenuItem menuItemCast = menu.findItem(R.id.cast);
-
-            if (!casting) {
-
-                casting = true;
-                caster = new CastThread();
-                caster.start();
-                menuItemCast.setIcon(R.drawable.ic_cast_blue_24dp);
-
-            } else {
-                casting = false;
-                caster.staph();
-                menuItemCast.setIcon(R.drawable.ic_cast_white_24dp);
-
-            }
-
+                }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -663,6 +653,7 @@ public class Record extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         // Check which request we're responding to
+        super.onActivityResult(requestCode, resultCode, intent);
         if (requestCode == 1200) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
@@ -724,8 +715,8 @@ public class Record extends AppCompatActivity {
                         mBluetoothLeService.writeCharacteristic(gattCharacteristic);
                         if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
                             mNotifyCharacteristic = gattCharacteristic;
-                            mBluetoothLeService.setCharacteristicNotification(
-                                    gattCharacteristic, true);
+//                            mBluetoothLeService.setCharacteristicNotification(
+//                                    gattCharacteristic, true); // THOMAS'
                         }
                     }
                 }
@@ -765,6 +756,7 @@ public class Record extends AppCompatActivity {
         // Loops through available GATT Services.
         for (BluetoothGattService gattService : gattServices) {
             uuid = gattService.getUuid().toString();
+            // for the new Traumschreiber the uuid is "00000ee6-0000-1000-8000-00805f9b34fb"
             if (uuid.equals("a22686cb-9268-bd91-dd4f-b52d03d85593")) {
                 List<BluetoothGattCharacteristic> gattCharacteristics =
                         gattService.getCharacteristics();
@@ -777,16 +769,16 @@ public class Record extends AppCompatActivity {
                         // If there is an active notification on a characteristic, clear
                         // it first so it doesn't update the data field on the user interface.
                         if (mNotifyCharacteristic != null) {
-                            mBluetoothLeService.setCharacteristicNotification(
-                                    mNotifyCharacteristic, false);
+//                            mBluetoothLeService.setCharacteristicNotification(
+//                                    mNotifyCharacteristic, false);  // THOMAS'
                             mNotifyCharacteristic = null;
                         }
                         mBluetoothLeService.readCharacteristic(gattCharacteristic);
                     }
                     if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
                         mNotifyCharacteristic = gattCharacteristic;
-                        mBluetoothLeService.setCharacteristicNotification(
-                                gattCharacteristic, true);
+//                        mBluetoothLeService.setCharacteristicNotification(
+//                                gattCharacteristic, true);  // THOMAS'
                     }
                     //mBluetoothLeService.disconnect();
                     mBluetoothLeService.connect(mDeviceAddress);
@@ -836,7 +828,7 @@ public class Record extends AppCompatActivity {
         // Conversion formula: V_in = X*1.65V/(1000 * GAIN * 2048)
         float gain = Float.parseFloat(selected_gain);
         float numerator = 1650;
-        float denominator = gain * 2048;
+        float denominator = gain * 2048; // 50000 for the new Traumschreiber
         List<Float> data_trans = new ArrayList<>();
         for (int datapoint : data)
             data_trans.add((datapoint * numerator) / denominator);
@@ -865,6 +857,7 @@ public class Record extends AppCompatActivity {
             mCh6.setText(values.get(5));
             mCh7.setText(values.get(6));
             mCh8.setText(values.get(7));
+            // THOMAS' ch7-8 excluded for the moment for the new T because we only have 6
         }
     }
 
@@ -1011,6 +1004,7 @@ public class Record extends AppCompatActivity {
     }
 
     private void addEntries(final List<List<Float>> e_list) {
+//        adjustScale(e_list);  // THOMAS' for auto scale adjusting of plot
         final List<ILineDataSet> datasets = new ArrayList<>();  // for adding multiple plots
         float x = 0;
         for (List<Float> f : e_list) {
@@ -1024,6 +1018,7 @@ public class Record extends AppCompatActivity {
             lineEntries6.add(new Entry(x, f.get(5)));
             lineEntries7.add(new Entry(x, f.get(6)));
             lineEntries8.add(new Entry(x, f.get(7)));
+            // THOMAS' here again 7 and 8 excluded because they don't work at the moment.
         }
         final float f_x = x;
         if (thread != null) thread.interrupt();
@@ -1071,6 +1066,50 @@ public class Record extends AppCompatActivity {
             }
         }
     }
+
+//    /** THOMAS' for automatically adjusting the scale of the plot
+//     * adjusts the scale according to the maximal and minimal value of the data given in
+//     *
+//     * @param e_list
+//     */
+//    private void adjustScale(final List<List<Float>> e_list) {
+//        if (recentlyDisplayedData == null) {
+//            recentlyDisplayedData = new ArrayList<>();
+//        }
+//        if (recentlyDisplayedData.size() > 50 * e_list.size())
+//            recentlyDisplayedData = recentlyDisplayedData.subList(e_list.size(), recentlyDisplayedData.size());
+//        for (List<Float> innerList : e_list) {
+//            recentlyDisplayedData.add(innerList);
+//        }
+//        int max = 0;
+//        int min = 0;
+//        for (List<Float> innerList : recentlyDisplayedData) {
+//            int channel = 0;
+//            for (Float entry : innerList) {
+//                if ((show_ch1 && channel == 0) || (show_ch2 && channel == 1) || (show_ch3 && channel == 2) || (show_ch4 && channel == 3) ||
+//                        (show_ch5 && channel == 4) || (show_ch6 && channel == 5) || (show_ch7 && channel == 6) || (show_ch8 && channel == 7)) {
+//                    if (entry > max) {
+//                        max = entry.intValue();
+//                    }
+//                    if (entry < min) {
+//                        min = entry.intValue();
+//                    }
+//                }
+//                channel++;
+//            }
+//        }
+//        // include this part to make the axis symmetric (0 always visible in the middle)
+////        if(max < min * -1) {
+////            max = min * -1;
+////        }
+////        min = max * -1;
+//        int range = max - min;
+//        max += 0.1 * range;
+//        min -= 0.1 * range;
+//        YAxis leftAxis = mChart.getAxisLeft();
+//        leftAxis.setAxisMaximum(max);
+//        leftAxis.setAxisMinimum(min);
+//    }
 
     //Starts a recording session
     @SuppressLint({"SimpleDateFormat", "SetTextI18n"})
@@ -1247,7 +1286,7 @@ public class Record extends AppCompatActivity {
         }
     }
 
-
+    @SuppressWarnings("InfiniteLoopStatement")
     class CastThread extends Thread {
 
         private volatile boolean exit = false;

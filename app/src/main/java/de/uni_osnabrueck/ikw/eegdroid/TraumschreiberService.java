@@ -1,22 +1,12 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
-
-import android.bluetooth.BluetoothGattCharacteristic;
 import android.util.Log;
-
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.UUID;
-
-/**
- * Created by jan on 01.01.18.
- */
-
 
 
 public class TraumschreiberService {
 
-    public final static String VENDOR_PREFIX = "74:72:61:75:6D:";
+    public final static String DEVICE_NAME = "traumschreiber";
     //Names chosen according to the python tflow_edge Traumschreiber.py
     public final static UUID BIOSIGNALS_UUID = UUID.fromString("faa7b588-19e5-f590-0545-c99f193c5c3e");
     public final static UUID LEDS_UUID = UUID.fromString("fcbea85a-4d87-18a2-2141-0d8d2437c0a4");
@@ -24,8 +14,8 @@ public class TraumschreiberService {
     //public final static UUID UUID_HEART_RATE_MEASUREMENT =
     //       UUID.fromString(SampleGattAttributes.HEART_RATE_MEASUREMENT);
 
-    public static boolean isTraumschreiberAddress(String bluetoothDeviceAddress) {
-        return bluetoothDeviceAddress.startsWith(VENDOR_PREFIX);
+    public static boolean isTraumschreiberDevice(String bluetoothDeviceName) {
+        return bluetoothDeviceName.toLowerCase().contains(DEVICE_NAME);
     }
 
     String mTraumschreiberDeviceAddress;

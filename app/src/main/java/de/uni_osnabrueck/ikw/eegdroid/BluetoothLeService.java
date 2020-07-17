@@ -97,6 +97,7 @@ public class BluetoothLeService extends Service {
                                          int status) {
             if (status == BluetoothGatt.GATT_SUCCESS)
                 broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+            setCharacteristicNotification(characteristic, true);
         }
 
         @Override
@@ -139,6 +140,7 @@ public class BluetoothLeService extends Service {
             final int heartRate = characteristic.getIntValue(format, 1);
             Log.d(TAG, String.format("Received heart rate: %d", heartRate));
             intent.putExtra(EXTRA_DATA, String.valueOf(heartRate));
+//        } else if (true) { // THOMAS'
         } else if (TraumschreiberService.BIOSIGNALS_UUID.equals(characteristic.getUuid())) {
             final byte[] data = characteristic.getValue();
             if (data != null && data.length > 0) {
@@ -297,8 +299,10 @@ public class BluetoothLeService extends Service {
         if (UUID_HEART_RATE_MEASUREMENT.equals(characteristic.getUuid())) {
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
                     UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
-            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-            mBluetoothGatt.writeDescriptor(descriptor);
+            if(descriptor != null) {
+                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                mBluetoothGatt.writeDescriptor(descriptor);
+            }
         }
     }
 
