@@ -11,12 +11,11 @@ import android.view.View;
 import android.widget.ImageView;
 
 public class ZoomableImageView extends ImageView {
-    Matrix matrix = new Matrix();
-
     static final int NONE = 0;
     static final int DRAG = 1;
     static final int ZOOM = 2;
     static final int CLICK = 3;
+    Matrix matrix = new Matrix();
     int mode = NONE;
 
     PointF last = new PointF();
@@ -150,6 +149,35 @@ public class ZoomableImageView extends ImageView {
         maxScale = x;
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        width = MeasureSpec.getSize(widthMeasureSpec);
+        height = MeasureSpec.getSize(heightMeasureSpec);
+        //Fit to screen.
+        float scale;
+        float scaleX = width / bmWidth;
+        float scaleY = height / bmHeight;
+        scale = Math.min(scaleX, scaleY);
+        matrix.setScale(scale, scale);
+        setImageMatrix(matrix);
+        saveScale = 1f;
+
+        // Center the image
+        redundantYSpace = height - (scale * bmHeight);
+        redundantXSpace = width - (scale * bmWidth);
+        redundantYSpace /= 2;
+        redundantXSpace /= 2;
+
+        matrix.postTranslate(redundantXSpace, redundantYSpace);
+
+        origWidth = width - 2 * redundantXSpace;
+        origHeight = height - 2 * redundantYSpace;
+        right = width * saveScale - width - (2 * redundantXSpace * saveScale);
+        bottom = height * saveScale - height - (2 * redundantYSpace * saveScale);
+        setImageMatrix(matrix);
+    }
+
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 
         @Override
@@ -210,34 +238,5 @@ public class ZoomableImageView extends ImageView {
             }
             return true;
         }
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        width = MeasureSpec.getSize(widthMeasureSpec);
-        height = MeasureSpec.getSize(heightMeasureSpec);
-        //Fit to screen.
-        float scale;
-        float scaleX = width / bmWidth;
-        float scaleY = height / bmHeight;
-        scale = Math.min(scaleX, scaleY);
-        matrix.setScale(scale, scale);
-        setImageMatrix(matrix);
-        saveScale = 1f;
-
-        // Center the image
-        redundantYSpace = height - (scale * bmHeight);
-        redundantXSpace = width - (scale * bmWidth);
-        redundantYSpace /= 2;
-        redundantXSpace /= 2;
-
-        matrix.postTranslate(redundantXSpace, redundantYSpace);
-
-        origWidth = width - 2 * redundantXSpace;
-        origHeight = height - 2 * redundantYSpace;
-        right = width * saveScale - width - (2 * redundantXSpace * saveScale);
-        bottom = height * saveScale - height - (2 * redundantYSpace * saveScale);
-        setImageMatrix(matrix);
     }
 }

@@ -65,22 +65,20 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Objects;
 
-;
-
 public class Epibot extends AppCompatActivity {
 
+    private static Conversation conversationService;
     private final String TAG = "MainActivity";
+    public ListView msgView;
     private EditText input;
     private ImageButton mic;
     private ImageButton send;
     private SpeechToText speechToText;
-    private static Conversation conversationService;
     private StreamPlayer player = new StreamPlayer();
     private MicrophoneHelper microphoneHelper;
     private MicrophoneInputStream capture;
     private boolean listening = false;
     private Handler handler = new Handler();
-    public ListView msgView;
     private ArrayAdapter<String> msgList;
     private ArrayList<String[]> messages;
     private MessageAdapter adapter;
@@ -102,12 +100,12 @@ public class Epibot extends AppCompatActivity {
         conversationService = initConversationService();
         final String inputWorkspaceId = getString(R.string.conversation_workspaceId);
         //Msg is null
-        msgView = (ListView) findViewById(R.id.listView2);
+        msgView = findViewById(R.id.listView2);
         msgList = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
         msgView.setAdapter(msgList);
-        input = (EditText) findViewById(R.id.input);
-        mic = (ImageButton) findViewById(R.id.mic);
-        send = (ImageButton) findViewById(R.id.send);
+        input = findViewById(R.id.input);
+        mic = findViewById(R.id.mic);
+        send = findViewById(R.id.send);
         MessageResponse response = null;
         conversationAPI(String.valueOf(input.getText()), context, inputWorkspaceId);
 
@@ -163,14 +161,14 @@ public class Epibot extends AppCompatActivity {
                 //pressing the [Send] button passes the text to the WCS conversation service
                 MessageResponse response = null;
                 String text = String.valueOf(input.getText());
-                input.setText(String.valueOf(""));
-                conversationAPI(String.valueOf(text), context, inputWorkspaceId);
+                input.setText("");
+                conversationAPI(text, context, inputWorkspaceId);
             }
         });
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        if (!isNetworkAvailable()){
+        if (!isNetworkAvailable()) {
             mic.setEnabled(false);
             send.setEnabled(false);
             input.setEnabled(false);
@@ -234,55 +232,6 @@ public class Epibot extends AppCompatActivity {
         return new RecognizeOptions.Builder().audio(capture).contentType(ContentType.OPUS.toString())
                 .model("en-US_BroadbandModel").inactivityTimeout(2000).build();
     }
-
-    private abstract class EmptyTextWatcher implements TextWatcher {
-        private boolean isEmpty = true; // assumes text is initially empty
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (s.length() == 0) {
-                isEmpty = true;
-                onEmpty(true);
-            } else if (isEmpty) {
-                isEmpty = false;
-                onEmpty(false);
-            }
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-        }
-
-        public abstract void onEmpty(boolean empty);
-    }
-
-    private class MicrophoneRecognizeDelegate extends BaseRecognizeCallback {
-
-        @Override
-        public void onTranscription(SpeechRecognitionResults speechResults) {
-            System.out.println(speechResults);
-            if (speechResults.getResults() != null && !speechResults.getResults().isEmpty()) {
-                String text = speechResults.getResults().get(0).getAlternatives().get(0).getTranscript();
-                showMicText(text);
-            }
-        }
-
-        @Override
-        public void onError(Exception e) {
-            showError(e);
-            enableMicButton();
-        }
-
-        @Override
-        public void onDisconnected() {
-            enableMicButton();
-        }
-    }
-
 
     /**
      * On request permissions result.
@@ -470,11 +419,8 @@ public class Epibot extends AppCompatActivity {
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(messages);
             oos.close();
-        } catch (FileNotFoundException e) {
-            Log.d("onDestroy", e.getMessage());
         } catch (Exception e) {
-            Log.d("onDestroy", e.getMessage());
-
+            Log.d("onDestroy", Objects.requireNonNull(e.getMessage()));
         }
     }
 
@@ -483,6 +429,54 @@ public class Epibot extends AppCompatActivity {
                 = (ConnectivityManager) getSystemService(android.content.Context.CONNECTIVITY_SERVICE);
         assert connectivityManager != null;
         return Objects.requireNonNull(connectivityManager.getActiveNetworkInfo()).isConnected();
+    }
+
+    private abstract static class EmptyTextWatcher implements TextWatcher {
+        private boolean isEmpty = true; // assumes text is initially empty
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (s.length() == 0) {
+                isEmpty = true;
+                onEmpty(true);
+            } else if (isEmpty) {
+                isEmpty = false;
+                onEmpty(false);
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+        }
+
+        public abstract void onEmpty(boolean empty);
+    }
+
+    private class MicrophoneRecognizeDelegate extends BaseRecognizeCallback {
+
+        @Override
+        public void onTranscription(SpeechRecognitionResults speechResults) {
+            System.out.println(speechResults);
+            if (speechResults.getResults() != null && !speechResults.getResults().isEmpty()) {
+                String text = speechResults.getResults().get(0).getAlternatives().get(0).getTranscript();
+                showMicText(text);
+            }
+        }
+
+        @Override
+        public void onError(Exception e) {
+            showError(e);
+            enableMicButton();
+        }
+
+        @Override
+        public void onDisconnected() {
+            enableMicButton();
+        }
     }
 }
 

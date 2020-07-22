@@ -4,13 +4,8 @@ package de.uni_osnabrueck.ikw.eegdroid;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
-import android.os.Environment;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -19,59 +14,44 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TableLayout;
 import android.widget.Toast;
 
-import org.apache.commons.math3.complex.Complex;
-import org.apache.commons.math3.linear.MatrixUtils;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
-import de.uni_osnabrueck.ikw.eegdroid.utilities.MyXAxisValueFormatterTime;
-import de.uni_osnabrueck.ikw.eegdroid.utilities.Utilities;
-import de.uni_osnabrueck.ikw.eegdroid.utilities.CustomFFT;
-import de.uni_osnabrueck.ikw.eegdroid.utilities.FFTWWrapper;
-import de.uni_osnabrueck.ikw.eegdroid.utilities.ZoomableImageView;
-
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 
+import org.apache.commons.math3.linear.MatrixUtils;
+
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import de.uni_osnabrueck.ikw.eegdroid.utilities.Utilities;
 
 public class TFAnalysis extends AppCompatActivity {
 
+    private static final String[] channels = {"1", "2", "3", "4", "5", "6", "7", "8"};
+    private static final String[] widths = {"1", "2", "3", "4", "5"};
+    private static final String[] overlaps = {"0", "1/4", "1/3", "1/2"};
+    public static int CHANNEL = 0;
+    public static int MAXHERTZ = 60;
+    public static String WINDOW = "hanning";
+    private static int FS = 225;
+    public static int WIDTH = 2 * FS;
+    public static int OVERLAP = WIDTH / 2;
+    private static int MAX_CHART_HEIGHT;
+    private static int MAX_CHART_WIDTH;
+    public double[][] eegData;
     //ZoomableImageView bmpView;
     private ArrayList<File> arrayListOfFiles;
     private Spinner widthSpinner;
     private Spinner channelSpinner;
     private Spinner overlapSpinner;
     private ImageView bmpView;
-    private static final String[] channels = {"1", "2", "3", "4", "5", "6" ,"7", "8"};
-    private static final String[] widths = {"1", "2", "3", "4", "5"};
-    private static final String[] overlaps = {"0", "1/4", "1/3", "1/2"};
-    private static int FS = 225;
-    public static int WIDTH = 2*FS;
-    public static int CHANNEL = 0;
-    public static int OVERLAP = WIDTH/2;
-    public double[][] eegData;
-    public static int MAXHERTZ = 60;
-    public static String WINDOW = "hanning";
-    private static int MAX_CHART_HEIGHT;
-    private static int MAX_CHART_WIDTH;
-    private int density = 10;
     private String[] arrayOfNames;
-
 
 
     @Override
@@ -104,47 +84,47 @@ public class TFAnalysis extends AppCompatActivity {
                         loadData(arrayListOfFiles.get(which));
 
 
-                            final LinearLayout parent = (LinearLayout) bmpView.getParent();
-                            parent.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                                @Override
-                                public void onGlobalLayout() {
+                        final LinearLayout parent = (LinearLayout) bmpView.getParent();
+                        parent.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                            @Override
+                            public void onGlobalLayout() {
 
-                                    try {
-                                        parent.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                                        MAX_CHART_HEIGHT = parent.getWidth();
-                                        MAX_CHART_WIDTH = parent.getHeight();//height is ready
-                                        //Bitmap spectogram = Bitmap.createBitmap(0, 0, Bitmap.Config.ARGB_8888);
+                                try {
+                                    parent.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                    MAX_CHART_HEIGHT = parent.getWidth();
+                                    MAX_CHART_WIDTH = parent.getHeight();//height is ready
+                                    //Bitmap spectogram = Bitmap.createBitmap(0, 0, Bitmap.Config.ARGB_8888);
 
-                                        Bitmap spectogram = Utilities.getSpectrogramBitmap(eegData[CHANNEL], FS, WIDTH, OVERLAP,
-                                                WINDOW, true, MAXHERTZ, true);
-
-
-                                        int width = spectogram.getWidth();
-                                        int height = spectogram.getHeight();
-                                        float wScale = (float) MAX_CHART_WIDTH / width;
-                                        float hScale = (float) MAX_CHART_HEIGHT / 2 / height;
-                                        hScale = Math.min(wScale, hScale);
-                                        spectogram = Bitmap.createScaledBitmap(spectogram, (int) (wScale * width), (int) (hScale * height), false);
+                                    Bitmap spectogram = Utilities.getSpectrogramBitmap(eegData[CHANNEL], FS, WIDTH, OVERLAP,
+                                            WINDOW, true, MAXHERTZ, true);
 
 
-                                        int test = eegData[CHANNEL].length / FS;
-                                        Log.d("zero?", Integer.toString(test));
-                                        // get real spectogram
-                                        Bitmap chart = Utilities.addAxisAndLabels(spectogram, MAXHERTZ, eegData[CHANNEL].length / FS);
-
-                                        bmpView.setImageBitmap(chart);
-
-                                    } catch (Exception e) {
-
-                                        finish();
-                                        Toast.makeText(getApplicationContext(), R.string.warning_too_short, Toast.LENGTH_LONG).show();
-                                        Log.d("EXCEPTION", "Dividing by zero");
+                                    int width = spectogram.getWidth();
+                                    int height = spectogram.getHeight();
+                                    float wScale = (float) MAX_CHART_WIDTH / width;
+                                    float hScale = (float) MAX_CHART_HEIGHT / 2 / height;
+                                    hScale = Math.min(wScale, hScale);
+                                    spectogram = Bitmap.createScaledBitmap(spectogram, (int) (wScale * width), (int) (hScale * height), false);
 
 
-                                    }
+                                    int test = eegData[CHANNEL].length / FS;
+                                    Log.d("zero?", Integer.toString(test));
+                                    // get real spectogram
+                                    Bitmap chart = Utilities.addAxisAndLabels(spectogram, MAXHERTZ, eegData[CHANNEL].length / FS);
+
+                                    bmpView.setImageBitmap(chart);
+
+                                } catch (Exception e) {
+
+                                    finish();
+                                    Toast.makeText(getApplicationContext(), R.string.warning_too_short, Toast.LENGTH_LONG).show();
+                                    Log.d("EXCEPTION", "Dividing by zero");
+
 
                                 }
-                            });
+
+                            }
+                        });
 
                         setupOverlapSpinner();
                         setupWidthSpinner();
@@ -164,7 +144,6 @@ public class TFAnalysis extends AppCompatActivity {
         alert.show();
 
 
-
     }
 
     @Override
@@ -178,25 +157,25 @@ public class TFAnalysis extends AppCompatActivity {
         }
     }
 
-    private void generateSpectogram(){
+    private void generateSpectogram() {
         Bitmap spectogram = Utilities.getSpectrogramBitmap(eegData[CHANNEL], FS, WIDTH, OVERLAP,
                 WINDOW, true, MAXHERTZ, true);
 
         int width = spectogram.getWidth();
         int height = spectogram.getHeight();
-        float wScale = (float) MAX_CHART_WIDTH/width;
-        float hScale = (float) MAX_CHART_HEIGHT/2/height;
-        hScale = Math.min(wScale,hScale);
-        spectogram = Bitmap.createScaledBitmap(spectogram, (int) (wScale*width), (int) (hScale*height), false);
+        float wScale = (float) MAX_CHART_WIDTH / width;
+        float hScale = (float) MAX_CHART_HEIGHT / 2 / height;
+        hScale = Math.min(wScale, hScale);
+        spectogram = Bitmap.createScaledBitmap(spectogram, (int) (wScale * width), (int) (hScale * height), false);
 
         // get real spectogram
-        Bitmap chart = Utilities.addAxisAndLabels(spectogram, MAXHERTZ, eegData[CHANNEL].length/FS);
+        Bitmap chart = Utilities.addAxisAndLabels(spectogram, MAXHERTZ, eegData[CHANNEL].length / FS);
 
         bmpView.setImageBitmap(chart);
     }
 
-    private void setupOverlapSpinner(){
-        overlapSpinner = (Spinner) findViewById(R.id.overlap_dropdown);
+    private void setupOverlapSpinner() {
+        overlapSpinner = findViewById(R.id.overlap_dropdown);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, overlaps);
 
@@ -208,22 +187,22 @@ public class TFAnalysis extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 int newOVERLAP = OVERLAP;
-                switch((String) parent.getItemAtPosition(position)){
+                switch ((String) parent.getItemAtPosition(position)) {
                     case "1/2":
-                        newOVERLAP = WIDTH/2;
+                        newOVERLAP = WIDTH / 2;
                         break;
                     case "1/3":
-                        newOVERLAP = WIDTH/3;
+                        newOVERLAP = WIDTH / 3;
                         break;
                     case "1/4":
-                        newOVERLAP = WIDTH/4;
+                        newOVERLAP = WIDTH / 4;
                         break;
                     case "0":
                         newOVERLAP = 0;
                         break;
 
                 }
-                if(newOVERLAP!=OVERLAP){
+                if (newOVERLAP != OVERLAP) {
                     OVERLAP = newOVERLAP;
                     generateSpectogram();
                     Log.v("overlap", (String) parent.getItemAtPosition(position));
@@ -240,8 +219,8 @@ public class TFAnalysis extends AppCompatActivity {
         overlapSpinner.setSelection(spinnerPosition);
     }
 
-    private void setupWidthSpinner(){
-        widthSpinner = (Spinner) findViewById(R.id.width_dropdown);
+    private void setupWidthSpinner() {
+        widthSpinner = findViewById(R.id.width_dropdown);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, widths);
 
@@ -254,10 +233,10 @@ public class TFAnalysis extends AppCompatActivity {
                                        int position, long id) {
 
                 int newWIDTH = Integer.parseInt((String) parent.getItemAtPosition(position)) * FS;
-                if(WIDTH!=newWIDTH){
-                    double overlap = (double)OVERLAP/WIDTH;
+                if (WIDTH != newWIDTH) {
+                    double overlap = (double) OVERLAP / WIDTH;
                     WIDTH = newWIDTH;
-                    OVERLAP = (int)(WIDTH*overlap);
+                    OVERLAP = (int) (WIDTH * overlap);
                     generateSpectogram();
                     Log.v("width", (String) parent.getItemAtPosition(position));
                 }
@@ -273,8 +252,8 @@ public class TFAnalysis extends AppCompatActivity {
         widthSpinner.setSelection(spinnerPosition);
     }
 
-    private void setupChannelSpinner(){
-        channelSpinner = (Spinner) findViewById(R.id.channel_dropdown);
+    private void setupChannelSpinner() {
+        channelSpinner = findViewById(R.id.channel_dropdown);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, channels);
 
@@ -286,7 +265,7 @@ public class TFAnalysis extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 int newChannel = Integer.parseInt((String) parent.getItemAtPosition(position)) - 1;
-                if(CHANNEL!=newChannel){
+                if (CHANNEL != newChannel) {
                     CHANNEL = newChannel;
                     generateSpectogram();
                     Log.v("channel", (String) parent.getItemAtPosition(position));

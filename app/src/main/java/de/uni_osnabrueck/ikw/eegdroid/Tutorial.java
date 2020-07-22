@@ -1,14 +1,14 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.webkit.WebView;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Objects;
 
@@ -24,7 +24,7 @@ public class Tutorial extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        webView = (WebView) findViewById(R.id.webViewTutorial);
+        webView = findViewById(R.id.webViewTutorial);
         webView.getSettings().setJavaScriptEnabled(true);
 
         if (isNetworkAvailable() == true) {

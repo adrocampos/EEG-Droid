@@ -1,14 +1,14 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.webkit.WebView;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Objects;
 
@@ -24,15 +24,15 @@ public class Learn extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        webView = (WebView) findViewById(R.id.webViewLearn);
+        webView = findViewById(R.id.webViewLearn);
         webView.getSettings().setJavaScriptEnabled(true);
 
 
         // If connection: load newest info
-        if (isNetworkAvailable()==true) {
+        if (isNetworkAvailable() == true) {
             webView.loadUrl("https://adrocampos.github.io/EEG-Droid/learn.html");
 
-       // If no connection: read from local
+            // If no connection: read from local
         } else {
 
             AlertDialog.Builder alert = new AlertDialog.Builder(this)

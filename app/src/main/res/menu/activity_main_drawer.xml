@@ -7,18 +7,18 @@
     <item android:title="Utilities">
         <menu>
 
-        <item
-            android:id="@+id/record"
-            android:icon="@drawable/ic_voicemail_black_24dp"
-            android:title="@string/activity_name_recordEEG" />
-        <item
-            android:id="@+id/display"
-            android:icon="@drawable/ic_video_library_black_24dp"
-            android:title="Play recordings" />
-        <item
-            android:id="@+id/manage"
-            android:icon="@drawable/ic_save_black_24dp"
-            android:title="Manage recordings" />
+            <item
+                android:id="@+id/record"
+                android:icon="@drawable/ic_voicemail_black_24dp"
+                android:title="@string/activity_name_recordEEG" />
+            <item
+                android:id="@+id/display"
+                android:icon="@drawable/ic_video_library_black_24dp"
+                android:title="Play recordings" />
+            <item
+                android:id="@+id/manage"
+                android:icon="@drawable/ic_save_black_24dp"
+                android:title="Manage recordings" />
 
         </menu>
     </item>

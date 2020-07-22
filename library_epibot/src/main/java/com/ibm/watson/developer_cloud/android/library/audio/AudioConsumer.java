@@ -17,19 +17,19 @@ package com.ibm.watson.developer_cloud.android.library.audio;
  * Delegate for consuming audio data from {@link MicrophoneCaptureThread}.
  */
 public interface AudioConsumer {
-  /**
-   * Data that has been recorded in the most recent sample and is ready for consumption.
-   *
-   * @param data      Buffer of audio data in raw form.
-   * @param amplitude Amplitude from sample.
-   * @param volume    Volume from sample.
-   */
-  void consume(byte[] data, double amplitude, double volume);
+    /**
+     * Data that has been recorded in the most recent sample and is ready for consumption.
+     *
+     * @param data      Buffer of audio data in raw form.
+     * @param amplitude Amplitude from sample.
+     * @param volume    Volume from sample.
+     */
+    void consume(byte[] data, double amplitude, double volume);
 
-  /**
-   * Consume.
-   *
-   * @param data the data
-   */
-  void consume(byte[] data);
+    /**
+     * Consume.
+     *
+     * @param data the data
+     */
+    void consume(byte[] data);
 }

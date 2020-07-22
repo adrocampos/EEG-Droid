@@ -28,109 +28,109 @@ import java.nio.ShortBuffer;
  */
 public class OggOpusEnc extends OpusWriter {
 
-  /**
-   * The Constant COPYRIGHT_NOTICE.
-   */
-  // Use PROPRIETARY notice if class contains a main() method, otherwise use COPYRIGHT notice.
-  public static final String COPYRIGHT_NOTICE = "(c) Copyright IBM Corp. 2015";
-  /**
-   * Data writer
-   */
-  private OpusWriter writer = null;
-  /**
-   * Opus encoder reference
-   */
-  private PointerByReference opusEncoder;
+    /**
+     * The Constant COPYRIGHT_NOTICE.
+     */
+    // Use PROPRIETARY notice if class contains a main() method, otherwise use COPYRIGHT notice.
+    public static final String COPYRIGHT_NOTICE = "(c) Copyright IBM Corp. 2015";
+    /**
+     * Data writer
+     */
+    private OpusWriter writer = null;
+    /**
+     * Opus encoder reference
+     */
+    private PointerByReference opusEncoder;
 
-  /**
-   * Constructor.
-   *
-   * @param ac the ac
-   * @throws IOException Signals that an I/O exception has occurred.
-   */
-  public OggOpusEnc(AudioConsumer ac) throws IOException {
-    initEncoder(ac);
-  }
-
-  /**
-   * For WebSocketClient.
-   *
-   * @param ac the ac
-   * @throws IOException Signals that an I/O exception has occurred.
-   */
-  public void initEncoder(AudioConsumer ac) throws IOException {
-    writer = new OpusWriter(ac);
-
-    IntBuffer error = IntBuffer.allocate(4);
-    this.opusEncoder = JNAOpus.INSTANCE.opus_encoder_create(SpeechConfiguration.SAMPLE_RATE,
-            SpeechConfiguration.AUDIO_CHANNELS, JNAOpus.OPUS_APPLICATION_VOIP, error);
-  }
-
-  /**
-   * When the encode begins.
-   */
-  public void onStart() {
-    writer.writeHeader("encoder=Lavc56.20.100 libopus");
-  }
-
-  /**
-   * Encode raw audio data into Opus format then call OpusWriter to write the Ogg packet.
-   *
-   * @param rawAudio the raw audio
-   * @return the int
-   * @throws IOException Signals that an I/O exception has occurred.
-   */
-  public int encodeAndWrite(byte[] rawAudio) throws IOException {
-    int uploadedAudioSize = 0;
-    ByteArrayInputStream ios = new ByteArrayInputStream(rawAudio);
-
-    byte[] data = new byte[SpeechConfiguration.FRAME_SIZE * 2];
-    int bufferSize, read;
-
-    while ((read = ios.read(data)) > 0) {
-      bufferSize = read;
-      byte[] pcmBuffer = new byte[read];
-      System.arraycopy(data, 0, pcmBuffer, 0, read);
-
-      ShortBuffer shortBuffer = ShortBuffer.allocate(bufferSize);
-      for (int i = 0; i < read; i += 2) {
-        int b1 = pcmBuffer[i] & 0xff;
-        int b2 = pcmBuffer[i + 1] << 8;
-        shortBuffer.put((short) (b1 | b2));
-      }
-      shortBuffer.flip();
-      ByteBuffer opusBuffer = ByteBuffer.allocate(bufferSize);
-
-      int opus_encoded = JNAOpus.INSTANCE.opus_encode(this.opusEncoder, shortBuffer, SpeechConfiguration.FRAME_SIZE,
-              opusBuffer, bufferSize);
-
-      opusBuffer.position(opus_encoded);
-      opusBuffer.flip();
-
-      byte[] opusData = new byte[opusBuffer.remaining()];
-      opusBuffer.get(opusData, 0, opusData.length);
-
-      if (opus_encoded > 0) {
-        uploadedAudioSize += opusData.length;
-        // System.out.println("This is where I'd write some data. " + uploadedAudioSize + " to be specific.");
-        writer.writePacket(opusData, 0, opusData.length);
-      }
+    /**
+     * Constructor.
+     *
+     * @param ac the ac
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public OggOpusEnc(AudioConsumer ac) throws IOException {
+        initEncoder(ac);
     }
 
-    ios.close();
+    /**
+     * For WebSocketClient.
+     *
+     * @param ac the ac
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public void initEncoder(AudioConsumer ac) throws IOException {
+        writer = new OpusWriter(ac);
 
-    return uploadedAudioSize;
-  }
-
-  /**
-   * Close writer.
-   */
-  public void close() {
-    try {
-      writer.close();
-      JNAOpus.INSTANCE.opus_encoder_destroy(this.opusEncoder);
-    } catch (IOException e) {
-      e.printStackTrace();
+        IntBuffer error = IntBuffer.allocate(4);
+        this.opusEncoder = JNAOpus.INSTANCE.opus_encoder_create(SpeechConfiguration.SAMPLE_RATE,
+                SpeechConfiguration.AUDIO_CHANNELS, JNAOpus.OPUS_APPLICATION_VOIP, error);
     }
-  }
+
+    /**
+     * When the encode begins.
+     */
+    public void onStart() {
+        writer.writeHeader("encoder=Lavc56.20.100 libopus");
+    }
+
+    /**
+     * Encode raw audio data into Opus format then call OpusWriter to write the Ogg packet.
+     *
+     * @param rawAudio the raw audio
+     * @return the int
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public int encodeAndWrite(byte[] rawAudio) throws IOException {
+        int uploadedAudioSize = 0;
+        ByteArrayInputStream ios = new ByteArrayInputStream(rawAudio);
+
+        byte[] data = new byte[SpeechConfiguration.FRAME_SIZE * 2];
+        int bufferSize, read;
+
+        while ((read = ios.read(data)) > 0) {
+            bufferSize = read;
+            byte[] pcmBuffer = new byte[read];
+            System.arraycopy(data, 0, pcmBuffer, 0, read);
+
+            ShortBuffer shortBuffer = ShortBuffer.allocate(bufferSize);
+            for (int i = 0; i < read; i += 2) {
+                int b1 = pcmBuffer[i] & 0xff;
+                int b2 = pcmBuffer[i + 1] << 8;
+                shortBuffer.put((short) (b1 | b2));
+            }
+            shortBuffer.flip();
+            ByteBuffer opusBuffer = ByteBuffer.allocate(bufferSize);
+
+            int opus_encoded = JNAOpus.INSTANCE.opus_encode(this.opusEncoder, shortBuffer, SpeechConfiguration.FRAME_SIZE,
+                    opusBuffer, bufferSize);
+
+            opusBuffer.position(opus_encoded);
+            opusBuffer.flip();
+
+            byte[] opusData = new byte[opusBuffer.remaining()];
+            opusBuffer.get(opusData, 0, opusData.length);
+
+            if (opus_encoded > 0) {
+                uploadedAudioSize += opusData.length;
+                // System.out.println("This is where I'd write some data. " + uploadedAudioSize + " to be specific.");
+                writer.writePacket(opusData, 0, opusData.length);
+            }
+        }
+
+        ios.close();
+
+        return uploadedAudioSize;
+    }
+
+    /**
+     * Close writer.
+     */
+    public void close() {
+        try {
+            writer.close();
+            JNAOpus.INSTANCE.opus_encoder_destroy(this.opusEncoder);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

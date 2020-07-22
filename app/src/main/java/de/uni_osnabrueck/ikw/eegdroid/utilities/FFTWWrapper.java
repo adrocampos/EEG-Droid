@@ -13,9 +13,9 @@ import static org.bytedeco.javacpp.fftw3.fftw_plan;
 import static org.bytedeco.javacpp.fftw3.fftw_plan_dft_1d;
 
 public class FFTWWrapper {
-    public static int NUM_POINTS = 1024;
     private static final int REAL = 0;
     private static final int IMAG = 1;
+    public static int NUM_POINTS = 1024;
     private static boolean FFTW_LOADED = false;
 
     public static Complex[] fftw(double[] x) {

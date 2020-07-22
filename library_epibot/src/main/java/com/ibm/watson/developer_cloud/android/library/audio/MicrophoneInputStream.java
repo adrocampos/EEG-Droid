@@ -27,139 +27,139 @@ import java.io.PipedOutputStream;
  * gets called in order to free its resources appropriately.
  */
 public final class MicrophoneInputStream extends InputStream implements AudioConsumer {
-  private static final String TAG = MicrophoneInputStream.class.getName();
+    private static final String TAG = MicrophoneInputStream.class.getName();
 
-  /**
-   * The content type.
-   */
-  public final ContentType CONTENT_TYPE;
+    /**
+     * The content type.
+     */
+    public final ContentType CONTENT_TYPE;
 
-  private final MicrophoneCaptureThread captureThread;
-  private final PipedOutputStream os;
-  private final PipedInputStream is;
+    private final MicrophoneCaptureThread captureThread;
+    private final PipedOutputStream os;
+    private final PipedInputStream is;
 
-  private AmplitudeListener amplitudeListener;
+    private AmplitudeListener amplitudeListener;
 
-  /**
-   * Instantiates a new microphone input stream.
-   *
-   * @param opusEncoded the opus encoded
-   */
-  public MicrophoneInputStream(boolean opusEncoded) {
-    captureThread = new MicrophoneCaptureThread(this, opusEncoded);
-    if (opusEncoded == true) {
-      CONTENT_TYPE = ContentType.OPUS;
-    } else {
-      CONTENT_TYPE = ContentType.RAW;
-    }
-    os = new PipedOutputStream();
-    is = new PipedInputStream();
-    try {
-      is.connect(os);
-    } catch (IOException e) {
-      Log.e(TAG, e.getMessage());
-    }
-    captureThread.start();
-  }
-
-  /**
-   * Read.
-   *
-   * @return the int
-   * @throws IOException Signals that an I/O exception has occurred.
-   */
-  @Override
-  public int read() throws IOException {
-    throw new UnsupportedOperationException("Call read(byte[]) or read(byte[], int, int)");
-  }
-
-  /**
-   * Read.
-   *
-   * @param buffer the buffer
-   * @return the int
-   * @throws IOException Signals that an I/O exception has occurred.
-   */
-  @Override
-  public int read(byte[] buffer) throws IOException {
-    return read(buffer, 0, buffer.length);
-  }
-
-  /**
-   * Read.
-   *
-   * @param buffer the buffer
-   * @param offset the offset
-   * @param length the length
-   * @return the int
-   * @throws IOException Signals that an I/O exception has occurred.
-   */
-  @Override
-  public int read(byte[] buffer, int offset, int length) throws IOException {
-    return is.read(buffer, offset, length);
-  }
-
-  /**
-   * Close.
-   *
-   * @throws IOException Signals that an I/O exception has occurred.
-   */
-  @Override
-  public void close() throws IOException {
-    captureThread.end();
-    os.close();
-    is.close();
-  }
-
-  /**
-   * Consume.
-   *
-   * @param data      the data
-   * @param amplitude the amplitude
-   * @param volume    the volume
-   */
-  @Override
-  public void consume(byte[] data, double amplitude, double volume) {
-    if (amplitudeListener != null) {
-      amplitudeListener.onSample(amplitude, volume);
+    /**
+     * Instantiates a new microphone input stream.
+     *
+     * @param opusEncoded the opus encoded
+     */
+    public MicrophoneInputStream(boolean opusEncoded) {
+        captureThread = new MicrophoneCaptureThread(this, opusEncoded);
+        if (opusEncoded == true) {
+            CONTENT_TYPE = ContentType.OPUS;
+        } else {
+            CONTENT_TYPE = ContentType.RAW;
+        }
+        os = new PipedOutputStream();
+        is = new PipedInputStream();
+        try {
+            is.connect(os);
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
+        }
+        captureThread.start();
     }
 
-    try {
-      os.write(data);
-    } catch (IOException e) {
-      Log.e(TAG, e.getMessage());
+    /**
+     * Read.
+     *
+     * @return the int
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    @Override
+    public int read() throws IOException {
+        throw new UnsupportedOperationException("Call read(byte[]) or read(byte[], int, int)");
     }
-  }
 
-  /**
-   * Consume.
-   *
-   * @param data the data
-   */
-  @Override
-  public void consume(byte[] data) {
-    try {
-      os.write(data);
-    } catch (IOException e) {
-      Log.e(TAG, e.getMessage());
+    /**
+     * Read.
+     *
+     * @param buffer the buffer
+     * @return the int
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    @Override
+    public int read(byte[] buffer) throws IOException {
+        return read(buffer, 0, buffer.length);
     }
-  }
 
-  /**
-   * Receive amplitude (and volume) data per sample from the {@code MicrophoneInputStream}.
-   *
-   * @param listener Notified per sample with amplitude and volume data.
-   */
-  public void setOnAmplitudeListener(AmplitudeListener listener) {
-    amplitudeListener = listener;
-  }
+    /**
+     * Read.
+     *
+     * @param buffer the buffer
+     * @param offset the offset
+     * @param length the length
+     * @return the int
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    @Override
+    public int read(byte[] buffer, int offset, int length) throws IOException {
+        return is.read(buffer, offset, length);
+    }
 
-  /**
-   * Get the audio format from the {@code MicrophoneInputStream}.
-   *
-   * @return audio/l16;rate=16000
-   */
-  public String getContentType() {
-    return CONTENT_TYPE.toString();
-  }
+    /**
+     * Close.
+     *
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    @Override
+    public void close() throws IOException {
+        captureThread.end();
+        os.close();
+        is.close();
+    }
+
+    /**
+     * Consume.
+     *
+     * @param data      the data
+     * @param amplitude the amplitude
+     * @param volume    the volume
+     */
+    @Override
+    public void consume(byte[] data, double amplitude, double volume) {
+        if (amplitudeListener != null) {
+            amplitudeListener.onSample(amplitude, volume);
+        }
+
+        try {
+            os.write(data);
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
+    /**
+     * Consume.
+     *
+     * @param data the data
+     */
+    @Override
+    public void consume(byte[] data) {
+        try {
+            os.write(data);
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
+    /**
+     * Receive amplitude (and volume) data per sample from the {@code MicrophoneInputStream}.
+     *
+     * @param listener Notified per sample with amplitude and volume data.
+     */
+    public void setOnAmplitudeListener(AmplitudeListener listener) {
+        amplitudeListener = listener;
+    }
+
+    /**
+     * Get the audio format from the {@code MicrophoneInputStream}.
+     *
+     * @return audio/l16;rate=16000
+     */
+    public String getContentType() {
+        return CONTENT_TYPE.toString();
+    }
 }

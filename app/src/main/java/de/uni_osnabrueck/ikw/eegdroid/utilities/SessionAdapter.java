@@ -19,19 +19,17 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
-
 import de.uni_osnabrueck.ikw.eegdroid.R;
 
 
 public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.PlanetViewHolder> {
 
     ArrayList<File> arrayListFiles;
+    private int selectedPos = RecyclerView.NO_POSITION;
 
     public SessionAdapter(ArrayList<File> arrayListFiles, Context context) {
         this.arrayListFiles = arrayListFiles;
     }
-
-    private int selectedPos = RecyclerView.NO_POSITION;
 
     @Override
     public SessionAdapter.PlanetViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -90,20 +88,19 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.PlanetVi
     }
 
     public static class PlanetViewHolder extends RecyclerView.ViewHolder {
+        public LinearLayout linearLayout;
         protected TextView name;
         protected TextView kbs;
         protected TextView date;
         protected TextView hour;
 
-        public LinearLayout linearLayout;
-
         public PlanetViewHolder(View itemView) {
             super(itemView);
-            name = (TextView) itemView.findViewById(R.id.text_id);
-            kbs = (TextView) itemView.findViewById(R.id.session_kbs);
-            date = (TextView) itemView.findViewById(R.id.session_date);
-            hour = (TextView) itemView.findViewById(R.id.session_hour);
-            linearLayout = (LinearLayout) itemView.findViewById(R.id.linear_layout_session_row);
+            name = itemView.findViewById(R.id.text_id);
+            kbs = itemView.findViewById(R.id.session_kbs);
+            date = itemView.findViewById(R.id.session_date);
+            hour = itemView.findViewById(R.id.session_hour);
+            linearLayout = itemView.findViewById(R.id.linear_layout_session_row);
         }
     }
 

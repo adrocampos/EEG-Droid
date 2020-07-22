@@ -1,32 +1,18 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.ShareActionProvider;
-import androidx.core.view.GravityCompat;
-import androidx.core.view.MenuItemCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class Settings extends AppCompatActivity {
 
@@ -59,12 +45,12 @@ public class Settings extends AppCompatActivity {
         IP = sharedPreferences.getString("IP", "192.168.1.125");
         port = sharedPreferences.getString("port", "65432");
 
-        editText_saveDir = (EditText) findViewById(R.id.editText_saveDir);
-        editText_username = (EditText) findViewById(R.id.editText_username);
-        editText_userID = (EditText) findViewById(R.id.editText_userID);
-        editText_IP = (EditText) findViewById(R.id.editText_IP);
-        editText_port = (EditText) findViewById(R.id.editText_port);
-        applyChangesButton = (Button) findViewById(R.id.settings_apply_changes);
+        editText_saveDir = findViewById(R.id.editText_saveDir);
+        editText_username = findViewById(R.id.editText_username);
+        editText_userID = findViewById(R.id.editText_userID);
+        editText_IP = findViewById(R.id.editText_IP);
+        editText_port = findViewById(R.id.editText_port);
+        applyChangesButton = findViewById(R.id.settings_apply_changes);
 
         editText_saveDir.setText(saveDir);
         editText_username.setText(username);

@@ -1,19 +1,7 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.ShareActionProvider;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-import androidx.core.view.MenuItemCompat;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -21,14 +9,23 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.ShareActionProvider;
+import androidx.core.content.FileProvider;
+import androidx.core.view.MenuItemCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-
-import android.view.View;
-import android.widget.EditText;
-import android.widget.Toast;
 
 import de.uni_osnabrueck.ikw.eegdroid.utilities.SessionAdapter;
 
@@ -49,7 +46,7 @@ public class ManageSessions extends AppCompatActivity {
         setContentView(R.layout.activity_manage_sessions);
         readDirectory(MainActivity.getDirSessions());
 
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView = findViewById(R.id.recycler_view);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -66,7 +63,6 @@ public class ManageSessions extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
-
 
 
     @Override
@@ -106,7 +102,7 @@ public class ManageSessions extends AppCompatActivity {
                     Intent intent = new Intent(Intent.ACTION_SEND);
                     intent.setType("text/plain");
                     intent.putExtra(Intent.EXTRA_SUBJECT, TextUtils.concat("EEG Session:", " ", arrayListOfFiles.get(position).getName()));
-                    Log.d("Auth", getApplicationContext().getPackageName().toString());
+                    Log.d("Auth", getApplicationContext().getPackageName());
                     Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".fileprovider", arrayListOfFiles.get(position));
                     intent.putExtra(Intent.EXTRA_STREAM, uri);
 
@@ -123,7 +119,7 @@ public class ManageSessions extends AppCompatActivity {
                     View mView = layoutInflaterAndroid.inflate(R.layout.input_dialog_string, null);
                     AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(this);
                     alertDialogBuilderUserInput.setView(mView);
-                    final EditText userInputDialogEditText = (EditText) mView.findViewById(R.id.input_dialog_string_Input);
+                    final EditText userInputDialogEditText = mView.findViewById(R.id.input_dialog_string_Input);
 
                     alertDialogBuilderUserInput
                             .setCancelable(false)
@@ -188,21 +184,20 @@ public class ManageSessions extends AppCompatActivity {
                     return true;
 
 
-
                 default:
                     return super.onOptionsItemSelected(item);
             }
         }
     }
 
-    public void createDirectory(File dir){
-        if (!dir.exists()){
-             dir.mkdirs(); // creates needed dirs
+    public void createDirectory(File dir) {
+        if (!dir.exists()) {
+            dir.mkdirs(); // creates needed dirs
         }
     }
 
     //Returns a list of recordings in directory
-    public void readDirectory(File dir){
+    public void readDirectory(File dir) {
         arrayListOfFiles = new ArrayList<>(Arrays.asList(dir.listFiles()));
         Collections.sort(arrayListOfFiles, Collections.reverseOrder());
         //Add if here?

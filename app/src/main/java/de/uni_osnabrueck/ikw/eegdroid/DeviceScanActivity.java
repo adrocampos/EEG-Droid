@@ -1,6 +1,7 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.bluetooth.BluetoothAdapter;
@@ -32,9 +33,10 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.core.content.ContextCompat;
+
 import androidx.core.app.ActivityCompat;
-import android.Manifest;
+import androidx.core.content.ContextCompat;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,27 +45,16 @@ import java.util.List;
  */
 public class DeviceScanActivity extends ListActivity {
     private final static String TAG = DeviceScanActivity.class.getSimpleName();
-
-    private LeDeviceListAdapter mLeDeviceListAdapter;
-    private BluetoothAdapter mBluetoothAdapter;
-    private BluetoothLeScanner mLEScanner;
-    private boolean mScanning;
-    private Handler mHandler;
-    private ScanSettings settings;
-    private List<ScanFilter> filters;
-    private BluetoothGatt mGatt;
-
     private static final int REQUEST_ENABLE_BT = 1;
-    private static final int REQUEST_BLUETOOTH = 1;
-    private static final int REQUEST_BLUETOOTH_ADMIN = 1;
+    //    private static final int REQUEST_BLUETOOTH = 1;
+//    private static final int REQUEST_BLUETOOTH_ADMIN = 1;
     private static final int REQUEST_ACCESS_COARSE_LOCATION = 1;
     private static final int REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final int REQUEST_ACCESS_BACKGROUND_LOCATION = 1;
     private static final int REQUEST_READ_EXTERNAL_STORAGE = 1;
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
     // Stops scanning after 10 seconds.
-    private static final long SCAN_PERIOD = 10000;
-
+    private static final long SCAN_PERIOD = 6000;
     private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -97,6 +88,34 @@ public class DeviceScanActivity extends ListActivity {
             gatt.disconnect();
         }
     };
+    private LeDeviceListAdapter mLeDeviceListAdapter;
+    // Device scan callback.
+    private final ScanCallback mScanCallback = new ScanCallback() {
+        @Override
+        public void onScanResult(int callbackType, ScanResult result) {
+            Log.i("callbackType", String.valueOf(callbackType));
+            Log.i("result", result.toString());
+            BluetoothDevice btDevice = result.getDevice();
+            mLeDeviceListAdapter.addDevice(btDevice);
+            mLeDeviceListAdapter.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onBatchScanResults(List<ScanResult> results) {
+            for (ScanResult sr : results) Log.i("ScanResult - Results", sr.toString());
+        }
+
+        @Override
+        public void onScanFailed(int errorCode) {
+            Log.e("Scan Failed", "Error Code: " + errorCode);
+        }
+    };
+    private BluetoothAdapter mBluetoothAdapter;
+    private BluetoothLeScanner mLEScanner;
+    private boolean mScanning;
+    private Handler mHandler;
+    private ScanSettings settings;
+    private List<ScanFilter> filters;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -159,7 +178,7 @@ public class DeviceScanActivity extends ListActivity {
         super.onResume();
         // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
         // fire an intent to display a dialog asking the user to grant permission to enable it.
-        if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
+        if (!mBluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         } else {
@@ -173,39 +192,39 @@ public class DeviceScanActivity extends ListActivity {
             setListAdapter(mLeDeviceListAdapter);
             scanLeDevice(true);
         }
-        if (ContextCompat.checkSelfPermission(DeviceScanActivity.this,
-                Manifest.permission.BLUETOOTH)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(DeviceScanActivity.this,
-                    Manifest.permission.BLUETOOTH)) {
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-
-                // No explanation needed; request the permission
-                ActivityCompat.requestPermissions(DeviceScanActivity.this,
-                        new String[]{Manifest.permission.BLUETOOTH},
-                        REQUEST_BLUETOOTH);
-                // REQUEST_BLUETOOTH is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-            }
-        }
-        if (ContextCompat.checkSelfPermission(DeviceScanActivity.this,
-                Manifest.permission.BLUETOOTH_ADMIN)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(DeviceScanActivity.this,
-                    Manifest.permission.BLUETOOTH_ADMIN)) {
-            } else {
-                ActivityCompat.requestPermissions(DeviceScanActivity.this,
-                        new String[]{Manifest.permission.BLUETOOTH_ADMIN},
-                        REQUEST_BLUETOOTH_ADMIN);
-            }
-        }
+//        if (ContextCompat.checkSelfPermission(DeviceScanActivity.this,
+//                Manifest.permission.BLUETOOTH)
+//                != PackageManager.PERMISSION_GRANTED) {
+//            // Permission is not granted
+//            // Should we show an explanation?
+//            if (ActivityCompat.shouldShowRequestPermissionRationale(DeviceScanActivity.this,
+//                    Manifest.permission.BLUETOOTH)) {
+//                // Show an explanation to the user *asynchronously* -- don't block
+//                // this thread waiting for the user's response! After the user
+//                // sees the explanation, try again to request the permission.
+//
+//            } else {
+//
+//                // No explanation needed; request the permission
+////                ActivityCompat.requestPermissions(DeviceScanActivity.this,
+////                        new String[]{Manifest.permission.BLUETOOTH},
+////                        REQUEST_BLUETOOTH);
+//                // REQUEST_BLUETOOTH is an
+//                // app-defined int constant. The callback method gets the
+//                // result of the request.
+//            }
+//        }
+//        if (ContextCompat.checkSelfPermission(DeviceScanActivity.this,
+//                Manifest.permission.BLUETOOTH_ADMIN)
+//                != PackageManager.PERMISSION_GRANTED) {
+//            if (ActivityCompat.shouldShowRequestPermissionRationale(DeviceScanActivity.this,
+//                    Manifest.permission.BLUETOOTH_ADMIN)) {
+//            } else {
+//                ActivityCompat.requestPermissions(DeviceScanActivity.this,
+//                        new String[]{Manifest.permission.BLUETOOTH_ADMIN},
+//                        REQUEST_BLUETOOTH_ADMIN);
+//            }
+//        }
         if (ContextCompat.checkSelfPermission(DeviceScanActivity.this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -239,15 +258,17 @@ public class DeviceScanActivity extends ListActivity {
                         REQUEST_ACCESS_FINE_LOCATION);
             }
         }
-        if (ContextCompat.checkSelfPermission(DeviceScanActivity.this,
-                Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(DeviceScanActivity.this,
-                    Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
-            } else {
-                ActivityCompat.requestPermissions(DeviceScanActivity.this,
-                        new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},
-                        REQUEST_ACCESS_BACKGROUND_LOCATION);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (ContextCompat.checkSelfPermission(DeviceScanActivity.this,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(DeviceScanActivity.this,
+                        Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+                } else {
+                    ActivityCompat.requestPermissions(DeviceScanActivity.this,
+                            new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},
+                            REQUEST_ACCESS_BACKGROUND_LOCATION);
+                }
             }
         }
         if (ContextCompat.checkSelfPermission(DeviceScanActivity.this,
@@ -292,8 +313,10 @@ public class DeviceScanActivity extends ListActivity {
 //        startActivity(intent);
         //Intent intent = new Intent(DeviceScanActivity.this, Record.class); //Maybe here is the problem
         Intent intent = new Intent();
+        int model = (TraumschreiberService.isNewModel(device.getName())) ? 3 : 2;
         intent.putExtra(Record.EXTRAS_DEVICE_NAME, device.getName());
         intent.putExtra(Record.EXTRAS_DEVICE_ADDRESS, device.getAddress());
+        intent.putExtra(Record.EXTRAS_DEVICE_MODEL, Integer.toString(model));
         setResult(RESULT_OK, intent);
 
 
@@ -311,18 +334,22 @@ public class DeviceScanActivity extends ListActivity {
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    mLEScanner.stopScan(mScanCallback);
                     mScanning = false;
+                    mLEScanner.stopScan(mScanCallback);
                     invalidateOptionsMenu();
                 }
             }, SCAN_PERIOD);
             mLEScanner.startScan(filters, settings, mScanCallback);
-            mScanning = true;
         } else {
-            mLEScanner.stopScan(mScanCallback);
             mScanning = false;
+            mLEScanner.stopScan(mScanCallback);
         }
         invalidateOptionsMenu();
+    }
+
+    static class ViewHolder {
+        TextView deviceName;
+        TextView deviceAddress;
     }
 
     // Adapter for holding devices found through scanning.
@@ -337,10 +364,10 @@ public class DeviceScanActivity extends ListActivity {
         }
 
         public void addDevice(BluetoothDevice device) {
-            if (device.getName() != null && TraumschreiberService.isTraumschreiberDevice(device.getName())){
+            if (device.getName() != null && TraumschreiberService.isTraumschreiberDevice(device.getName())) {
                 Log.d(TAG, "addDevice: Found a Traumschreiber with ID " + device.getAddress());
 
-                if(!mLeDevices.contains(device)) {
+                if (!mLeDevices.contains(device)) {
                     mLeDevices.add(device);
                 }
             } else {
@@ -378,8 +405,8 @@ public class DeviceScanActivity extends ListActivity {
             if (view == null) {
                 view = mInflator.inflate(R.layout.list_devices, null);
                 viewHolder = new ViewHolder();
-                viewHolder.deviceAddress = (TextView) view.findViewById(R.id.device_address);
-                viewHolder.deviceName = (TextView) view.findViewById(R.id.device_name);
+                viewHolder.deviceAddress = view.findViewById(R.id.device_address);
+                viewHolder.deviceName = view.findViewById(R.id.device_name);
                 view.setTag(viewHolder);
             } else viewHolder = (ViewHolder) view.getTag();
 
@@ -393,31 +420,4 @@ public class DeviceScanActivity extends ListActivity {
             return view;
         }
     }
-
-    static class ViewHolder {
-        TextView deviceName;
-        TextView deviceAddress;
-    }
-
-    // Device scan callback.
-    private final ScanCallback mScanCallback = new ScanCallback() {
-        @Override
-        public void onScanResult(int callbackType, ScanResult result) {
-            Log.i("callbackType", String.valueOf(callbackType));
-            Log.i("result", result.toString());
-            BluetoothDevice btDevice = result.getDevice();
-            mLeDeviceListAdapter.addDevice(btDevice);
-            mLeDeviceListAdapter.notifyDataSetChanged();
-        }
-
-        @Override
-        public void onBatchScanResults(List<ScanResult> results) {
-            for (ScanResult sr : results) Log.i("ScanResult - Results", sr.toString());
-        }
-
-        @Override
-        public void onScanFailed(int errorCode) {
-            Log.e("Scan Failed", "Error Code: " + errorCode);
-        }
-    };
 }

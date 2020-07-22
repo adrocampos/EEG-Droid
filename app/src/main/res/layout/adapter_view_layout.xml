@@ -9,14 +9,14 @@
         android:id="@+id/AdapterEpibotTextView"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_margin="2dp"
         android:layout_weight="3"
         android:drawableTop="@drawable/ic_forum_black_24dp"
         android:text="Epibot"
         android:textAlignment="center"
         android:textColor="#000000"
         android:textSize="14sp"
-        android:textStyle="bold"
-        android:layout_margin="2dp"/>
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -43,13 +43,13 @@
         android:id="@+id/AdapterUserTextView"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_margin="2dp"
         android:layout_weight="3"
         android:drawableTop="@drawable/ic_account_box_black_24dp"
         android:text="@string/username"
         android:textAlignment="center"
         android:textColor="#000000"
         android:textSize="14sp"
-        android:textStyle="bold"
-        android:layout_margin="2dp"/>
+        android:textStyle="bold" />
 
 </LinearLayout>
