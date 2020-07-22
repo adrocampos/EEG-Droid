@@ -4,7 +4,7 @@
     <item
         android:id="@+id/restore_default_settings"
         android:icon="@drawable/ic_restore_black_24dp"
-        bwq:showAsAction="always"
-        android:title="Restore settings" />
+        android:title="Restore settings"
+        bwq:showAsAction="always" />
 
 </menu>

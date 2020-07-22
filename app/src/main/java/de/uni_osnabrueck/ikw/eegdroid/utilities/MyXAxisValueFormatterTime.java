@@ -1,6 +1,5 @@
 package de.uni_osnabrueck.ikw.eegdroid.utilities;
 
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import java.time.LocalTime;

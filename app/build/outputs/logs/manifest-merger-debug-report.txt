@@ -1,22 +1,22 @@
 -- Merging decision tree log ---
 provider#de.uni_osnabrueck.ikw.eegdroid.utilities.GenericFileProvider
-INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:72:9-80:20
+INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:74:9-82:20
 	android:grantUriPermissions
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:76:13-47
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:78:13-47
 	android:authorities
 		INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:74:13-64
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:76:13-64
 	android:exported
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:75:13-37
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:77:13-37
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:73:13-58
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:75:13-58
 manifest
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:2:1-83:12
-INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:2:1-83:12
-INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:2:1-83:12
-INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:2:1-83:12
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:2:1-85:12
+INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:2:1-85:12
+INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:2:1-85:12
+INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:2:1-85:12
 MERGED from [com.google.android.material:material:1.3.0-alpha01] /home/mvidaldepalo/.gradle/caches/transforms-2/files-2.1/4470ad15ec0231a791eaf5557ac36429/material-1.3.0-alpha01/AndroidManifest.xml:17:1-24:12
-MERGED from [:library_epibot] /home/mvidaldepalo/github/EEG-Droid/library_epibot/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-26:12
+MERGED from [:library_epibot] /home/mvidaldepalo/github/EEG-Droid/library_epibot/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-25:12
 MERGED from [androidx.preference:preference:1.1.1] /home/mvidaldepalo/.gradle/caches/transforms-2/files-2.1/e3ce7e7cf0568bf54350349961cc10db/preference-1.1.1/AndroidManifest.xml:17:1-24:12
 MERGED from [us.feras.mdv:markdownview:1.1.0] /home/mvidaldepalo/.gradle/caches/transforms-2/files-2.1/ff22158283bd889622c5d9856f7dfa0a/jetified-markdownview-1.1.0/AndroidManifest.xml:2:1-17:12
 MERGED from [androidx.appcompat:appcompat:1.3.0-alpha01] /home/mvidaldepalo/.gradle/caches/transforms-2/files-2.1/78f827cc269587ea9b571925462da663/appcompat-1.3.0-alpha01/AndroidManifest.xml:17:1-24:12
@@ -62,22 +62,22 @@ MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /home/m
 MERGED from [androidx.print:print:1.0.0] /home/mvidaldepalo/.gradle/caches/transforms-2/files-2.1/87e4a5cb4839ebd5d033fa0ae6227780/print-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.interpolator:interpolator:1.0.0] /home/mvidaldepalo/.gradle/caches/transforms-2/files-2.1/bcf856ddfeb04b3b73ed182739910d39/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.annotation:annotation-experimental:1.0.0] /home/mvidaldepalo/.gradle/caches/transforms-2/files-2.1/1e0614212b25f4ae67724a3587ed8129/jetified-annotation-experimental-1.0.0/AndroidManifest.xml:17:1-24:12
-INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:2:1-83:12
-INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:2:1-83:12
-INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:2:1-83:12
+INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:2:1-85:12
+INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:2:1-85:12
+INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:2:1-85:12
 	package
 		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:4:5-45
 		INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml
 		INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml
 	android:versionName
 		INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:2:1-83:12
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:2:1-85:12
 		INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml
 	xmlns:tools
 		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:3:5-51
 	android:versionCode
 		INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:2:1-83:12
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:2:1-85:12
 		INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml
 	xmlns:android
 		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:2:11-69
@@ -88,61 +88,61 @@ ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:
 	android:name
 		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:7:9-53
 uses-permission#android.permission.BLUETOOTH
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:9:5-67
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:10:5-68
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:9:22-65
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:10:22-65
 uses-permission#android.permission.BLUETOOTH_ADMIN
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:10:5-73
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:11:5-74
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:10:22-71
-uses-permission#android.permission.ACCESS_BACKGROUND_LOCATION
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:11:5-85
-	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:11:22-82
-uses-permission#android.permission.ACCESS_FINE_LOCATION
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:12:5-79
-	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:12:22-76
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:11:22-71
 uses-permission#android.permission.ACCESS_COARSE_LOCATION
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:13:5-80
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:12:5-81
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:13:22-78
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:12:22-78
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:13:5-79
+	android:name
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:13:22-76
+uses-permission#android.permission.ACCESS_BACKGROUND_LOCATION
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:14:5-85
+	android:name
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:14:22-82
 uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:14:5-81
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:15:5-81
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:14:22-78
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:15:22-78
 uses-permission#android.permission.INTERNET
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:15:5-67
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:16:5-67
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:15:22-64
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:16:22-64
 uses-permission#android.permission.RECORD_AUDIO
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:16:5-71
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:17:5-71
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:16:22-68
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:17:22-68
 uses-permission#android.permission.MANAGE_DOCUMENTS
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:17:5-18:47
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:18:5-20:47
 	tools:ignore
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:18:9-44
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:20:9-44
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:17:22-72
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:19:9-59
 uses-permission#android.permission.CAMERA
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:20:5-65
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:22:5-65
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:20:22-62
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:22:22-62
 uses-permission#android.permission.READ_EXTERNAL_STORAGE
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:21:5-80
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:23:5-80
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:21:22-77
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:23:22-77
 uses-permission#android.permission.ACCESS_NETWORK_STATE
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:22:5-79
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:24:5-79
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:22:22-76
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:24:22-76
 application
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:24:5-81:19
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:26:5-83:19
 MERGED from [com.google.android.material:material:1.3.0-alpha01] /home/mvidaldepalo/.gradle/caches/transforms-2/files-2.1/4470ad15ec0231a791eaf5557ac36429/material-1.3.0-alpha01/AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.3.0-alpha01] /home/mvidaldepalo/.gradle/caches/transforms-2/files-2.1/4470ad15ec0231a791eaf5557ac36429/material-1.3.0-alpha01/AndroidManifest.xml:22:5-20
-MERGED from [:library_epibot] /home/mvidaldepalo/github/EEG-Droid/library_epibot/build/intermediates/library_manifest/debug/AndroidManifest.xml:13:5-24:19
-MERGED from [:library_epibot] /home/mvidaldepalo/github/EEG-Droid/library_epibot/build/intermediates/library_manifest/debug/AndroidManifest.xml:13:5-24:19
+MERGED from [:library_epibot] /home/mvidaldepalo/github/EEG-Droid/library_epibot/build/intermediates/library_manifest/debug/AndroidManifest.xml:13:5-23:19
+MERGED from [:library_epibot] /home/mvidaldepalo/github/EEG-Droid/library_epibot/build/intermediates/library_manifest/debug/AndroidManifest.xml:13:5-23:19
 MERGED from [us.feras.mdv:markdownview:1.1.0] /home/mvidaldepalo/.gradle/caches/transforms-2/files-2.1/ff22158283bd889622c5d9856f7dfa0a/jetified-markdownview-1.1.0/AndroidManifest.xml:11:5-15:19
 MERGED from [us.feras.mdv:markdownview:1.1.0] /home/mvidaldepalo/.gradle/caches/transforms-2/files-2.1/ff22158283bd889622c5d9856f7dfa0a/jetified-markdownview-1.1.0/AndroidManifest.xml:11:5-15:19
 MERGED from [androidx.constraintlayout:constraintlayout:1.1.3] /home/mvidaldepalo/.gradle/caches/transforms-2/files-2.1/75baa063235eedb7ab2cc635bdb88d73/constraintlayout-1.1.3/AndroidManifest.xml:9:5-20
@@ -154,103 +154,103 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /home/mvida
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.4.0-alpha01] /home/mvidaldepalo/.gradle/caches/transforms-2/files-2.1/73c7ee2965ed6b6fb00fe3515aa614af/core-1.4.0-alpha01/AndroidManifest.xml:24:18-86
 	android:supportsRtl
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:29:9-35
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:31:9-35
 	android:label
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:27:9-41
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:29:9-41
 	android:roundIcon
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:28:9-55
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:30:9-55
 	android:icon
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:26:9-44
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:28:9-44
 	android:allowBackup
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:25:9-35
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:27:9-35
 	android:theme
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:30:9-40
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:32:9-40
 activity#de.uni_osnabrueck.ikw.eegdroid.Info
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:31:9-51
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:33:9-42
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:31:19-39
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:33:19-39
 activity#de.uni_osnabrueck.ikw.eegdroid.Settings
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:32:9-46
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:34:9-46
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:32:19-43
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:34:19-43
 activity#de.uni_osnabrueck.ikw.eegdroid.Tutorial
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:33:9-46
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:35:9-46
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:33:19-43
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:35:19-43
 activity#de.uni_osnabrueck.ikw.eegdroid.Learn
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:34:9-43
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:36:9-43
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:34:19-40
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:36:19-40
 activity#de.uni_osnabrueck.ikw.eegdroid.ManageSessions
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:35:9-52
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:37:9-52
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:35:19-49
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:37:19-49
 activity#de.uni_osnabrueck.ikw.eegdroid.MainActivity
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:36:9-45:20
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:38:9-47:20
 	android:label
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:38:13-45
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:40:13-45
 	android:theme
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:39:13-56
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:41:13-56
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:37:13-41
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:39:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:40:13-44:29
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:42:13-46:29
 action#android.intent.action.MAIN
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:41:17-69
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:43:17-69
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:41:25-66
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:43:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:43:17-77
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:45:17-77
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:43:27-74
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:45:27-74
 activity#de.uni_osnabrueck.ikw.eegdroid.Record
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:46:9-44
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:48:9-44
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:46:19-41
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:48:19-41
 activity#de.uni_osnabrueck.ikw.eegdroid.Display
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:47:9-49:62
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:49:9-51:62
 	android:configChanges
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:49:13-59
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:51:13-59
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:48:13-36
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:50:13-36
 activity#de.uni_osnabrueck.ikw.eegdroid.TFAnalysis
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:50:9-52:62
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:52:9-54:62
 	android:configChanges
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:52:13-59
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:54:13-59
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:51:13-39
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:53:13-39
 activity#de.uni_osnabrueck.ikw.eegdroid.Epibot
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:53:9-55:62
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:55:9-57:62
 	android:configChanges
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:55:13-59
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:57:13-59
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:54:13-35
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:56:13-35
 activity#de.uni_osnabrueck.ikw.eegdroid.SettingsActivity
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:56:9-58:63
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:58:9-60:63
 	android:label
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:58:13-60
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:60:13-60
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:57:13-45
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:59:13-45
 activity#de.uni_osnabrueck.ikw.eegdroid.DeviceScanActivity
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:59:9-61:48
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:61:9-63:48
 	android:label
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:61:13-45
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:63:13-45
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:60:13-47
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:62:13-47
 service#de.uni_osnabrueck.ikw.eegdroid.BluetoothLeService
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:63:9-65:38
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:65:9-67:38
 	android:enabled
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:65:13-35
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:67:13-35
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:64:13-47
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:66:13-47
 activity#de.uni_osnabrueck.ikw.eegdroid.Connect
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:67:9-70:59
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:69:9-72:59
 	android:label
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:69:13-59
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:71:13-59
 	android:theme
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:70:13-56
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:72:13-56
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:68:13-36
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:70:13-36
 uses-sdk
 INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml
@@ -360,17 +360,17 @@ INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.x
 		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml
 		INJECTED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml
 meta-data#android.support.FILE_PROVIDER_PATHS
-ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:77:13-79:58
+ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:79:13-81:58
 	android:resource
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:79:17-55
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:81:17-55
 	android:name
-		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:78:17-67
+		ADDED from /home/mvidaldepalo/github/EEG-Droid/app/src/main/AndroidManifest.xml:80:17-67
 uses-permission#android.permission.VIBRATE
 ADDED from [:library_epibot] /home/mvidaldepalo/github/EEG-Droid/library_epibot/build/intermediates/library_manifest/debug/AndroidManifest.xml:11:5-66
 	android:name
 		ADDED from [:library_epibot] /home/mvidaldepalo/github/EEG-Droid/library_epibot/build/intermediates/library_manifest/debug/AndroidManifest.xml:11:22-63
 provider#androidx.core.content.FileProvider
-ADDED from [:library_epibot] /home/mvidaldepalo/github/EEG-Droid/library_epibot/build/intermediates/library_manifest/debug/AndroidManifest.xml:14:9-23:20
+ADDED from [:library_epibot] /home/mvidaldepalo/github/EEG-Droid/library_epibot/build/intermediates/library_manifest/debug/AndroidManifest.xml:14:9-22:20
 	android:grantUriPermissions
 		ADDED from [:library_epibot] /home/mvidaldepalo/github/EEG-Droid/library_epibot/build/intermediates/library_manifest/debug/AndroidManifest.xml:18:13-47
 	android:authorities

@@ -4,8 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="de.uni_osnabrueck.ikw.eegdroid">
 
-    <item android:id="@+id/clear_conversation"
+    <item
+        android:id="@+id/clear_conversation"
         android:icon="@drawable/ic_clear_all_white_24dp"
         android:title="@string/clear_conversation"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 </menu>

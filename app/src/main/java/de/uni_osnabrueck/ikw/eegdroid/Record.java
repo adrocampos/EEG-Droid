@@ -24,7 +24,6 @@ import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -61,31 +60,21 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 
 public class Record extends AppCompatActivity {
 
-    private final static String TAG = Record.class.getSimpleName();
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
-    private TextView mConnectionState;
-    private TextView viewDeviceAddress;
-    private String mDeviceName;
-    private String mDeviceAddress;
-    private ExpandableListView mGattServicesList;
-    private BluetoothLeService mBluetoothLeService;
-    private ArrayList<ArrayList<BluetoothGattCharacteristic>> mGattCharacteristics = new ArrayList<ArrayList<BluetoothGattCharacteristic>>();
-    private BluetoothGattCharacteristic mNotifyCharacteristic;
-    private final String LIST_NAME = "NAME";
-    private final String LIST_UUID = "UUID";
-    private boolean recording = false;
-    private String selected_gain;
+    public static final String EXTRAS_DEVICE_MODEL = "DEVICE_MODEL"; // "2": old, "3": new
+    private final static String TAG = Record.class.getSimpleName();
     private final Handler handler = new Handler();
     private final List<Float> dp_received = new ArrayList<>();
     private final List<List<Float>> accumulated = new ArrayList<>();
     // constants
-    private final int CONNECT_DELAY = 2000;
+    private final int CONNECT_DELAY = 1000;
     private final float DATAPOINT_TIME = 4.5f;
     private final int PLOT_MEMO = 3000;  // max time range in ms (x value) to store on plot
     private final int MAX_VISIBLE = 500;  // see 500ms at the time on the plot
@@ -97,6 +86,40 @@ public class Record extends AppCompatActivity {
     private final ArrayList<Entry> lineEntries6 = new ArrayList<>();
     private final ArrayList<Entry> lineEntries7 = new ArrayList<>();
     private final ArrayList<Entry> lineEntries8 = new ArrayList<>();
+    private TextView mConnectionState;
+    private TextView viewDeviceAddress;
+    private String mDeviceName;
+    private boolean mNewDevice;
+    private String mDeviceAddress;
+    private BluetoothLeService mBluetoothLeService;
+    // Code to manage Service lifecycle.
+    private final ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {
+            mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
+            if (!mBluetoothLeService.initialize()) {
+                Log.e(TAG, "Unable to initialize Bluetooth");
+                finish();
+            }
+
+            // hack for ensuring a successful connection
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mBluetoothLeService.connect(mDeviceAddress);
+                }
+            }, CONNECT_DELAY);  // connect with a defined delay
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            if (mBluetoothLeService != null) mBluetoothLeService = null;
+        }
+    };
+    private BluetoothGattCharacteristic mNotifyCharacteristic;
+    private boolean recording = false;
+    private String selected_gain;
     private float res_time;
     private float res_freq;
     private int cnt = 0;
@@ -145,6 +168,18 @@ public class Record extends AppCompatActivity {
     private View layout_plots;
     private boolean plotting = false;
     private List<float[]> main_data;
+    private final View.OnClickListener imageDiscardOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            main_data = new ArrayList<>();
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Your EEG session was discarded.",
+                    Toast.LENGTH_LONG
+            ).show();
+            buttons_prerecording();
+        }
+    };
     private float data_cnt = 0;
     private long start_data = 0;
     private String start_time;
@@ -153,48 +188,6 @@ public class Record extends AppCompatActivity {
     private String recording_time;
     private long start_timestamp;
     private long end_timestamp;
-    private Thread thread;
-    private long plotting_start;
-    private boolean deviceConnected = false;
-    private boolean casting = false;
-    private Menu menu;
-    private Socket socket;
-    private PrintWriter out;
-    private BufferedReader in;
-    private List<Float> microV;
-    private CastThread caster;
-//    private List<List<Float>> recentlyDisplayedData;  // THOMAS' for auto scale adjusting of plot
-
-
-    // Code to manage Service lifecycle.
-    private final ServiceConnection mServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder service) {
-            mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
-            if (!mBluetoothLeService.initialize()) {
-                Log.e(TAG, "Unable to initialize Bluetooth");
-                finish();
-            }
-
-            // hack for ensuring a successful connection
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mBluetoothLeService.connect(mDeviceAddress);
-                }
-            }, CONNECT_DELAY);  // connect with a defined delay
-
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            if (mBluetoothLeService != null) {
-                mBluetoothLeService = null;
-            }
-        }
-    };
-
-
     private final View.OnClickListener imageRecordOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -212,7 +205,6 @@ public class Record extends AppCompatActivity {
             }
         }
     };
-
     private final View.OnClickListener imageSaveOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -221,7 +213,7 @@ public class Record extends AppCompatActivity {
             AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(Record.this);
             alertDialogBuilderUserInput.setView(mView);
 
-            final EditText userInputLabel = (EditText) mView.findViewById(R.id.input_dialog_string_Input);
+            final EditText userInputLabel = mView.findViewById(R.id.input_dialog_string_Input);
 
             alertDialogBuilderUserInput
                     .setCancelable(false)
@@ -244,19 +236,31 @@ public class Record extends AppCompatActivity {
             buttons_prerecording();
         }
     };
-    private final View.OnClickListener imageDiscardOnClickListener = new View.OnClickListener() {
+    private Thread thread;
+    private long plotting_start;
+    private final CompoundButton.OnCheckedChangeListener switchPlotsOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
-        public void onClick(View v) {
-            main_data = new ArrayList<>();
-            Toast.makeText(
-                    getApplicationContext(),
-                    "Your EEG session was discarded.",
-                    Toast.LENGTH_LONG
-            ).show();
-            buttons_prerecording();
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (!isChecked) {
+                layout_plots.setVisibility(ViewStub.GONE);
+                mXAxis.setVisibility(ViewStub.GONE);
+                plotting = false;
+            } else {
+                layout_plots.setVisibility(ViewStub.VISIBLE);
+                mXAxis.setVisibility(ViewStub.VISIBLE);
+                plotting = true;
+                plotting_start = System.currentTimeMillis();
+            }
         }
     };
-
+    private boolean deviceConnected = false;
+    private boolean casting = false;
+    private Menu menu;
+    private List<List<Float>> recentlyDisplayedData;
+    private Socket socket;
+    private PrintWriter out;
+    private BufferedReader in;
+    private List<Float> microV;
     // Handles various events fired by the Service.
     // ACTION_GATT_CONNECTED: connected to a GATT server.
     // ACTION_GATT_DISCONNECTED: disconnected from a GATT server.
@@ -269,28 +273,18 @@ public class Record extends AppCompatActivity {
             if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
                 buttons_prerecording();
                 setConnectionStatus(true);
-
-
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 setConnectionStatus(false);
                 clearUI();
                 disableCheckboxes();
-
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 // Show all the supported services and characteristics on the user interface.
-                if (mNotifyCharacteristic == null) {
-                    readGattCharacteristic(mBluetoothLeService.getSupportedGattServices());
-                }
-
+                readGattCharacteristic(mBluetoothLeService.getSupportedGattServices());
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-
-
-                System.out.println(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
                 data_cnt++;
                 long last_data = System.currentTimeMillis();
-
                 enableCheckboxes();
-                microV = transData(intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA));
+                microV = transData(Objects.requireNonNull(intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA)));
                 displayData(microV);
                 if (plotting) {
                     accumulated.add(microV);
@@ -305,7 +299,7 @@ public class Record extends AppCompatActivity {
                 if (start_data == 0) start_data = System.currentTimeMillis();
                 res_time = (last_data - start_data) / data_cnt;
                 res_freq = (1 / res_time) * 1000;
-                String hertz = String.valueOf((int) res_freq) + "Hz";
+                String hertz = (int) res_freq + "Hz";
                 @SuppressLint("DefaultLocale") String resolution = String.format("%.2f", res_time) + "ms - ";
                 String content = resolution + hertz;
                 mDataResolution.setText(content);
@@ -320,11 +314,21 @@ public class Record extends AppCompatActivity {
             }
         }
     };
+    private CastThread caster;
+
+    private static IntentFilter makeGattUpdateIntentFilter() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
+        intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
+        return intentFilter;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter()); // THOMAS'
+        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
         setContentView(R.layout.activity_record);
 
         ch1_color = ContextCompat.getColor(getApplicationContext(), R.color.aqua);
@@ -384,7 +388,7 @@ public class Record extends AppCompatActivity {
                         selected_gain = "1";
                         max = 2100f;
                 }
-                if (mBluetoothLeService != null) {
+                if (mBluetoothLeService != null && !mNewDevice) {
                     writeGattCharacteristic(mBluetoothLeService.getSupportedGattServices());
                 }
                 YAxis leftAxis = mChart.getAxisLeft();
@@ -410,14 +414,14 @@ public class Record extends AppCompatActivity {
 
 
         // Sets up UI references.
-        mConnectionState = (TextView) findViewById(R.id.connection_state);
+        mConnectionState = findViewById(R.id.connection_state);
 
         // Extract the info from the intent
 
-        //Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
-        //bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+//        Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
+//        bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
-        viewDeviceAddress = (TextView) findViewById(R.id.device_address);
+        viewDeviceAddress = findViewById(R.id.device_address);
         mConnectionState = findViewById(R.id.connection_state);
         mCh1 = findViewById(R.id.ch1);
         mCh2 = findViewById(R.id.ch2);
@@ -541,13 +545,13 @@ public class Record extends AppCompatActivity {
         });
         mDataResolution = findViewById(R.id.resolution_value);
         setChart();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-//        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter()); // THOMAS commented it
+        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
         if (mBluetoothLeService != null) {
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
             Log.d(TAG, "Connect request result=" + result);
@@ -557,7 +561,7 @@ public class Record extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-//        unregisterReceiver(mGattUpdateReceiver); // THOMAS commented it
+        unregisterReceiver(mGattUpdateReceiver);
     }
 
     @Override
@@ -659,7 +663,6 @@ public class Record extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         // Check which request we're responding to
@@ -671,12 +674,13 @@ public class Record extends AppCompatActivity {
                 // The Intent's data Uri identifies which contact was selected
                 mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
                 mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
+                String model = intent.getStringExtra(EXTRAS_DEVICE_MODEL);
+                if (model != null) mNewDevice = model.equals("3");
                 Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
                 bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
             }
         }
     }
-
 
     private void writeGattCharacteristic(List<BluetoothGattService> gattServices) {
         if (gattServices == null) return;
@@ -725,8 +729,8 @@ public class Record extends AppCompatActivity {
                         mBluetoothLeService.writeCharacteristic(gattCharacteristic);
                         if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
                             mNotifyCharacteristic = gattCharacteristic;
-//                            mBluetoothLeService.setCharacteristicNotification(
-//                                    gattCharacteristic, true); // THOMAS'
+                            mBluetoothLeService.setCharacteristicNotification(
+                                    gattCharacteristic, true);
                         }
                     }
                 }
@@ -734,65 +738,39 @@ public class Record extends AppCompatActivity {
         }
     }
 
-    private static IntentFilter makeGattUpdateIntentFilter() {
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
-        intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
-        return intentFilter;
-    }
-
-    private final CompoundButton.OnCheckedChangeListener switchPlotsOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (!isChecked) {
-                layout_plots.setVisibility(ViewStub.GONE);
-                mXAxis.setVisibility(ViewStub.GONE);
-                plotting = false;
-            } else {
-                layout_plots.setVisibility(ViewStub.VISIBLE);
-                mXAxis.setVisibility(ViewStub.VISIBLE);
-                plotting = true;
-                plotting_start = System.currentTimeMillis();
-            }
-        }
-    };
-
-
     private void readGattCharacteristic(List<BluetoothGattService> gattServices) {
         if (gattServices == null) return;
         String uuid;
+        String charUuid;
         // Loops through available GATT Services.
         for (BluetoothGattService gattService : gattServices) {
             uuid = gattService.getUuid().toString();
             // for the new Traumschreiber the uuid is "00000ee6-0000-1000-8000-00805f9b34fb"
-            if (uuid.equals("a22686cb-9268-bd91-dd4f-b52d03d85593")) {
+            if ((!mNewDevice && uuid.equals("a22686cb-9268-bd91-dd4f-b52d03d85593")) || (mNewDevice && uuid.equals("00000ee6-0000-1000-8000-00805f9b34fb"))) {
                 List<BluetoothGattCharacteristic> gattCharacteristics =
                         gattService.getCharacteristics();
                 // Loops through available Characteristics.
                 for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
-                    // uuid -> "faa7b588-19e5-f590-0545-c99f193c5c3e"
-                    // start reading the EEG data received from this gatt characteristic
+
                     final int charaProp = gattCharacteristic.getProperties();
-                    if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
-                        // If there is an active notification on a characteristic, clear
-                        // it first so it doesn't update the data field on the user interface.
-                        if (mNotifyCharacteristic != null) {
-//                            mBluetoothLeService.setCharacteristicNotification(
-//                                    mNotifyCharacteristic, false);  // THOMAS'
-                            mNotifyCharacteristic = null;
+                    charUuid = gattCharacteristic.getUuid().toString();
+                    if ((!mNewDevice && charUuid.equals("faa7b588-19e5-f590-0545-c99f193c5c3e")) || (mNewDevice && charUuid.equals("0000e617-0000-1000-8000-00805f9b34fb"))) {
+                        if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
+                            // If there is an active notification on a characteristic, clear
+                            // it first so it doesn't update the data field on the user interface.
+                            if (mNotifyCharacteristic != null) {
+                                mBluetoothLeService.setCharacteristicNotification(
+                                        mNotifyCharacteristic, false);
+                                mNotifyCharacteristic = null;
+                            }
+                            mBluetoothLeService.readCharacteristic(gattCharacteristic, mNewDevice);
                         }
-                        mBluetoothLeService.readCharacteristic(gattCharacteristic);
+                        if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+                            mNotifyCharacteristic = gattCharacteristic;
+                            mBluetoothLeService.setCharacteristicNotification(
+                                    gattCharacteristic, true);
+                        }
                     }
-                    if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
-                        mNotifyCharacteristic = gattCharacteristic;
-                        // THOMAS' commented this, incoming data is not read for the old T otherwise
-                        mBluetoothLeService.setCharacteristicNotification(
-                                gattCharacteristic, true);
-                    }
-                    //mBluetoothLeService.disconnect();
-                    mBluetoothLeService.connect(mDeviceAddress);
                 }
             }
         }
@@ -835,11 +813,11 @@ public class Record extends AppCompatActivity {
     }
 
     private List<Float> transData(int[] data) {
-        // Assuming GAIN = 64
-        // Conversion formula: V_in = X*1.65V/(1000 * GAIN * 2048)
+        // Conversion formula: V_in = X*1.65V/(1000 * GAIN * PRECISION)
         float gain = Float.parseFloat(selected_gain);
+        float precision = (mNewDevice) ? 50000 : 2048;
         float numerator = 1650;
-        float denominator = gain * 2048; // 50000 for the new Traumschreiber
+        float denominator = gain * precision;
         List<Float> data_trans = new ArrayList<>();
         for (int datapoint : data)
             data_trans.add((datapoint * numerator) / denominator);
@@ -866,9 +844,10 @@ public class Record extends AppCompatActivity {
             mCh4.setText(values.get(3));
             mCh5.setText(values.get(4));
             mCh6.setText(values.get(5));
-            mCh7.setText(values.get(6));
-            mCh8.setText(values.get(7));
-            // THOMAS' ch7-8 excluded for the moment for the new T because we only have 6
+            if (!mNewDevice) {
+                mCh7.setText(values.get(6));
+                mCh8.setText(values.get(7));
+            }
         }
     }
 
@@ -1015,7 +994,7 @@ public class Record extends AppCompatActivity {
     }
 
     private void addEntries(final List<List<Float>> e_list) {
-//        adjustScale(e_list);  // THOMAS' for auto scale adjusting of plot
+        adjustScale(e_list);
         final List<ILineDataSet> datasets = new ArrayList<>();  // for adding multiple plots
         float x = 0;
         for (List<Float> f : e_list) {
@@ -1027,9 +1006,10 @@ public class Record extends AppCompatActivity {
             lineEntries4.add(new Entry(x, f.get(3)));
             lineEntries5.add(new Entry(x, f.get(4)));
             lineEntries6.add(new Entry(x, f.get(5)));
-            lineEntries7.add(new Entry(x, f.get(6)));
-            lineEntries8.add(new Entry(x, f.get(7)));
-            // THOMAS' here again 7 and 8 excluded because they don't work at the moment.
+            if (!mNewDevice) {
+                lineEntries7.add(new Entry(x, f.get(6)));
+                lineEntries8.add(new Entry(x, f.get(7)));
+            }
         }
         final float f_x = x;
         if (thread != null) thread.interrupt();
@@ -1078,49 +1058,49 @@ public class Record extends AppCompatActivity {
         }
     }
 
-//    /** THOMAS' for automatically adjusting the scale of the plot
-//     * adjusts the scale according to the maximal and minimal value of the data given in
-//     *
-//     * @param e_list
-//     */
-//    private void adjustScale(final List<List<Float>> e_list) {
-//        if (recentlyDisplayedData == null) {
-//            recentlyDisplayedData = new ArrayList<>();
+    /**
+     * adjusts the scale according to the maximal and minimal value of the data given in
+     *
+     * @param e_list
+     */
+    private void adjustScale(final List<List<Float>> e_list) {
+        if (recentlyDisplayedData == null) {
+            recentlyDisplayedData = new ArrayList<>();
+        }
+        if (recentlyDisplayedData.size() > 50 * e_list.size())
+            recentlyDisplayedData = recentlyDisplayedData.subList(e_list.size(), recentlyDisplayedData.size());
+        for (List<Float> innerList : e_list) {
+            recentlyDisplayedData.add(innerList);
+        }
+        int max = 0;
+        int min = 0;
+        for (List<Float> innerList : recentlyDisplayedData) {
+            int channel = 0;
+            for (Float entry : innerList) {
+                if ((show_ch1 && channel == 0) || (show_ch2 && channel == 1) || (show_ch3 && channel == 2) || (show_ch4 && channel == 3) ||
+                        (show_ch5 && channel == 4) || (show_ch6 && channel == 5) || (show_ch7 && channel == 6) || (show_ch8 && channel == 7)) {
+                    if (entry > max) {
+                        max = entry.intValue();
+                    }
+                    if (entry < min) {
+                        min = entry.intValue();
+                    }
+                }
+                channel++;
+            }
+        }
+        // include this part to make the axis symmetric (0 always visible in the middle)
+//        if(max < min * -1) {
+//            max = min * -1;
 //        }
-//        if (recentlyDisplayedData.size() > 50 * e_list.size())
-//            recentlyDisplayedData = recentlyDisplayedData.subList(e_list.size(), recentlyDisplayedData.size());
-//        for (List<Float> innerList : e_list) {
-//            recentlyDisplayedData.add(innerList);
-//        }
-//        int max = 0;
-//        int min = 0;
-//        for (List<Float> innerList : recentlyDisplayedData) {
-//            int channel = 0;
-//            for (Float entry : innerList) {
-//                if ((show_ch1 && channel == 0) || (show_ch2 && channel == 1) || (show_ch3 && channel == 2) || (show_ch4 && channel == 3) ||
-//                        (show_ch5 && channel == 4) || (show_ch6 && channel == 5) || (show_ch7 && channel == 6) || (show_ch8 && channel == 7)) {
-//                    if (entry > max) {
-//                        max = entry.intValue();
-//                    }
-//                    if (entry < min) {
-//                        min = entry.intValue();
-//                    }
-//                }
-//                channel++;
-//            }
-//        }
-//        // include this part to make the axis symmetric (0 always visible in the middle)
-////        if(max < min * -1) {
-////            max = min * -1;
-////        }
-////        min = max * -1;
-//        int range = max - min;
-//        max += 0.1 * range;
-//        min -= 0.1 * range;
-//        YAxis leftAxis = mChart.getAxisLeft();
-//        leftAxis.setAxisMaximum(max);
-//        leftAxis.setAxisMinimum(min);
-//    }
+//        min = max * -1;
+        int range = max - min;
+        max += 0.1 * range;
+        min -= 0.1 * range;
+        YAxis leftAxis = mChart.getAxisLeft();
+        leftAxis.setAxisMaximum(max);
+        leftAxis.setAxisMinimum(min);
+    }
 
     //Starts a recording session
     @SuppressLint({"SimpleDateFormat", "SetTextI18n"})
@@ -1300,11 +1280,11 @@ public class Record extends AppCompatActivity {
     @SuppressWarnings("InfiniteLoopStatement")
     class CastThread extends Thread {
 
-        private volatile boolean exit = false;
         String IP = getSharedPreferences("userPreferences", 0).getString("IP", getResources().getString(R.string.default_IP));
         String port = getSharedPreferences("userPreferences", 0).getString("port", getResources().getString(R.string.default_port));
         // best way found until now to encode the values, a stringified JSON. Looks like:
         JSONObject toSend = new JSONObject();
+        private volatile boolean exit = false;
         // {'pkg': 1, 'time': 1589880540884, '1': -149.85352, '2': -18.530273, '3': 191.74805, '4': -305.34668, '5': 0, '6': -142.60254, '7': -1.6113281, '8': -29.80957}
 
         public void run() {
@@ -1360,12 +1340,13 @@ public class Record extends AppCompatActivity {
             if (out != null) {
                 out.close();
             }
-            //maybe when activity closes
-//            try {
-//                socket.close();
-//            } catch (IOException e){
-//            }
-
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
     }

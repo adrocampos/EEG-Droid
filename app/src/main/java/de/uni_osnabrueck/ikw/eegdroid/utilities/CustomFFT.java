@@ -3,11 +3,11 @@ package de.uni_osnabrueck.ikw.eegdroid.utilities;
 import org.apache.commons.math3.complex.Complex;
 
 public class CustomFFT {
+    private static final int FFT_THRES = 32;
+    public static int FFT_SIZE = 1024;
     private static Complex[][] FFT_MAT;
     private static Complex[][] DFT_MAT;
     private static Complex[] FFT_FACTORS;
-    private static final int FFT_THRES = 32;
-    public static int FFT_SIZE = 1024;
 
     private static void initFFTMat() {
         FFT_MAT = new Complex[FFT_THRES][FFT_THRES];

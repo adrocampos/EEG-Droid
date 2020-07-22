@@ -18,50 +18,50 @@ package com.ibm.watson.developer_cloud.android.library.audio.opus;
  */
 public class OggOpus {
 
-  static {
-    System.loadLibrary("oggopus");
-  }
+    static {
+        System.loadLibrary("oggopus");
+    }
 
-  /**
-   * Inits the audio.
-   */
-  public static native void initAudio();
+    /**
+     * Inits the audio.
+     */
+    public static native void initAudio();
 
-  /**
-   * Start recorder.
-   *
-   * @param sample_rate the sample rate
-   */
-  public static native void startRecorder(int sample_rate);
+    /**
+     * Start recorder.
+     *
+     * @param sample_rate the sample rate
+     */
+    public static native void startRecorder(int sample_rate);
 
-  /**
-   * Stop recorder.
-   */
-  public static native void stopRecorder();
+    /**
+     * Stop recorder.
+     */
+    public static native void stopRecorder();
 
-  /**
-   * Encode.
-   *
-   * @param s           the s
-   * @param sample_rate the sample rate
-   * @return the int
-   */
-  public static native int encode(String s, int sample_rate);
+    /**
+     * Encode.
+     *
+     * @param s           the s
+     * @param sample_rate the sample rate
+     * @return the int
+     */
+    public static native int encode(String s, int sample_rate);
 
-  /**
-   * Decode.
-   *
-   * @param s           the s
-   * @param o           the o
-   * @param sample_rate the sample rate
-   * @return the int
-   */
-  public static native int decode(String s, String o, int sample_rate);
+    /**
+     * Decode.
+     *
+     * @param s           the s
+     * @param o           the o
+     * @param sample_rate the sample rate
+     * @return the int
+     */
+    public static native int decode(String s, String o, int sample_rate);
 
-  /**
-   * Volume.
-   *
-   * @return the float
-   */
-  public static native float volume();
+    /**
+     * Volume.
+     *
+     * @return the float
+     */
+    public static native float volume();
 }

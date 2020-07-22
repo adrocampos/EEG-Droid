@@ -1,6 +1,7 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
 import android.util.Log;
+
 import java.util.UUID;
 
 
@@ -10,18 +11,21 @@ public class TraumschreiberService {
     //Names chosen according to the python tflow_edge Traumschreiber.py
     public final static UUID BIOSIGNALS_UUID = UUID.fromString("faa7b588-19e5-f590-0545-c99f193c5c3e");
     public final static UUID LEDS_UUID = UUID.fromString("fcbea85a-4d87-18a2-2141-0d8d2437c0a4");
+    String mTraumschreiberDeviceAddress;
 
     //public final static UUID UUID_HEART_RATE_MEASUREMENT =
     //       UUID.fromString(SampleGattAttributes.HEART_RATE_MEASUREMENT);
+
+    public TraumschreiberService(String traumschreiberDeviceAddress) {
+        this.mTraumschreiberDeviceAddress = traumschreiberDeviceAddress;
+    }
 
     public static boolean isTraumschreiberDevice(String bluetoothDeviceName) {
         return bluetoothDeviceName.toLowerCase().contains(DEVICE_NAME);
     }
 
-    String mTraumschreiberDeviceAddress;
-
-    public TraumschreiberService(String traumschreiberDeviceAddress) {
-        this.mTraumschreiberDeviceAddress = traumschreiberDeviceAddress;
+    public static boolean isNewModel(String bluetoothDeviceName) {
+        return bluetoothDeviceName.startsWith("T");
     }
 
     /***
@@ -29,21 +33,30 @@ public class TraumschreiberService {
      * @param data_bytes
      * @return int[] data_ints of the datapoint values as integers
      */
-    public static int[] decompress(byte[] data_bytes) {
-        int bytelengthDatapoint = 2;
-        int[] data_ints = new int[data_bytes.length / bytelengthDatapoint];
-        Log.d("Decompressing", "decompress: "+String.format("%02X %02X ", data_bytes[0], data_bytes[1]));
+    public static int[] decompress(byte[] data_bytes, boolean newModel) {
+        if (!newModel) {  // for old Traumschreiber
+            int bytelengthDatapoint = 2;
+            int[] data_ints = new int[data_bytes.length / bytelengthDatapoint];
+            Log.d("Decompressing", "decompress: " + String.format("%02X %02X ", data_bytes[0], data_bytes[1]));
+            //https://stackoverflow.com/questions/9581530/converting-from-byte-to-int-in-java
+            //Example: rno[0]&0x000000ff)<<24|(rno[1]&0x000000ff)<<16|
+            for (int i = 0; i < data_bytes.length / bytelengthDatapoint; i++) {
+                int new_int = (data_bytes[i * bytelengthDatapoint + 1]) << 8 | (data_bytes[i * bytelengthDatapoint + 0]) & 0xff;
+                //new_int = new_int << 8;
+                data_ints[i] = new_int;
+            }
 
-
-        //https://stackoverflow.com/questions/9581530/converting-from-byte-to-int-in-java
-        //Example: rno[0]&0x000000ff)<<24|(rno[1]&0x000000ff)<<16|
-        for(int i = 0; i < data_bytes.length /bytelengthDatapoint; i++) {
-            int new_int = (data_bytes[i*bytelengthDatapoint + 1]) << 8 | (data_bytes[i*bytelengthDatapoint + 0])&0xff;
-            //new_int = new_int << 8;
-            data_ints[i] = new_int;
+            return data_ints;
+        } else {  // for new Traumschreiber
+            int packet_id = data_bytes[0] >> 4;
+            int[] data_ints = new int[6];
+            for (int channel = 0; channel < 6; channel++) {
+                if (data_bytes.length >= (channel + 1) * 3 + 1) {
+                    data_ints[channel] = (data_bytes[channel * 3 + 1] << 16) | (data_bytes[channel * 3 + 2] << 8) | data_bytes[channel * 3 + 3];
+                }
+            }
+            return data_ints;
         }
-
-        return data_ints;
     }
 }
 

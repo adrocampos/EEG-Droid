@@ -36,7 +36,6 @@
             android:text="@string/menu_stop" />
 
 
-
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

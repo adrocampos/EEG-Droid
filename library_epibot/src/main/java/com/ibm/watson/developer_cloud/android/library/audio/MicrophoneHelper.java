@@ -15,6 +15,7 @@ package com.ibm.watson.developer_cloud.android.library.audio;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -23,53 +24,53 @@ import androidx.core.content.ContextCompat;
  */
 public class MicrophoneHelper {
 
-  /**
-   * The Constant REQUEST_PERMISSION.
-   */
-  public static final int REQUEST_PERMISSION = 5000;
+    /**
+     * The Constant REQUEST_PERMISSION.
+     */
+    public static final int REQUEST_PERMISSION = 5000;
 
-  private Activity activity;
-  private MicrophoneInputStream inputStream;
+    private Activity activity;
+    private MicrophoneInputStream inputStream;
 
-  /**
-   * Small helper class to sit in between the client and the more in-depth microphone classes. Meant to provide a
-   * similar experience to the other Helper classes as well as handle permissions.
-   *
-   * @param activity The current activity
-   */
-  public MicrophoneHelper(Activity activity) {
-    this.activity = activity;
-    requestRecordingPermission();
-  }
-
-  /**
-   * Gets the input stream.
-   *
-   * @param opusEncoded the opus encoded
-   * @return the input stream
-   */
-  public MicrophoneInputStream getInputStream(boolean opusEncoded) {
-    this.inputStream = new MicrophoneInputStream(opusEncoded);
-    return this.inputStream;
-  }
-
-  /**
-   * Close input stream.
-   */
-  public void closeInputStream() {
-    try {
-      this.inputStream.close();
-    } catch (Exception e) {
-      e.printStackTrace();
+    /**
+     * Small helper class to sit in between the client and the more in-depth microphone classes. Meant to provide a
+     * similar experience to the other Helper classes as well as handle permissions.
+     *
+     * @param activity The current activity
+     */
+    public MicrophoneHelper(Activity activity) {
+        this.activity = activity;
+        requestRecordingPermission();
     }
-  }
 
-  private void requestRecordingPermission() {
-    if (ContextCompat.checkSelfPermission(activity,
-            Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-      ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.RECORD_AUDIO},
-              REQUEST_PERMISSION);
+    /**
+     * Gets the input stream.
+     *
+     * @param opusEncoded the opus encoded
+     * @return the input stream
+     */
+    public MicrophoneInputStream getInputStream(boolean opusEncoded) {
+        this.inputStream = new MicrophoneInputStream(opusEncoded);
+        return this.inputStream;
     }
-  }
+
+    /**
+     * Close input stream.
+     */
+    public void closeInputStream() {
+        try {
+            this.inputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void requestRecordingPermission() {
+        if (ContextCompat.checkSelfPermission(activity,
+                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.RECORD_AUDIO},
+                    REQUEST_PERMISSION);
+        }
+    }
 
 }

@@ -2,86 +2,86 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
 buildscript {
-  repositories {
-    mavenCentral()
-  }
+    repositories {
+        mavenCentral()
+    }
 }
 
 android {
-  compileSdkVersion 29
+    compileSdkVersion 29
 
-  defaultConfig {
-    minSdkVersion 21
-    targetSdkVersion 29
-    versionCode 1
-    versionName "1.0"
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
 
-    ndk {
-      moduleName "libspeex"
-      moduleName "libOpusDecode"
+        ndk {
+            moduleName "libspeex"
+            moduleName "libOpusDecode"
+        }
     }
-  }
-  buildTypes {
-    release {
-      minifyEnabled true
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
     }
-  }
 
-  lintOptions {
-    abortOnError false
-  }
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
-  implementation fileTree(dir: 'libs', include: ['*.jar'])
-  testImplementation 'junit:junit:4.12'
-  implementation 'androidx.appcompat:appcompat:1.3.0-alpha01'
-  implementation ('net.java.dev.jna:jna:4.2.2') {
-    transitive=true
-  }
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.12'
+    implementation 'androidx.appcompat:appcompat:1.3.0-alpha01'
+    implementation('net.java.dev.jna:jna:4.2.2') {
+        transitive = true
+    }
 }
 
 publishing {
-  publications {
-    aar(MavenPublication) {
-      groupId 'com.ibm.watson.developer_cloud'
-      artifactId 'android-sdk'
-      artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
+    publications {
+        aar(MavenPublication) {
+            groupId 'com.ibm.watson.developer_cloud'
+            artifactId 'android-sdk'
+            artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
 
-      pom.withXml {
-        def dependencies = asNode().appendNode('dependencies')
-        configurations.getByName("_releaseCompile").getResolvedConfiguration().getFirstLevelModuleDependencies().each {
-          def dependency = dependencies.appendNode('dependency')
-          dependency.appendNode('groupId', it.moduleGroup)
-          dependency.appendNode('artifactId', it.moduleName)
-          dependency.appendNode('version', it.moduleVersion)
+            pom.withXml {
+                def dependencies = asNode().appendNode('dependencies')
+                configurations.getByName("_releaseCompile").getResolvedConfiguration().getFirstLevelModuleDependencies().each {
+                    def dependency = dependencies.appendNode('dependency')
+                    dependency.appendNode('groupId', it.moduleGroup)
+                    dependency.appendNode('artifactId', it.moduleName)
+                    dependency.appendNode('version', it.moduleVersion)
+                }
+            }
         }
-      }
     }
-  }
 }
 
 model {
-  tasks.generatePomFileForAarPublication {
-    destination = file("$buildDir/android-sdk.pom")
-  }
+    tasks.generatePomFileForAarPublication {
+        destination = file("$buildDir/android-sdk.pom")
+    }
 }
 
 task generateSourcesJar(type: Jar) {
-  from android.sourceSets.main.java.srcDirs
-  classifier 'sources'
+    from android.sourceSets.main.java.srcDirs
+    classifier 'sources'
 }
 
 task generateJavadocs(type: Javadoc) {
-  source = android.sourceSets.main.java.srcDirs
-  classpath += project.files(android.getBootClasspath()
-          .join(File.pathSeparator))
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath()
+            .join(File.pathSeparator))
 }
 
 task generateJavadocsJar(type: Jar) {
-  from generateJavadocs.destinationDir
-  classifier 'javadoc'
+    from generateJavadocs.destinationDir
+    classifier 'javadoc'
 }
 
 generateJavadocsJar.dependsOn generateJavadocs

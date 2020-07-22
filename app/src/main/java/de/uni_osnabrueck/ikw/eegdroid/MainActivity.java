@@ -33,9 +33,9 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
 
+    private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
     private static File dirSessions;
     private ManageSessions ManageSessions = new ManageSessions();
-
     private Uri dirUri;
     private TextView appName;
     private TextView appVersion;
@@ -53,19 +53,22 @@ public class MainActivity extends AppCompatActivity
     private String saveDir;
     private String username;
     private String userID;
-    private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
+
+    public static File getDirSessions() {
+        return dirSessions;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         //Retrieve saveDir, username & userID from sharedPreferences
         sharedPreferences = getSharedPreferences("userPreferences", MODE_PRIVATE);
         //If sharedPreferences not found (first time usage), use default values
-        saveDir = sharedPreferences.getString("saveDir",getResources().getString(R.string.default_folder));
+        saveDir = sharedPreferences.getString("saveDir", getResources().getString(R.string.default_folder));
         username = sharedPreferences.getString("username", getResources().getString(R.string.default_username));
         userID = sharedPreferences.getString("userID", getResources().getString(R.string.default_userID));
 
@@ -76,23 +79,23 @@ public class MainActivity extends AppCompatActivity
         Log.d("Main Directory", dirUri.getPath());
 
         //Sets the lateral Menu
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         //Shows basic information about the App
-        appName = (TextView) findViewById(R.id.main_app_name);
-        appVersion = (TextView) findViewById(R.id.main_app_version);
-        textViewUsername = (TextView) findViewById(R.id.textViewUsername);
+        appName = findViewById(R.id.main_app_name);
+        appVersion = findViewById(R.id.main_app_version);
+        textViewUsername = findViewById(R.id.textViewUsername);
         textViewUsername.setText(username);
-        textViewUserID = (TextView) findViewById(R.id.textViewUserID);
+        textViewUserID = findViewById(R.id.textViewUserID);
         textViewUserID.setText(userID);
-        textViewSaveDir = (TextView) findViewById(R.id.textViewSaveDir);
-        textViewSaveDir.setText( "Downloads"+ saveDir + "/");
+        textViewSaveDir = findViewById(R.id.textViewSaveDir);
+        textViewSaveDir.setText("Downloads" + saveDir + "/");
 
         applicationInfo = getApplicationInfo();
         appName.setText(applicationInfo.loadLabel(getPackageManager()));
@@ -101,12 +104,12 @@ public class MainActivity extends AppCompatActivity
 
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        tableRowRecord = (TableRow) findViewById(R.id.tableRowRecord);
-        tableRowDisplay = (TableRow) findViewById(R.id.tableRowDisplay);
-        tableRowManage = (TableRow) findViewById(R.id.tableRowManage);
-        tableRowLearn = (TableRow) findViewById(R.id.tableRowLearn);
-        tableRowTutorial = (TableRow) findViewById(R.id.tableRowTutorial);
-        tableRowEpibot = (TableRow) findViewById(R.id.tableRowEpibot);
+        tableRowRecord = findViewById(R.id.tableRowRecord);
+        tableRowDisplay = findViewById(R.id.tableRowDisplay);
+        tableRowManage = findViewById(R.id.tableRowManage);
+        tableRowLearn = findViewById(R.id.tableRowLearn);
+        tableRowTutorial = findViewById(R.id.tableRowTutorial);
+        tableRowEpibot = findViewById(R.id.tableRowEpibot);
 
         //Allows initialize activity when click in home
         tableRowRecord.setOnClickListener(new View.OnClickListener() {
@@ -133,7 +136,8 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     Intent intent = new Intent(getBaseContext(), Display.class);
                     intent.putExtra("dirString", dirSessions.getPath());
-                    startActivity(intent);}
+                    startActivity(intent);
+                }
             }
         });
 
@@ -199,20 +203,19 @@ public class MainActivity extends AppCompatActivity
                         REQUEST_WRITE_EXTERNAL_STORAGE);
 
             }
-        } else {}
+        } else {
+        }
     }
-
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
     }
-
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -281,13 +284,9 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(this, Info.class);
             startActivity(intent);
         }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    public static File getDirSessions() {
-        return dirSessions;
     }
 
 }

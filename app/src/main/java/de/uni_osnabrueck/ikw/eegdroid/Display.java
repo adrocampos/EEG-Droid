@@ -1,9 +1,5 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
@@ -14,6 +10,10 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -38,6 +38,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -99,7 +100,7 @@ public class Display extends AppCompatActivity {
 
                 Toast.makeText(
                         getApplicationContext(),
-                        "Time point: " + Integer.toString(+point_in_time.getHour()) + ":" + Integer.toString(point_in_time.getMinute()) + ":" + Integer.toString(point_in_time.getSecond()),
+                        "Time point: " + +point_in_time.getHour() + ":" + point_in_time.getMinute() + ":" + point_in_time.getSecond(),
                         Toast.LENGTH_LONG
                 ).show();
             }
@@ -108,10 +109,10 @@ public class Display extends AppCompatActivity {
             public void onNothingSelected() {
             }
         };
-        nameTextView = (TextView) findViewById(R.id.name_file);
-        dateTextView = (TextView) findViewById(R.id.session_date_file);
-        startTextView = (TextView) findViewById(R.id.start_time_file);
-        finishTextView = (TextView) findViewById(R.id.finish_time_file);
+        nameTextView = findViewById(R.id.name_file);
+        dateTextView = findViewById(R.id.session_date_file);
+        startTextView = findViewById(R.id.start_time_file);
+        finishTextView = findViewById(R.id.finish_time_file);
 
         chckbx_ch1 = findViewById(R.id.checkBox_ch1_display);
         chckbx_ch2 = findViewById(R.id.checkBox_ch2_display);
@@ -247,7 +248,7 @@ public class Display extends AppCompatActivity {
         bottomAxis.setGridColor(Color.WHITE);
         bottomAxis.setTextColor(Color.GRAY);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         timer = new Timer();
 

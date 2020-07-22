@@ -1,28 +1,24 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.core.text.HtmlCompat;
-
-import android.graphics.Color;
-import android.util.Log;
+import android.os.Build;
+import android.text.Html;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
 import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.text.HtmlCompat;
+
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
-import android.text.Html;
-import android.os.Build;
-
-import org.w3c.dom.Text;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -30,8 +26,8 @@ import static android.content.Context.MODE_PRIVATE;
 public class MessageAdapter extends ArrayAdapter<String[]> {
 
     private static final String TAG = "MessageAdapter";
-    private Context mContext;
     int mResource;
+    private Context mContext;
 
     public MessageAdapter(@NonNull Context context, int resource, @NonNull ArrayList<String[]> objects) {
         super(context, resource, objects);
@@ -47,10 +43,10 @@ public class MessageAdapter extends ArrayAdapter<String[]> {
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate(mResource, parent, false);
-        TextView tvEpibot = (TextView) convertView.findViewById(R.id.AdapterEpibotTextView);
-        TextView tvUser = (TextView) convertView.findViewById(R.id.AdapterUserTextView);
-        TextView tvMsj = (TextView) convertView.findViewById(R.id.AdapterMessageTextView);
-        ImageView ivIma = (ImageView) convertView.findViewById(R.id.AdapterImageView);
+        TextView tvEpibot = convertView.findViewById(R.id.AdapterEpibotTextView);
+        TextView tvUser = convertView.findViewById(R.id.AdapterUserTextView);
+        TextView tvMsj = convertView.findViewById(R.id.AdapterMessageTextView);
+        ImageView ivIma = convertView.findViewById(R.id.AdapterImageView);
 
         String user = getItem(position)[0];
         String type = getItem(position)[2];
