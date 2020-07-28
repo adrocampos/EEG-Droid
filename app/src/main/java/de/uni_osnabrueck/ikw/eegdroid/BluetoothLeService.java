@@ -255,7 +255,7 @@ public class BluetoothLeService extends Service {
             return;
         }
         newTraumschreiber = newModel;
-        mBluetoothGatt.readCharacteristic(characteristic);
+        if (newTraumschreiber) mBluetoothGatt.readCharacteristic(characteristic);
     }
 
     /**
