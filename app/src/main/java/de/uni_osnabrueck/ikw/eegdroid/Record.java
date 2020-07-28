@@ -61,6 +61,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 
@@ -75,7 +77,6 @@ public class Record extends AppCompatActivity {
     private final List<List<Float>> accumulated = new ArrayList<>();
     // constants
     private final int CONNECT_DELAY = 1000;
-    private final float DATAPOINT_TIME = 4.5f;
     private final int PLOT_MEMO = 3000;  // max time range in ms (x value) to store on plot
     private final int MAX_VISIBLE = 500;  // see 500ms at the time on the plot
     private final ArrayList<Entry> lineEntries1 = new ArrayList<>();
@@ -86,6 +87,7 @@ public class Record extends AppCompatActivity {
     private final ArrayList<Entry> lineEntries6 = new ArrayList<>();
     private final ArrayList<Entry> lineEntries7 = new ArrayList<>();
     private final ArrayList<Entry> lineEntries8 = new ArrayList<>();
+    private float DATAPOINT_TIME;
     private TextView mConnectionState;
     private TextView viewDeviceAddress;
     private String mDeviceName;
@@ -261,6 +263,10 @@ public class Record extends AppCompatActivity {
     private PrintWriter out;
     private BufferedReader in;
     private List<Float> microV;
+    private CastThread caster;
+    private Timer timer;
+    private TimerTask timerTask;
+    private boolean timerRunning = false;
     // Handles various events fired by the Service.
     // ACTION_GATT_CONNECTED: connected to a GATT server.
     // ACTION_GATT_DISCONNECTED: disconnected from a GATT server.
@@ -277,11 +283,17 @@ public class Record extends AppCompatActivity {
                 setConnectionStatus(false);
                 clearUI();
                 disableCheckboxes();
+                data_cnt = 0;
+                timer.cancel();
+                timer.purge();
+                timerRunning = false;
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 // Show all the supported services and characteristics on the user interface.
+                data_cnt = 0;
                 readGattCharacteristic(mBluetoothLeService.getSupportedGattServices());
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 data_cnt++;
+                if (!timerRunning) startTimer();
                 long last_data = System.currentTimeMillis();
                 enableCheckboxes();
                 microV = transData(Objects.requireNonNull(intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA)));
@@ -296,13 +308,6 @@ public class Record extends AppCompatActivity {
                     }
                 }
                 if (recording) storeData(microV);
-                if (start_data == 0) start_data = System.currentTimeMillis();
-                res_time = (last_data - start_data) / data_cnt;
-                res_freq = (1 / res_time) * 1000;
-                String hertz = (int) res_freq + "Hz";
-                @SuppressLint("DefaultLocale") String resolution = String.format("%.2f", res_time) + "ms - ";
-                String content = resolution + hertz;
-                mDataResolution.setText(content);
                 //setConnectionStatus(true);
                 if (recording) {
                     mConnectionState.setText(R.string.recording);
@@ -314,7 +319,6 @@ public class Record extends AppCompatActivity {
             }
         }
     };
-    private CastThread caster;
 
     private static IntentFilter makeGattUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
@@ -323,6 +327,33 @@ public class Record extends AppCompatActivity {
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
         intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
         return intentFilter;
+    }
+
+    private void initializeTimerTask() {
+        timerTask = new TimerTask() {
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        res_time = 1000 / data_cnt;
+                        String hertz = (int) data_cnt + "Hz";
+                        @SuppressLint("DefaultLocale") String resolution = String.format("%.2f", res_time) + "ms - ";
+                        String content = resolution + hertz;
+                        mDataResolution.setText(content);
+                        data_cnt = 0;
+                    }
+                });
+            }
+        };
+    }
+
+    private void startTimer() {
+        //set a new Timer
+        timer = new Timer();
+        //initialize the TimerTask's job
+        initializeTimerTask();
+        // schedule the timer, the stimulus presence will repeat every 1 seconds
+        timer.schedule(timerTask, 1000, 1000);
+        timerRunning = true;
     }
 
     @Override
@@ -813,14 +844,17 @@ public class Record extends AppCompatActivity {
     }
 
     private List<Float> transData(int[] data) {
-        // Conversion formula: V_in = X*1.65V/(1000 * GAIN * PRECISION)
+        // Conversion formula (old): V_in = X * 1.65V / (1000 * GAIN * PRECISION)
+        // Conversion formula (new): V_in = X * (298 / (1000 * gain))
         float gain = Float.parseFloat(selected_gain);
-        float precision = (mNewDevice) ? 50000 : 2048;
-        float numerator = 1650;
-        float denominator = gain * precision;
         List<Float> data_trans = new ArrayList<>();
-        for (int datapoint : data)
-            data_trans.add((datapoint * numerator) / denominator);
+        if (!mNewDevice) { // old model
+            float precision = 2048;
+            float numerator = 1650;
+            float denominator = gain * precision;
+            for (int datapoint : data) data_trans.add((datapoint * numerator) / denominator);
+        } else for (int datapoint : data) data_trans.add(datapoint * (298 / (1000000 * gain)));
+//        for (int datapoint : data) data_trans.add((float) datapoint); // for testing raw data
         return data_trans;
     }
 
@@ -997,6 +1031,7 @@ public class Record extends AppCompatActivity {
         adjustScale(e_list);
         final List<ILineDataSet> datasets = new ArrayList<>();  // for adding multiple plots
         float x = 0;
+        DATAPOINT_TIME = (mNewDevice) ? 4f : 4.5f;
         for (List<Float> f : e_list) {
             cnt++;
             x = cnt * DATAPOINT_TIME;
