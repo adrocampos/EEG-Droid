@@ -75,9 +75,6 @@ public class Record extends AppCompatActivity {
     private final Handler handler = new Handler();
     private final List<Float> dp_received = new ArrayList<>();
     private final List<List<Float>> accumulated = new ArrayList<>();
-    // constants
-    private final int CONNECT_DELAY = 1000;
-    private final int PLOT_MEMO = 3000;  // max time range in ms (x value) to store on plot
     private final int MAX_VISIBLE = 500;  // see 500ms at the time on the plot
     private final ArrayList<Entry> lineEntries1 = new ArrayList<>();
     private final ArrayList<Entry> lineEntries2 = new ArrayList<>();
@@ -87,7 +84,6 @@ public class Record extends AppCompatActivity {
     private final ArrayList<Entry> lineEntries6 = new ArrayList<>();
     private final ArrayList<Entry> lineEntries7 = new ArrayList<>();
     private final ArrayList<Entry> lineEntries8 = new ArrayList<>();
-    private float DATAPOINT_TIME;
     private TextView mConnectionState;
     private TextView viewDeviceAddress;
     private String mDeviceName;
@@ -105,6 +101,8 @@ public class Record extends AppCompatActivity {
             }
 
             // hack for ensuring a successful connection
+            // constants
+            int CONNECT_DELAY = 1000;
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -161,7 +159,6 @@ public class Record extends AppCompatActivity {
     private TextView mXAxis;
     private TextView mDataResolution;
     private Spinner gain_spinner;
-    private int ACCUM_PLOT = 30;
     private LineChart mChart;
     private ImageButton imageButtonRecord;
     private ImageButton imageButtonSave;
@@ -183,7 +180,6 @@ public class Record extends AppCompatActivity {
         }
     };
     private float data_cnt = 0;
-    private long start_data = 0;
     private String start_time;
     private String end_time;
     private long start_watch;
@@ -301,6 +297,7 @@ public class Record extends AppCompatActivity {
                 if (plotting) {
                     accumulated.add(microV);
                     long plotting_elapsed = last_data - plotting_start;
+                    int ACCUM_PLOT = 30;
                     if (plotting_elapsed > ACCUM_PLOT) {
                         addEntries(accumulated);
                         accumulated.clear();
@@ -336,6 +333,7 @@ public class Record extends AppCompatActivity {
                     public void run() {
                         res_time = 1000 / data_cnt;
                         String hertz = (int) data_cnt + "Hz";
+                        res_freq = data_cnt;
                         @SuppressLint("DefaultLocale") String resolution = String.format("%.2f", res_time) + "ms - ";
                         String content = resolution + hertz;
                         mDataResolution.setText(content);
@@ -818,7 +816,6 @@ public class Record extends AppCompatActivity {
         mCh8.setText("");
         mDataResolution.setText(R.string.no_data);
         data_cnt = 0;
-        start_data = 0;
     }
 
     private void enableCheckboxes() {
@@ -1031,7 +1028,7 @@ public class Record extends AppCompatActivity {
         adjustScale(e_list);
         final List<ILineDataSet> datasets = new ArrayList<>();  // for adding multiple plots
         float x = 0;
-        DATAPOINT_TIME = (mNewDevice) ? 4f : 4.5f;
+        float DATAPOINT_TIME = (mNewDevice) ? 4f : 4.5f;
         for (List<Float> f : e_list) {
             cnt++;
             x = cnt * DATAPOINT_TIME;
@@ -1084,6 +1081,8 @@ public class Record extends AppCompatActivity {
             }
         });
         thread.start();
+        // max time range in ms (x value) to store on plot
+        int PLOT_MEMO = 3000;
         if (x > PLOT_MEMO) {
             for (int j = 0; j < e_list.size(); j++) {
                 for (int i = 0; i < mChart.getData().getDataSetCount(); i++) {

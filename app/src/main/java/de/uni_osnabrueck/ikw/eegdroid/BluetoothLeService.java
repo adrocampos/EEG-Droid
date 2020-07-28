@@ -97,7 +97,7 @@ public class BluetoothLeService extends Service {
                                          int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
-                setCharacteristicNotification(characteristic, true);
+                if (newTraumschreiber) setCharacteristicNotification(characteristic, true);
             }
 
         }
@@ -255,7 +255,7 @@ public class BluetoothLeService extends Service {
             return;
         }
         newTraumschreiber = newModel;
-        if (newTraumschreiber) mBluetoothGatt.readCharacteristic(characteristic);
+        mBluetoothGatt.readCharacteristic(characteristic);
     }
 
     /**
@@ -273,7 +273,7 @@ public class BluetoothLeService extends Service {
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
         BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
                 UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
-        if(descriptor != null) {
+        if (descriptor != null) {
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             mBluetoothGatt.writeDescriptor(descriptor);
         }
