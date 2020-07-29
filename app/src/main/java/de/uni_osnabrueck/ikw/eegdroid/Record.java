@@ -45,6 +45,7 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -54,6 +55,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -64,6 +67,7 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 
 public class Record extends AppCompatActivity {
@@ -1311,66 +1315,53 @@ public class Record extends AppCompatActivity {
         }
     }
 
-    @SuppressWarnings("InfiniteLoopStatement")
-    class CastThread extends Thread {
 
+    class CastThread extends Thread {
         String IP = getSharedPreferences("userPreferences", 0).getString("IP", getResources().getString(R.string.default_IP));
-        String port = getSharedPreferences("userPreferences", 0).getString("port", getResources().getString(R.string.default_port));
+        String PORT = getSharedPreferences("userPreferences", 0).getString("port", getResources().getString(R.string.default_port));
         // best way found until now to encode the values, a stringified JSON. Looks like:
         JSONObject toSend = new JSONObject();
-        private volatile boolean exit = false;
+//        private volatile boolean exit = false;
         // {'pkg': 1, 'time': 1589880540884, '1': -149.85352, '2': -18.530273, '3': 191.74805, '4': -305.34668, '5': 0, '6': -142.60254, '7': -1.6113281, '8': -29.80957}
 
         public void run() {
-
-            while (!exit) {
-                try {
-                    try {
-                        socket = new Socket(IP, Integer.parseInt(port));
-                        out = new PrintWriter(socket.getOutputStream(), true);
-                        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                        Log.d("CastThread", "sending");
-                        List<Float> lastV = null; // store last octet of EEG values
-                        int pkg = 0;
-                        while (true) {
-                            // ensure not sending the same as the last one (since while true)
-                            // optimally the socket should be open and sending every time it has a
-                            // new octet of values instead of using a while true
-                            if (microV != null && lastV != microV) {
-                                toSend = new JSONObject();
-                                // timestamp in milliseconds since January 1, 1970, 00:00:00 GMT
-                                long time = new Date().getTime();
-                                toSend.put("pkg", pkg); // add pkg number
-                                toSend.put("time", time); // add time
-                                for (int i = 0; i < microV.size(); i++) {
-                                    // add voltage amplitudes
-                                    toSend.put(Integer.toString(i + 1), microV.get(i));
-                                }
-                                out.println(toSend); // send data
-                                lastV = microV; // store current as last
-                                pkg++; // increase package counter
-                            }
+            try {
+                WSClient c = new WSClient(new URI("ws://" + IP + ":" + PORT));
+                c.setReuseAddr(true);
+                // c.setConnectionLostTimeout(0); // default is 60 seconds
+                // TODO: check if TCP_NODELAY improves speed, also .connect() vs .connectBlocking()
+                // TODO: Add connect/disconnect control by cast button pressed and message received
+                c.setTcpNoDelay(true);
+                c.connectBlocking();
+                int pkg = 0;
+                List<Float> lastV = null; // store last octet of EEG values
+                while (c.isOpen()) {
+                    if (microV != null && lastV != microV) {
+                        toSend = new JSONObject();
+                        // timestamp in milliseconds since January 1, 1970, 00:00:00 GMT
+                        long time = new Date().getTime();
+                        toSend.put("pkg", pkg); // add pkg number
+                        toSend.put("time", time); // add time
+                        for (int i = 0; i < microV.size(); i++) {
+                            // add voltage amplitudes
+                            toSend.put(Integer.toString(i + 1), microV.get(i));
                         }
-
-
-                    } catch (UnknownHostException e) {
-                        Log.d("CastThread", "unknown host " + e.getMessage());
-
-                    } catch (IOException e) {
-                        Log.d("CastThread", "no I/O " + e.getMessage());
+                        c.send(toSend.toString());
+                        lastV = microV; // store current as last
+                        pkg++; // increase package counter
+//                        Log.d("WS", "Sent: " + toSend.toString());
                     }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
-
+            } catch (URISyntaxException | JSONException | InterruptedException e) {
+                e.printStackTrace();
+                Log.d("WS", "URI error:" + e);
             }
         }
 
         public void staph() {
 
             Log.d("CastThread", "Stopped");
-            exit = true;
+//            exit = true;
             if (out != null) {
                 out.close();
             }

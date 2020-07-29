@@ -55,4 +55,5 @@ dependencies {
     implementation 'us.feras.mdv:markdownview:1.1.0'
     implementation 'ru.noties.markwon:core:3.0.1'
     implementation 'com.atlassian.commonmark:commonmark:0.12.1'
+    implementation 'org.java-websocket:Java-WebSocket:1.5.1'
 }
