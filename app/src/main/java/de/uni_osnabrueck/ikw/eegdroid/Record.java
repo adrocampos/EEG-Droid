@@ -45,6 +45,7 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -54,6 +55,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -61,7 +64,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 
 public class Record extends AppCompatActivity {
@@ -73,10 +79,6 @@ public class Record extends AppCompatActivity {
     private final Handler handler = new Handler();
     private final List<Float> dp_received = new ArrayList<>();
     private final List<List<Float>> accumulated = new ArrayList<>();
-    // constants
-    private final int CONNECT_DELAY = 1000;
-    private final float DATAPOINT_TIME = 4.5f;
-    private final int PLOT_MEMO = 3000;  // max time range in ms (x value) to store on plot
     private final int MAX_VISIBLE = 500;  // see 500ms at the time on the plot
     private final ArrayList<Entry> lineEntries1 = new ArrayList<>();
     private final ArrayList<Entry> lineEntries2 = new ArrayList<>();
@@ -103,6 +105,8 @@ public class Record extends AppCompatActivity {
             }
 
             // hack for ensuring a successful connection
+            // constants
+            int CONNECT_DELAY = 1000;
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -159,7 +163,6 @@ public class Record extends AppCompatActivity {
     private TextView mXAxis;
     private TextView mDataResolution;
     private Spinner gain_spinner;
-    private int ACCUM_PLOT = 30;
     private LineChart mChart;
     private ImageButton imageButtonRecord;
     private ImageButton imageButtonSave;
@@ -181,7 +184,6 @@ public class Record extends AppCompatActivity {
         }
     };
     private float data_cnt = 0;
-    private long start_data = 0;
     private String start_time;
     private String end_time;
     private long start_watch;
@@ -261,6 +263,10 @@ public class Record extends AppCompatActivity {
     private PrintWriter out;
     private BufferedReader in;
     private List<Float> microV;
+    private CastThread caster;
+    private Timer timer;
+    private TimerTask timerTask;
+    private boolean timerRunning = false;
     // Handles various events fired by the Service.
     // ACTION_GATT_CONNECTED: connected to a GATT server.
     // ACTION_GATT_DISCONNECTED: disconnected from a GATT server.
@@ -277,11 +283,17 @@ public class Record extends AppCompatActivity {
                 setConnectionStatus(false);
                 clearUI();
                 disableCheckboxes();
+                data_cnt = 0;
+                timer.cancel();
+                timer.purge();
+                timerRunning = false;
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 // Show all the supported services and characteristics on the user interface.
+                data_cnt = 0;
                 readGattCharacteristic(mBluetoothLeService.getSupportedGattServices());
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 data_cnt++;
+                if (!timerRunning) startTimer();
                 long last_data = System.currentTimeMillis();
                 enableCheckboxes();
                 microV = transData(Objects.requireNonNull(intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA)));
@@ -289,6 +301,7 @@ public class Record extends AppCompatActivity {
                 if (plotting) {
                     accumulated.add(microV);
                     long plotting_elapsed = last_data - plotting_start;
+                    int ACCUM_PLOT = 30;
                     if (plotting_elapsed > ACCUM_PLOT) {
                         addEntries(accumulated);
                         accumulated.clear();
@@ -296,13 +309,6 @@ public class Record extends AppCompatActivity {
                     }
                 }
                 if (recording) storeData(microV);
-                if (start_data == 0) start_data = System.currentTimeMillis();
-                res_time = (last_data - start_data) / data_cnt;
-                res_freq = (1 / res_time) * 1000;
-                String hertz = (int) res_freq + "Hz";
-                @SuppressLint("DefaultLocale") String resolution = String.format("%.2f", res_time) + "ms - ";
-                String content = resolution + hertz;
-                mDataResolution.setText(content);
                 //setConnectionStatus(true);
                 if (recording) {
                     mConnectionState.setText(R.string.recording);
@@ -314,7 +320,6 @@ public class Record extends AppCompatActivity {
             }
         }
     };
-    private CastThread caster;
 
     private static IntentFilter makeGattUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
@@ -323,6 +328,34 @@ public class Record extends AppCompatActivity {
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
         intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
         return intentFilter;
+    }
+
+    private void initializeTimerTask() {
+        timerTask = new TimerTask() {
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        res_time = 1000 / data_cnt;
+                        String hertz = (int) data_cnt + "Hz";
+                        res_freq = data_cnt;
+                        @SuppressLint("DefaultLocale") String resolution = String.format("%.2f", res_time) + "ms - ";
+                        String content = resolution + hertz;
+                        mDataResolution.setText(content);
+                        data_cnt = 0;
+                    }
+                });
+            }
+        };
+    }
+
+    private void startTimer() {
+        //set a new Timer
+        timer = new Timer();
+        //initialize the TimerTask's job
+        initializeTimerTask();
+        // schedule the timer, the stimulus presence will repeat every 1 seconds
+        timer.schedule(timerTask, 1000, 1000);
+        timerRunning = true;
     }
 
     @Override
@@ -787,7 +820,6 @@ public class Record extends AppCompatActivity {
         mCh8.setText("");
         mDataResolution.setText(R.string.no_data);
         data_cnt = 0;
-        start_data = 0;
     }
 
     private void enableCheckboxes() {
@@ -813,14 +845,17 @@ public class Record extends AppCompatActivity {
     }
 
     private List<Float> transData(int[] data) {
-        // Conversion formula: V_in = X*1.65V/(1000 * GAIN * PRECISION)
+        // Conversion formula (old): V_in = X * 1.65V / (1000 * GAIN * PRECISION)
+        // Conversion formula (new): V_in = X * (298 / (1000 * gain))
         float gain = Float.parseFloat(selected_gain);
-        float precision = (mNewDevice) ? 50000 : 2048;
-        float numerator = 1650;
-        float denominator = gain * precision;
         List<Float> data_trans = new ArrayList<>();
-        for (int datapoint : data)
-            data_trans.add((datapoint * numerator) / denominator);
+        if (!mNewDevice) { // old model
+            float precision = 2048;
+            float numerator = 1650;
+            float denominator = gain * precision;
+            for (int datapoint : data) data_trans.add((datapoint * numerator) / denominator);
+        } else for (int datapoint : data) data_trans.add(datapoint * (298 / (1000000 * gain)));
+//        for (int datapoint : data) data_trans.add((float) datapoint); // for testing raw data
         return data_trans;
     }
 
@@ -997,6 +1032,7 @@ public class Record extends AppCompatActivity {
         adjustScale(e_list);
         final List<ILineDataSet> datasets = new ArrayList<>();  // for adding multiple plots
         float x = 0;
+        float DATAPOINT_TIME = (mNewDevice) ? 4f : 4.5f;
         for (List<Float> f : e_list) {
             cnt++;
             x = cnt * DATAPOINT_TIME;
@@ -1049,6 +1085,8 @@ public class Record extends AppCompatActivity {
             }
         });
         thread.start();
+        // max time range in ms (x value) to store on plot
+        int PLOT_MEMO = 3000;
         if (x > PLOT_MEMO) {
             for (int j = 0; j < e_list.size(); j++) {
                 for (int i = 0; i < mChart.getData().getDataSetCount(); i++) {
@@ -1277,66 +1315,53 @@ public class Record extends AppCompatActivity {
         }
     }
 
-    @SuppressWarnings("InfiniteLoopStatement")
-    class CastThread extends Thread {
 
+    class CastThread extends Thread {
         String IP = getSharedPreferences("userPreferences", 0).getString("IP", getResources().getString(R.string.default_IP));
-        String port = getSharedPreferences("userPreferences", 0).getString("port", getResources().getString(R.string.default_port));
+        String PORT = getSharedPreferences("userPreferences", 0).getString("port", getResources().getString(R.string.default_port));
         // best way found until now to encode the values, a stringified JSON. Looks like:
         JSONObject toSend = new JSONObject();
-        private volatile boolean exit = false;
+//        private volatile boolean exit = false;
         // {'pkg': 1, 'time': 1589880540884, '1': -149.85352, '2': -18.530273, '3': 191.74805, '4': -305.34668, '5': 0, '6': -142.60254, '7': -1.6113281, '8': -29.80957}
 
         public void run() {
-
-            while (!exit) {
-                try {
-                    try {
-                        socket = new Socket(IP, Integer.parseInt(port));
-                        out = new PrintWriter(socket.getOutputStream(), true);
-                        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                        Log.d("CastThread", "sending");
-                        List<Float> lastV = null; // store last octet of EEG values
-                        int pkg = 0;
-                        while (true) {
-                            // ensure not sending the same as the last one (since while true)
-                            // optimally the socket should be open and sending every time it has a
-                            // new octet of values instead of using a while true
-                            if (microV != null && lastV != microV) {
-                                toSend = new JSONObject();
-                                // timestamp in milliseconds since January 1, 1970, 00:00:00 GMT
-                                long time = new Date().getTime();
-                                toSend.put("pkg", pkg); // add pkg number
-                                toSend.put("time", time); // add time
-                                for (int i = 0; i < microV.size(); i++) {
-                                    // add voltage amplitudes
-                                    toSend.put(Integer.toString(i + 1), microV.get(i));
-                                }
-                                out.println(toSend); // send data
-                                lastV = microV; // store current as last
-                                pkg++; // increase package counter
-                            }
+            try {
+                WSClient c = new WSClient(new URI("ws://" + IP + ":" + PORT));
+                c.setReuseAddr(true);
+                // c.setConnectionLostTimeout(0); // default is 60 seconds
+                // TODO: check if TCP_NODELAY improves speed, also .connect() vs .connectBlocking()
+                // TODO: Add connect/disconnect control by cast button pressed and message received
+                c.setTcpNoDelay(true);
+                c.connectBlocking();
+                int pkg = 0;
+                List<Float> lastV = null; // store last octet of EEG values
+                while (c.isOpen()) {
+                    if (microV != null && lastV != microV) {
+                        toSend = new JSONObject();
+                        // timestamp in milliseconds since January 1, 1970, 00:00:00 GMT
+                        long time = new Date().getTime();
+                        toSend.put("pkg", pkg); // add pkg number
+                        toSend.put("time", time); // add time
+                        for (int i = 0; i < microV.size(); i++) {
+                            // add voltage amplitudes
+                            toSend.put(Integer.toString(i + 1), microV.get(i));
                         }
-
-
-                    } catch (UnknownHostException e) {
-                        Log.d("CastThread", "unknown host " + e.getMessage());
-
-                    } catch (IOException e) {
-                        Log.d("CastThread", "no I/O " + e.getMessage());
+                        c.send(toSend.toString());
+                        lastV = microV; // store current as last
+                        pkg++; // increase package counter
+//                        Log.d("WS", "Sent: " + toSend.toString());
                     }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
-
+            } catch (URISyntaxException | JSONException | InterruptedException e) {
+                e.printStackTrace();
+                Log.d("WS", "URI error:" + e);
             }
         }
 
         public void staph() {
 
             Log.d("CastThread", "Stopped");
-            exit = true;
+//            exit = true;
             if (out != null) {
                 out.close();
             }
