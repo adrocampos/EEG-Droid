@@ -267,6 +267,7 @@
 
     <string name="menu_record_connect">Connect</string>
     <string name="menu_record_cast">Cast</string>
+    <string name="menu_record_notify">Notify</string>
     <string name="permission_storage">The app needs permission to access storage</string>
 
 </resources>
