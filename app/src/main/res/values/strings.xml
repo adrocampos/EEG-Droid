@@ -124,7 +124,13 @@
     <string name="ch6">6</string>
     <string name="ch7">7</string>
     <string name="ch8">8</string>
-    <string-array name="gains">
+    <string-array name="gains_new">
+        <item>1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>8</item>
+    </string-array>
+    <string-array name="gains_old">
         <item>0.5</item>
         <item>1</item>
         <item>2</item>
