@@ -32,6 +32,8 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -128,6 +130,9 @@ public class BluetoothLeService extends Service {
         final Intent intent = new Intent(action);
         final byte[] data = characteristic.getValue();
         if (data != null && data.length > 0) {
+            // Temporary log for debugging
+            String datastring = Arrays.toString(data);
+            Log.d(TAG, "Uncompressed bytes:" + datastring);
             //We have to decompress the EEG-Data here. This is done by TraumschreiberService.decompress();
             int[] data_int = TraumschreiberService.decompress(data, newTraumschreiber);
             final StringBuilder stringBuilder = new StringBuilder(data.length);
@@ -138,7 +143,7 @@ public class BluetoothLeService extends Service {
             Log.d(TAG, "Received EEG Signal " + stringBuilder1.toString());
             stringBuilder.append(stringBuilder1.toString());
             intent.putExtra(EXTRA_DATA, data_int);
-            Log.d(TAG, "Received EEG Signal " + stringBuilder.toString());
+            //Log.d(TAG, "Received EEG Signal " + stringBuilder.toString());
         }
         sendBroadcast(intent);
     }
