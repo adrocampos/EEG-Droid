@@ -103,7 +103,7 @@ public class Record extends AppCompatActivity {
 
             // hack for ensuring a successful connection
             // constants
-            int CONNECT_DELAY = 1000;
+            int CONNECT_DELAY = 2000;
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -674,18 +674,7 @@ public class Record extends AppCompatActivity {
             return true;
         }
 
-        if (id == R.id.notify) {
-            MenuItem menuItemNotify = menu.findItem(R.id.notify);
-            if (!notifying) {
-                notifying = true;
-                readGattCharacteristic(mBluetoothLeService.getSupportedGattServices());
-                menuItemNotify.setIcon(R.drawable.ic_notifications_active_blue_24dp);
-            } else {
-                notifying = false;
-                readGattCharacteristic(mBluetoothLeService.getSupportedGattServices());
-                menuItemNotify.setIcon(R.drawable.ic_notifications_off_white_24dp);
-            }
-        }
+        if (id == R.id.notify) toggleNotifying();
 
         if (id == R.id.cast) {
             MenuItem menuItemCast = menu.findItem(R.id.cast);
@@ -701,6 +690,19 @@ public class Record extends AppCompatActivity {
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void toggleNotifying() {
+        MenuItem menuItemNotify = menu.findItem(R.id.notify);
+        if (!notifying) {
+            notifying = true;
+            readGattCharacteristic(mBluetoothLeService.getSupportedGattServices());
+            menuItemNotify.setIcon(R.drawable.ic_notifications_active_blue_24dp);
+        } else {
+            notifying = false;
+            readGattCharacteristic(mBluetoothLeService.getSupportedGattServices());
+            menuItemNotify.setIcon(R.drawable.ic_notifications_off_white_24dp);
+        }
     }
 
     @Override
@@ -727,6 +729,7 @@ public class Record extends AppCompatActivity {
         if (gattServices == null) return;
         String uuid;
         String charUuid;
+        toggleNotifying();
         for (BluetoothGattService gattService : gattServices) {
             uuid = gattService.getUuid().toString();
 
@@ -736,16 +739,11 @@ public class Record extends AppCompatActivity {
                         gattService.getCharacteristics();
 
                 // Loops through available Characteristics.
-                for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
+                for (final BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
                     charUuid = gattCharacteristic.getUuid().toString();
                     if ((!mNewDevice && charUuid.equals("fcbea85a-4d87-18a2-2141-0d8d2437c0a4")) ||
                             (mNewDevice && charUuid.equals("0000ecc0-0000-1000-8000-00805f9b34fb"))) {
                         final int charaProp = gattCharacteristic.getProperties();
-
-                        /*if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
-                            mBluetoothLeService.setCharacteristicNotification(
-                                    gattCharacteristic, false);
-                        }*/
                         if (((charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE) |
                                 (charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) > 0) {
                             /*  gains:\
@@ -783,26 +781,38 @@ public class Record extends AppCompatActivity {
                                 }
                             } else {
                                 newValue = new byte[1];
+                                // set bits 3 and 4 to 1 for real + dummy data: 0b00xx0000 -> x to 1
+                                // set only bit 3 to 1 for dummy data only:     0b00x00000 -> x to 1
                                 switch (selected_gain) {
                                     case "1":
-                                        newValue[0] = (byte)0b00110000;
+                                        newValue[0] = (byte) 0b00000000;
                                         break;
                                     case "2":
-                                        newValue[0] = (byte)0b01110000;
+                                        newValue[0] = (byte) 0b01000000;
                                         break;
                                     case "4":
-                                        newValue[0] = (byte)0b10110000;
+                                        newValue[0] = (byte) 0b10000000;
                                         break;
                                     case "8":
-                                        newValue[0] = (byte)0b11110000;
+                                        newValue[0] = (byte) 0b11000000;
                                         break;
                                 }
                             }
-                            gattCharacteristic.setValue(newValue);
-                            mBluetoothLeService.writeCharacteristic(gattCharacteristic);
-                            // normal setCharNotification call
-                            /*mBluetoothLeService.setCharacteristicNotification(
-                                    gattCharacteristic, true);*/
+                            int WRITECHAR_DELAY = 500;
+                            final int TOGGLE_DELAY = 500;
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    gattCharacteristic.setValue(newValue);
+                                    mBluetoothLeService.writeCharacteristic(gattCharacteristic);
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            toggleNotifying();
+                                        }
+                                    }, TOGGLE_DELAY);
+                                }
+                            }, WRITECHAR_DELAY);
                         }
                     }
                 }
