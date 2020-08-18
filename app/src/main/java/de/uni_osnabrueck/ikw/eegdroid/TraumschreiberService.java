@@ -60,4 +60,3 @@ public class TraumschreiberService {
         return data_ints;
     }
 }
-
