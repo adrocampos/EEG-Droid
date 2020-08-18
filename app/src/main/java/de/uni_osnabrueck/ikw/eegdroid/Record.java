@@ -730,18 +730,22 @@ public class Record extends AppCompatActivity {
         for (BluetoothGattService gattService : gattServices) {
             uuid = gattService.getUuid().toString();
 
-            if (((!mNewDevice && uuid.equals("05bbfe57-2f19-ab84-c448-6769fe64d994")) || (mNewDevice && uuid.equals("00000ee6-0000-1000-8000-00805f9b34fb")))) {
+            if (((!mNewDevice && uuid.equals("05bbfe57-2f19-ab84-c448-6769fe64d994")) ||
+                    (mNewDevice && uuid.equals("00000ee6-0000-1000-8000-00805f9b34fb")))) {
                 List<BluetoothGattCharacteristic> gattCharacteristics =
                         gattService.getCharacteristics();
+
                 // Loops through available Characteristics.
                 for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
                     charUuid = gattCharacteristic.getUuid().toString();
-                    if ((!mNewDevice && charUuid.equals("fcbea85a-4d87-18a2-2141-0d8d2437c0a4")) || (mNewDevice && charUuid.equals("0000ecc0-0000-1000-8000-00805f9b34fb"))) {
+                    if ((!mNewDevice && charUuid.equals("fcbea85a-4d87-18a2-2141-0d8d2437c0a4")) ||
+                            (mNewDevice && charUuid.equals("0000ecc0-0000-1000-8000-00805f9b34fb"))) {
                         final int charaProp = gattCharacteristic.getProperties();
-                        if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+
+                        /*if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
                             mBluetoothLeService.setCharacteristicNotification(
                                     gattCharacteristic, false);
-                        }
+                        }*/
                         if (((charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE) |
                                 (charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) > 0) {
                             /*  gains:\
@@ -778,30 +782,27 @@ public class Record extends AppCompatActivity {
                                         break;
                                 }
                             } else {
-//                                newValue = new byte[4];
-//                                switch (selected_gain) {
-//                                    case "1":
-//                                        newValue[0] = 0b000;
-//                                        break;
-//                                    case "2":
-//                                        newValue[0] = 0b001;
-//                                        break;
-//                                    case "4":
-//                                        newValue[0] = 0b010;
-//                                        break;
-//                                    case "8":
-//                                        newValue[0] = 0b011;
-//                                        break;
-//                                }
-//                                newValue[2] = 0b1;
-//                                newValue[3] = 0b1;
-                                newValue = new byte[]{(byte)0x30};
+                                newValue = new byte[1];
+                                switch (selected_gain) {
+                                    case "1":
+                                        newValue[0] = (byte)0b00110000;
+                                        break;
+                                    case "2":
+                                        newValue[0] = (byte)0b01110000;
+                                        break;
+                                    case "4":
+                                        newValue[0] = (byte)0b10110000;
+                                        break;
+                                    case "8":
+                                        newValue[0] = (byte)0b11110000;
+                                        break;
+                                }
                             }
                             gattCharacteristic.setValue(newValue);
                             mBluetoothLeService.writeCharacteristic(gattCharacteristic);
                             // normal setCharNotification call
-                            mBluetoothLeService.setCharacteristicNotification(
-                                    gattCharacteristic, true);
+                            /*mBluetoothLeService.setCharacteristicNotification(
+                                    gattCharacteristic, true);*/
                         }
                     }
                 }
