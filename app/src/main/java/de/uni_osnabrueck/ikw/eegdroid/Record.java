@@ -335,7 +335,7 @@ public class Record extends AppCompatActivity {
                 getResources().getStringArray(gains_set)));
         int gain_default = mNewDevice ? 0 : 1;
         gain_spinner.setSelection(gain_default);
-        gain_spinner.setEnabled(false);
+        gain_spinner.setEnabled(true);
         selected_gain = gain_spinner.getSelectedItem().toString();
         gain_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -629,7 +629,6 @@ public class Record extends AppCompatActivity {
                 Intent intent = new Intent(this, DeviceScanActivity.class);
                 startActivityForResult(intent, 1200);
             } else {
-
                 //Handles the Dialog to confirm the closing of the activity
                 AlertDialog.Builder alert = new AlertDialog.Builder(this)
                         .setTitle(R.string.dialog_title)
@@ -651,9 +650,7 @@ public class Record extends AppCompatActivity {
         }
 
         if (id == android.R.id.home) {
-
             if (recording) {
-
                 //Handles the Dialog to confirm the closing of the activity
                 AlertDialog.Builder alert = new AlertDialog.Builder(this)
                         .setTitle(R.string.dialog_title)
@@ -674,7 +671,6 @@ public class Record extends AppCompatActivity {
             } else {
                 onBackPressed();
             }
-
             return true;
         }
 
@@ -692,23 +688,17 @@ public class Record extends AppCompatActivity {
         }
 
         if (id == R.id.cast) {
-
             MenuItem menuItemCast = menu.findItem(R.id.cast);
-
             if (!casting) {
-
                 casting = true;
                 caster = new CastThread();
                 caster.start();
                 menuItemCast.setIcon(R.drawable.ic_cast_blue_24dp);
-
             } else {
                 casting = false;
                 caster.staph();
                 menuItemCast.setIcon(R.drawable.ic_cast_white_24dp);
-
             }
-
         }
         return super.onOptionsItemSelected(item);
     }
@@ -748,6 +738,10 @@ public class Record extends AppCompatActivity {
                     charUuid = gattCharacteristic.getUuid().toString();
                     if ((!mNewDevice && charUuid.equals("fcbea85a-4d87-18a2-2141-0d8d2437c0a4")) || (mNewDevice && charUuid.equals("0000ecc0-0000-1000-8000-00805f9b34fb"))) {
                         final int charaProp = gattCharacteristic.getProperties();
+                        if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+                            mBluetoothLeService.setCharacteristicNotification(
+                                    gattCharacteristic, false);
+                        }
                         if (((charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE) |
                                 (charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) > 0) {
                             /*  gains:\
@@ -784,29 +778,30 @@ public class Record extends AppCompatActivity {
                                         break;
                                 }
                             } else {
-                                newValue = new byte[8];
-                                switch (selected_gain) {
-                                    case "1":
-                                        newValue[0] = 0b00;
-                                        break;
-                                    case "2":
-                                        newValue[0] = 0b01;
-                                        break;
-                                    case "4":
-                                        newValue[0] = 0b10;
-                                        break;
-                                    case "8":
-                                        newValue[0] = 0b11;
-                                        break;
-                                }
+//                                newValue = new byte[4];
+//                                switch (selected_gain) {
+//                                    case "1":
+//                                        newValue[0] = 0b000;
+//                                        break;
+//                                    case "2":
+//                                        newValue[0] = 0b001;
+//                                        break;
+//                                    case "4":
+//                                        newValue[0] = 0b010;
+//                                        break;
+//                                    case "8":
+//                                        newValue[0] = 0b011;
+//                                        break;
+//                                }
+//                                newValue[2] = 0b1;
+//                                newValue[3] = 0b1;
+                                newValue = new byte[]{(byte)0x30};
                             }
                             gattCharacteristic.setValue(newValue);
                             mBluetoothLeService.writeCharacteristic(gattCharacteristic);
-                            if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
-                                mNotifyCharacteristic = gattCharacteristic;
-                                mBluetoothLeService.setCharacteristicNotification(
-                                        gattCharacteristic, true);
-                            }
+                            // normal setCharNotification call
+                            mBluetoothLeService.setCharacteristicNotification(
+                                    gattCharacteristic, true);
                         }
                     }
                 }
@@ -890,15 +885,15 @@ public class Record extends AppCompatActivity {
     private List<Float> transData(int[] data) {
         // Conversion formula (old): V_in = X * 1.65V / (1000 * GAIN * PRECISION)
         // Conversion formula (new): V_in = X * (298 / (1000 * gain))
-//        float gain = Float.parseFloat(selected_gain);
+        float gain = Float.parseFloat(selected_gain);
         List<Float> data_trans = new ArrayList<>();
-//        if (!mNewDevice) { // old model
-//            float precision = 2048;
-//            float numerator = 1650;
-//            float denominator = gain * precision;
-//            for (int datapoint : data) data_trans.add((datapoint * numerator) / denominator);
-//        } else for (int datapoint : data) data_trans.add(datapoint * (298 / (1000000 * gain)));
-        for (int datapoint : data) data_trans.add((float) datapoint); // for testing raw data
+        if (!mNewDevice) { // old model
+            float precision = 2048;
+            float numerator = 1650;
+            float denominator = gain * precision;
+            for (int datapoint : data) data_trans.add((datapoint * numerator) / denominator);
+        } else for (int datapoint : data) data_trans.add(datapoint * (298 / (1000000 * gain)));
+//        for (int datapoint : data) data_trans.add((float) datapoint); // for testing raw data
         return data_trans;
     }
 
