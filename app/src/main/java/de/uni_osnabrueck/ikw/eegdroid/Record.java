@@ -119,6 +119,7 @@ public class Record extends AppCompatActivity {
     };
     private BluetoothGattCharacteristic mNotifyCharacteristic;
     private boolean recording = false;
+    private boolean notifying = false;
     private String selected_gain;
     private float res_time;
     private float res_freq;
@@ -677,6 +678,19 @@ public class Record extends AppCompatActivity {
             return true;
         }
 
+        if (id == R.id.notify) {
+            MenuItem menuItemNotify = menu.findItem(R.id.notify);
+            if (!notifying) {
+                notifying = true;
+                readGattCharacteristic(mBluetoothLeService.getSupportedGattServices());
+                menuItemNotify.setIcon(R.drawable.ic_notifications_active_blue_24dp);
+            } else {
+                notifying = false;
+                readGattCharacteristic(mBluetoothLeService.getSupportedGattServices());
+                menuItemNotify.setIcon(R.drawable.ic_notifications_off_white_24dp);
+            }
+        }
+
         if (id == R.id.cast) {
 
             MenuItem menuItemCast = menu.findItem(R.id.cast);
@@ -828,8 +842,9 @@ public class Record extends AppCompatActivity {
                                     gattCharacteristic, false);
                             // normal setCharNotification call
                             mBluetoothLeService.setCharacteristicNotification(
-                                    gattCharacteristic, true);
-                            mBluetoothLeService.readCharacteristic(gattCharacteristic, mNewDevice);
+                                    gattCharacteristic, notifying);
+                            if (notifying)
+                                mBluetoothLeService.readCharacteristic(gattCharacteristic, mNewDevice);
                         }
                     }
                 }
@@ -1284,7 +1299,6 @@ public class Record extends AppCompatActivity {
         imageButtonSave.setEnabled(false);
         imageButtonDiscard.setImageResource(R.drawable.ic_delete_gray_24dp);
         imageButtonDiscard.setEnabled(false);
-
     }
 
     private void buttons_prerecording() {
@@ -1311,11 +1325,11 @@ public class Record extends AppCompatActivity {
         imageButtonSave.setImageResource(R.drawable.ic_save_black_24dp);
         imageButtonDiscard.setEnabled(true);
         imageButtonDiscard.setImageResource(R.drawable.ic_delete_black_24dp);
-
     }
 
     private void setConnectionStatus(boolean b) {
         MenuItem menuItem = menu.findItem(R.id.scan);
+        MenuItem menuItemNotify = menu.findItem(R.id.notify);
         MenuItem menuItemCast = menu.findItem(R.id.cast);
         if (b) {
             deviceConnected = true;
@@ -1325,8 +1339,8 @@ public class Record extends AppCompatActivity {
             switch_plots.setEnabled(true);
             gain_spinner.setEnabled(true);
             viewDeviceAddress.setText(mDeviceAddress);
+            menuItemNotify.setVisible(true);
             menuItemCast.setVisible(true);
-
         } else {
             deviceConnected = false;
             menuItem.setIcon(R.drawable.ic_bluetooth_searching_white_24dp);
@@ -1336,6 +1350,7 @@ public class Record extends AppCompatActivity {
             switch_plots.setEnabled(false);
             gain_spinner.setEnabled(false);
             viewDeviceAddress.setText(R.string.no_address);
+            menuItemNotify.setVisible(false);
             menuItemCast.setVisible(false);
         }
     }
