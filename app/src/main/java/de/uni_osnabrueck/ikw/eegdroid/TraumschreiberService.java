@@ -52,9 +52,18 @@ public class TraumschreiberService {
             data_ints = new int[data_bytes.length / bLen];
             Log.d("Decompressing", "decompress: " + String.format("%02X %02X %02X", data_bytes[0], data_bytes[1], data_bytes[2]));
             // value of channel n is encoded by 3 bytes placed at positions 3n+1, 3n+2 and 3n+3 in data_bytes
+<<<<<<< HEAD
             for (int ch = 0; ch < data_bytes.length / bLen; ch++) {
                 new_int = (data_bytes[ch * bLen + 3]) << 16 | (data_bytes[ch * bLen + 2] & 0xff) << 8 | (data_bytes[ch * bLen + 1] & 0xff);
                 data_ints[ch] = new_int;
+=======
+            for (int channel = 0; channel < 6; channel++) {
+                // the following three bytes are converted from signed to unsigned through '& 0xff'
+                int byte1 = data_bytes[channel * 3 + 1] & 0xff;
+                int byte2 = data_bytes[channel * 3 + 2] & 0xff;
+                int byte3 = data_bytes[channel * 3 + 3] & 0xff;
+                data_ints[channel] = byte1 << 24 | byte2 << 16 | byte3 << 8;
+>>>>>>> 4c546ee... added gain modification
             }
         }
         return data_ints;
