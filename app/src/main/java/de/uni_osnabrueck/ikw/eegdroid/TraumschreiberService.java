@@ -52,13 +52,11 @@ public class TraumschreiberService {
             int[] data_ints = new int[6];
             // value of channel n is encoded by 3 bytes placed at positions 3n+1, 3n+2 and 3n+3 in data_bytes
             for (int channel = 0; channel < 6; channel++) {
-                if (data_bytes.length >= (channel + 1) * 3 + 1) {
-                    // the following three bytes are converted from signed to unsigned through '& 0xff'
-                    int byte1 = data_bytes[channel * 3 + 1] & 0xff;
-                    int byte2 = data_bytes[channel * 3 + 2] & 0xff;
-                    int byte3 = data_bytes[channel * 3 + 3] & 0xff;
-                    data_ints[channel] = byte1 << 16 | byte2 << 8 | byte3;
-                }
+                // the following three bytes are converted from signed to unsigned through '& 0xff'
+                int byte1 = data_bytes[channel * 3 + 1] & 0xff;
+                int byte2 = data_bytes[channel * 3 + 2] & 0xff;
+                int byte3 = data_bytes[channel * 3 + 3] & 0xff;
+                data_ints[channel] = byte1 << 24 | byte2 << 16 | byte3 << 8;
             }
             return data_ints;
         }
