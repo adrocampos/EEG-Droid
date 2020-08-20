@@ -53,7 +53,7 @@ public class TraumschreiberService {
             Log.d("Decompressing", "decompress: " + String.format("%02X %02X %02X", data_bytes[0], data_bytes[1], data_bytes[2]));
             // value of channel n is encoded by 3 bytes placed at positions 3n+1, 3n+2 and 3n+3 in data_bytes
             for (int ch = 0; ch < data_bytes.length / bLen; ch++) {
-                new_int = (data_bytes[ch * bLen + 3]) << 16 | (data_bytes[ch * bLen + 2] & 0xff) << 8 | (data_bytes[ch * bLen + 1] & 0xff);
+                new_int = (data_bytes[ch * bLen + 1]) << 16 | (data_bytes[ch * bLen + 2] & 0xff) << 8 | (data_bytes[ch * bLen + 3] & 0xff);
                 data_ints[ch] = new_int;
             }
         }
