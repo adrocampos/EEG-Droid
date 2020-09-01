@@ -383,7 +383,6 @@ public class Record extends AppCompatActivity {
                 }
                 if (deviceConnected)
                     writeGattCharacteristic(mBluetoothLeService.getSupportedGattServices());
-                buttons_nodata();
             }
 
             @Override
