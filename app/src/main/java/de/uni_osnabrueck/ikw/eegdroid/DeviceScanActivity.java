@@ -286,13 +286,10 @@ public class DeviceScanActivity extends ListActivity {
     private void scanLeDevice(final boolean enable) {
         if (enable) {
             // Stops scanning after a pre-defined scan period.
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mScanning = false;
-                    mLEScanner.stopScan(mScanCallback);
-                    invalidateOptionsMenu();
-                }
+            mHandler.postDelayed(() -> {
+                mScanning = false;
+                mLEScanner.stopScan(mScanCallback);
+                invalidateOptionsMenu();
             }, SCAN_PERIOD);
             mLEScanner.startScan(filters, settings, mScanCallback);
         } else {

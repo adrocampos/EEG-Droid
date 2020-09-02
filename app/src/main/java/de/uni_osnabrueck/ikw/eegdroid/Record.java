@@ -6,7 +6,6 @@ import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -91,6 +90,7 @@ public class Record extends AppCompatActivity {
     private boolean mNewDevice;
     private String mDeviceAddress;
     private BluetoothLeService mBluetoothLeService;
+    private ArrayList<Integer> pkgIDs = new ArrayList<>();
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -104,12 +104,7 @@ public class Record extends AppCompatActivity {
             // hack for ensuring a successful connection
             // constants
             int CONNECT_DELAY = 2000;
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mBluetoothLeService.connect(mDeviceAddress);
-                }
-            }, CONNECT_DELAY);  // connect with a defined delay
+            handler.postDelayed(() -> mBluetoothLeService.connect(mDeviceAddress), CONNECT_DELAY);  // connect with a defined delay
         }
 
         @Override
@@ -187,53 +182,42 @@ public class Record extends AppCompatActivity {
     private String recording_time;
     private long start_timestamp;
     private long end_timestamp;
-    private final View.OnClickListener imageRecordOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (!recording) {
-                startTrial();
-                Toast.makeText(
-                        getApplicationContext(),
-                        "Recording in process.",
-                        Toast.LENGTH_LONG
-                ).show();
-                buttons_recording();
-            } else {
-                endTrial();
-                buttons_postrecording();
-            }
+    private final View.OnClickListener imageRecordOnClickListener = v -> {
+        if (!recording) {
+            startTrial();
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Recording in process.",
+                    Toast.LENGTH_LONG
+            ).show();
+            buttons_recording();
+        } else {
+            endTrial();
+            buttons_postrecording();
         }
     };
-    private final View.OnClickListener imageSaveOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getApplicationContext());
-            View mView = layoutInflaterAndroid.inflate(R.layout.input_dialog_string, null);
-            AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(Record.this);
-            alertDialogBuilderUserInput.setView(mView);
+    private final View.OnClickListener imageSaveOnClickListener = v -> {
+        LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getApplicationContext());
+        View mView = layoutInflaterAndroid.inflate(R.layout.input_dialog_string, null);
+        AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(Record.this);
+        alertDialogBuilderUserInput.setView(mView);
 
-            final EditText userInputLabel = mView.findViewById(R.id.input_dialog_string_Input);
+        final EditText userInputLabel = mView.findViewById(R.id.input_dialog_string_Input);
 
-            alertDialogBuilderUserInput
-                    .setCancelable(false)
-                    .setTitle(R.string.session_label_title)
-                    .setMessage(getResources().getString(R.string.enter_session_label))
-                    .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialogBox, int id) {
-                            if (!userInputLabel.getText().toString().isEmpty()) {
-                                saveSession(userInputLabel.getText().toString());
-                                Toast.makeText(getApplicationContext(), "Your EEG session was successfully stored.", Toast.LENGTH_LONG).show();
-                            } else {
-                                saveSession();
-                                Toast.makeText(getApplicationContext(), "Your EEG session was successfully stored.", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    });
+        alertDialogBuilderUserInput
+                .setCancelable(false)
+                .setTitle(R.string.session_label_title)
+                .setMessage(getResources().getString(R.string.enter_session_label))
+                .setPositiveButton(R.string.save, (dialogBox, id) -> {
+                    if (!userInputLabel.getText().toString().isEmpty()) {
+                        saveSession(userInputLabel.getText().toString());
+                    } else saveSession();
+                    Toast.makeText(getApplicationContext(), "Your EEG session was successfully stored.", Toast.LENGTH_LONG).show();
+                });
 
-            AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
-            alertDialogAndroid.show();
-            buttons_prerecording();
-        }
+        AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
+        alertDialogAndroid.show();
+        buttons_prerecording();
     };
     private Thread thread;
     private long plotting_start;
@@ -273,22 +257,27 @@ public class Record extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
+//            Log.d("Device connected: ", deviceConnected ? "true" : "false");
             if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
+                deviceConnected = true;
                 buttons_prerecording();
                 setConnectionStatus(true);
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
+                deviceConnected = false;
                 setConnectionStatus(false);
                 clearUI();
                 disableCheckboxes();
                 data_cnt = 0;
-                timer.cancel();
-                timer.purge();
+                if (timer != null) {
+                    timer.cancel();
+                    timer.purge();
+                }
                 timerRunning = false;
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 // Show all the supported services and characteristics on the user interface.
                 data_cnt = 0;
                 readGattCharacteristic(mBluetoothLeService.getSupportedGattServices());
-            } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
+            } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action) && deviceConnected) {
                 data_cnt++;
                 if (!timerRunning) startTimer();
                 long last_data = System.currentTimeMillis();
@@ -305,9 +294,8 @@ public class Record extends AppCompatActivity {
                         plotting_start = System.currentTimeMillis();
                     }
                 }
-                if (recording) storeData(microV);
-                //setConnectionStatus(true);
                 if (recording) {
+                    storeData(microV);
                     mConnectionState.setText(R.string.recording);
                     mConnectionState.setTextColor(Color.RED);
                 } else {
@@ -395,16 +383,14 @@ public class Record extends AppCompatActivity {
     private void initializeTimerTask() {
         timerTask = new TimerTask() {
             public void run() {
-                handler.post(new Runnable() {
-                    public void run() {
-                        res_time = 1000 / data_cnt;
-                        String hertz = (int) data_cnt + "Hz";
-                        res_freq = data_cnt;
-                        @SuppressLint("DefaultLocale") String resolution = String.format("%.2f", res_time) + "ms - ";
-                        String content = resolution + hertz;
-                        mDataResolution.setText(content);
-                        data_cnt = 0;
-                    }
+                handler.post(() -> {
+                    res_time = 1000 / data_cnt;
+                    String hertz = (int) data_cnt + "Hz";
+                    res_freq = data_cnt;
+                    @SuppressLint("DefaultLocale") String resolution = String.format("%.2f", res_time) + "ms - ";
+                    String content = resolution + hertz;
+                    mDataResolution.setText(content);
+                    data_cnt = 0;
                 });
             }
         };
@@ -452,11 +438,6 @@ public class Record extends AppCompatActivity {
         // Sets up UI references.
         mConnectionState = findViewById(R.id.connection_state);
 
-        // Extract the info from the intent
-
-//        Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
-//        bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
-
         viewDeviceAddress = findViewById(R.id.device_address);
         mConnectionState = findViewById(R.id.connection_state);
         mCh1 = findViewById(R.id.ch1);
@@ -483,100 +464,84 @@ public class Record extends AppCompatActivity {
         chckbx_ch6 = findViewById(R.id.checkBox_ch6);
         chckbx_ch7 = findViewById(R.id.checkBox_ch7);
         chckbx_ch8 = findViewById(R.id.checkBox_ch8);
-        chckbx_ch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                show_ch1 = isChecked;
-                if (!isChecked) enabledCheckboxes--;
-                else enabledCheckboxes++;
-                if (enabledCheckboxes == 0) {
-                    chckbx_ch1.setChecked(true);
-                    show_ch1 = true;
-                    enabledCheckboxes++;
-                }
+        chckbx_ch1.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            show_ch1 = isChecked;
+            if (!isChecked) enabledCheckboxes--;
+            else enabledCheckboxes++;
+            if (enabledCheckboxes == 0) {
+                chckbx_ch1.setChecked(true);
+                show_ch1 = true;
+                enabledCheckboxes++;
             }
         });
-        chckbx_ch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                show_ch2 = isChecked;
-                if (!isChecked) enabledCheckboxes--;
-                else enabledCheckboxes++;
-                if (enabledCheckboxes == 0) {
-                    chckbx_ch2.setChecked(true);
-                    show_ch2 = true;
-                    enabledCheckboxes++;
-                }
+        chckbx_ch2.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            show_ch2 = isChecked;
+            if (!isChecked) enabledCheckboxes--;
+            else enabledCheckboxes++;
+            if (enabledCheckboxes == 0) {
+                chckbx_ch2.setChecked(true);
+                show_ch2 = true;
+                enabledCheckboxes++;
             }
         });
-        chckbx_ch3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                show_ch3 = isChecked;
-                if (!isChecked) enabledCheckboxes--;
-                else enabledCheckboxes++;
-                if (enabledCheckboxes == 0) {
-                    chckbx_ch3.setChecked(true);
-                    show_ch3 = true;
-                    enabledCheckboxes++;
-                }
+        chckbx_ch3.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            show_ch3 = isChecked;
+            if (!isChecked) enabledCheckboxes--;
+            else enabledCheckboxes++;
+            if (enabledCheckboxes == 0) {
+                chckbx_ch3.setChecked(true);
+                show_ch3 = true;
+                enabledCheckboxes++;
             }
         });
-        chckbx_ch4.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                show_ch4 = isChecked;
-                if (!isChecked) enabledCheckboxes--;
-                else enabledCheckboxes++;
-                if (enabledCheckboxes == 0) {
-                    chckbx_ch4.setChecked(true);
-                    show_ch4 = true;
-                    enabledCheckboxes++;
-                }
+        chckbx_ch4.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            show_ch4 = isChecked;
+            if (!isChecked) enabledCheckboxes--;
+            else enabledCheckboxes++;
+            if (enabledCheckboxes == 0) {
+                chckbx_ch4.setChecked(true);
+                show_ch4 = true;
+                enabledCheckboxes++;
             }
         });
-        chckbx_ch5.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                show_ch5 = isChecked;
-                if (!isChecked) enabledCheckboxes--;
-                else enabledCheckboxes++;
-                if (enabledCheckboxes == 0) {
-                    chckbx_ch5.setChecked(true);
-                    show_ch5 = true;
-                    enabledCheckboxes++;
-                }
+        chckbx_ch5.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            show_ch5 = isChecked;
+            if (!isChecked) enabledCheckboxes--;
+            else enabledCheckboxes++;
+            if (enabledCheckboxes == 0) {
+                chckbx_ch5.setChecked(true);
+                show_ch5 = true;
+                enabledCheckboxes++;
             }
         });
-        chckbx_ch6.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                show_ch6 = isChecked;
-                if (!isChecked) enabledCheckboxes--;
-                else enabledCheckboxes++;
-                if (enabledCheckboxes == 0) {
-                    chckbx_ch6.setChecked(true);
-                    show_ch6 = true;
-                    enabledCheckboxes++;
-                }
+        chckbx_ch6.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            show_ch6 = isChecked;
+            if (!isChecked) enabledCheckboxes--;
+            else enabledCheckboxes++;
+            if (enabledCheckboxes == 0) {
+                chckbx_ch6.setChecked(true);
+                show_ch6 = true;
+                enabledCheckboxes++;
             }
         });
-        chckbx_ch7.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                show_ch7 = isChecked;
-                if (!isChecked) enabledCheckboxes--;
-                else enabledCheckboxes++;
-                if (enabledCheckboxes == 0) {
-                    chckbx_ch7.setChecked(true);
-                    show_ch7 = true;
-                    enabledCheckboxes++;
-                }
+        chckbx_ch7.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            show_ch7 = isChecked;
+            if (!isChecked) enabledCheckboxes--;
+            else enabledCheckboxes++;
+            if (enabledCheckboxes == 0) {
+                chckbx_ch7.setChecked(true);
+                show_ch7 = true;
+                enabledCheckboxes++;
             }
         });
-        chckbx_ch8.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                show_ch8 = isChecked;
-                if (!isChecked) enabledCheckboxes--;
-                else enabledCheckboxes++;
-                if (enabledCheckboxes == 0) {
-                    chckbx_ch8.setChecked(true);
-                    show_ch8 = true;
-                    enabledCheckboxes++;
-                }
+        chckbx_ch8.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            show_ch8 = isChecked;
+            if (!isChecked) enabledCheckboxes--;
+            else enabledCheckboxes++;
+            if (enabledCheckboxes == 0) {
+                chckbx_ch8.setChecked(true);
+                show_ch8 = true;
+                enabledCheckboxes++;
             }
         });
         mDataResolution = findViewById(R.id.resolution_value);
@@ -603,9 +568,8 @@ public class Record extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (deviceConnected) {
-            unbindService(mServiceConnection);
-        }
+        unbindService(mServiceConnection);
+        mBluetoothLeService = null;
     }
 
     @Override
@@ -632,20 +596,14 @@ public class Record extends AppCompatActivity {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this)
                         .setTitle(R.string.dialog_title)
                         .setMessage(getResources().getString(R.string.confirmation_disconnect));
-                alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int which) {
-                        mBluetoothLeService.disconnect();
-                    }
-                });
-                alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // close dialog
-                        dialog.cancel();
-                    }
+                alert.setPositiveButton(android.R.string.yes, (dialog, which) -> mBluetoothLeService.disconnect());
+                alert.setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+                    // close dialog
+                    dialog.cancel();
                 });
                 alert.show();
             }
+            return true;
         }
 
         if (id == android.R.id.home) {
@@ -654,17 +612,10 @@ public class Record extends AppCompatActivity {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this)
                         .setTitle(R.string.dialog_title)
                         .setMessage(getResources().getString(R.string.confirmation_close_record));
-                alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int which) {
-                        onBackPressed();
-                    }
-                });
-                alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // close dialog
-                        dialog.cancel();
-                    }
+                alert.setPositiveButton(android.R.string.yes, (dialog, which) -> onBackPressed());
+                alert.setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+                    // close dialog
+                    dialog.cancel();
                 });
                 alert.show();
             } else {
@@ -799,18 +750,10 @@ public class Record extends AppCompatActivity {
                             }
                             int WRITECHAR_DELAY = 500;
                             final int TOGGLE_DELAY = 500;
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    gattCharacteristic.setValue(newValue);
-                                    mBluetoothLeService.writeCharacteristic(gattCharacteristic);
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            toggleNotifying();
-                                        }
-                                    }, TOGGLE_DELAY);
-                                }
+                            handler.postDelayed(() -> {
+                                gattCharacteristic.setValue(newValue);
+                                mBluetoothLeService.writeCharacteristic(gattCharacteristic);
+                                handler.postDelayed(this::toggleNotifying, TOGGLE_DELAY);
                             }, WRITECHAR_DELAY);
                         }
                     }
@@ -898,11 +841,19 @@ public class Record extends AppCompatActivity {
         float gain = Float.parseFloat(selected_gain);
         List<Float> data_trans = new ArrayList<>();
         if (!mNewDevice) { // old model
+            pkgIDs.add((int) data_cnt); // store pkg ID
             float precision = 2048;
             float numerator = 1650;
             float denominator = gain * precision;
             for (int datapoint : data) data_trans.add((datapoint * numerator) / denominator);
-        } else for (int datapoint : data) data_trans.add(datapoint * (298 / (1000000 * gain)));
+        } else {
+            pkgIDs.add(data[0]); // store pkg ID
+            int[] dataNoID = new int[data.length - 1]; // array without the pkg id slot
+            // copy the array without the pkg id
+            System.arraycopy(data, 1, dataNoID, 0, data.length - 1);
+//            for (int datapoint : dataNoID) data_trans.add((float) datapoint); // for testing raw data
+            for (int datapoint : dataNoID) data_trans.add(datapoint * (298 / (1000000 * gain)));
+        }
 //        for (int datapoint : data) data_trans.add((float) datapoint); // for testing raw data
         return data_trans;
     }
@@ -1095,34 +1046,31 @@ public class Record extends AppCompatActivity {
         }
         final float f_x = x;
         if (thread != null) thread.interrupt();
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                LineDataSet set1 = createSet1(lineEntries1, show_ch1);
-                datasets.add(set1);
-                LineDataSet set2 = createSet2(lineEntries2, show_ch2);
-                datasets.add(set2);
-                LineDataSet set3 = createSet3(lineEntries3, show_ch3);
-                datasets.add(set3);
-                LineDataSet set4 = createSet4(lineEntries4, show_ch4);
-                datasets.add(set4);
-                LineDataSet set5 = createSet5(lineEntries5, show_ch5);
-                datasets.add(set5);
-                LineDataSet set6 = createSet6(lineEntries6, show_ch6);
-                datasets.add(set6);
-                LineDataSet set7 = createSet7(lineEntries7, show_ch7);
-                datasets.add(set7);
-                LineDataSet set8 = createSet8(lineEntries8, show_ch8);
-                datasets.add(set8);
-                LineData linedata = new LineData(datasets);
-                linedata.notifyDataChanged();
-                mChart.setData(linedata);
-                mChart.notifyDataSetChanged();
-                // limit the number of visible entries
-                mChart.setVisibleXRangeMaximum(MAX_VISIBLE);
-                // move to the latest entry
-                mChart.moveViewToX(f_x);
-            }
+        final Runnable runnable = () -> {
+            LineDataSet set1 = createSet1(lineEntries1, show_ch1);
+            datasets.add(set1);
+            LineDataSet set2 = createSet2(lineEntries2, show_ch2);
+            datasets.add(set2);
+            LineDataSet set3 = createSet3(lineEntries3, show_ch3);
+            datasets.add(set3);
+            LineDataSet set4 = createSet4(lineEntries4, show_ch4);
+            datasets.add(set4);
+            LineDataSet set5 = createSet5(lineEntries5, show_ch5);
+            datasets.add(set5);
+            LineDataSet set6 = createSet6(lineEntries6, show_ch6);
+            datasets.add(set6);
+            LineDataSet set7 = createSet7(lineEntries7, show_ch7);
+            datasets.add(set7);
+            LineDataSet set8 = createSet8(lineEntries8, show_ch8);
+            datasets.add(set8);
+            LineData linedata = new LineData(datasets);
+            linedata.notifyDataChanged();
+            mChart.setData(linedata);
+            mChart.notifyDataSetChanged();
+            // limit the number of visible entries
+            mChart.setVisibleXRangeMaximum(MAX_VISIBLE);
+            // move to the latest entry
+            mChart.moveViewToX(f_x);
         };
         thread = new Thread(new Runnable() {
             @Override
@@ -1229,70 +1177,69 @@ public class Record extends AppCompatActivity {
         final String top_header = "Username, User ID, Session ID,Session Tag,Date,Shape (rows x columns)," +
                 "Duration (ms),Starting Time,Ending Time,Resolution (ms),Resolution (Hz)," +
                 "Unit Measure,Starting Timestamp,Ending Timestamp";
-        final String dp_header = "Time,Ch-1,Ch-2,Ch-3,Ch-4,Ch-5,Ch-6,Ch-7,Ch-8";
+        final String dp_header = "Pkg ID,Time,Ch-1,Ch-2,Ch-3,Ch-4,Ch-5,Ch-6,Ch-7,Ch-8";
         final UUID id = UUID.randomUUID();
         @SuppressLint("SimpleDateFormat") final String date = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss").format(new Date());
         final char delimiter = ',';
         final char break_line = '\n';
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    File formatted = new File(MainActivity.getDirSessions(),
-                            date + "_" + tag + ".csv");
-                    // if file doesn't exists, then create it
-                    if (!formatted.exists()) //noinspection ResultOfMethodCallIgnored
-                        formatted.createNewFile();
-                    FileWriter fileWriter = new FileWriter(formatted);
-                    int rows = main_data.size();
-                    int cols = main_data.get(0).length;
-                    fileWriter.append(top_header);
-                    fileWriter.append(break_line);
-                    fileWriter.append(username);
+        new Thread(() -> {
+            try {
+                File formatted = new File(MainActivity.getDirSessions(),
+                        date + "_" + tag + ".csv");
+                // if file doesn't exists, then create it
+                if (!formatted.exists()) //noinspection ResultOfMethodCallIgnored
+                    formatted.createNewFile();
+                FileWriter fileWriter = new FileWriter(formatted);
+                int rows = main_data.size();
+                int cols = main_data.get(0).length;
+                fileWriter.append(top_header);
+                fileWriter.append(break_line);
+                fileWriter.append(username);
+                fileWriter.append(delimiter);
+                fileWriter.append(userID);
+                fileWriter.append(delimiter);
+                fileWriter.append(id.toString());
+                fileWriter.append(delimiter);
+                fileWriter.append(tag);
+                fileWriter.append(delimiter);
+                fileWriter.append(date);
+                fileWriter.append(delimiter);
+                fileWriter.append(String.valueOf(rows)).append("x").append(String.valueOf(cols));
+                fileWriter.append(delimiter);
+                fileWriter.append(recording_time);
+                fileWriter.append(delimiter);
+                fileWriter.append(start_time);
+                fileWriter.append(delimiter);
+                fileWriter.append(end_time);
+                fileWriter.append(delimiter);
+                fileWriter.append(String.valueOf(res_time));
+                fileWriter.append(delimiter);
+                fileWriter.append(String.valueOf(res_freq));
+                fileWriter.append(delimiter);
+                fileWriter.append("µV");
+                fileWriter.append(delimiter);
+                fileWriter.append(Long.toString(start_timestamp));
+                fileWriter.append(delimiter);
+                fileWriter.append(Long.toString(end_timestamp));
+                fileWriter.append(delimiter);
+                fileWriter.append(break_line);
+                fileWriter.append(dp_header);
+                fileWriter.append(break_line);
+                for (int i = 0; i < rows; i++) {
+                    fileWriter.append(String.valueOf(pkgIDs.get(i)));
                     fileWriter.append(delimiter);
-                    fileWriter.append(userID);
+                    fileWriter.append(String.valueOf(dp_received.get(i)));
                     fileWriter.append(delimiter);
-                    fileWriter.append(id.toString());
-                    fileWriter.append(delimiter);
-                    fileWriter.append(tag);
-                    fileWriter.append(delimiter);
-                    fileWriter.append(date);
-                    fileWriter.append(delimiter);
-                    fileWriter.append(String.valueOf(rows)).append("x").append(String.valueOf(cols));
-                    fileWriter.append(delimiter);
-                    fileWriter.append(recording_time);
-                    fileWriter.append(delimiter);
-                    fileWriter.append(start_time);
-                    fileWriter.append(delimiter);
-                    fileWriter.append(end_time);
-                    fileWriter.append(delimiter);
-                    fileWriter.append(String.valueOf(res_time));
-                    fileWriter.append(delimiter);
-                    fileWriter.append(String.valueOf(res_freq));
-                    fileWriter.append(delimiter);
-                    fileWriter.append("µV");
-                    fileWriter.append(delimiter);
-                    fileWriter.append(Long.toString(start_timestamp));
-                    fileWriter.append(delimiter);
-                    fileWriter.append(Long.toString(end_timestamp));
-                    fileWriter.append(delimiter);
-                    fileWriter.append(break_line);
-                    fileWriter.append(dp_header);
-                    fileWriter.append(break_line);
-                    for (int i = 0; i < rows; i++) {
-                        fileWriter.append(String.valueOf(dp_received.get(i)));
+                    for (int j = 0; j < cols; j++) {
+                        fileWriter.append(String.valueOf(main_data.get(i)[j]));
                         fileWriter.append(delimiter);
-                        for (int j = 0; j < cols; j++) {
-                            fileWriter.append(String.valueOf(main_data.get(i)[j]));
-                            fileWriter.append(delimiter);
-                        }
-                        fileWriter.append(break_line);
                     }
-                    fileWriter.flush();
-                    fileWriter.close();
-                } catch (Exception e) {
-                    Log.e(TAG, "Error storing the data into a CSV file: " + e);
+                    fileWriter.append(break_line);
                 }
+                fileWriter.flush();
+                fileWriter.close();
+            } catch (Exception e) {
+                Log.e(TAG, "Error storing the data into a CSV file: " + e);
             }
         }).start();
     }
@@ -1332,12 +1279,11 @@ public class Record extends AppCompatActivity {
         imageButtonDiscard.setImageResource(R.drawable.ic_delete_black_24dp);
     }
 
-    private void setConnectionStatus(boolean b) {
+    private void setConnectionStatus(boolean connected) {
         MenuItem menuItem = menu.findItem(R.id.scan);
         MenuItem menuItemNotify = menu.findItem(R.id.notify);
         MenuItem menuItemCast = menu.findItem(R.id.cast);
-        if (b) {
-            deviceConnected = true;
+        if (connected) {
             menuItem.setIcon(R.drawable.ic_bluetooth_connected_blue_24dp);
             mConnectionState.setText(R.string.device_connected);
             mConnectionState.setTextColor(Color.GREEN);
@@ -1347,7 +1293,6 @@ public class Record extends AppCompatActivity {
             menuItemNotify.setVisible(true);
             menuItemCast.setVisible(true);
         } else {
-            deviceConnected = false;
             menuItem.setIcon(R.drawable.ic_bluetooth_searching_white_24dp);
             mConnectionState.setText(R.string.no_device);
             mConnectionState.setTextColor(Color.LTGRAY);

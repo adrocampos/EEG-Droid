@@ -88,6 +88,7 @@ public final class GalleryHelper {
         if (resultCode == RESULT_OK) {
             Uri targetUri = data.getData();
             try {
+                assert targetUri != null;
                 return BitmapFactory.decodeStream(activity.getContentResolver().openInputStream(targetUri));
             } catch (FileNotFoundException e) {
                 Log.e(TAG, "File Not Found", e);
@@ -108,6 +109,7 @@ public final class GalleryHelper {
         String[] proj = {MediaStore.Images.Media.DATA};
         CursorLoader cLoader = new CursorLoader(activity.getApplicationContext(), contentUri, proj, null, null, null);
         Cursor cursor = cLoader.loadInBackground();
+        assert cursor != null;
         int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         cursor.moveToFirst();
         return cursor.getString(column_index);
