@@ -20,6 +20,7 @@ import android.util.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 /**
  * Exposes the ability to play raw audio data from an InputStream.
@@ -69,7 +70,7 @@ public final class StreamPlayer {
                 audioTrack.release();
             }
         } catch (IOException e2) {
-            Log.e(TAG, e2.getMessage());
+            Log.e(TAG, Objects.requireNonNull(e2.getMessage()));
         }
     }
 
@@ -92,8 +93,7 @@ public final class StreamPlayer {
             int bs = AudioTrack.getMinBufferSize(sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
             audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate, AudioFormat.CHANNEL_OUT_MONO,
                     AudioFormat.ENCODING_PCM_16BIT, bs, AudioTrack.MODE_STREAM);
-            if (audioTrack != null)
-                audioTrack.play();
+            audioTrack.play();
         }
     }
 }

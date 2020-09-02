@@ -48,13 +48,15 @@ public class TraumschreiberService {
                 data_ints[ch] = new_int;
             }
         } else {  // for new Traumschreiber
-            // int packet_id = data_bytes[0] >> 4; -- not used for now.
-            data_ints = new int[data_bytes.length / bLen];
+            int packet_id = data_bytes[0] >> 4; // not used for now.
+            Log.d("Pkg ID: ", Integer.toString(packet_id));
+            data_ints = new int[data_bytes.length / bLen + 1];
+            data_ints[0] = packet_id;
             Log.d("Decompressing", "decompress: " + String.format("%02X %02X %02X", data_bytes[0], data_bytes[1], data_bytes[2]));
             // value of channel n is encoded by 3 bytes placed at positions 3n+1, 3n+2 and 3n+3 in data_bytes
             for (int ch = 0; ch < data_bytes.length / bLen; ch++) {
                 new_int = (data_bytes[ch * bLen + 1]) << 16 | (data_bytes[ch * bLen + 2] & 0xff) << 8 | (data_bytes[ch * bLen + 3] & 0xff);
-                data_ints[ch] = new_int;
+                data_ints[ch + 1] = new_int;
             }
         }
         return data_ints;
