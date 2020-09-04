@@ -90,7 +90,6 @@ public class Record extends AppCompatActivity {
     private boolean mNewDevice;
     private String mDeviceAddress;
     private BluetoothLeService mBluetoothLeService;
-    private ArrayList<Integer> pkgIDs = new ArrayList<>();
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -112,6 +111,7 @@ public class Record extends AppCompatActivity {
             if (mBluetoothLeService != null) mBluetoothLeService = null;
         }
     };
+    private ArrayList<Integer> pkgIDs = new ArrayList<>();
     private BluetoothGattCharacteristic mNotifyCharacteristic;
     private boolean recording = false;
     private boolean notifying = false;
