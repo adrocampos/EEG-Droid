@@ -48,7 +48,7 @@ public class TraumschreiberService {
                 data_ints[ch] = new_int;
             }
         } else {  // for new Traumschreiber
-            int packet_id = data_bytes[0] >> 4; // not used for now.
+            int packet_id = (data_bytes[0] & 0xff) >> 4; // Pkg Ids go from 0 to 15 (4 bit)
             Log.d("Pkg ID: ", Integer.toString(packet_id));
             data_ints = new int[data_bytes.length / bLen + 1];
             data_ints[0] = packet_id;
