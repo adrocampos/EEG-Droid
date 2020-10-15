@@ -1,0 +1,71 @@
+trigger:
+  branches: {include: ['master', '1.*'] }
+  paths:
+    include: ['*']
+    exclude:
+    - 'docs/*'
+
+variables:
+  cmakeargs: '-DCMAKE_BUILD_TYPE=Release'
+stages:
+- stage: build
+  jobs:
+  - job: Linux
+    pool: { vmImage: 'ubuntu-16.04' }
+    steps:
+    - template: ci/azure_build_steps.yml
+  - job: Win64
+    pool: { vmImage: 'vs2017-win2016' }
+    steps:
+    - bash: 'echo "##vso[task.prependpath]C:\\Program Files\\CMake\\bin\\"'
+      displayName: 'Fix PATH'
+    - template: ci/azure_build_steps.yml
+      parameters:
+        cmake_stepvars: '-A x64'
+  - job: MacOS
+    pool: { vmImage: 'macOS-10.13' }
+    variables:
+      MACOSX_DEPLOYMENT_TARGET: '10.9'
+    steps:
+    - template: ci/azure_build_steps.yml
+      parameters:
+        run_tests: true
+        cmake_stepvars: '-DCMAKE_INTERPROCEDURAL_OPTIMIZATION=1 -DCMAKE_POLICY_DEFAULT_CMP0069=NEW'
+  - job: manylinux2010
+    pool: { vmImage: 'ubuntu-16.04' }
+    container: quay.io/pypa/manylinux2010_x86_64:latest
+    steps:
+    - bash: CFLAGS="-flto -static-libstdc++ -std=c++14" ./standalone_compilation_linux.sh
+    - bash: strip --strip-unneeded liblsl.so
+    - publish: liblsl.so
+      artifact: manylinux2010
+  - job: manylinux1
+    pool: { vmImage: 'ubuntu-16.04' }
+    container: quay.io/pypa/manylinux1_x86_64:latest
+    steps:
+    - bash: CFLAGS="-flto -static-libstdc++ -std=c++11" ./standalone_compilation_linux.sh
+    - bash: strip --strip-unneeded liblsl.so
+    - publish: liblsl.so
+      artifact: manylinux1
+- stage: Upload
+  jobs:
+  - job: Upload
+    pool: { vmImage: 'ubuntu-16.04' }
+    steps:
+    - bash: mkdir upload
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        targetPath: upload
+    - bash: |
+            mv upload/manylinux2010/liblsl.so upload/liblsl-manylinux2010-liblsl64.so
+            mv upload/manylinux1/liblsl.so upload/liblsl-manylinux1-liblsl64.so
+    - task: GithubRelease@0
+      condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+      inputs:
+        action: edit
+        tag: $(Build.SourceBranchName)
+        githubConnection: upload
+        draft: true
+        addChangelog: false
+        assets: |
+          upload/**/liblsl-*

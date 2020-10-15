@@ -1,0 +1,68 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: ['*']
+    tags: 
+  pull_request:
+  release:
+    types: ['created', 'edited']
+  create:
+    tags: ['*']
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+        - ubuntu-latest
+        - windows-latest
+        - macOS-latest
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v1
+    - name: CMake version
+      run: cmake --version
+    - name: Configure CMake
+      shell: bash
+      run: |
+           cmake --version
+           cmake -E make_directory build
+           cd build
+           cmake -DLSL_UNITTESTS=1 -DCPACK_PACKAGE_DIRECTORY=${PWD}/package ..
+    - name: make
+      run: cmake --build build --config Release -j --target install
+    - name: package
+      shell: bash
+      if: "!startsWith(github.ref, 'refs/heads')"
+      run: |
+           echo $GITHUB_REF
+           cmake --build build --config Release -j --target package
+           # On Debian / Ubuntu the dependencies can only be resolved for
+           # already installed packages. Therefore, we have built all
+           # packages without dependencies in the previous step,
+           # install them and rebuild them with dependency discovery enabled
+           if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
+              cmake -DCPACK_DEBIAN_PACKAGE_SHLIBDEPS=ON .
+              sudo dpkg -i build/package/*.deb
+              cmake --build build --config Release -j --target package
+           fi
+           cmake -E remove_directory build/uploadpkgs/_CPack_Packages
+    - name: upload install dir
+      uses: actions/upload-artifact@master
+      with:
+        name: build-${{ matrix.os }}
+        path: build/install
+
+    - name: upload package
+      uses: actions/upload-artifact@master
+      if: "!startsWith(github.ref, 'refs/heads')"
+      with:
+        name: pkg-${{ matrix.os }}
+        path: build/package
+    - name: unit tests (internal functions)
+      run: build/install/bin/lsl_test_internal --order rand --durations yes
+    - name: unit tests (exported functions)
+      shell: bash
+      run: build/install/bin/lsl_test_exported --order rand --durations yes || [ "${{ matrix.os }}" = "macOS-latest" ]

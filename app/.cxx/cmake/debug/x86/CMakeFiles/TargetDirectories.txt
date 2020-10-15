@@ -1,0 +1,12 @@
+/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86/CMakeFiles/install/local.dir
+/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86/CMakeFiles/package_source.dir
+/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86/CMakeFiles/lslboost.dir
+/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86/CMakeFiles/rebuild_cache.dir
+/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86/CMakeFiles/lslobj.dir
+/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86/CMakeFiles/package.dir
+/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86/CMakeFiles/lsl.dir
+/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86/CMakeFiles/edit_cache.dir
+/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86/CMakeFiles/install/strip.dir
+/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86/CMakeFiles/lslver.dir
+/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86/CMakeFiles/list_install_components.dir
+/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86/CMakeFiles/install.dir

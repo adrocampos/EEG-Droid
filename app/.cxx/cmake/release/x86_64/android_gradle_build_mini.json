@@ -1,0 +1,43 @@
+{
+  "buildFiles": [
+    "/home/mvidaldepalo/github/EEG-Droid/liblsl/CMakeLists.txt",
+    "/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/build/cmake/android.toolchain.cmake",
+    "/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/build/cmake/platforms.cmake",
+    "/home/mvidaldepalo/github/EEG-Droid/liblsl/cmake/LSLConfig.cmake",
+    "/home/mvidaldepalo/github/EEG-Droid/liblsl/cmake/LSLCMake.cmake"
+  ],
+  "cleanCommands": [
+    "./cmake/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/release/x86_64\" clean"
+  ],
+  "buildTargetsCommand": "./cmake/bin/ninja  -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/release/x86_64\" {LIST_OF_TARGETS_TO_BUILD}",
+  "libraries": {
+    "lslobj-Release-x86_64": {
+      "artifactName": "lslobj",
+      "buildCommand": "./cmake/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/release/x86_64\" lslobj",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "lsl-Release-x86_64": {
+      "artifactName": "lsl",
+      "buildCommand": "./cmake/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/release/x86_64\" lsl",
+      "abi": "x86_64",
+      "output": "/home/mvidaldepalo/github/EEG-Droid/app/build/intermediates/cmake/release/obj/x86_64/liblsl.so",
+      "runtimeFiles": []
+    },
+    "lslboost-Release-x86_64": {
+      "artifactName": "lslboost",
+      "buildCommand": "./cmake/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/release/x86_64\" lslboost",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "lslver-Release-x86_64": {
+      "artifactName": "lslver",
+      "buildCommand": "./cmake/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/release/x86_64\" lslver",
+      "abi": "x86_64",
+      "output": "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/release/x86_64/lslver",
+      "runtimeFiles": [
+        "/home/mvidaldepalo/github/EEG-Droid/app/build/intermediates/cmake/release/obj/x86_64/liblsl.so"
+      ]
+    }
+  }
+}

@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity
 
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
     private static File dirSessions;
-    private ManageSessions ManageSessions = new ManageSessions();
+    private final ManageSessions ManageSessions = new ManageSessions();
     private Uri dirUri;
     private TextView appName;
     private TextView appVersion;
@@ -180,14 +180,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        tableRowEpibot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getBaseContext(), Epibot.class);
-                startActivity(intent);
-            }
-        });
-
         // Check if permission to write is granted
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -271,10 +263,6 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.tutorial) {
             Intent intent = new Intent(this, Tutorial.class);
-            startActivity(intent);
-
-        } else if (id == R.id.epibot) {
-            Intent intent = new Intent(this, Epibot.class);
             startActivity(intent);
 
         } else if (id == R.id.settings) {
