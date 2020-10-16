@@ -896,8 +896,6 @@ public class Record extends AppCompatActivity {
     private void streamData(List<Float> data_microV) {
         float[] sample = new float[24];
 
-        for (int i = 0; i < sample.length; i++) sample[i] = 0;
-
         for (int i = 0; i < data_microV.size(); i++) {
             sample[i] = data_microV.get(i);
         }

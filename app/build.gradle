@@ -17,20 +17,26 @@ android {
         versionCode 1
         versionName '1.1'
         vectorDrawables.useSupportLibrary = true
-        externalNativeBuild {
-            cmake {
-                arguments "-DANDROID_CPP_FEATURES=rtti exceptions","-DLSL_NO_FANCY_LIBNAME=1","-DANDROID_PLATFORM=24"
-                targets "lsl"
-            }
-        }
+        // uncomment it for building liblsl.so (LSL) using cmake
+        // specify cmake.dir=path-to-cmake on local.properties
+//        externalNativeBuild {
+//            cmake {
+//                arguments "-DANDROID_CPP_FEATURES=rtti exceptions","-DLSL_NO_FANCY_LIBNAME=1","-DANDROID_PLATFORM=24"
+//                targets "lsl"
+//            }
+//        }
     }
-    externalNativeBuild.cmake {
-        // If the Android SDK CMake is older than 3.12, you need to install CMake locally and
-        // configure the path in your local.properties file, e.g.
-        // cmake.dir=path-to-cmake
-        version "3.12.0+"
-        path "../liblsl/CMakeLists.txt"
-    }
+    // uncomment also for for building liblsl.so (LSL) using cmake
+    // download liblsl source code: https://github.com/sccn/liblsl/releases/latest
+    // and place it on the root folder, so /root-folder/liblsl
+    // make sure the libs aren't existing on /root-folder/app/src/main/jniLibs/, if so delete them
+//    externalNativeBuild.cmake {
+//        // If the Android SDK CMake is older than 3.12, you need to install CMake locally and
+//        // configure the path in your local.properties file, e.g.
+//        // cmake.dir=path-to-cmake
+//        version "3.12.0+"
+//        path "../liblsl/CMakeLists.txt"
+//    }
     buildTypes {
         release {
             minifyEnabled true
@@ -54,7 +60,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    ndkVersion '21.3.6528147'
 
 }
 

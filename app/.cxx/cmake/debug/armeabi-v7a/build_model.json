@@ -16,8 +16,8 @@
         "ndk"
       ],
       "buildRoot": "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/armeabi-v7a",
-      "cmakeToolchain": "/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/build/cmake/android.toolchain.cmake",
-      "cmakeExecutable": "/home/mvidaldepalo/github/EEG-Droid/./cmake/bin/cmake",
+      "cmakeToolchain": "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake",
+      "cmakeExecutable": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/cmake",
       "variables": [
         {
           "name": "CMAKE_FIND_ROOT_PATH",
@@ -29,7 +29,7 @@
         },
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/build/cmake/android.toolchain.cmake"
+          "value": "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake"
         },
         {
           "name": "ANDROID_ABI",
@@ -37,7 +37,7 @@
         },
         {
           "name": "ANDROID_NDK",
-          "value": "/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147"
+          "value": "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462"
         },
         {
           "name": "CMAKE_ANDROID_ARCH_ABI",
@@ -45,7 +45,7 @@
         },
         {
           "name": "CMAKE_ANDROID_NDK",
-          "value": "/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147"
+          "value": "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462"
         },
         {
           "name": "CMAKE_EXPORT_COMPILE_COMMANDS",
@@ -57,7 +57,7 @@
         },
         {
           "name": "CMAKE_MAKE_PROGRAM",
-          "value": "/home/mvidaldepalo/github/EEG-Droid/./cmake/bin/ninja"
+          "value": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja"
         },
         {
           "name": "CMAKE_SYSTEM_NAME",
@@ -107,11 +107,11 @@
     "module": {
       "buildSystem": "CMAKE",
       "cmake": {
-        "cmakeExe": "/home/mvidaldepalo/github/EEG-Droid/./cmake/bin/cmake",
+        "cmakeExe": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/cmake",
         "minimumCmakeVersion": "3.12.0",
-        "ninjaExe": "./cmake/bin/ninja"
+        "ninjaExe": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja"
       },
-      "cmakeToolchainFile": "/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/build/cmake/android.toolchain.cmake",
+      "cmakeToolchainFile": "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake",
       "cxxFolder": "/home/mvidaldepalo/github/EEG-Droid/app/.cxx",
       "gradleModulePathName": ":app",
       "intermediatesFolder": "/home/mvidaldepalo/github/EEG-Droid/app/build/intermediates",
@@ -124,7 +124,7 @@
         "X86",
         "X86_64"
       ],
-      "ndkFolder": "/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147",
+      "ndkFolder": "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462",
       "ndkMetaAbiList": [
         {
           "abi": "ARMEABI_V7A",
@@ -153,7 +153,7 @@
       ],
       "ndkMetaPlatforms": {
         "min": 16,
-        "max": 30,
+        "max": 29,
         "aliases": {
           "20": 19,
           "25": 24,
@@ -169,8 +169,7 @@
           "O": 26,
           "O-MR1": 27,
           "P": 28,
-          "Q": 29,
-          "R": 30
+          "Q": 29
         }
       },
       "ndkSupportedAbiList": [
@@ -180,7 +179,7 @@
         "X86_64"
       ],
       "ndkDefaultStl": "LIBCXX_STATIC",
-      "ndkVersion": "21.3.6528147",
+      "ndkVersion": "21.1.6352462",
       "project": {
         "compilerSettingsCacheFolder": "/home/mvidaldepalo/github/EEG-Droid/.cxx",
         "cxxFolder": "/home/mvidaldepalo/github/EEG-Droid/.cxx",
@@ -194,10 +193,10 @@
       "splitsAbiFilterSet": [],
       "stlSharedObjectMap": {
         "LIBCXX_SHARED": {
-          "ARMEABI_V7A": "/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/arm-linux-androideabi/libc++_shared.so",
-          "ARM64_V8A": "/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so",
-          "X86": "/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/i686-linux-android/libc++_shared.so",
-          "X86_64": "/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/x86_64-linux-android/libc++_shared.so"
+          "ARMEABI_V7A": "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/arm-linux-androideabi/libc++_shared.so",
+          "ARM64_V8A": "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so",
+          "X86": "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/i686-linux-android/libc++_shared.so",
+          "X86_64": "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/x86_64-linux-android/libc++_shared.so"
         },
         "LIBCXX_STATIC": {},
         "NONE": {},

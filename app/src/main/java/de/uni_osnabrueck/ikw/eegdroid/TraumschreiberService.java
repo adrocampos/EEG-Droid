@@ -43,7 +43,7 @@ public class TraumschreiberService {
             //https://stackoverflow.com/questions/9581530/converting-from-byte-to-int-in-java
             //Example: rno[0]&0x000000ff)<<24|(rno[1]&0x000000ff)<<16|
             for (int ch = 0; ch < data_bytes.length / bLen; ch++) {
-                new_int = (data_bytes[ch * bLen + 1]) << 8 | (data_bytes[ch * bLen]) & 0xff;
+                new_int = (data_bytes[ch * bLen]) << 8 | (data_bytes[ch * bLen  + 1]) & 0xff;
                 //new_int = new_int << 8;
                 data_ints[ch] = new_int;
             }

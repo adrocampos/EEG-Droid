@@ -1,7 +1,6 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -22,14 +21,14 @@ public class Learn extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_learn);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         webView = findViewById(R.id.webViewLearn);
         webView.getSettings().setJavaScriptEnabled(true);
 
 
         // If connection: load newest info
-        if (isNetworkAvailable() == true) {
+        if (isNetworkAvailable()) {
             webView.loadUrl("https://adrocampos.github.io/EEG-Droid/learn.html");
 
             // If no connection: read from local
@@ -39,11 +38,7 @@ public class Learn extends AppCompatActivity {
                     .setTitle(getString(R.string.no_internet))
                     .setMessage(getString(R.string.no_internet_message));
 
-            alert.setPositiveButton(getString(R.string.access_offline), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    webView.loadUrl("file:///android_asset/docs/learn.html");
-                }
-            });
+            alert.setPositiveButton(getString(R.string.access_offline), (dialog, which) -> webView.loadUrl("file:///android_asset/docs/learn.html"));
             alert.show();
 
         }
@@ -52,15 +47,11 @@ public class Learn extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()) {
-
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private boolean isNetworkAvailable() {

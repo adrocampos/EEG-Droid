@@ -1,27 +1,27 @@
 {
   "stringTable": {
     "0": "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a",
-    "1": "--target=aarch64-none-linux-android24 --gcc-toolchain=/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DBOOST_ALL_NO_LIB -DBOOST_ASIO_SEPARATE_COMPILATION -I. -I/home/mvidaldepalo/github/EEG-Droid/liblsl -I/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions -O0 -fno-limit-debug-info -fPIC -fvisibility=hidden -pthread",
-    "2": "--target=aarch64-none-linux-android24 --gcc-toolchain=/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DBOOST_ALL_NO_LIB -DBOOST_ASIO_SEPARATE_COMPILATION -DLIBLSL_EXPORTS -I. -I/home/mvidaldepalo/github/EEG-Droid/liblsl -I/home/mvidaldepalo/github/EEG-Droid/liblsl/include -I/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions -O0 -fno-limit-debug-info -fPIC -fvisibility=hidden -pthread",
-    "3": "--target=aarch64-none-linux-android24 --gcc-toolchain=/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DBOOST_ALL_NO_LIB -DBOOST_ASIO_SEPARATE_COMPILATION -DLIBLSL_EXPORTS -DLSL_LIBRARY_INFO_STR=\"\\\"git:/branch:master/build:Debug/compiler:Clang-9.0/boost:\\\" BOOST_LIB_VERSION\" -I. -I/home/mvidaldepalo/github/EEG-Droid/liblsl -I/home/mvidaldepalo/github/EEG-Droid/liblsl/include -I/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions -O0 -fno-limit-debug-info -fPIC -fvisibility=hidden -pthread",
-    "4": "--target=aarch64-none-linux-android24 --gcc-toolchain=/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DLSLNOAUTOLINK -I. -I/home/mvidaldepalo/github/EEG-Droid/liblsl -I/home/mvidaldepalo/github/EEG-Droid/liblsl/include -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -O0 -fno-limit-debug-info -fPIE"
+    "1": "--target=aarch64-none-linux-android24 --gcc-toolchain=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DBOOST_ALL_NO_LIB -DBOOST_ASIO_SEPARATE_COMPILATION -I. -I/home/mvidaldepalo/github/EEG-Droid/liblsl -I/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions -O0 -fno-limit-debug-info -fPIC -fvisibility=hidden -pthread",
+    "2": "--target=aarch64-none-linux-android24 --gcc-toolchain=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DBOOST_ALL_NO_LIB -DBOOST_ASIO_SEPARATE_COMPILATION -DLIBLSL_EXPORTS -I. -I/home/mvidaldepalo/github/EEG-Droid/liblsl -I/home/mvidaldepalo/github/EEG-Droid/liblsl/include -I/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions -O0 -fno-limit-debug-info -fPIC -fvisibility=hidden -pthread",
+    "3": "--target=aarch64-none-linux-android24 --gcc-toolchain=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DBOOST_ALL_NO_LIB -DBOOST_ASIO_SEPARATE_COMPILATION -DLIBLSL_EXPORTS -DLSL_LIBRARY_INFO_STR=\"\\\"git:/branch:master/build:Debug/compiler:Clang-9.0/boost:\\\" BOOST_LIB_VERSION\" -I. -I/home/mvidaldepalo/github/EEG-Droid/liblsl -I/home/mvidaldepalo/github/EEG-Droid/liblsl/include -I/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions -O0 -fno-limit-debug-info -fPIC -fvisibility=hidden -pthread",
+    "4": "--target=aarch64-none-linux-android24 --gcc-toolchain=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DLSLNOAUTOLINK -I. -I/home/mvidaldepalo/github/EEG-Droid/liblsl -I/home/mvidaldepalo/github/EEG-Droid/liblsl/include -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -O0 -fno-limit-debug-info -fPIE"
   },
   "buildFiles": [
     "/home/mvidaldepalo/github/EEG-Droid/liblsl/CMakeLists.txt",
-    "/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/build/cmake/android.toolchain.cmake",
-    "/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/build/cmake/platforms.cmake",
+    "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake",
+    "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/build/cmake/platforms.cmake",
     "/home/mvidaldepalo/github/EEG-Droid/liblsl/cmake/LSLConfig.cmake",
     "/home/mvidaldepalo/github/EEG-Droid/liblsl/cmake/LSLCMake.cmake"
   ],
   "cleanCommands": [
-    "./cmake/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a\" clean"
+    "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a\" clean"
   ],
-  "buildTargetsCommand": "./cmake/bin/ninja  -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a\" {LIST_OF_TARGETS_TO_BUILD}",
+  "buildTargetsCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja  -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a\" {LIST_OF_TARGETS_TO_BUILD}",
   "libraries": {
     "lsl-Debug-arm64-v8a": {
-      "buildCommand": "./cmake/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a\" lsl",
+      "buildCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a\" lsl",
       "buildType": "debug",
-      "toolchain": "1548203796",
+      "toolchain": "867713758",
       "abi": "arm64-v8a",
       "artifactName": "lsl",
       "files": [],
@@ -30,9 +30,9 @@
       "runtimeFiles": []
     },
     "lslver-Debug-arm64-v8a": {
-      "buildCommand": "./cmake/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a\" lslver",
+      "buildCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a\" lslver",
       "buildType": "debug",
-      "toolchain": "1548203796",
+      "toolchain": "867713758",
       "abi": "arm64-v8a",
       "artifactName": "lslver",
       "files": [
@@ -49,9 +49,9 @@
       ]
     },
     "lslobj-Debug-arm64-v8a": {
-      "buildCommand": "./cmake/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a\" lslobj",
+      "buildCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a\" lslobj",
       "buildType": "debug",
-      "toolchain": "1548203796",
+      "toolchain": "867713758",
       "abi": "arm64-v8a",
       "artifactName": "lslobj",
       "files": [
@@ -314,9 +314,9 @@
       ]
     },
     "lslboost-Debug-arm64-v8a": {
-      "buildCommand": "./cmake/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a\" lslboost",
+      "buildCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a\" lslboost",
       "buildType": "debug",
-      "toolchain": "1548203796",
+      "toolchain": "867713758",
       "abi": "arm64-v8a",
       "artifactName": "lslboost",
       "files": [
@@ -400,9 +400,9 @@
     }
   },
   "toolchains": {
-    "1548203796": {
-      "cCompilerExecutable": "/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/linux-x86_64/bin/clang",
-      "cppCompilerExecutable": "/home/mvidaldepalo/Android/Sdk/ndk/21.3.6528147/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++"
+    "867713758": {
+      "cCompilerExecutable": "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang",
+      "cppCompilerExecutable": "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++"
     }
   },
   "cFileExtensions": [

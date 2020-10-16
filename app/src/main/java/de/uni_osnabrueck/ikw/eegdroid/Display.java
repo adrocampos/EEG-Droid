@@ -1,13 +1,11 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
-import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,15 +48,12 @@ import de.uni_osnabrueck.ikw.eegdroid.utilities.MyXAxisValueFormatterTime;
 public class Display extends AppCompatActivity {
 
     private ArrayList<File> arrayListOfFiles;
-    private String[] arrayOfNames;
     private File fileToPlot;
     private LineChart chart;
     private LineDataSet[] lineDataSets;
-    private int nChannels = 8;
     private Timer timer;
     private int period = 1;
     private int jump_x = 1;
-    private int density = 10;
     private float max_in_X;
     private float position_x = 0;
     private TextView nameTextView;
@@ -66,16 +61,7 @@ public class Display extends AppCompatActivity {
     private TextView startTextView;
     private TextView finishTextView;
     private BasicFileAttributes attrs;
-    private CheckBox chckbx_ch1;
-    private CheckBox chckbx_ch2;
-    private CheckBox chckbx_ch3;
-    private CheckBox chckbx_ch4;
-    private CheckBox chckbx_ch5;
-    private CheckBox chckbx_ch6;
-    private CheckBox chckbx_ch7;
-    private CheckBox chckbx_ch8;
     private boolean playing = false;
-    private TimerTask updateChart;
 
 
     @Override
@@ -86,7 +72,7 @@ public class Display extends AppCompatActivity {
         arrayListOfFiles = manager.getArrayListOfFiles();
 
         //Create the list of names for display in dialog
-        arrayOfNames = new String[arrayListOfFiles.size()];
+        String[] arrayOfNames = new String[arrayListOfFiles.size()];
         for (int i = 0; i < arrayOfNames.length; i++) {
             arrayOfNames[i] = arrayListOfFiles.get(i).getName();
         }
@@ -114,109 +100,61 @@ public class Display extends AppCompatActivity {
         startTextView = findViewById(R.id.start_time_file);
         finishTextView = findViewById(R.id.finish_time_file);
 
-        chckbx_ch1 = findViewById(R.id.checkBox_ch1_display);
-        chckbx_ch2 = findViewById(R.id.checkBox_ch2_display);
-        chckbx_ch3 = findViewById(R.id.checkBox_ch3_display);
-        chckbx_ch4 = findViewById(R.id.checkBox_ch4_display);
-        chckbx_ch5 = findViewById(R.id.checkBox_ch5_display);
-        chckbx_ch6 = findViewById(R.id.checkBox_ch6_display);
-        chckbx_ch7 = findViewById(R.id.checkBox_ch7_display);
-        chckbx_ch8 = findViewById(R.id.checkBox_ch8_display);
+        CheckBox chckbx_ch1 = findViewById(R.id.checkBox_ch1_display);
+        CheckBox chckbx_ch2 = findViewById(R.id.checkBox_ch2_display);
+        CheckBox chckbx_ch3 = findViewById(R.id.checkBox_ch3_display);
+        CheckBox chckbx_ch4 = findViewById(R.id.checkBox_ch4_display);
+        CheckBox chckbx_ch5 = findViewById(R.id.checkBox_ch5_display);
+        CheckBox chckbx_ch6 = findViewById(R.id.checkBox_ch6_display);
+        CheckBox chckbx_ch7 = findViewById(R.id.checkBox_ch7_display);
+        CheckBox chckbx_ch8 = findViewById(R.id.checkBox_ch8_display);
 
-        chckbx_ch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        chckbx_ch1.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
-                if (isChecked) {
-                    lineDataSets[0].setVisible(true);
-                } else {
-                    lineDataSets[0].setVisible(false);
-                }
-                chart.invalidate();
-            }
+            lineDataSets[0].setVisible(isChecked);
+            chart.invalidate();
         });
 
-        chckbx_ch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        chckbx_ch2.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
-                if (isChecked) {
-                    lineDataSets[1].setVisible(true);
-                } else {
-                    lineDataSets[1].setVisible(false);
-                }
-                chart.invalidate();
-            }
+            lineDataSets[1].setVisible(isChecked);
+            chart.invalidate();
         });
 
-        chckbx_ch3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        chckbx_ch3.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
-                if (isChecked) {
-                    lineDataSets[2].setVisible(true);
-                } else {
-                    lineDataSets[2].setVisible(false);
-                }
-                chart.invalidate();
-            }
+            lineDataSets[2].setVisible(isChecked);
+            chart.invalidate();
         });
 
-        chckbx_ch4.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        chckbx_ch4.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
-                if (isChecked) {
-                    lineDataSets[3].setVisible(true);
-                } else {
-                    lineDataSets[3].setVisible(false);
-                }
-                chart.invalidate();
-            }
+            lineDataSets[3].setVisible(isChecked);
+            chart.invalidate();
         });
 
-        chckbx_ch5.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        chckbx_ch5.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
-                if (isChecked) {
-                    lineDataSets[4].setVisible(true);
-                } else {
-                    lineDataSets[4].setVisible(false);
-                }
-                chart.invalidate();
-            }
+            lineDataSets[4].setVisible(isChecked);
+            chart.invalidate();
         });
 
-        chckbx_ch6.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        chckbx_ch6.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
-                if (isChecked) {
-                    lineDataSets[5].setVisible(true);
-                } else {
-                    lineDataSets[5].setVisible(false);
-                }
-                chart.invalidate();
-            }
+            lineDataSets[5].setVisible(isChecked);
+            chart.invalidate();
         });
 
-        chckbx_ch7.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        chckbx_ch7.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
-                if (isChecked) {
-                    lineDataSets[6].setVisible(true);
-                } else {
-                    lineDataSets[6].setVisible(false);
-                }
-                chart.invalidate();
-            }
+            lineDataSets[6].setVisible(isChecked);
+            chart.invalidate();
         });
 
-        chckbx_ch8.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        chckbx_ch8.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
-                if (isChecked) {
-                    lineDataSets[7].setVisible(true);
-                } else {
-                    lineDataSets[7].setVisible(false);
-                }
-                chart.invalidate();
-            }
+            lineDataSets[7].setVisible(isChecked);
+            chart.invalidate();
         });
 
         chart = findViewById(R.id.chart);
@@ -255,39 +193,32 @@ public class Display extends AppCompatActivity {
         // Dialog for choosing the session to plot
         AlertDialog.Builder alert = new AlertDialog.Builder(this)
                 .setTitle(R.string.select_recording)
-                .setItems(arrayOfNames, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+                .setItems(arrayOfNames, (dialog, which) -> {
 
-                        fileToPlot = arrayListOfFiles.get(which);
-                        loadData(fileToPlot);
-                        setData();
+                    fileToPlot = arrayListOfFiles.get(which);
+                    loadData(fileToPlot);
+                    setData();
 
-                        Path path = arrayListOfFiles.get(which).toPath();
+                    Path path = arrayListOfFiles.get(which).toPath();
 
-                        try {
-                            attrs = Files.readAttributes(path, BasicFileAttributes.class);
-                        } catch (IOException ex) {
-                            attrs = null;
-                        }
-
-                        nameTextView.setText(arrayListOfFiles.get(which).getName());
-                        ZonedDateTime creationTime = attrs.creationTime().toInstant().atZone(ZoneId.systemDefault());
-                        dateTextView.setText(creationTime.toLocalDate().toString());
-                        startTextView.setText(creationTime.toLocalTime().toString());
-                        finishTextView.setText(creationTime.toLocalTime().plusSeconds(Math.round(max_in_X / 1000)).toString());
-
-                        bottomAxis.setValueFormatter(new MyXAxisValueFormatterTime(creationTime));
-
-                        dialog.dismiss();
-                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
+                    try {
+                        attrs = Files.readAttributes(path, BasicFileAttributes.class);
+                    } catch (IOException ex) {
+                        attrs = null;
                     }
-                }).setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        finish();
-                    }
-                });
+
+                    nameTextView.setText(arrayListOfFiles.get(which).getName());
+                    ZonedDateTime creationTime = attrs.creationTime().toInstant().atZone(ZoneId.systemDefault());
+                    dateTextView.setText(creationTime.toLocalDate().toString());
+                    startTextView.setText(creationTime.toLocalTime().toString());
+                    finishTextView.setText(creationTime.toLocalTime().plusSeconds(Math.round(max_in_X / 1000)).toString());
+
+                    bottomAxis.setValueFormatter(new MyXAxisValueFormatterTime(creationTime));
+
+                    dialog.dismiss();
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+                }).setOnCancelListener(dialog -> finish());
         alert.show();
 
     }
@@ -307,7 +238,7 @@ public class Display extends AppCompatActivity {
                 if (!playing) {
                     playing = true;
                     timer = new Timer();
-                    updateChart = new UpdateChart();
+                    TimerTask updateChart = new UpdateChart();
                     timer.scheduleAtFixedRate(updateChart, 0, period);
                     item.setIcon(R.drawable.ic_pause_white_24dp);
                     return true;
@@ -376,6 +307,7 @@ public class Display extends AppCompatActivity {
     // Fills lineDataSets with the content of CSV files
     private void loadData(File file) {
 
+        int nChannels = 8;
         lineDataSets = new LineDataSet[nChannels];
 
         try {
@@ -396,6 +328,7 @@ public class Display extends AppCompatActivity {
             int count = 0;
             while ((line = csvReader.readNext()) != null) {
 
+                int density = 10;
                 if (count % density == 0) {
                     arrayOfEntry1.add(new Entry(Float.parseFloat(line[0]), Float.parseFloat(line[1])));
                     arrayOfEntry2.add(new Entry(Float.parseFloat(line[0]), Float.parseFloat(line[2])));

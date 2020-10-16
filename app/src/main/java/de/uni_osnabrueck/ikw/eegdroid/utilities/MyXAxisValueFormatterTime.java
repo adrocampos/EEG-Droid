@@ -7,7 +7,7 @@ import java.time.ZonedDateTime;
 
 public class MyXAxisValueFormatterTime extends ValueFormatter {
 
-    private ZonedDateTime time;
+    private final ZonedDateTime time;
 
     public MyXAxisValueFormatterTime(ZonedDateTime creationTime) {
         time = creationTime;

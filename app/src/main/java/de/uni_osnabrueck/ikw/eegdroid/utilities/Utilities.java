@@ -31,15 +31,12 @@ public class Utilities {
             frCount = (int) Math.ceil(maxHertz / hertzPerVal);
         }
         int minFr = (int) Math.ceil(1 / hertzPerVal);
-        double xLim = n / fs; //seconds
         double[][] spectogramData = new double[frCount][windowSteps + 1];
         double[] fftData = new double[width];
-        Complex[] fftRes = new Complex[width];
+        Complex[] fftRes;
 
         for (int count = 0, offset = 0; count <= windowSteps; count++, offset += windowStepSize) {
-            for (int j = 0; j < width; j++) {
-                fftData[j] = eegData[offset + j];
-            }
+            if (width >= 0) System.arraycopy(eegData, offset, fftData, 0, width);
             switch (window) {
                 case "hanning":
                     applyHanningWindow(fftData);
@@ -90,7 +87,6 @@ public class Utilities {
 
     public static void applyHammingWindow(double[] x) {
         int n = x.length - 1;
-        double meanX = mean(x);
         for (int i = 0; i < x.length; i++) {
             x[i] *= (0.54 - 0.46 * Math.cos(2 * i * Math.PI / n));
         }
@@ -319,20 +315,20 @@ public class Utilities {
         // DRAW X AXIS
         canvas.drawLine(widthOfY, heightOfX, right, heightOfX, paint);
         String tickLabel;
-        for (int i = 0; i < yTicks.length; i++) {
-            canvas.drawLine(widthOfY - tickSize, heightOfX - yTicks[i][0], widthOfY, heightOfX - yTicks[i][0], paint);
-            tickLabel = Integer.toString(yTicks[i][1]);
-            canvas.drawText(tickLabel, space + (maxLetters - tickLabel.length()) * letterLength, heightOfX - yTicks[i][0] + textHeight / 2, paint);
+        for (int[] yTick : yTicks) {
+            canvas.drawLine(widthOfY - tickSize, heightOfX - yTick[0], widthOfY, heightOfX - yTick[0], paint);
+            tickLabel = Integer.toString(yTick[1]);
+            canvas.drawText(tickLabel, space + (maxLetters - tickLabel.length()) * letterLength, heightOfX - yTick[0] + textHeight / 2.0f, paint);
         }
 
-        for (int i = 0; i < xTicks.length; i++) {
-            canvas.drawLine(widthOfY + xTicks[i][0], heightOfX, widthOfY + xTicks[i][0], heightOfX + tickSize, paint);
-            tickLabel = Integer.toString(xTicks[i][1]);
-            canvas.drawText(tickLabel, widthOfY + xTicks[i][0] - tickLabel.length() * letterLength / 2, heightOfX + tickSize + space + textHeight, paint);
+        for (int[] xTick : xTicks) {
+            canvas.drawLine(widthOfY + xTick[0], heightOfX, widthOfY + xTick[0], heightOfX + tickSize, paint);
+            tickLabel = Integer.toString(xTick[1]);
+            canvas.drawText(tickLabel, widthOfY + xTick[0] - tickLabel.length() * letterLength / 2.0f, heightOfX + tickSize + space + textHeight, paint);
         }
         paint.setTextSize(46);
         canvas.drawText(yLabel, 0, labelHeight + space, paint);
-        canvas.drawText(xLabel, widthOfY + bitmap.getWidth() / 2 - yLabel.length() * letterLength / 2, bottom - space, paint);
+        canvas.drawText(xLabel, widthOfY + bitmap.getWidth() / 2.0f - yLabel.length() * letterLength / 2.0f, bottom - space, paint);
 
         //plot_array_list(canvas , data_2_plot , labels , "the title" , 0 );
         paint.setStyle(Paint.Style.FILL_AND_STROKE);
@@ -348,7 +344,6 @@ public class Utilities {
         Paint.FontMetrics tp = this_paint.getFontMetrics();
         Rect rect = new Rect();
         this_paint.getTextBounds(this_text, 0, this_text.length(), rect);
-        int[] sizes = {rect.width(), rect.height()};
-        return sizes;
+        return new int[]{rect.width(), rect.height()};
     }
 }
