@@ -1,0 +1,486 @@
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"supportedProtocolVersions":[{"isExperimental":true,"major":1,"minor":2}],"type":"hello"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {
+  "type": "handshake",
+  "cookie": "gradle-cmake-cookie",
+  "protocolVersion": {
+    "isExperimental": true,
+    "major": 1,
+    "minor": 2
+  },
+  "sourceDirectory": "/home/mvidaldepalo/github/EEG-Droid/liblsl",
+  "buildDirectory": "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a",
+  "generator": "Ninja"
+}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"gradle-cmake-cookie","inReplyTo":"handshake","type":"reply"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {
+  "type": "configure",
+  "cacheArguments": [
+    "",
+    "-DCMAKE_FIND_ROOT_PATH\u003d/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/prefab/arm64-v8a/prefab",
+    "-DCMAKE_BUILD_TYPE\u003dDebug",
+    "-DCMAKE_TOOLCHAIN_FILE\u003d/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake",
+    "-DANDROID_ABI\u003darm64-v8a",
+    "-DANDROID_NDK\u003d/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462",
+    "-DCMAKE_ANDROID_ARCH_ABI\u003darm64-v8a",
+    "-DCMAKE_ANDROID_NDK\u003d/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462",
+    "-DCMAKE_EXPORT_COMPILE_COMMANDS\u003dON",
+    "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY\u003d/home/mvidaldepalo/github/EEG-Droid/app/build/intermediates/cmake/debug/obj/arm64-v8a",
+    "-DCMAKE_MAKE_PROGRAM\u003d/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja",
+    "-DCMAKE_SYSTEM_NAME\u003dAndroid",
+    "-DCMAKE_SYSTEM_VERSION\u003d21",
+    "-DANDROID_CPP_FEATURES\u003drtti exceptions",
+    "-DLSL_NO_FANCY_LIBNAME\u003d1",
+    "-DANDROID_PLATFORM\u003d24"
+  ]
+}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Detecting C compiler ABI info","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Detecting C compiler ABI info
+CMAKE SERVER: Detecting C compiler ABI info
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","progressCurrent":33,"progressMaximum":1000,"progressMessage":"Configuring","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Detecting C compiler ABI info - done","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Detecting C compiler ABI info - done
+CMAKE SERVER: Detecting C compiler ABI info - done
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Check for working C compiler: /home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang - skipped","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Check for working C compiler: /home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang - skipped
+CMAKE SERVER: Check for working C compiler: /home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang - skipped
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Detecting C compile features","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Detecting C compile features
+CMAKE SERVER: Detecting C compile features
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Detecting C compile features - done","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Detecting C compile features - done
+CMAKE SERVER: Detecting C compile features - done
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Detecting CXX compiler ABI info","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Detecting CXX compiler ABI info
+CMAKE SERVER: Detecting CXX compiler ABI info
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","progressCurrent":65,"progressMaximum":1000,"progressMessage":"Configuring","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Detecting CXX compiler ABI info - done","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Detecting CXX compiler ABI info - done
+CMAKE SERVER: Detecting CXX compiler ABI info - done
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Check for working CXX compiler: /home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ - skipped","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Check for working CXX compiler: /home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ - skipped
+CMAKE SERVER: Check for working CXX compiler: /home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ - skipped
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Detecting CXX compile features","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Detecting CXX compile features
+CMAKE SERVER: Detecting CXX compile features
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Detecting CXX compile features - done","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Detecting CXX compile features - done
+CMAKE SERVER: Detecting CXX compile features - done
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Found Git: /app/bin/git (found version \"2.28.0\") ","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Found Git: /app/bin/git (found version "2.28.0") 
+CMAKE SERVER: Found Git: /app/bin/git (found version "2.28.0") 
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Git version information: master/","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Git version information: master/
+CMAKE SERVER: Git version information: master/
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Looking for pthread.h","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Looking for pthread.h
+CMAKE SERVER: Looking for pthread.h
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","progressCurrent":96,"progressMaximum":1000,"progressMessage":"Configuring","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Looking for pthread.h - found","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Looking for pthread.h - found
+CMAKE SERVER: Looking for pthread.h - found
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Performing Test CMAKE_HAVE_LIBC_PTHREAD","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Performing Test CMAKE_HAVE_LIBC_PTHREAD
+CMAKE SERVER: Performing Test CMAKE_HAVE_LIBC_PTHREAD
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","progressCurrent":126,"progressMaximum":1000,"progressMessage":"Configuring","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+CMAKE SERVER: Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Looking for pthread_create in pthreads","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Looking for pthread_create in pthreads
+CMAKE SERVER: Looking for pthread_create in pthreads
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","progressCurrent":155,"progressMaximum":1000,"progressMessage":"Configuring","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Looking for pthread_create in pthreads - not found","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Looking for pthread_create in pthreads - not found
+CMAKE SERVER: Looking for pthread_create in pthreads - not found
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Looking for pthread_create in pthread","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Looking for pthread_create in pthread
+CMAKE SERVER: Looking for pthread_create in pthread
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","progressCurrent":184,"progressMaximum":1000,"progressMessage":"Configuring","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Looking for pthread_create in pthread - not found","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Looking for pthread_create in pthread - not found
+CMAKE SERVER: Looking for pthread_create in pthread - not found
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Check if compiler accepts -pthread","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Check if compiler accepts -pthread
+CMAKE SERVER: Check if compiler accepts -pthread
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","progressCurrent":211,"progressMaximum":1000,"progressMessage":"Configuring","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Check if compiler accepts -pthread - yes","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Check if compiler accepts -pthread - yes
+CMAKE SERVER: Check if compiler accepts -pthread - yes
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Found Threads: TRUE  ","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Found Threads: TRUE  
+CMAKE SERVER: Found Threads: TRUE  
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Included LSL CMake helpers, rev. 12, /home/mvidaldepalo/github/EEG-Droid/liblsl/cmake","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Included LSL CMake helpers, rev. 12, /home/mvidaldepalo/github/EEG-Droid/liblsl/cmake
+CMAKE SERVER: Included LSL CMake helpers, rev. 12, /home/mvidaldepalo/github/EEG-Droid/liblsl/cmake
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"CMake Warning at cmake/LSLCMake.cmake:21 (message):\n  CMAKE_INSTALL_PREFIX default initialized to\n  /home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/install\nCall Stack (most recent call first):\n  CMakeLists.txt:277 (include)\n\n","title":"Warning","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: CMake Warning at /home/mvidaldepalo/github/EEG-Droid/liblsl/cmake/LSLCMake.cmake:21 (message):
+  CMAKE_INSTALL_PREFIX default initialized to
+  /home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/install
+Call Stack (most recent call first):
+  CMakeLists.txt:277 (include)
+
+CMAKE SERVER: CMake Warning at /home/mvidaldepalo/github/EEG-Droid/liblsl/cmake/LSLCMake.cmake:21 (message):
+  CMAKE_INSTALL_PREFIX default initialized to
+  /home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/install
+Call Stack (most recent call first):
+  CMakeLists.txt:277 (include)
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Installing Components: liblsl","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Installing Components: liblsl
+CMAKE SERVER: Installing Components: liblsl
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Configuring done","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Configuring done
+CMAKE SERVER: Configuring done
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"CMake Deprecation Warning:\n  The 'cmake-server(7)' is deprecated.  Please port clients to use the\n  'cmake-file-api(7)' instead.\n\n","title":"Warning","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: CMake Deprecation Warning:
+  The 'cmake-server(7)' is deprecated.  Please port clients to use the
+  'cmake-file-api(7)' instead.
+
+CMAKE SERVER: CMake Deprecation Warning:
+  The 'cmake-server(7)' is deprecated.  Please port clients to use the
+  'cmake-file-api(7)' instead.
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","type":"reply"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"type":"compute"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"compute","progressCurrent":100,"progressMaximum":1000,"progressMessage":"Generating","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"compute","progressCurrent":1000,"progressMaximum":1000,"progressMessage":"Generating","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"compute","message":"Generating done","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Generating done
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"compute","type":"reply"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"type":"cmakeInputs"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"buildFiles":[{"isCMake":true,"isTemporary":false,"sources":["../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeDetermineSystem.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Platform/Android-Determine.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeSystem.cmake.in","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeSystemSpecificInitialize.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Platform/Android-Initialize.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeDetermineCCompiler.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeDetermineCompiler.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Platform/Android-Determine-C.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Platform/Android/Determine-Compiler.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeFindBinUtils.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Compiler/Clang-FindBinUtils.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeCCompiler.cmake.in","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeDetermineCXXCompiler.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeDetermineCompiler.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Platform/Android-Determine-CXX.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Platform/Android/Determine-Compiler.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeFindBinUtils.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Compiler/Clang-FindBinUtils.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeCXXCompiler.cmake.in","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeSystemSpecificInformation.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeGenericSystem.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeInitializeConfigs.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Platform/Android.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Platform/Linux.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Platform/UnixPaths.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeCInformation.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeLanguageInformation.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Compiler/Clang-C.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Compiler/Clang.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Compiler/CMakeCommonCompilerMacros.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Compiler/GNU.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Compiler/CMakeCommonCompilerMacros.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Internal/CMakeCheckCompilerFlag.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Platform/Android-Clang-C.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Platform/Android-Clang.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeCommonLanguageInclude.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeTestCCompiler.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeTestCompilerCommon.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeDetermineCompilerABI.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeParseImplicitIncludeInfo.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeParseImplicitLinkInfo.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeTestCompilerCommon.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeCCompilerABI.c","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeDetermineCompileFeatures.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Internal/FeatureTesting.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeCCompiler.cmake.in","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeCXXInformation.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeLanguageInformation.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Compiler/Clang-CXX.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Compiler/Clang.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Platform/Android-Clang-CXX.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Platform/Android-Clang.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeCommonLanguageInclude.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeTestCXXCompiler.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeTestCompilerCommon.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeDetermineCompilerABI.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeParseImplicitIncludeInfo.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeParseImplicitLinkInfo.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeTestCompilerCommon.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeCXXCompilerABI.cpp","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeDetermineCompileFeatures.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/Internal/FeatureTesting.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakeCXXCompiler.cmake.in","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/FindGit.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/FindPackageHandleStandardArgs.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/FindPackageMessage.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/FindThreads.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CheckLibraryExists.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CheckIncludeFile.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CheckCSourceCompiles.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CheckIncludeFile.c.in","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CheckFunctionExists.c","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CheckFunctionExists.c","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CheckForPthreads.c","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/FindPackageHandleStandardArgs.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/FindPackageMessage.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/GNUInstallDirs.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CMakePackageConfigHelpers.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/WriteBasicConfigVersionFile.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/BasicConfigVersion-AnyNewerVersion.cmake.in","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CPack.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Modules/CPackComponent.cmake","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Templates/CPackConfig.cmake.in","../../../Android/Sdk/cmake/custom/share/cmake-3.18/Templates/CPackConfig.cmake.in"]},{"isCMake":false,"isTemporary":false,"sources":["CMakeLists.txt","../../../Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake","../../../Android/Sdk/ndk/21.1.6352462/build/cmake/platforms.cmake","../../../Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake","cmake/LSLConfig.cmake","cmake/LSLCMake.cmake","cmake/LSLCMake.cmake"]},{"isCMake":false,"isTemporary":true,"sources":["../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/3.18.4/CMakeSystem.cmake","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/3.18.4/CMakeCCompiler.cmake","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/3.18.4/CMakeCXXCompiler.cmake","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/3.18.4/CMakeCCompiler.cmake","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/3.18.4/CMakeCXXCompiler.cmake"]}],"cmakeRootDirectory":"/home/mvidaldepalo/Android/Sdk/cmake/custom/share/cmake-3.18","cookie":"","inReplyTo":"cmakeInputs","sourceDirectory":"/home/mvidaldepalo/github/EEG-Droid/liblsl","type":"reply"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"type":"codemodel"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"configurations":[{"name":"Debug","projects":[{"buildDirectory":"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a","hasInstallRule":true,"minimumCMakeVersion":"3.6.0","name":"liblsl","sourceDirectory":"/home/mvidaldepalo/github/EEG-Droid/liblsl","targets":[{"artifacts":["/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/lslobj"],"buildDirectory":"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a","fileGroups":[{"compileFlags":"-g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions  -O0 -fno-limit-debug-info  -fPIC -fvisibility=hidden -pthread","defines":["BOOST_ALL_NO_LIB","BOOST_ASIO_SEPARATE_COMPILATION","LIBLSL_EXPORTS","LSL_LIBRARY_INFO_STR=\"git:/branch:master/build:Debug/compiler:Clang-9.0/boost:\" BOOST_LIB_VERSION"],"includePath":[{"path":"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a"},{"path":"/home/mvidaldepalo/github/EEG-Droid/liblsl"},{"path":"/home/mvidaldepalo/github/EEG-Droid/liblsl/include"},{"path":"/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost"}],"isGenerated":false,"language":"CXX","sources":["src/lsl_freefuncs_c.cpp"]},{"isGenerated":false,"sources":["src/api_config.h","src/cancellable_streambuf.h","src/cancellation.h","src/cast.h","src/common.h","src/consumer_queue.h","src/data_receiver.h","src/forward.h","src/info_receiver.h","src/inlet_connection.h","src/portable_archive/portable_archive_exception.hpp","src/portable_archive/portable_archive_includes.hpp","src/portable_archive/portable_iarchive.hpp","src/portable_archive/portable_oarchive.hpp","src/pugixml/pugiconfig.hpp","src/pugixml/pugixml.hpp","src/resolver_impl.h","src/resolve_attempt_udp.h","src/sample.h","src/send_buffer.h","src/socket_utils.h","src/stream_info_impl.h","src/stream_inlet_impl.h","src/stream_outlet_impl.h","src/tcp_server.h","src/time_postprocessor.h","src/time_receiver.h","src/udp_server.h","include/lsl_c.h","include/lsl_cpp.h","include/lsl/constants.h"]},{"compileFlags":"-g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions  -O0 -fno-limit-debug-info  -fPIC -fvisibility=hidden -pthread","defines":["BOOST_ALL_NO_LIB","BOOST_ASIO_SEPARATE_COMPILATION","LIBLSL_EXPORTS"],"includePath":[{"path":"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a"},{"path":"/home/mvidaldepalo/github/EEG-Droid/liblsl"},{"path":"/home/mvidaldepalo/github/EEG-Droid/liblsl/include"},{"path":"/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost"}],"isGenerated":false,"language":"CXX","sources":["src/api_config.cpp","src/cancellation.cpp","src/cast.cpp","src/common.cpp","src/consumer_queue.cpp","src/data_receiver.cpp","src/info_receiver.cpp","src/inlet_connection.cpp","src/lsl_continuous_resolver_c.cpp","src/lsl_inlet_c.cpp","src/lsl_outlet_c.cpp","src/lsl_streaminfo_c.cpp","src/lsl_xml_element_c.cpp","src/pugixml/pugixml.cpp","src/resolver_impl.cpp","src/resolve_attempt_udp.cpp","src/sample.cpp","src/send_buffer.cpp","src/socket_utils.cpp","src/stream_info_impl.cpp","src/stream_outlet_impl.cpp","src/tcp_server.cpp","src/time_postprocessor.cpp","src/time_receiver.cpp","src/udp_server.cpp"]}],"fullName":"lslobj","isGeneratorProvided":false,"linkerLanguage":"CXX","name":"lslobj","sourceDirectory":"/home/mvidaldepalo/github/EEG-Droid/liblsl","sysroot":"/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot","type":"OBJECT_LIBRARY"},{"artifacts":["/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/lslboost"],"buildDirectory":"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a","fileGroups":[{"compileFlags":"-g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions  -O0 -fno-limit-debug-info  -fPIC -fvisibility=hidden -pthread","defines":["BOOST_ALL_NO_LIB","BOOST_ASIO_SEPARATE_COMPILATION"],"includePath":[{"path":"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a"},{"path":"/home/mvidaldepalo/github/EEG-Droid/liblsl"},{"path":"/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost"}],"isGenerated":false,"language":"CXX","sources":["lslboost/asio_objects.cpp","lslboost/libs/atomic/src/lockpool.cpp","lslboost/libs/chrono/src/chrono.cpp","lslboost/libs/serialization/src/archive_exception.cpp","lslboost/libs/serialization/src/basic_archive.cpp","lslboost/libs/serialization/src/basic_iarchive.cpp","lslboost/libs/serialization/src/basic_iserializer.cpp","lslboost/libs/serialization/src/basic_oarchive.cpp","lslboost/libs/serialization/src/basic_oserializer.cpp","lslboost/libs/serialization/src/basic_serializer_map.cpp","lslboost/libs/serialization/src/extended_type_info.cpp","lslboost/libs/serialization/src/extended_type_info_typeid.cpp","lslboost/libs/serialization/src/void_cast.cpp","lslboost/libs/thread/src/pthread/once.cpp","lslboost/libs/thread/src/pthread/thread.cpp"]}],"fullName":"lslboost","isGeneratorProvided":false,"linkerLanguage":"CXX","name":"lslboost","sourceDirectory":"/home/mvidaldepalo/github/EEG-Droid/liblsl","sysroot":"/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot","type":"OBJECT_LIBRARY"},{"artifacts":["/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/lslver"],"buildDirectory":"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a","fileGroups":[{"compileFlags":"-g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIE","defines":["LSLNOAUTOLINK"],"includePath":[{"path":"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a"},{"path":"/home/mvidaldepalo/github/EEG-Droid/liblsl"},{"path":"/home/mvidaldepalo/github/EEG-Droid/liblsl/include"}],"isGenerated":false,"language":"C","sources":["testing/lslver.c"]}],"fullName":"lslver","hasInstallRule":true,"installPaths":["/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/install/bin"],"isGeneratorProvided":false,"linkFlags":"-Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libgcc_real.a -Wl,--exclude-libs,libatomic.a -static-libstdc++ -Wl,--build-id -Wl,--fatal-warnings -Wl,--no-undefined -Qunused-arguments -Wl,--gc-sections","linkLanguageFlags":"-g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -O0 -fno-limit-debug-info","linkLibraries":"/home/mvidaldepalo/github/EEG-Droid/app/build/intermediates/cmake/debug/obj/arm64-v8a/liblsl.so  -pthread  -latomic -lm","linkerLanguage":"C","name":"lslver","sourceDirectory":"/home/mvidaldepalo/github/EEG-Droid/liblsl","sysroot":"/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot","type":"EXECUTABLE"},{"artifacts":["/home/mvidaldepalo/github/EEG-Droid/app/build/intermediates/cmake/debug/obj/arm64-v8a/liblsl.so"],"buildDirectory":"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a","fileGroups":[{"isGenerated":true,"sources":["../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/api_config.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/cancellation.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/cast.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/common.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/consumer_queue.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/data_receiver.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/info_receiver.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/inlet_connection.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/lsl_continuous_resolver_c.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/lsl_freefuncs_c.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/lsl_inlet_c.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/lsl_outlet_c.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/lsl_streaminfo_c.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/lsl_xml_element_c.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/pugixml/pugixml.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/resolver_impl.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/resolve_attempt_udp.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/sample.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/send_buffer.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/socket_utils.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/stream_info_impl.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/stream_outlet_impl.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/tcp_server.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/time_postprocessor.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/time_receiver.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/src/udp_server.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/lslboost/asio_objects.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/lslboost/libs/atomic/src/lockpool.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/lslboost/libs/chrono/src/chrono.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/lslboost/libs/serialization/src/archive_exception.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/lslboost/libs/serialization/src/basic_archive.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/lslboost/libs/serialization/src/basic_iarchive.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/lslboost/libs/serialization/src/basic_iserializer.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/lslboost/libs/serialization/src/basic_oarchive.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/lslboost/libs/serialization/src/basic_oserializer.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/lslboost/libs/serialization/src/basic_serializer_map.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/lslboost/libs/serialization/src/extended_type_info.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/lslboost/libs/serialization/src/extended_type_info_typeid.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/lslboost/libs/serialization/src/void_cast.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/lslboost/libs/thread/src/pthread/once.cpp.o","../app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/lslboost/libs/thread/src/pthread/thread.cpp.o"]}],"fullName":"liblsl.so","hasInstallRule":true,"installPaths":["/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/install/lib","/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/install/lib"],"isGeneratorProvided":false,"linkFlags":"-Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libgcc_real.a -Wl,--exclude-libs,libatomic.a -static-libstdc++ -Wl,--build-id -Wl,--fatal-warnings -Wl,--no-undefined -Qunused-arguments","linkLibraries":"-pthread  -latomic -lm","linkerLanguage":"CXX","name":"lsl","sourceDirectory":"/home/mvidaldepalo/github/EEG-Droid/liblsl","sysroot":"/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot","type":"SHARED_LIBRARY"}]}]}],"cookie":"","inReplyTo":"codemodel","type":"reply"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+

@@ -1,0 +1,7 @@
+Executable : /home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja
+arguments : 
+-C
+/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64
+lsl
+jvmArgs : 
+

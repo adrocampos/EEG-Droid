@@ -53,9 +53,6 @@
             android:name=".TFAnalysis"
             android:configChanges="orientation|screenSize" />
         <activity
-            android:name=".Epibot"
-            android:configChanges="orientation|screenSize" />
-        <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity

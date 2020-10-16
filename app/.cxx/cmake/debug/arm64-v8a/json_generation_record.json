@@ -1,0 +1,26 @@
+[
+  {
+    "level": "INFO",
+    "message": "Start JSON generation. Platform version: 21 min SDK version: arm64-v8a",
+    "file": "/home/mvidaldepalo/github/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "debug|arm64-v8a"
+  },
+  {
+    "level": "INFO",
+    "message": "- CMake found from cmake.dir at \u0027/home/mvidaldepalo/Android/Sdk/cmake/custom\u0027 had version \u00273.18.4\u0027",
+    "file": "/home/mvidaldepalo/github/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "debug|arm64-v8a"
+  },
+  {
+    "level": "INFO",
+    "message": "JSON \u0027/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/android_gradle_build.json\u0027 was up-to-date",
+    "file": "/home/mvidaldepalo/github/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "debug|arm64-v8a"
+  },
+  {
+    "level": "INFO",
+    "message": "JSON generation completed without problems",
+    "file": "/home/mvidaldepalo/github/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "debug|arm64-v8a"
+  }
+]

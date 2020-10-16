@@ -1,0 +1,58 @@
+ninja: Entering directory `/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a'
+[1/42] Building CXX object CMakeFiles/lslboost.dir/lslboost/libs/atomic/src/lockpool.cpp.o
+[2/42] Building CXX object CMakeFiles/lslboost.dir/lslboost/libs/serialization/src/basic_archive.cpp.o
+[3/42] Building CXX object CMakeFiles/lslboost.dir/lslboost/libs/serialization/src/basic_iserializer.cpp.o
+[4/42] Building CXX object CMakeFiles/lslboost.dir/lslboost/libs/serialization/src/basic_oserializer.cpp.o
+[5/42] Building CXX object CMakeFiles/lslboost.dir/lslboost/libs/serialization/src/extended_type_info.cpp.o
+[6/42] Building CXX object CMakeFiles/lslboost.dir/lslboost/libs/serialization/src/archive_exception.cpp.o
+[7/42] Building CXX object CMakeFiles/lslboost.dir/lslboost/libs/serialization/src/basic_serializer_map.cpp.o
+[8/42] Building CXX object CMakeFiles/lslboost.dir/lslboost/libs/serialization/src/extended_type_info_typeid.cpp.o
+[9/42] Building CXX object CMakeFiles/lslboost.dir/lslboost/libs/thread/src/pthread/once.cpp.o
+[10/42] Building CXX object CMakeFiles/lslboost.dir/lslboost/libs/serialization/src/void_cast.cpp.o
+[11/42] Building CXX object CMakeFiles/lslboost.dir/lslboost/libs/serialization/src/basic_oarchive.cpp.o
+[12/42] Building CXX object CMakeFiles/lslboost.dir/lslboost/libs/chrono/src/chrono.cpp.o
+[13/42] Building CXX object CMakeFiles/lslboost.dir/lslboost/libs/serialization/src/basic_iarchive.cpp.o
+[14/42] Building CXX object CMakeFiles/lslobj.dir/src/common.cpp.o
+[15/42] Building CXX object CMakeFiles/lslobj.dir/src/cancellation.cpp.o
+[16/42] Building CXX object CMakeFiles/lslobj.dir/src/cast.cpp.o
+[17/42] Building CXX object CMakeFiles/lslobj.dir/src/lsl_xml_element_c.cpp.o
+[18/42] Building CXX object CMakeFiles/lslboost.dir/lslboost/asio_objects.cpp.o
+[19/42] Building CXX object CMakeFiles/lslobj.dir/src/sample.cpp.o
+In file included from /home/mvidaldepalo/github/EEG-Droid/liblsl/src/sample.cpp:3:
+In file included from /home/mvidaldepalo/github/EEG-Droid/liblsl/src/portable_archive/portable_iarchive.hpp:260:
+In file included from /home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost/boost/archive/impl/basic_binary_iarchive.ipp:25:
+In file included from /home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost/boost/detail/endian.hpp:9:
+/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost/boost/predef/detail/endian_compat.h:11:9: warning: The use of BOOST_*_ENDIAN and BOOST_BYTE_ORDER is deprecated. Please include <boost/predef/other/endian.h> and use BOOST_ENDIAN_*_BYTE instead [-W#pragma-messages]
+#pragma message("The use of BOOST_*_ENDIAN and BOOST_BYTE_ORDER is deprecated. Please include <boost/predef/other/endian.h> and use BOOST_ENDIAN_*_BYTE instead")
+        ^
+1 warning generated.
+[20/42] Building CXX object CMakeFiles/lslobj.dir/src/consumer_queue.cpp.o
+[21/42] Building CXX object CMakeFiles/lslobj.dir/src/lsl_continuous_resolver_c.cpp.o
+[22/42] Building CXX object CMakeFiles/lslobj.dir/src/lsl_inlet_c.cpp.o
+[23/42] Building CXX object CMakeFiles/lslobj.dir/src/lsl_streaminfo_c.cpp.o
+[24/42] Building CXX object CMakeFiles/lslobj.dir/src/api_config.cpp.o
+[25/42] Building CXX object CMakeFiles/lslobj.dir/src/lsl_freefuncs_c.cpp.o
+[26/42] Building CXX object CMakeFiles/lslobj.dir/src/lsl_outlet_c.cpp.o
+[27/42] Building CXX object CMakeFiles/lslobj.dir/src/pugixml/pugixml.cpp.o
+[28/42] Building CXX object CMakeFiles/lslobj.dir/src/inlet_connection.cpp.o
+[29/42] Building CXX object CMakeFiles/lslobj.dir/src/info_receiver.cpp.o
+[30/42] Building CXX object CMakeFiles/lslboost.dir/lslboost/libs/thread/src/pthread/thread.cpp.o
+[31/42] Building CXX object CMakeFiles/lslobj.dir/src/socket_utils.cpp.o
+[32/42] Building CXX object CMakeFiles/lslobj.dir/src/send_buffer.cpp.o
+[33/42] Building CXX object CMakeFiles/lslobj.dir/src/data_receiver.cpp.o
+/home/mvidaldepalo/github/EEG-Droid/liblsl/src/data_receiver.cpp:137:32: warning: explicit instantiation of 'pull_sample_typed<long>' that occurs after an explicit specialization has no effect [-Winstantiation-after-specialization]
+template double data_receiver::pull_sample_typed<int64_t>(int64_t *, int, double);
+                               ^
+/home/mvidaldepalo/github/EEG-Droid/liblsl/src/data_receiver.cpp:130:23: note: previous template specialization is here
+double data_receiver::pull_sample_typed(long *buffer, int buffer_elements, double timeout) {
+                      ^
+1 warning generated.
+[34/42] Building CXX object CMakeFiles/lslobj.dir/src/time_postprocessor.cpp.o
+[35/42] Building CXX object CMakeFiles/lslobj.dir/src/stream_info_impl.cpp.o
+[36/42] Building CXX object CMakeFiles/lslobj.dir/src/resolver_impl.cpp.o
+[37/42] Building CXX object CMakeFiles/lslobj.dir/src/resolve_attempt_udp.cpp.o
+[38/42] Building CXX object CMakeFiles/lslobj.dir/src/udp_server.cpp.o
+[39/42] Building CXX object CMakeFiles/lslobj.dir/src/stream_outlet_impl.cpp.o
+[40/42] Building CXX object CMakeFiles/lslobj.dir/src/time_receiver.cpp.o
+[41/42] Building CXX object CMakeFiles/lslobj.dir/src/tcp_server.cpp.o
+[42/42] Linking CXX shared library /home/mvidaldepalo/github/EEG-Droid/app/build/intermediates/cmake/debug/obj/arm64-v8a/liblsl.so

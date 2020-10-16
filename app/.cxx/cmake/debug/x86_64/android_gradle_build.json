@@ -1,0 +1,414 @@
+{
+  "stringTable": {
+    "0": "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64",
+    "1": "--target=x86_64-none-linux-android24 --gcc-toolchain=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DBOOST_ALL_NO_LIB -DBOOST_ASIO_SEPARATE_COMPILATION -I. -I/home/mvidaldepalo/github/EEG-Droid/liblsl -I/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions -O0 -fno-limit-debug-info -fPIC -fvisibility=hidden -pthread",
+    "2": "--target=x86_64-none-linux-android24 --gcc-toolchain=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DBOOST_ALL_NO_LIB -DBOOST_ASIO_SEPARATE_COMPILATION -DLIBLSL_EXPORTS -I. -I/home/mvidaldepalo/github/EEG-Droid/liblsl -I/home/mvidaldepalo/github/EEG-Droid/liblsl/include -I/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions -O0 -fno-limit-debug-info -fPIC -fvisibility=hidden -pthread",
+    "3": "--target=x86_64-none-linux-android24 --gcc-toolchain=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DBOOST_ALL_NO_LIB -DBOOST_ASIO_SEPARATE_COMPILATION -DLIBLSL_EXPORTS -DLSL_LIBRARY_INFO_STR=\"\\\"git:/branch:master/build:Debug/compiler:Clang-9.0/boost:\\\" BOOST_LIB_VERSION\" -I. -I/home/mvidaldepalo/github/EEG-Droid/liblsl -I/home/mvidaldepalo/github/EEG-Droid/liblsl/include -I/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions -O0 -fno-limit-debug-info -fPIC -fvisibility=hidden -pthread",
+    "4": "--target=x86_64-none-linux-android24 --gcc-toolchain=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DLSLNOAUTOLINK -I. -I/home/mvidaldepalo/github/EEG-Droid/liblsl -I/home/mvidaldepalo/github/EEG-Droid/liblsl/include -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -O0 -fno-limit-debug-info -fPIE"
+  },
+  "buildFiles": [
+    "/home/mvidaldepalo/github/EEG-Droid/liblsl/CMakeLists.txt",
+    "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake",
+    "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/build/cmake/platforms.cmake",
+    "/home/mvidaldepalo/github/EEG-Droid/liblsl/cmake/LSLConfig.cmake",
+    "/home/mvidaldepalo/github/EEG-Droid/liblsl/cmake/LSLCMake.cmake"
+  ],
+  "cleanCommands": [
+    "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64\" clean"
+  ],
+  "buildTargetsCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja  -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64\" {LIST_OF_TARGETS_TO_BUILD}",
+  "libraries": {
+    "lsl-Debug-x86_64": {
+      "buildCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64\" lsl",
+      "buildType": "debug",
+      "toolchain": "867713758",
+      "abi": "x86_64",
+      "artifactName": "lsl",
+      "files": [],
+      "headers": [],
+      "output": "/home/mvidaldepalo/github/EEG-Droid/app/build/intermediates/cmake/debug/obj/x86_64/liblsl.so",
+      "runtimeFiles": []
+    },
+    "lslver-Debug-x86_64": {
+      "buildCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64\" lslver",
+      "buildType": "debug",
+      "toolchain": "867713758",
+      "abi": "x86_64",
+      "artifactName": "lslver",
+      "files": [
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/testing/lslver.c",
+          "flagsOrdinal": 4,
+          "workingDirectoryOrdinal": 0
+        }
+      ],
+      "headers": [],
+      "output": "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64/lslver",
+      "runtimeFiles": [
+        "/home/mvidaldepalo/github/EEG-Droid/app/build/intermediates/cmake/debug/obj/x86_64/liblsl.so"
+      ]
+    },
+    "lslboost-Debug-x86_64": {
+      "buildCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64\" lslboost",
+      "buildType": "debug",
+      "toolchain": "867713758",
+      "abi": "x86_64",
+      "artifactName": "lslboost",
+      "files": [
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost/asio_objects.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost/libs/atomic/src/lockpool.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost/libs/chrono/src/chrono.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost/libs/serialization/src/archive_exception.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost/libs/serialization/src/basic_archive.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost/libs/serialization/src/basic_iarchive.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost/libs/serialization/src/basic_iserializer.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost/libs/serialization/src/basic_oarchive.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost/libs/serialization/src/basic_oserializer.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost/libs/serialization/src/basic_serializer_map.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost/libs/serialization/src/extended_type_info.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost/libs/serialization/src/extended_type_info_typeid.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost/libs/serialization/src/void_cast.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost/libs/thread/src/pthread/once.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost/libs/thread/src/pthread/thread.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        }
+      ],
+      "headers": []
+    },
+    "lslobj-Debug-x86_64": {
+      "buildCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64\" lslobj",
+      "buildType": "debug",
+      "toolchain": "867713758",
+      "abi": "x86_64",
+      "artifactName": "lslobj",
+      "files": [
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/lsl_freefuncs_c.cpp",
+          "flagsOrdinal": 3,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/api_config.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/cancellation.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/cast.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/common.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/consumer_queue.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/data_receiver.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/info_receiver.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/inlet_connection.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/lsl_continuous_resolver_c.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/lsl_inlet_c.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/lsl_outlet_c.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/lsl_streaminfo_c.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/lsl_xml_element_c.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/pugixml/pugixml.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/resolver_impl.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/resolve_attempt_udp.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/sample.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/send_buffer.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/socket_utils.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/stream_info_impl.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/stream_outlet_impl.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/tcp_server.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/time_postprocessor.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/time_receiver.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/udp_server.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        }
+      ],
+      "headers": [
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/api_config.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/cancellable_streambuf.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/cancellation.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/cast.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/common.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/consumer_queue.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/data_receiver.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/forward.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/info_receiver.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/inlet_connection.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/portable_archive/portable_archive_exception.hpp",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/portable_archive/portable_archive_includes.hpp",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/portable_archive/portable_iarchive.hpp",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/portable_archive/portable_oarchive.hpp",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/pugixml/pugiconfig.hpp",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/pugixml/pugixml.hpp",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/resolver_impl.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/resolve_attempt_udp.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/sample.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/send_buffer.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/socket_utils.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/stream_info_impl.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/stream_inlet_impl.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/stream_outlet_impl.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/tcp_server.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/time_postprocessor.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/time_receiver.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/src/udp_server.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/include/lsl_c.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/include/lsl_cpp.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/EEG-Droid/liblsl/include/lsl/constants.h",
+          "workingDirectoryOrdinal": 0
+        }
+      ]
+    }
+  },
+  "toolchains": {
+    "867713758": {
+      "cCompilerExecutable": "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang",
+      "cppCompilerExecutable": "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++"
+    }
+  },
+  "cFileExtensions": [
+    "c"
+  ],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

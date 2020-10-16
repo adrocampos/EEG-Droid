@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
@@ -31,15 +32,15 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.PlanetVi
         this.arrayListFiles = arrayListFiles;
     }
 
+    @NonNull
     @Override
     public SessionAdapter.PlanetViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.session_row, parent, false);
-        PlanetViewHolder viewHolder = new PlanetViewHolder(v);
-        return viewHolder;
+        return new PlanetViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(SessionAdapter.PlanetViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull SessionAdapter.PlanetViewHolder holder, final int position) {
 
         BasicFileAttributes attrs;
         Path path = arrayListFiles.get(position).toPath();
@@ -51,7 +52,8 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.PlanetVi
         }
 
         holder.name.setText(arrayListFiles.get(position).getName());
-        float kbs = attrs.size() / 1000;
+        assert attrs != null;
+        float kbs = attrs.size() / 1000.0f;
         holder.kbs.setText(Float.toString(kbs));
 
         ZonedDateTime creationTime = attrs.creationTime().toInstant().atZone(ZoneId.systemDefault());
@@ -61,14 +63,11 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.PlanetVi
         //This handles the selection of an item in the list
         holder.itemView.setSelected(selectedPos == position);
 
-        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d("Adapter.getSelectedPos() ", Integer.toString(position));
-                notifyItemChanged(selectedPos);
-                selectedPos = position;
-                notifyItemChanged(selectedPos);
-            }
+        holder.linearLayout.setOnClickListener(view -> {
+            Log.d("Adapter.getSelectedPos() ", Integer.toString(position));
+            notifyItemChanged(selectedPos);
+            selectedPos = position;
+            notifyItemChanged(selectedPos);
         });
 
     }

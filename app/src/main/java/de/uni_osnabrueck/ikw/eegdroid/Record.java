@@ -85,6 +85,9 @@ public class Record extends AppCompatActivity {
     private final ArrayList<Entry> lineEntries6 = new ArrayList<>();
     private final ArrayList<Entry> lineEntries7 = new ArrayList<>();
     private final ArrayList<Entry> lineEntries8 = new ArrayList<>();
+    private final ArrayList<Integer> pkgIDs = new ArrayList<>();
+    LSL.StreamInfo streamInfo;
+    LSL.StreamOutlet streamOutlet = null;
     private TextView mConnectionState;
     private TextView viewDeviceAddress;
     private boolean mNewDevice;
@@ -111,7 +114,6 @@ public class Record extends AppCompatActivity {
             if (mBluetoothLeService != null) mBluetoothLeService = null;
         }
     };
-    private ArrayList<Integer> pkgIDs = new ArrayList<>();
     private BluetoothGattCharacteristic mNotifyCharacteristic;
     private boolean recording = false;
     private boolean notifying = false;
@@ -283,6 +285,7 @@ public class Record extends AppCompatActivity {
                 long last_data = System.currentTimeMillis();
                 enableCheckboxes();
                 microV = transData(Objects.requireNonNull(intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA)));
+                streamData(microV);
                 displayData(microV);
                 if (plotting) {
                     accumulated.add(microV);
@@ -411,7 +414,14 @@ public class Record extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
         setContentView(R.layout.activity_record);
-
+        final UUID uid = UUID.randomUUID();
+        streamInfo = new LSL.StreamInfo("Traumschreiber-EEG", "Markers", 24, LSL.IRREGULAR_RATE, LSL.ChannelFormat.float32, uid.toString());
+        try {
+            streamOutlet = new LSL.StreamOutlet(streamInfo);
+        } catch (IOException ex) {
+            Log.d("LSL issue:", Objects.requireNonNull(ex.getMessage()));
+            return;
+        }
         ch1_color = ContextCompat.getColor(getApplicationContext(), R.color.aqua);
         ch2_color = ContextCompat.getColor(getApplicationContext(), R.color.fuchsia);
         ch3_color = ContextCompat.getColor(getApplicationContext(), R.color.green);
@@ -881,6 +891,23 @@ public class Record extends AppCompatActivity {
                 mCh8.setText(values.get(7));
             }
         }
+    }
+
+    private void streamData(List<Float> data_microV) {
+        float[] sample = new float[24];
+
+        for (int i = 0; i < data_microV.size(); i++) {
+            sample[i] = data_microV.get(i);
+        }
+        streamOutlet.push_sample(sample);
+        Log.d("LSL", "Sample sent!");
+//        try {
+//            streamOutlet.push_sample(sample);
+//        } catch (Exception ex) {
+//            Log.d("LSL issue", Objects.requireNonNull(ex.getMessage()));
+//            streamOutlet.close();
+//            streamInfo.destroy();
+//        }
     }
 
     private void setChart() {

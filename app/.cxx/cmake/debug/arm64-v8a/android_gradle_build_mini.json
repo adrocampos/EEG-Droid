@@ -1,0 +1,43 @@
+{
+  "buildFiles": [
+    "/home/mvidaldepalo/github/EEG-Droid/liblsl/CMakeLists.txt",
+    "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake",
+    "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/build/cmake/platforms.cmake",
+    "/home/mvidaldepalo/github/EEG-Droid/liblsl/cmake/LSLConfig.cmake",
+    "/home/mvidaldepalo/github/EEG-Droid/liblsl/cmake/LSLCMake.cmake"
+  ],
+  "cleanCommands": [
+    "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a\" clean"
+  ],
+  "buildTargetsCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja  -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a\" {LIST_OF_TARGETS_TO_BUILD}",
+  "libraries": {
+    "lsl-Debug-arm64-v8a": {
+      "artifactName": "lsl",
+      "buildCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a\" lsl",
+      "abi": "arm64-v8a",
+      "output": "/home/mvidaldepalo/github/EEG-Droid/app/build/intermediates/cmake/debug/obj/arm64-v8a/liblsl.so",
+      "runtimeFiles": []
+    },
+    "lslver-Debug-arm64-v8a": {
+      "artifactName": "lslver",
+      "buildCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a\" lslver",
+      "abi": "arm64-v8a",
+      "output": "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/lslver",
+      "runtimeFiles": [
+        "/home/mvidaldepalo/github/EEG-Droid/app/build/intermediates/cmake/debug/obj/arm64-v8a/liblsl.so"
+      ]
+    },
+    "lslobj-Debug-arm64-v8a": {
+      "artifactName": "lslobj",
+      "buildCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a\" lslobj",
+      "abi": "arm64-v8a",
+      "runtimeFiles": []
+    },
+    "lslboost-Debug-arm64-v8a": {
+      "artifactName": "lslboost",
+      "buildCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a\" lslboost",
+      "abi": "arm64-v8a",
+      "runtimeFiles": []
+    }
+  }
+}

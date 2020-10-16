@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,24 +34,7 @@ public class MainActivity extends AppCompatActivity
 
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
     private static File dirSessions;
-    private ManageSessions ManageSessions = new ManageSessions();
-    private Uri dirUri;
-    private TextView appName;
-    private TextView appVersion;
-    private TextView textViewUsername;
-    private TextView textViewUserID;
-    private TextView textViewSaveDir;
-    private ApplicationInfo applicationInfo;
-    private TableRow tableRowRecord;
-    private TableRow tableRowDisplay;
-    private TableRow tableRowManage;
-    private TableRow tableRowLearn;
-    private TableRow tableRowTutorial;
-    private TableRow tableRowEpibot;
-    private SharedPreferences sharedPreferences;
-    private String saveDir;
-    private String username;
-    private String userID;
+    private final ManageSessions ManageSessions = new ManageSessions();
 
     public static File getDirSessions() {
         return dirSessions;
@@ -66,16 +48,16 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         //Retrieve saveDir, username & userID from sharedPreferences
-        sharedPreferences = getSharedPreferences("userPreferences", MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("userPreferences", MODE_PRIVATE);
         //If sharedPreferences not found (first time usage), use default values
-        saveDir = sharedPreferences.getString("saveDir", getResources().getString(R.string.default_folder));
-        username = sharedPreferences.getString("username", getResources().getString(R.string.default_username));
-        userID = sharedPreferences.getString("userID", getResources().getString(R.string.default_userID));
+        String saveDir = sharedPreferences.getString("saveDir", getResources().getString(R.string.default_folder));
+        String username = sharedPreferences.getString("username", getResources().getString(R.string.default_username));
+        String userID = sharedPreferences.getString("userID", getResources().getString(R.string.default_userID));
 
         // File object to save the directory to save the EEG recordings
         dirSessions = new File(Objects.requireNonNull(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)).getAbsolutePath() + saveDir);
         ManageSessions.createDirectory(dirSessions);
-        dirUri = Uri.parse(Environment.getExternalStorageDirectory() + saveDir + "/"); //Uri to open the folder with sessions
+        Uri dirUri = Uri.parse(Environment.getExternalStorageDirectory() + saveDir + "/"); //Uri to open the folder with sessions
         Log.d("Main Directory", dirUri.getPath());
 
         //Sets the lateral Menu
@@ -88,104 +70,80 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         //Shows basic information about the App
-        appName = findViewById(R.id.main_app_name);
-        appVersion = findViewById(R.id.main_app_version);
-        textViewUsername = findViewById(R.id.textViewUsername);
+        TextView appName = findViewById(R.id.main_app_name);
+        TextView appVersion = findViewById(R.id.main_app_version);
+        TextView textViewUsername = findViewById(R.id.textViewUsername);
         textViewUsername.setText(username);
-        textViewUserID = findViewById(R.id.textViewUserID);
+        TextView textViewUserID = findViewById(R.id.textViewUserID);
         textViewUserID.setText(userID);
-        textViewSaveDir = findViewById(R.id.textViewSaveDir);
+        TextView textViewSaveDir = findViewById(R.id.textViewSaveDir);
         textViewSaveDir.setText("Downloads" + saveDir + "/");
 
-        applicationInfo = getApplicationInfo();
+        ApplicationInfo applicationInfo = getApplicationInfo();
         appName.setText(applicationInfo.loadLabel(getPackageManager()));
         appName.setTextColor(getColor(R.color.colorPrimary));
         appVersion.setText(BuildConfig.VERSION_NAME);
 
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
 
-        tableRowRecord = findViewById(R.id.tableRowRecord);
-        tableRowDisplay = findViewById(R.id.tableRowDisplay);
-        tableRowManage = findViewById(R.id.tableRowManage);
-        tableRowLearn = findViewById(R.id.tableRowLearn);
-        tableRowTutorial = findViewById(R.id.tableRowTutorial);
-        tableRowEpibot = findViewById(R.id.tableRowEpibot);
+        TableRow tableRowRecord = findViewById(R.id.tableRowRecord);
+        TableRow tableRowDisplay = findViewById(R.id.tableRowDisplay);
+        TableRow tableRowManage = findViewById(R.id.tableRowManage);
+        TableRow tableRowLearn = findViewById(R.id.tableRowLearn);
+        TableRow tableRowTutorial = findViewById(R.id.tableRowTutorial);
 
         //Allows initialize activity when click in home
-        tableRowRecord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getBaseContext(), Record.class);
+        tableRowRecord.setOnClickListener(v -> {
+            Intent intent = new Intent(getBaseContext(), Record.class);
+            startActivity(intent);
+        });
+
+        tableRowDisplay.setOnClickListener(v -> {
+
+            // Avoid that app crashes if no permission
+            if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(
+                        getApplicationContext(),
+                        getText(R.string.permission_storage),
+                        Toast.LENGTH_LONG
+                ).show();
+            } else {
+                Intent intent = new Intent(getBaseContext(), Display.class);
+                intent.putExtra("dirString", dirSessions.getPath());
                 startActivity(intent);
             }
         });
 
-        tableRowDisplay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        tableRowManage.setOnClickListener(v -> {
 
-                // Avoid that app crashes if no permission
-                if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(
-                            getApplicationContext(),
-                            getText(R.string.permission_storage),
-                            Toast.LENGTH_LONG
-                    ).show();
-                } else {
-                    Intent intent = new Intent(getBaseContext(), Display.class);
-                    intent.putExtra("dirString", dirSessions.getPath());
-                    startActivity(intent);
-                }
-            }
-        });
-
-        tableRowManage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                // Avoid that app crashes if no permission
-                if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(
-                            getApplicationContext(),
-                            getText(R.string.permission_storage),
-                            Toast.LENGTH_LONG
-                    ).show();
-                } else {
-                    Intent intent = new Intent(getBaseContext(), ManageSessions.class);
-                    intent.putExtra("dirString", dirSessions.getPath());
-                    startActivity(intent);
-
-                }
-            }
-        });
-
-
-        tableRowLearn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getBaseContext(), Learn.class);
+            // Avoid that app crashes if no permission
+            if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(
+                        getApplicationContext(),
+                        getText(R.string.permission_storage),
+                        Toast.LENGTH_LONG
+                ).show();
+            } else {
+                Intent intent = new Intent(getBaseContext(), ManageSessions.class);
+                intent.putExtra("dirString", dirSessions.getPath());
                 startActivity(intent);
+
             }
         });
 
-        tableRowTutorial.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getBaseContext(), Tutorial.class);
-                startActivity(intent);
-            }
+
+        tableRowLearn.setOnClickListener(v -> {
+            Intent intent = new Intent(getBaseContext(), Learn.class);
+            startActivity(intent);
         });
 
-        tableRowEpibot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getBaseContext(), Epibot.class);
-                startActivity(intent);
-            }
+        tableRowTutorial.setOnClickListener(v -> {
+            Intent intent = new Intent(getBaseContext(), Tutorial.class);
+            startActivity(intent);
         });
 
         // Check if permission to write is granted
@@ -203,7 +161,6 @@ public class MainActivity extends AppCompatActivity
                         REQUEST_WRITE_EXTERNAL_STORAGE);
 
             }
-        } else {
         }
     }
 
@@ -217,7 +174,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -271,10 +227,6 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.tutorial) {
             Intent intent = new Intent(this, Tutorial.class);
-            startActivity(intent);
-
-        } else if (id == R.id.epibot) {
-            Intent intent = new Intent(this, Epibot.class);
             startActivity(intent);
 
         } else if (id == R.id.settings) {

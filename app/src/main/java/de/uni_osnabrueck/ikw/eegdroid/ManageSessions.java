@@ -1,6 +1,5 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,18 +25,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Objects;
 
 import de.uni_osnabrueck.ikw.eegdroid.utilities.SessionAdapter;
 
 public class ManageSessions extends AppCompatActivity {
 
-    //List <Files> to save the current state directory
-    private RecyclerView recyclerView;
     private SessionAdapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
     private String saveDir;
     private ArrayList<File> arrayListOfFiles;
-    private DividerItemDecoration mDividerItemDecoration;
     private ShareActionProvider shareActionProvider;
 
     @Override
@@ -46,22 +42,23 @@ public class ManageSessions extends AppCompatActivity {
         setContentView(R.layout.activity_manage_sessions);
         readDirectory(MainActivity.getDirSessions());
 
-        recyclerView = findViewById(R.id.recycler_view);
-        layoutManager = new LinearLayoutManager(this);
+        //List <Files> to save the current state directory
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
         adapter = new SessionAdapter(arrayListOfFiles, getApplicationContext());
         recyclerView.setAdapter(adapter);
 
         // Add line between items of RecyclerView
-        mDividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), 1);
+        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), 1);
         recyclerView.addItemDecoration(mDividerItemDecoration);
 
         // Receive the directory of the EEG Sessions
         Intent intent = getIntent();
         saveDir = intent.getExtras().getString("dirString");
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
     }
 
 
@@ -81,10 +78,9 @@ public class ManageSessions extends AppCompatActivity {
 
         //Handles if no session has been selected
         if (position == -1) {
-            switch (item.getItemId()) {
-                case android.R.id.home:
-                    onBackPressed();
-                    return true;
+            if (item.getItemId() == android.R.id.home) {
+                onBackPressed();
+                return true;
             }
             Toast.makeText(getApplicationContext(), R.string.warning_select_session, Toast.LENGTH_LONG).show();
             return super.onOptionsItemSelected(item);
@@ -125,31 +121,27 @@ public class ManageSessions extends AppCompatActivity {
                             .setCancelable(false)
                             .setTitle(R.string.rename_title)
                             .setMessage(getResources().getString(R.string.ask_new_name) + " " + arrayListOfFiles.get(position).getName() + ":")
-                            .setPositiveButton(R.string.rename, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialogBox, int id) {
-                                    String oldName = arrayListOfFiles.get(position).getName().substring(0, 20);
-                                    File newName = new File(saveDir, oldName + userInputDialogEditText.getText().toString() + ".csv");
-                                    //Check if exist another file with this name
-                                    if (arrayListOfFiles.contains(newName)) {
-                                        Toast.makeText(getApplicationContext(), R.string.warning_rename, Toast.LENGTH_LONG).show();
-                                        dialogBox.cancel();
-                                        adapter.resetSelectedPos();
-                                    } else {
-                                        arrayListOfFiles.get(position).renameTo(newName);
-                                        arrayListOfFiles.set(position, newName);
-                                        Collections.sort(arrayListOfFiles, Collections.reverseOrder());
-                                        //adapter.notifyItemChanged(position);
-                                        adapter.notifyDataSetChanged();
-                                        adapter.resetSelectedPos();
-                                    }
+                            .setPositiveButton(R.string.rename, (dialogBox, id) -> {
+                                String oldName = arrayListOfFiles.get(position).getName().substring(0, 20);
+                                File newName = new File(saveDir, oldName + userInputDialogEditText.getText().toString() + ".csv");
+                                //Check if exist another file with this name
+                                if (arrayListOfFiles.contains(newName)) {
+                                    Toast.makeText(getApplicationContext(), R.string.warning_rename, Toast.LENGTH_LONG).show();
+                                    dialogBox.cancel();
+                                    adapter.resetSelectedPos();
+                                } else {
+                                    arrayListOfFiles.get(position).renameTo(newName);
+                                    arrayListOfFiles.set(position, newName);
+                                    Collections.sort(arrayListOfFiles, Collections.reverseOrder());
+                                    //adapter.notifyItemChanged(position);
+                                    adapter.notifyDataSetChanged();
+                                    adapter.resetSelectedPos();
                                 }
                             })
                             .setNegativeButton(R.string.cancel,
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialogBox, int id) {
-                                            dialogBox.cancel();
-                                            adapter.resetSelectedPos();
-                                        }
+                                    (dialogBox, id) -> {
+                                        dialogBox.cancel();
+                                        adapter.resetSelectedPos();
                                     });
 
                     AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
@@ -162,22 +154,17 @@ public class ManageSessions extends AppCompatActivity {
                     AlertDialog.Builder alert = new AlertDialog.Builder(this)
                             .setTitle(R.string.dialog_title)
                             .setMessage(getResources().getString(R.string.confirmation_delete) + " " + arrayListOfFiles.get(position).getName() + "?");
-                    alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    alert.setPositiveButton(android.R.string.yes, (dialog, which) -> {
 
-                        public void onClick(DialogInterface dialog, int which) {
-
-                            arrayListOfFiles.get(position).delete();
-                            arrayListOfFiles.remove(position);
-                            adapter.notifyItemRemoved(position);
-                            //adapter.resetSelectedPos();
-                        }
+                        arrayListOfFiles.get(position).delete();
+                        arrayListOfFiles.remove(position);
+                        adapter.notifyItemRemoved(position);
+                        //adapter.resetSelectedPos();
                     });
-                    alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // close dialog
-                            dialog.cancel();
-                            adapter.resetSelectedPos();
-                        }
+                    alert.setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+                        // close dialog
+                        dialog.cancel();
+                        adapter.resetSelectedPos();
                     });
                     alert.show();
                     adapter.resetSelectedPos();
@@ -198,7 +185,7 @@ public class ManageSessions extends AppCompatActivity {
 
     //Returns a list of recordings in directory
     public void readDirectory(File dir) {
-        arrayListOfFiles = new ArrayList<>(Arrays.asList(dir.listFiles()));
+        arrayListOfFiles = new ArrayList<>(Arrays.asList(Objects.requireNonNull(dir.listFiles())));
         Collections.sort(arrayListOfFiles, Collections.reverseOrder());
         //Add if here?
     }

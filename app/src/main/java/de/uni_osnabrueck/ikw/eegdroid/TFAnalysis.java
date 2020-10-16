@@ -39,7 +39,7 @@ public class TFAnalysis extends AppCompatActivity {
     public static int CHANNEL = 0;
     public static int MAXHERTZ = 60;
     public static String WINDOW = "hanning";
-    private static int FS = 225;
+    private static final int FS = 225;
     public static int WIDTH = 2 * FS;
     public static int OVERLAP = WIDTH / 2;
     private static int MAX_CHART_HEIGHT;
@@ -135,12 +135,7 @@ public class TFAnalysis extends AppCompatActivity {
 
 
                     }
-                }).setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        finish();
-                    }
-                });
+                }).setOnCancelListener(dialog -> finish());
         alert.show();
 
 

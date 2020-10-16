@@ -1,0 +1,37 @@
+Detecting C compiler ABI info
+Detecting C compiler ABI info - done
+Check for working C compiler: /home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang - skipped
+Detecting C compile features
+Detecting C compile features - done
+Detecting CXX compiler ABI info
+Detecting CXX compiler ABI info - done
+Check for working CXX compiler: /home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ - skipped
+Detecting CXX compile features
+Detecting CXX compile features - done
+Found Git: /app/bin/git (found version "2.28.0") 
+Git version information: master/
+Looking for pthread.h
+Looking for pthread.h - found
+Performing Test CMAKE_HAVE_LIBC_PTHREAD
+Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+Looking for pthread_create in pthreads
+Looking for pthread_create in pthreads - not found
+Looking for pthread_create in pthread
+Looking for pthread_create in pthread - not found
+Check if compiler accepts -pthread
+Check if compiler accepts -pthread - yes
+Found Threads: TRUE  
+Included LSL CMake helpers, rev. 12, /home/mvidaldepalo/github/EEG-Droid/liblsl/cmake
+CMake Warning at /home/mvidaldepalo/github/EEG-Droid/liblsl/cmake/LSLCMake.cmake:21 (message):
+  CMAKE_INSTALL_PREFIX default initialized to
+  /home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64/install
+Call Stack (most recent call first):
+  CMakeLists.txt:277 (include)
+
+
+Installing Components: liblsl
+Configuring done
+CMake Deprecation Warning:
+  The 'cmake-server(7)' is deprecated.  Please port clients to use the
+  'cmake-file-api(7)' instead.
+

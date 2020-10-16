@@ -1,0 +1,43 @@
+{
+  "buildFiles": [
+    "/home/mvidaldepalo/github/EEG-Droid/liblsl/CMakeLists.txt",
+    "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake",
+    "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/build/cmake/platforms.cmake",
+    "/home/mvidaldepalo/github/EEG-Droid/liblsl/cmake/LSLConfig.cmake",
+    "/home/mvidaldepalo/github/EEG-Droid/liblsl/cmake/LSLCMake.cmake"
+  ],
+  "cleanCommands": [
+    "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64\" clean"
+  ],
+  "buildTargetsCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja  -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64\" {LIST_OF_TARGETS_TO_BUILD}",
+  "libraries": {
+    "lsl-Debug-x86_64": {
+      "artifactName": "lsl",
+      "buildCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64\" lsl",
+      "abi": "x86_64",
+      "output": "/home/mvidaldepalo/github/EEG-Droid/app/build/intermediates/cmake/debug/obj/x86_64/liblsl.so",
+      "runtimeFiles": []
+    },
+    "lslver-Debug-x86_64": {
+      "artifactName": "lslver",
+      "buildCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64\" lslver",
+      "abi": "x86_64",
+      "output": "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64/lslver",
+      "runtimeFiles": [
+        "/home/mvidaldepalo/github/EEG-Droid/app/build/intermediates/cmake/debug/obj/x86_64/liblsl.so"
+      ]
+    },
+    "lslboost-Debug-x86_64": {
+      "artifactName": "lslboost",
+      "buildCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64\" lslboost",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    },
+    "lslobj-Debug-x86_64": {
+      "artifactName": "lslobj",
+      "buildCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64\" lslobj",
+      "abi": "x86_64",
+      "runtimeFiles": []
+    }
+  }
+}

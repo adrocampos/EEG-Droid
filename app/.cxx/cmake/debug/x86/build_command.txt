@@ -1,0 +1,23 @@
+                Executable : /home/mvidaldepalo/Android/Sdk/cmake/custom/bin/cmake
+arguments : 
+-H/home/mvidaldepalo/github/EEG-Droid/liblsl
+-DCMAKE_FIND_ROOT_PATH=/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/prefab/x86/prefab
+-DCMAKE_BUILD_TYPE=Debug
+-DCMAKE_TOOLCHAIN_FILE=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake
+-DANDROID_ABI=x86
+-DANDROID_NDK=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462
+-DCMAKE_ANDROID_ARCH_ABI=x86
+-DCMAKE_ANDROID_NDK=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462
+-DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=/home/mvidaldepalo/github/EEG-Droid/app/build/intermediates/cmake/debug/obj/x86
+-DCMAKE_MAKE_PROGRAM=/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja
+-DCMAKE_SYSTEM_NAME=Android
+-DCMAKE_SYSTEM_VERSION=21
+-DANDROID_CPP_FEATURES=rtti exceptions
+-DLSL_NO_FANCY_LIBNAME=1
+-DANDROID_PLATFORM=24
+-B/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86
+-GNinja
+jvmArgs : 
+
+Build command args:
