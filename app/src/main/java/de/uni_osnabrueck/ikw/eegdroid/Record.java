@@ -687,126 +687,95 @@ public class Record extends AppCompatActivity {
 
     private void writeGattCharacteristic(List<BluetoothGattService> gattServices) {
         if (gattServices == null) return;
-        String uuid;
-        String charUuid;
+        UUID serviceUuid = mNewDevice ? TraumschreiberService.WRITE_SERVICE_UUID_NEW : TraumschreiberService.WRITE_SERVICE_UUID_OLD;
+        UUID charUuid = mNewDevice ? TraumschreiberService.WRITE_CHAR_UUID_NEW : TraumschreiberService.WRITE_CHAR_UUID_OLD;
+        BluetoothGattService gattService = mBluetoothLeService.mBluetoothGatt.getService(serviceUuid);
+        BluetoothGattCharacteristic gattChar = gattService.getCharacteristic(charUuid);
         toggleNotifying();
-        for (BluetoothGattService gattService : gattServices) {
-            uuid = gattService.getUuid().toString();
 
-            if (((!mNewDevice && uuid.equals("05bbfe57-2f19-ab84-c448-6769fe64d994")) ||
-                    (mNewDevice && uuid.equals("00000ee6-0000-1000-8000-00805f9b34fb")))) {
-                List<BluetoothGattCharacteristic> gattCharacteristics =
-                        gattService.getCharacteristics();
-
-                // Loops through available Characteristics.
-                for (final BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
-                    charUuid = gattCharacteristic.getUuid().toString();
-                    if ((!mNewDevice && charUuid.equals("fcbea85a-4d87-18a2-2141-0d8d2437c0a4")) ||
-                            (mNewDevice && charUuid.equals("0000ecc0-0000-1000-8000-00805f9b34fb"))) {
-                        final int charaProp = gattCharacteristic.getProperties();
-                        if (((charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE) |
-                                (charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) > 0) {
-                            /*  gains:\
-                                old -> {0.5:0b111, 1:0b000, 2:0b001, 4:0b010, 8:0b011, 16:0b100, 32:0b101, 64:0b110}
-                                new -> {1:0b00, 2:0b01, 4:0b10, 8:0b11}
-                             */
-                            final byte[] newValue;
-                            if (!mNewDevice) {
-                                newValue = new byte[6];
-                                switch (selected_gain) {
-                                    case "0.5":
-                                        newValue[4] = 0b111;
-                                        break;
-                                    case "1":
-                                        newValue[4] = 0b000;
-                                        break;
-                                    case "2":
-                                        newValue[4] = 0b001;
-                                        break;
-                                    case "4":
-                                        newValue[4] = 0b010;
-                                        break;
-                                    case "8":
-                                        newValue[4] = 0b011;
-                                        break;
-                                    case "16":
-                                        newValue[4] = 0b100;
-                                        break;
-                                    case "32":
-                                        newValue[4] = 0b101;
-                                        break;
-                                    case "64":
-                                        newValue[4] = 0b110;
-                                        break;
-                                }
-                            } else {
-                                newValue = new byte[1];
-                                // set bits 3 and 4 to 1 for real + dummy data: 0b00xx0000 -> x to 1
-                                // set only bit 3 to 1 for dummy data only:     0b00x00000 -> x to 1
-                                switch (selected_gain) {
-                                    case "1":
-                                        newValue[0] = (byte) 0b00000000;
-                                        break;
-                                    case "2":
-                                        newValue[0] = (byte) 0b01000000;
-                                        break;
-                                    case "4":
-                                        newValue[0] = (byte) 0b10000000;
-                                        break;
-                                    case "8":
-                                        newValue[0] = (byte) 0b11000000;
-                                        break;
-                                }
-                            }
-                            int WRITECHAR_DELAY = 500;
-                            final int TOGGLE_DELAY = 500;
-                            handler.postDelayed(() -> {
-                                gattCharacteristic.setValue(newValue);
-                                mBluetoothLeService.writeCharacteristic(gattCharacteristic);
-                                handler.postDelayed(this::toggleNotifying, TOGGLE_DELAY);
-                            }, WRITECHAR_DELAY);
-                        }
-                    }
+        final int charaProp = gattChar.getProperties();
+        if (((charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE) |
+                (charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) > 0) {
+            /*  gains:\
+                old -> {0.5:0b111, 1:0b000, 2:0b001, 4:0b010, 8:0b011, 16:0b100, 32:0b101, 64:0b110}
+                new -> {1:0b00, 2:0b01, 4:0b10, 8:0b11}
+             */
+            final byte[] newValue;
+            if (!mNewDevice) {
+                newValue = new byte[6];
+                switch (selected_gain) {
+                    case "0.5":
+                        newValue[4] = 0b111;
+                        break;
+                    case "1":
+                        newValue[4] = 0b000;
+                        break;
+                    case "2":
+                        newValue[4] = 0b001;
+                        break;
+                    case "4":
+                        newValue[4] = 0b010;
+                        break;
+                    case "8":
+                        newValue[4] = 0b011;
+                        break;
+                    case "16":
+                        newValue[4] = 0b100;
+                        break;
+                    case "32":
+                        newValue[4] = 0b101;
+                        break;
+                    case "64":
+                        newValue[4] = 0b110;
+                        break;
+                }
+            } else {
+                newValue = new byte[1];
+                // set bits 3 and 4 to 1 for real + dummy data: 0b00xx0000 -> x to 1
+                // set only bit 3 to 1 for dummy data only:     0b00x00000 -> x to 1
+                switch (selected_gain) {
+                    case "1":
+                        newValue[0] = (byte) 0b00000000;
+                        break;
+                    case "2":
+                        newValue[0] = (byte) 0b01000000;
+                        break;
+                    case "4":
+                        newValue[0] = (byte) 0b10000000;
+                        break;
+                    case "8":
+                        newValue[0] = (byte) 0b11000000;
+                        break;
                 }
             }
+            int WRITECHAR_DELAY = 500;
+            final int TOGGLE_DELAY = 500;
+            handler.postDelayed(() -> {
+                gattChar.setValue(newValue);
+                mBluetoothLeService.writeCharacteristic(gattChar);
+                handler.postDelayed(this::toggleNotifying, TOGGLE_DELAY);
+            }, WRITECHAR_DELAY);
         }
     }
 
     private void readGattCharacteristic(List<BluetoothGattService> gattServices) {
         if (gattServices == null) return;
-        String uuid;
-        String charUuid;
-        // Loops through available GATT Services.
-        for (BluetoothGattService gattService : gattServices) {
-            uuid = gattService.getUuid().toString();
-            // for the new Traumschreiber the uuid is "00000ee6-0000-1000-8000-00805f9b34fb"
-            if ((!mNewDevice && uuid.equals("a22686cb-9268-bd91-dd4f-b52d03d85593")) || (mNewDevice && uuid.equals("00000ee6-0000-1000-8000-00805f9b34fb"))) {
-                List<BluetoothGattCharacteristic> gattCharacteristics =
-                        gattService.getCharacteristics();
-                // Loops through available Characteristics.
-                for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
-                    final int charaProp = gattCharacteristic.getProperties();
-                    charUuid = gattCharacteristic.getUuid().toString();
-                    if ((!mNewDevice && charUuid.equals("faa7b588-19e5-f590-0545-c99f193c5c3e")) || (mNewDevice && charUuid.equals("0000e617-0000-1000-8000-00805f9b34fb"))) {
-                        if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
-                            if (mNotifyCharacteristic != null) {
-                                mBluetoothLeService.setCharacteristicNotification(
-                                        mNotifyCharacteristic, false);
-                                mNotifyCharacteristic = null;
-                            }
-                            mNotifyCharacteristic = gattCharacteristic;
-                            // hack for reconnection and in case of notification set to true
-                            mBluetoothLeService.setCharacteristicNotification(
-                                    gattCharacteristic, false);
-                            // normal setCharNotification call
-                            mBluetoothLeService.setCharacteristicNotification(
-                                    gattCharacteristic, notifying);
-                            if (notifying)
-                                mBluetoothLeService.readCharacteristic(gattCharacteristic, mNewDevice);
-                        }
-                    }
-                }
+        UUID serviceUuid = mNewDevice ? TraumschreiberService.READ_SERVICE_UUID_NEW : TraumschreiberService.READ_SERVICE_UUID_OLD;
+        UUID charUuid = mNewDevice ? TraumschreiberService.READ_CHAR_UUID_NEW : TraumschreiberService.READ_CHAR_UUID_OLD;
+        BluetoothGattService gattService = mBluetoothLeService.mBluetoothGatt.getService(serviceUuid);
+        BluetoothGattCharacteristic gattChar = gattService.getCharacteristic(charUuid);
+        final int charaProp = gattChar.getProperties();
+        if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+            if (mNotifyCharacteristic != null) {
+                mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, false);
+                mNotifyCharacteristic = null;
             }
+            mNotifyCharacteristic = gattChar;
+            // hack for reconnection and in case of notification set to true
+            mBluetoothLeService.setCharacteristicNotification(gattChar, false);
+            // normal setCharNotification call
+            mBluetoothLeService.setCharacteristicNotification(gattChar, notifying);
+            if (notifying) mBluetoothLeService.readCharacteristic(gattChar, mNewDevice);
         }
     }
 

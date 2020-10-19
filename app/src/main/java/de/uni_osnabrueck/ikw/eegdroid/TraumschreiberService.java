@@ -9,8 +9,16 @@ public class TraumschreiberService {
 
     public final static String DEVICE_NAME = "traumschreiber";
     //Names chosen according to the python tflow_edge Traumschreiber.py
-    public final static UUID BIOSIGNALS_UUID = UUID.fromString("faa7b588-19e5-f590-0545-c99f193c5c3e");
-    public final static UUID LEDS_UUID = UUID.fromString("fcbea85a-4d87-18a2-2141-0d8d2437c0a4");
+    public final static UUID READ_SERVICE_UUID_OLD = UUID.fromString("a22686cb-9268-bd91-dd4f-b52d03d85593");
+    public final static UUID READ_SERVICE_UUID_NEW = UUID.fromString("00000ee6-0000-1000-8000-00805f9b34fb");
+    public final static UUID READ_CHAR_UUID_OLD = UUID.fromString("faa7b588-19e5-f590-0545-c99f193c5c3e");
+    public final static UUID READ_CHAR_UUID_NEW = UUID.fromString("0000e617-0000-1000-8000-00805f9b34fb");
+    public final static UUID WRITE_SERVICE_UUID_OLD = UUID.fromString("05bbfe57-2f19-ab84-c448-6769fe64d994");
+    public final static UUID WRITE_SERVICE_UUID_NEW = UUID.fromString("00000ee6-0000-1000-8000-00805f9b34fb");
+    public final static UUID WRITE_CHAR_UUID_OLD = UUID.fromString("fcbea85a-4d87-18a2-2141-0d8d2437c0a4");
+    public final static UUID WRITE_CHAR_UUID_NEW = UUID.fromString("0000ecc0-0000-1000-8000-00805f9b34fb");
+
+
     String mTraumschreiberDeviceAddress;
 
     //public final static UUID UUID_HEART_RATE_MEASUREMENT =
@@ -43,7 +51,7 @@ public class TraumschreiberService {
             //https://stackoverflow.com/questions/9581530/converting-from-byte-to-int-in-java
             //Example: rno[0]&0x000000ff)<<24|(rno[1]&0x000000ff)<<16|
             for (int ch = 0; ch < data_bytes.length / bLen; ch++) {
-                new_int = (data_bytes[ch * bLen]) << 8 | (data_bytes[ch * bLen  + 1]) & 0xff;
+                new_int = (data_bytes[ch * bLen]) << 8 | (data_bytes[ch * bLen + 1]) & 0xff;
                 //new_int = new_int << 8;
                 data_ints[ch] = new_int;
             }
