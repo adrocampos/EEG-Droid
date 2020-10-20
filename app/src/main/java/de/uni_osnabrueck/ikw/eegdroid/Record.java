@@ -154,7 +154,7 @@ public class Record extends AppCompatActivity {
     private ImageButton imageButtonRecord;
     private ImageButton imageButtonSave;
     private ImageButton imageButtonDiscard;
-    private Switch switch_plots;
+    private androidx.appcompat.widget.SwitchCompat switch_plots;
     private View layout_plots;
     private boolean plotting = false;
     private List<float[]> main_data;
@@ -458,67 +458,75 @@ public class Record extends AppCompatActivity {
 
         getChannelColors(); // fills int[] channelColors with values
         for (int i = 0; i < nChannels; i++) {
-            // Create View for Channel Value
-            TextView channelValueView = new TextView(getApplicationContext());
-            LinearLayout.LayoutParams valueLayout = new LinearLayout.LayoutParams(15, -1, 1f);
-            //valueLayout.width = 6;
-            //valueLayout.height = ViewGroup.LayoutParams.MATCH_PARENT;
-            //valueLayout.weight = 1;
-            valueLayout.topMargin = 2;
-            channelValueView.setLayoutParams(valueLayout);
-            channelValueView.setTextAlignment(RelativeLayout.TEXT_ALIGNMENT_VIEW_END);
-            channelValueView.setText("0μV");
-            channelValueView.setTextColor(channelColors[i]);
-            channelValueView.setTextSize(13);
-            // channelValueView.setGravity(0);
-            channelValueViews[i] = channelValueView;
-            channelValueRows[i / 8].addView(channelValueView);
 
-            // Create Checkbox for displaying channel
-            CheckBox box = new CheckBox(getApplicationContext());
-            LinearLayout.LayoutParams boxLayout = new LinearLayout.LayoutParams(15, -2, 1f);
-            //boxLayout.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            //boxLayout.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            //boxLayout.weight = 1;
-            box.setLayoutParams(boxLayout);
-            box.setText(Integer.toString(i + 1));
-            box.setTextColor(channelColors[i]);
-            box.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                int channelId = Integer.parseInt(buttonView.getText().toString()) - 1;
-                if (isChecked) {
-                    enabledCheckboxes++;
-                    if (enabledCheckboxes <= 8) {
-                        channelsShown[channelId] = true;
-                    } else {
-                        Toast.makeText(
-                                getApplicationContext(),
-                                "Can't plot more than 8 channels simultaneously.",
-                                Toast.LENGTH_LONG
-                        ).show();
-                        box.setChecked(false);
-                        enabledCheckboxes--;
-                    }
-                }
-                if (!isChecked) {
-                    if (!plotting | enabledCheckboxes > 1) {
-                        enabledCheckboxes--;
-                        channelsShown[channelId] = false;
-                    } else {
-                        Toast.makeText(
-                                getApplicationContext(),
-                                "Need to plot at least one channel",
-                                Toast.LENGTH_SHORT
-                        ).show();
-                        buttonView.setChecked(true); //Check this box again
-                    }
-                }
-            });
-            checkBoxes[i] = box;
-            checkBoxRows[i / 8].addView(box);
+            channelValueViews[i] = createChannelValueView(i);
+            channelValueRows[i / 8].addView(channelValueViews[i]);
+
+            checkBoxes[i] = createPlottingCheckbox(i);
+            checkBoxRows[i / 8].addView(checkBoxes[i]);
         }
         mDataResolution = findViewById(R.id.resolution_value);
         setChart();
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+    }
+
+    private TextView createChannelValueView (int i){
+        // Create View for Channel Value
+        TextView channelValueView = new TextView(getApplicationContext());
+        LinearLayout.LayoutParams valueLayout = new LinearLayout.LayoutParams(15, -1, 1f);
+        //valueLayout.width = 6;
+        //valueLayout.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        //valueLayout.weight = 1;
+        valueLayout.topMargin = 2;
+        channelValueView.setLayoutParams(valueLayout);
+        channelValueView.setTextAlignment(RelativeLayout.TEXT_ALIGNMENT_VIEW_END);
+        channelValueView.setText("0μV");
+        channelValueView.setTextColor(channelColors[i]);
+        channelValueView.setTextSize(13);
+        // channelValueView.setGravity(0);
+        return channelValueView;
+    }
+    private CheckBox createPlottingCheckbox (int i) {
+        // Create Checkbox for displaying channel
+        CheckBox box = new CheckBox(getApplicationContext());
+        LinearLayout.LayoutParams boxLayout = new LinearLayout.LayoutParams(15, -2, 1f);
+        //boxLayout.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        //boxLayout.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        //boxLayout.weight = 1;
+        box.setLayoutParams(boxLayout);
+        box.setText(Integer.toString(i + 1));
+        box.setTextColor(channelColors[i]);
+        box.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            int channelId = Integer.parseInt(buttonView.getText().toString()) - 1;
+            if (isChecked) {
+                enabledCheckboxes++;
+                if (enabledCheckboxes <= 8) {
+                    channelsShown[channelId] = true;
+                } else {
+                    Toast.makeText(
+                            getApplicationContext(),
+                            "Can't plot more than 8 channels simultaneously.",
+                            Toast.LENGTH_LONG
+                    ).show();
+                    box.setChecked(false);
+                    enabledCheckboxes--;
+                }
+            }
+            if (!isChecked) {
+                if (!plotting | enabledCheckboxes > 1) {
+                    enabledCheckboxes--;
+                    channelsShown[channelId] = false;
+                } else {
+                    Toast.makeText(
+                            getApplicationContext(),
+                            "Need to plot at least one channel",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    buttonView.setChecked(true); //Check this box again
+                }
+            }
+        });
+        return box;
     }
 
     @Override
