@@ -378,7 +378,7 @@ public class Record extends AppCompatActivity {
         handler.postDelayed(() -> {
             configCharacteristic.setValue(configBytes);
             mBluetoothLeService.writeCharacteristic(configCharacteristic);
-            //handler.postDelayed(this::toggleNotifying, TOGGLE_DELAY);
+            //handler.postDelayed(this::, TOGGLE_DELAY);
         }, WRITECHAR_DELAY);
     }
 
@@ -1011,6 +1011,18 @@ public class Record extends AppCompatActivity {
                 channel++;
             }
         }
+
+        // include this part to make the axis symmetric (0 always visible in the middle)
+        /*if (max < min * -1) max = min * -1;
+        min = max * -1;
+        */
+
+        int range = max - min;
+        max += 0.1 * range;
+        min -= 0.1 * range;
+        YAxis leftAxis = mChart.getAxisLeft();
+        leftAxis.setAxisMaximum(max);
+        leftAxis.setAxisMinimum(min);
     }
 
     //Starts a recording session
