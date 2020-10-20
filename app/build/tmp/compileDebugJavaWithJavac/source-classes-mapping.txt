@@ -24,6 +24,7 @@ de/uni_osnabrueck/ikw/eegdroid/BluetoothLeService.java
 de/uni_osnabrueck/ikw/eegdroid/Record.java
  de.uni_osnabrueck.ikw.eegdroid.Record
  de.uni_osnabrueck.ikw.eegdroid.Record$1
+ de.uni_osnabrueck.ikw.eegdroid.Record$10
  de.uni_osnabrueck.ikw.eegdroid.Record$2
  de.uni_osnabrueck.ikw.eegdroid.Record$3
  de.uni_osnabrueck.ikw.eegdroid.Record$4
@@ -31,6 +32,7 @@ de/uni_osnabrueck/ikw/eegdroid/Record.java
  de.uni_osnabrueck.ikw.eegdroid.Record$6
  de.uni_osnabrueck.ikw.eegdroid.Record$7
  de.uni_osnabrueck.ikw.eegdroid.Record$8
+ de.uni_osnabrueck.ikw.eegdroid.Record$9
  de.uni_osnabrueck.ikw.eegdroid.Record$CastThread
 de/uni_osnabrueck/ikw/eegdroid/BuildConfig.java
  de.uni_osnabrueck.ikw.eegdroid.BuildConfig
