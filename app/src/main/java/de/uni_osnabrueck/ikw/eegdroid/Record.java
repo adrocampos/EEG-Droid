@@ -2,7 +2,6 @@ package de.uni_osnabrueck.ikw.eegdroid;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -35,7 +34,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.arch.core.internal.FastSafeIterableMap;
 import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -81,30 +79,40 @@ public class Record extends AppCompatActivity {
     private final List<Float> dp_received = new ArrayList<>();
     private final List<List<Float>> accumulated = new ArrayList<>();
     private final int MAX_VISIBLE = 1000;  // see 500ms at the time on the plot
-    private int nChannels = 24;
+    private final ArrayList<Integer> pkgIDs = new ArrayList<>();
+    private final int nChannels = 24;
     private final ArrayList<ArrayList<Entry>> lineEntryLists = new ArrayList<ArrayList<Entry>>() {
         {
-            for(int i=0; i<nChannels; i++) {
+            for (int i = 0; i < nChannels; i++) {
                 ArrayList<Entry> lineEntries = new ArrayList<>();
                 add(lineEntries);
             }
         }
     };
-    private final ArrayList<Integer> pkgIDs = new ArrayList<>();
-    private String serviceUuid = "00000ee6-0000-1000-8000-00805f9b34fb";
-    private ArrayList<BluetoothGattCharacteristic> notifyingCharacteristics = new ArrayList<>();
-    private ArrayList<String> notifyingUUIDs = new ArrayList<String>() {
+    private final String serviceUuid = "00000ee6-0000-1000-8000-00805f9b34fb";
+    private final ArrayList<BluetoothGattCharacteristic> notifyingCharacteristics = new ArrayList<>();
+    private final ArrayList<String> notifyingUUIDs = new ArrayList<String>() {
         {
             add("0000ee60-0000-1000-8000-00805f9b34fb");
             add("0000ee61-0000-1000-8000-00805f9b34fb");
             add("0000ee62-0000-1000-8000-00805f9b34fb");
         }
     };
-    private BluetoothGattCharacteristic mNotifyCharacteristic;
-    private BluetoothGattCharacteristic configCharacteristic;
-    private String configCharacteristicUuid = "0000ecc0-0000-1000-8000-00805f9b34fb";
+    private final String configCharacteristicUuid = "0000ecc0-0000-1000-8000-00805f9b34fb";
+    private final String selectedGain = "1";
+    private final byte selectedGainB = 0b00000000;
+    private final boolean generateDummy = false;
+    private final byte generateDummyB = (byte) 0b00000000;
+    private final boolean halfDummy = false;
+    private final byte halfDummyB = (byte) 0b00000000;
+    private final int[] channelColors = new int[nChannels];
+    private final boolean[] channelsShown = new boolean[nChannels];
+    private final CheckBox[] checkBoxes = new CheckBox[nChannels];
+    private final TextView[] channelValueViews = new TextView[nChannels];
     LSL.StreamInfo streamInfo;
     LSL.StreamOutlet streamOutlet = null;
+    private BluetoothGattCharacteristic mNotifyCharacteristic;
+    private BluetoothGattCharacteristic configCharacteristic;
     private TextView mConnectionState;
     private TextView viewDeviceAddress;
     private boolean mNewDevice;
@@ -131,26 +139,14 @@ public class Record extends AppCompatActivity {
             if (mBluetoothLeService != null) mBluetoothLeService = null;
         }
     };
-    private String selectedGain = "1";
-    private byte selectedGainB = 0b00000000;
-    private boolean generateDummy = false;
-    private byte generateDummyB = (byte) 0b00000000;
-    private boolean halfDummy = false;
-    private byte halfDummyB = (byte) 0b00000000;
     private int selectedScale;
     private byte selectedScaleB = 0b00000000;
-
-    private boolean recording = false;
     private boolean recording = false;
     private boolean notifying = false;
     private float res_time;
     private float res_freq;
     private int cnt = 0;
-    private int[] channelColors = new int[nChannels];
-    private boolean[] channelsShown = new boolean[nChannels];
     private int enabledCheckboxes = 0;
-    private CheckBox[] checkBoxes = new CheckBox[nChannels];
-    private TextView[] channelValueViews = new TextView[nChannels];
     private TextView mXAxis;
     private TextView mDataResolution;
     private Spinner gain_spinner;
@@ -230,10 +226,10 @@ public class Record extends AppCompatActivity {
             } else {
                 //layout_plots.setVisibility(ViewStub.VISIBLE);
                 //mXAxis.setVisibility(ViewStub.VISIBLE);
-                if(enabledCheckboxes!=0) {
+                if (enabledCheckboxes != 0) {
                     plotting = true;
                     plotting_start = System.currentTimeMillis();
-                } else{
+                } else {
                     Toast.makeText(getApplicationContext(),
                             "Need to select a Channel first",
                             Toast.LENGTH_SHORT).show();
@@ -290,8 +286,8 @@ public class Record extends AppCompatActivity {
                 enableCheckboxes(1);
                 microV = transData(Objects.requireNonNull(intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA)));
                 streamData(microV);
-                if (data_cnt%30==0) displayData(microV);
-                if (plotting & data_cnt%2==0) {
+                if (data_cnt % 30 == 0) displayData(microV);
+                if (plotting & data_cnt % 2 == 0) {
                     accumulated.add(microV);
                     long plotting_elapsed = last_data - plotting_start;
                     int ACCUM_PLOT_MS = 30;
@@ -358,6 +354,7 @@ public class Record extends AppCompatActivity {
                 }*/
                 if (configCharacteristic != null) updateConfiguration();
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 // sometimes you need nothing here
@@ -365,7 +362,7 @@ public class Record extends AppCompatActivity {
         });
     }
 
-    private void updateConfiguration(){
+    private void updateConfiguration() {
         // Declare bytearray
         byte[] configBytes = new byte[3];
 
@@ -460,10 +457,10 @@ public class Record extends AppCompatActivity {
         channelValueRows[2] = findViewById(R.id.channelValueRow3);
 
         getChannelColors(); // fills int[] channelColors with values
-        for(int i=0; i<nChannels; i++) {
+        for (int i = 0; i < nChannels; i++) {
             // Create View for Channel Value
             TextView channelValueView = new TextView(getApplicationContext());
-            LinearLayout.LayoutParams valueLayout =  new LinearLayout.LayoutParams(15,-1,1f);
+            LinearLayout.LayoutParams valueLayout = new LinearLayout.LayoutParams(15, -1, 1f);
             //valueLayout.width = 6;
             //valueLayout.height = ViewGroup.LayoutParams.MATCH_PARENT;
             //valueLayout.weight = 1;
@@ -479,7 +476,7 @@ public class Record extends AppCompatActivity {
 
             // Create Checkbox for displaying channel
             CheckBox box = new CheckBox(getApplicationContext());
-            LinearLayout.LayoutParams boxLayout = new LinearLayout.LayoutParams(15,-2,1f);
+            LinearLayout.LayoutParams boxLayout = new LinearLayout.LayoutParams(15, -2, 1f);
             //boxLayout.width = ViewGroup.LayoutParams.WRAP_CONTENT;
             //boxLayout.height = ViewGroup.LayoutParams.WRAP_CONTENT;
             //boxLayout.weight = 1;
@@ -503,7 +500,7 @@ public class Record extends AppCompatActivity {
                     }
                 }
                 if (!isChecked) {
-                    if(!plotting | enabledCheckboxes >1){
+                    if (!plotting | enabledCheckboxes > 1) {
                         enabledCheckboxes--;
                         channelsShown[channelId] = false;
                     } else {
@@ -657,7 +654,7 @@ public class Record extends AppCompatActivity {
         // Loops through available GATT Services.
         for (BluetoothGattService gattService : gattServices) {
             // If we find the right service
-            if (serviceUuid.equals( gattService.getUuid().toString() )) {
+            if (serviceUuid.equals(gattService.getUuid().toString())) {
                 gattCharacteristics = gattService.getCharacteristics();
                 for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
                     charUuid = gattCharacteristic.getUuid().toString();
@@ -666,7 +663,7 @@ public class Record extends AppCompatActivity {
                         notifyingCharacteristics.add(gattCharacteristic);
                         mBluetoothLeService.setCharacteristicNotification(gattCharacteristic, false);
                         mNotifyCharacteristic = gattCharacteristic; // store the last one here.
-                    } else if (configCharacteristicUuid.contains(charUuid)){
+                    } else if (configCharacteristicUuid.contains(charUuid)) {
                         configCharacteristic = gattCharacteristic;
                     }
                 }
@@ -675,21 +672,17 @@ public class Record extends AppCompatActivity {
         }
     }
 
-    private void prepareNotifications(){
+    private void prepareNotifications() {
         // set notifications of all notifyingCharacteristics except the one used for toggling.
-        for(BluetoothGattCharacteristic characteristic : notifyingCharacteristics){
+        for (BluetoothGattCharacteristic characteristic : notifyingCharacteristics) {
             mBluetoothLeService.setNewTraumschreiber(mNewDevice);
             // Wait until setting the previous notification was successful
-            while(mBluetoothLeService.isBusy) {
+            while (mBluetoothLeService.isBusy) {
 
                 Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    public void run() {
-                        Log.d(TAG, "Waiting for notification descriptor write to finish.");
-                    }
-                }, 300);
+                handler.postDelayed(() -> Log.d(TAG, "Waiting for notification descriptor write to finish."), 300);
             }
-            if (characteristic != mNotifyCharacteristic){
+            if (characteristic != mNotifyCharacteristic) {
                 mBluetoothLeService.setCharacteristicNotification(characteristic, true);
             }
         }
@@ -790,17 +783,17 @@ public class Record extends AppCompatActivity {
 //    }
 
     private void clearUI() {
-        for(TextView view:channelValueViews) view.setText("0μV");
+        for (TextView view : channelValueViews) view.setText("0μV");
         mDataResolution.setText(R.string.no_data);
         data_cnt = 0;
     }
 
     private void enableCheckboxes(int n) {
-        for (int i=0;i<n;i++) checkBoxes[i].setEnabled(true);
+        for (int i = 0; i < n; i++) checkBoxes[i].setEnabled(true);
     }
 
     private void disableCheckboxes() {
-        for (CheckBox box:checkBoxes) box.setEnabled(false);
+        for (CheckBox box : checkBoxes) box.setEnabled(false);
     }
 
     private List<Float> transData(int[] data) {
@@ -815,7 +808,7 @@ public class Record extends AppCompatActivity {
             float denominator = gain * precision;
             for (int datapoint : data) data_trans.add((datapoint * numerator) / denominator);
         } else {
-            for (float datapoint : data) data_trans.add(datapoint * 298 / (10^6) / gain);
+            for (float datapoint : data) data_trans.add(datapoint * 298 / (10 ^ 6) / gain);
         }
         return data_trans;
     }
@@ -823,15 +816,15 @@ public class Record extends AppCompatActivity {
     @SuppressLint("DefaultLocale")
     private void displayData(List<Float> signalMicroV) {
         if (signalMicroV != null) {
-            for(int i=0; i<24; i++){
+            for (int i = 0; i < 24; i++) {
                 String channelValueS = "";
                 float channelValueF = signalMicroV.get(i);
                 //if(signalMicroV.get(i) > 0) value += "+";
-                if(channelValueF >= 1000 | channelValueF <=-1000) {
-                    channelValueF = channelValueF/1000;
+                if (channelValueF >= 1000 | channelValueF <= -1000) {
+                    channelValueF = channelValueF / 1000;
                     channelValueS += String.format("%.2f", channelValueF);
                     channelValueS += "mV";
-                } else{
+                } else {
                     channelValueS += String.format("%.1f", channelValueF);
                     channelValueS += "μV";
                 }
@@ -913,8 +906,8 @@ public class Record extends AppCompatActivity {
         bottomAxis.setTextColor(Color.GRAY);
     }
 
-    private LineDataSet createSet(int channelId){
-        LineDataSet set = new LineDataSet(lineEntryLists.get(channelId), String.format("Ch-%d",channelId+1));
+    private LineDataSet createSet(int channelId) {
+        LineDataSet set = new LineDataSet(lineEntryLists.get(channelId), String.format("Ch-%d", channelId + 1));
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
         set.setColor(channelColors[channelId]);
         set.setDrawCircles(false);
@@ -931,13 +924,13 @@ public class Record extends AppCompatActivity {
         float DATAPOINT_TIME = 6f;
 
         /*** Loop through all "rows",each row has nChannels entries **/
-        for(int i=0;i<e_list.size();i++){
-            cnt+=2; // TODO: manage skipping every other frame in a cleaner way
+        for (int i = 0; i < e_list.size(); i++) {
+            cnt += 2; // TODO: manage skipping every other frame in a cleaner way
             x = cnt * DATAPOINT_TIME; // timestamp for x axis in ms
             List<Float> f = e_list.get(i);
 
             /***  add the entries of every shown channel.**/
-            for(int n=0; n<nChannels;n++ ) {
+            for (int n = 0; n < nChannels; n++) {
                 //the ith entryList represents the stored data of the ith channel
                 // TODO: Chec if if condition makes a difference. CUrrent: NO
                 lineEntryLists.get(n).add(new Entry(x, f.get(n)));
@@ -949,8 +942,8 @@ public class Record extends AppCompatActivity {
         final Runnable runnable = () -> {
 
             // PLOTTABLE DATASET CREATION
-            for(int i=0;i<nChannels;i++) {
-                if(channelsShown[i]){
+            for (int i = 0; i < nChannels; i++) {
+                if (channelsShown[i]) {
                     LineDataSet set = createSet(i);
                     datasets.add(set);
                 }
@@ -979,7 +972,7 @@ public class Record extends AppCompatActivity {
         // as soon as we have recorded more than PLOT_MEMO miliseconds, remove earlier entries
         // from chart.
         if (x > PLOT_MEMO) {
-            for (int j = 0; j<e_list.size(); j++) {
+            for (int j = 0; j < e_list.size(); j++) {
                 for (int i = 0; i < mChart.getData().getDataSetCount(); i++) {
                     mChart.getData().getDataSetByIndex(i).removeFirst();
                 }
@@ -1074,7 +1067,7 @@ public class Record extends AppCompatActivity {
         int rows = main_data.size();
         int cols = main_data.get(0).length;
         final StringBuilder header = new StringBuilder();
-        for(int i=1;i<cols;i++) header.append(String.format("Ch-%d,", i));
+        for (int i = 1; i < cols; i++) header.append(String.format("Ch-%d,", i));
         header.append(String.format("Ch-%d", cols));
         new Thread(() -> {
             try {
@@ -1199,7 +1192,7 @@ public class Record extends AppCompatActivity {
         }
     }
 
-    private void getChannelColors(){
+    private void getChannelColors() {
         // If you figure out a way to do this in a for loop, please feel free to make this better.
         channelColors[0] = ContextCompat.getColor(this, R.color.Ch1);
         channelColors[1] = ContextCompat.getColor(this, R.color.Ch2);
@@ -1225,7 +1218,7 @@ public class Record extends AppCompatActivity {
         channelColors[21] = ContextCompat.getColor(this, R.color.Ch22);
         channelColors[22] = ContextCompat.getColor(this, R.color.Ch23);
         channelColors[23] = ContextCompat.getColor(this, R.color.Ch24);
-    };
+    }
 
 
     class CastThread extends Thread {

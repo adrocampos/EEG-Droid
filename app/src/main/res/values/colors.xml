@@ -21,4 +21,30 @@
     <color name="grey">#AAAAAA</color>
     <color name="silver">#DDDDDD</color>
     <color name="white">#FFFFFF</color>
+
+    <color name="Ch1"> #FFB300</color>
+    <color name="Ch2"> #803E75</color>
+    <color name="Ch3"> #FF6800</color>
+    <color name="Ch4"> #A6BDD7</color>
+    <color name="Ch5"> #C10020</color>
+    <color name="Ch6"> #CEA262</color>
+    <color name="Ch7"> #817066</color>
+    <color name="Ch8"> #007D34</color>
+    <color name="Ch9"> #F6768E</color>
+    <color name="Ch10"> #00538A</color>
+    <color name="Ch11"> #FF7A5C</color>
+    <color name="Ch12"> #53377A</color>
+    <color name="Ch13"> #FF8E00</color>
+    <color name="Ch14"> #B32851</color>
+    <color name="Ch15"> #F4C800</color>
+    <color name="Ch16"> #7F180D</color>
+    <color name="Ch17"> #93AA00</color>
+    <color name="Ch18"> #593315</color>
+    <color name="Ch19"> #F13A13</color>
+    <color name="Ch20"> #232C16</color>
+    <color name="Ch21">#B10DC9</color>
+    <color name="Ch22">#111111</color>
+    <color name="Ch23">#AAAAAA</color>
+    <color name="Ch24">#DDDDDD</color>
+
 </resources>
