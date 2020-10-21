@@ -372,14 +372,8 @@ public class Record extends AppCompatActivity {
         configBytes[2] = 0b00000000;
 
 
-        // write to characteristic
-        int WRITECHAR_DELAY = 100;
-        final int TOGGLE_DELAY = 500;
-        handler.postDelayed(() -> {
-            configCharacteristic.setValue(configBytes);
-            mBluetoothLeService.writeCharacteristic(configCharacteristic);
-            //handler.postDelayed(this::, TOGGLE_DELAY);
-        }, WRITECHAR_DELAY);
+        configCharacteristic.setValue(configBytes);
+        mBluetoothLeService.writeCharacteristic(configCharacteristic);
     }
 
     private void initializeTimerTask() {
@@ -391,7 +385,8 @@ public class Record extends AppCompatActivity {
                     res_freq = data_cnt;
                     @SuppressLint("DefaultLocale") String resolution = String.format("%.2f", res_time) + "ms - ";
                     String content = resolution + hertz;
-                    mDataResolution.setText(content);
+                    if (data_cnt != 0) mDataResolution.setText(content);
+                    if (!notifying) mDataResolution.setText("No data");
                     data_cnt = 0;
                 });
             }
@@ -548,7 +543,11 @@ public class Record extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(mServiceConnection);
+        try {
+            unbindService(mServiceConnection);
+        } catch(Exception e) {
+            Log.w(TAG, e.toString());
+        }
         mBluetoothLeService = null;
     }
 
@@ -624,14 +623,20 @@ public class Record extends AppCompatActivity {
 
     private void toggleNotifying() {
         MenuItem menuItemNotify = menu.findItem(R.id.notify);
+        menuItemNotify.setEnabled(false);
         if (!notifying) {
             notifying = true;
+            mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, notifying);
             menuItemNotify.setIcon(R.drawable.ic_notifications_active_blue_24dp);
         } else {
             notifying = false;
+            mDataResolution.setText("No data");
+            mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, notifying);
             menuItemNotify.setIcon(R.drawable.ic_notifications_off_white_24dp);
         }
-        mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, notifying);
+
+        menuItemNotify.setEnabled(true);
+
     }
 
     @Override
@@ -684,17 +689,22 @@ public class Record extends AppCompatActivity {
         // set notifications of all notifyingCharacteristics except the one used for toggling.
         for (BluetoothGattCharacteristic characteristic : notifyingCharacteristics) {
             mBluetoothLeService.setNewTraumschreiber(mNewDevice);
-            // Wait until setting the previous notification was successful
-            while (mBluetoothLeService.isBusy) {
-
-                Handler handler = new Handler();
-                handler.postDelayed(() -> Log.d(TAG, "Waiting for notification descriptor write to finish."), 300);
-            }
+            waitForBluetoothCallback(mBluetoothLeService);
             if (characteristic != mNotifyCharacteristic) {
                 mBluetoothLeService.setCharacteristicNotification(characteristic, true);
             }
         }
     }
+
+    private void waitForBluetoothCallback(BluetoothLeService service){
+        while (service.isBusy) {
+            Handler handler = new Handler();
+            handler.postDelayed(() -> Log.d(TAG, "Waiting for bluetooth operation to finish."), 300);
+        }
+
+    }
+
+
 
 //    private void writeGattCharacteristic(List<BluetoothGattService> gattServices) {
 //        if (gattServices == null) return;
@@ -830,10 +840,10 @@ public class Record extends AppCompatActivity {
                 //if(signalMicroV.get(i) > 0) value += "+";
                 if (channelValueF >= 1000 | channelValueF <= -1000) {
                     channelValueF = channelValueF / 1000;
-                    channelValueS += String.format("%.2f", channelValueF);
+                    channelValueS += String.format("%.1f", channelValueF);
                     channelValueS += "mV";
                 } else {
-                    channelValueS += String.format("%.1f", channelValueF);
+                    channelValueS += String.format("%.0f", channelValueF);
                     channelValueS += "μV";
                 }
                 channelValueViews[i].setText(channelValueS);
@@ -848,7 +858,7 @@ public class Record extends AppCompatActivity {
             sample[i] = data_microV.get(i);
         }
         streamOutlet.push_sample(sample);
-        Log.d("LSL", "Sample sent!");
+        Log.v("LSL", "Sample sent!");
 //        try {
 //            streamOutlet.push_sample(sample);
 //        } catch (Exception ex) {
@@ -1300,6 +1310,5 @@ public class Record extends AppCompatActivity {
         }
 
     }
-
 
 }
