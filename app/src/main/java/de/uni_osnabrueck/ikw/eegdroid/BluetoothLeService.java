@@ -117,6 +117,7 @@ public class BluetoothLeService extends Service {
                                           BluetoothGattCharacteristic characteristic,
                                           int status) {
             Log.d(TAG, "------------- onCharacteristicWrite status: " + status);
+            isBusy = false;
         }
 
         @Override
@@ -295,6 +296,7 @@ public class BluetoothLeService extends Service {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
+        isBusy = true;
         Log.w(TAG, characteristic.toString());
         mBluetoothGatt.writeCharacteristic(characteristic);
     }
