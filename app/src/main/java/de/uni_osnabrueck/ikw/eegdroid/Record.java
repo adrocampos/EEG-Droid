@@ -90,7 +90,6 @@ public class Record extends AppCompatActivity {
         }
     };
     private final String serviceUuid = "00000ee6-0000-1000-8000-00805f9b34fb";
-    private final ArrayList<BluetoothGattCharacteristic> notifyingCharacteristics = new ArrayList<>();
     private final ArrayList<String> notifyingUUIDs = new ArrayList<String>() {
         {
             add("0000ee60-0000-1000-8000-00805f9b34fb");
@@ -99,20 +98,23 @@ public class Record extends AppCompatActivity {
         }
     };
     private final String configCharacteristicUuid = "0000ecc0-0000-1000-8000-00805f9b34fb";
-    private final String selectedGain = "1";
-    private final byte selectedGainB = 0b00000000;
-    private final boolean generateDummy = false;
-    private final byte generateDummyB = (byte) 0b00000000;
-    private final boolean halfDummy = false;
-    private final byte halfDummyB = (byte) 0b00000000;
+    private final String codeCharacteristicUuid = "0000c0de-0000-1000-8000-00805f9b34fb";
+    private final ArrayList<BluetoothGattCharacteristic> notifyingCharacteristics = new ArrayList<>();
+    private BluetoothGattCharacteristic configCharacteristic;
+    private BluetoothGattCharacteristic codeCharacteristic;
+    private BluetoothGattCharacteristic mNotifyCharacteristic;
+    private String selectedGain = "1";
+    private byte selectedGainB = 0b00000000;
+    private boolean generateDummy = false;
+    private byte generateDummyB = (byte) 0b00000000;
+    private boolean halfDummy = false;
+    private byte halfDummyB = (byte) 0b00000000;
     private final int[] channelColors = new int[nChannels];
     private final boolean[] channelsShown = new boolean[nChannels];
     private final CheckBox[] checkBoxes = new CheckBox[nChannels];
     private final TextView[] channelValueViews = new TextView[nChannels];
     LSL.StreamInfo streamInfo;
     LSL.StreamOutlet streamOutlet = null;
-    private BluetoothGattCharacteristic mNotifyCharacteristic;
-    private BluetoothGattCharacteristic configCharacteristic;
     private TextView mConnectionState;
     private TextView viewDeviceAddress;
     private boolean mNewDevice;
@@ -286,6 +288,8 @@ public class Record extends AppCompatActivity {
                 enableCheckboxes(1);
                 microV = transData(Objects.requireNonNull(intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA)));
                 streamData(microV);
+                //if (data_cnt==1) Toast.makeText(getApplicationContext(), "Callibrating offset..", Toast.LENGTH_LONG);
+                //if (data_cnt==1000) Toast.makeText(getApplicationContext(), "Callibrated offset", Toast.LENGTH_LONG);
                 if (data_cnt % 30 == 0) displayData(microV);
                 if (plotting & data_cnt % 2 == 0) {
                     accumulated.add(microV);
@@ -332,9 +336,16 @@ public class Record extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 int parsed = Integer.parseInt(gain_spinner.getSelectedItem().toString());
-                selectedScaleB = (byte) (parsed << 4);
-                Log.i(TAG, "SELECTED SCALE: " + Integer.toString(selectedScaleB));
-                TraumschreiberService.setSignalScaling(parsed);
+                    switch(parsed) {
+                        case 1:
+                            generateDummy = false;
+                            generateDummyB = (byte) 0;
+                            break;
+                        case 2:
+                            generateDummy = true;
+                            generateDummyB = (byte) 0b00110000;
+
+                    }
                 /*switch (position) {
                     case 1:
                         selectedGain = "2";
@@ -368,7 +379,7 @@ public class Record extends AppCompatActivity {
 
         // Concatenate binary strings
         configBytes[0] = (byte) (selectedGainB | generateDummyB | halfDummyB);
-        configBytes[1] = selectedScaleB;
+        //configBytes[1] = selectedScaleB;
         configBytes[2] = 0b00000000;
 
 
@@ -624,6 +635,7 @@ public class Record extends AppCompatActivity {
     private void toggleNotifying() {
         MenuItem menuItemNotify = menu.findItem(R.id.notify);
         menuItemNotify.setEnabled(false);
+        waitForBluetoothCallback(mBluetoothLeService);
         if (!notifying) {
             notifying = true;
             mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, notifying);
@@ -675,20 +687,25 @@ public class Record extends AppCompatActivity {
                     if (notifyingUUIDs.contains(charUuid)) {
                         notifyingCharacteristics.add(gattCharacteristic);
                         mBluetoothLeService.setCharacteristicNotification(gattCharacteristic, false);
-                        mNotifyCharacteristic = gattCharacteristic; // store the last one here.
+                        mNotifyCharacteristic = gattCharacteristic; // Store the last one here for toggling
                     } else if (configCharacteristicUuid.contains(charUuid)) {
                         configCharacteristic = gattCharacteristic;
+                    } else if (codeCharacteristicUuid.contains(charUuid)) {
+                        codeCharacteristic = gattCharacteristic;
                     }
                 }
                 prepareNotifications();
+                waitForBluetoothCallback(mBluetoothLeService);
+                mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
             }
         }
     }
 
     private void prepareNotifications() {
         // set notifications of all notifyingCharacteristics except the one used for toggling.
+        mBluetoothLeService.setNewTraumschreiber(mNewDevice);
+
         for (BluetoothGattCharacteristic characteristic : notifyingCharacteristics) {
-            mBluetoothLeService.setNewTraumschreiber(mNewDevice);
             waitForBluetoothCallback(mBluetoothLeService);
             if (characteristic != mNotifyCharacteristic) {
                 mBluetoothLeService.setCharacteristicNotification(characteristic, true);
@@ -703,102 +720,6 @@ public class Record extends AppCompatActivity {
         }
 
     }
-
-
-
-//    private void writeGattCharacteristic(List<BluetoothGattService> gattServices) {
-//        if (gattServices == null) return;
-//        UUID serviceUuid = mNewDevice ? TraumschreiberService.WRITE_SERVICE_UUID_NEW : TraumschreiberService.WRITE_SERVICE_UUID_OLD;
-//        UUID charUuid = mNewDevice ? TraumschreiberService.WRITE_CHAR_UUID_NEW : TraumschreiberService.WRITE_CHAR_UUID_OLD;
-//        BluetoothGattService gattService = mBluetoothLeService.mBluetoothGatt.getService(serviceUuid);
-//        BluetoothGattCharacteristic gattChar = gattService.getCharacteristic(charUuid);
-//        toggleNotifying();
-//
-//        final int charaProp = gattChar.getProperties();
-//        if (((charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE) |
-//                (charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) > 0) {
-//            /*  gains:\
-//                old -> {0.5:0b111, 1:0b000, 2:0b001, 4:0b010, 8:0b011, 16:0b100, 32:0b101, 64:0b110}
-//                new -> {1:0b00, 2:0b01, 4:0b10, 8:0b11}
-//             */
-//            final byte[] newValue;
-//            if (!mNewDevice) {
-//                newValue = new byte[6];
-//                switch (selectedGain) {
-//                    case "0.5":
-//                        newValue[4] = 0b111;
-//                        break;
-//                    case "1":
-//                        newValue[4] = 0b000;
-//                        break;
-//                    case "2":
-//                        newValue[4] = 0b001;
-//                        break;
-//                    case "4":
-//                        newValue[4] = 0b010;
-//                        break;
-//                    case "8":
-//                        newValue[4] = 0b011;
-//                        break;
-//                    case "16":
-//                        newValue[4] = 0b100;
-//                        break;
-//                    case "32":
-//                        newValue[4] = 0b101;
-//                        break;
-//                    case "64":
-//                        newValue[4] = 0b110;
-//                        break;
-//                }
-//            } else {
-//                newValue = new byte[1];
-//                // set bits 3 and 4 to 1 for real + dummy data: 0b00xx0000 -> x to 1
-//                // set only bit 3 to 1 for dummy data only:     0b00x00000 -> x to 1
-//                switch (selectedGain) {
-//                    case "1":
-//                        newValue[0] = (byte) 0b00000000;
-//                        break;
-//                    case "2":
-//                        newValue[0] = (byte) 0b01000000;
-//                        break;
-//                    case "4":
-//                        newValue[0] = (byte) 0b10000000;
-//                        break;
-//                    case "8":
-//                        newValue[0] = (byte) 0b11000000;
-//                        break;
-//                }
-//            }
-//            int WRITECHAR_DELAY = 500;
-//            final int TOGGLE_DELAY = 500;
-//            handler.postDelayed(() -> {
-//                gattChar.setValue(newValue);
-//                mBluetoothLeService.writeCharacteristic(gattChar);
-//                handler.postDelayed(this::toggleNotifying, TOGGLE_DELAY);
-//            }, WRITECHAR_DELAY);
-//        }
-//    }
-
-//    private void readGattCharacteristic(List<BluetoothGattService> gattServices) {
-//        if (gattServices == null) return;
-//        UUID serviceUuid = mNewDevice ? TraumschreiberService.READ_SERVICE_UUID_NEW : TraumschreiberService.READ_SERVICE_UUID_OLD;
-//        UUID charUuid = mNewDevice ? TraumschreiberService.READ_CHAR_UUID_NEW : TraumschreiberService.READ_CHAR_UUID_OLD;
-//        BluetoothGattService gattService = mBluetoothLeService.mBluetoothGatt.getService(serviceUuid);
-//        BluetoothGattCharacteristic gattChar = gattService.getCharacteristic(charUuid);
-//        final int charaProp = gattChar.getProperties();
-//        if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
-//            if (mNotifyCharacteristic != null) {
-//                mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, false);
-//                mNotifyCharacteristic = null;
-//            }
-//            mNotifyCharacteristic = gattChar;
-//            // hack for reconnection and in case of notification set to true
-//            mBluetoothLeService.setCharacteristicNotification(gattChar, false);
-//            // normal setCharNotification call
-//            mBluetoothLeService.setCharacteristicNotification(gattChar, notifying);
-//            if (notifying) mBluetoothLeService.readCharacteristic(gattChar, mNewDevice);
-//        }
-//    }
 
     private void clearUI() {
         for (TextView view : channelValueViews) view.setText("0μV");
