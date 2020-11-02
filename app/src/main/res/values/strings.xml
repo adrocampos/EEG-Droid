@@ -229,9 +229,9 @@
     <string name="separator">,</string>
     <string name="version">Version:</string>
 
-    <string name="intro">Welcome to the EEGDroid App. The goal of this App is allow you to record, plot, storage and manage EEG brain signals. With this App you are able to:</string>
-    <string name="outro">Please select one of the options or open the side menu</string>
-    <string name="bugs">Did you found a bug? Please report it to: rrojascampos@uos.de</string>
+    <string name="intro"> </string>
+    <string name="outro"> </string>
+    <string name="bugs"> </string>
 
     <string name="activity_name_recordEEG">Record</string>
     <string name="activity_name_play">Play</string>

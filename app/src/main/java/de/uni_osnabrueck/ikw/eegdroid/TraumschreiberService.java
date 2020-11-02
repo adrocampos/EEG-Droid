@@ -2,6 +2,8 @@ package de.uni_osnabrueck.ikw.eegdroid;
 
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 
 
@@ -17,13 +19,24 @@ public class TraumschreiberService {
     public final static UUID WRITE_SERVICE_UUID_NEW = UUID.fromString("00000ee6-0000-1000-8000-00805f9b34fb");
     public final static UUID WRITE_CHAR_UUID_OLD = UUID.fromString("fcbea85a-4d87-18a2-2141-0d8d2437c0a4");
     public final static UUID WRITE_CHAR_UUID_NEW = UUID.fromString("0000ecc0-0000-1000-8000-00805f9b34fb");
+    private final ArrayList<String> notifyingUUIDs = new ArrayList<String>() {
+        {
+            add("0000ee60-0000-1000-8000-00805f9b34fb");
+            add("0000ee61-0000-1000-8000-00805f9b34fb");
+            add("0000ee62-0000-1000-8000-00805f9b34fb");
+        }
+    };
+    private final String configCharacteristicUuid = "0000ecc0-0000-1000-8000-00805f9b34fb";
+    private final String codeCharacteristicUuid = "0000c0de-0000-1000-8000-00805f9b34fb";
     private final static String TAG = "TraumschreiberService";
-    private static int signalBitShift = 6;
     private static final int signalScale = 298 / 1000000;
     public String mTraumschreiberDeviceAddress;
     private final byte[] dpcmBuffer = new byte[30];
     private final byte[] dpcmBuffer2 = new byte[30];
     private final int[] decodedSignal = new int[24];
+    private static int[] signalBitShift = new int[24];
+    private static int[] signalOffset = new int[24];
+    private int pkgCount;
     private boolean characteristic0Ready = false;
 
 
@@ -44,16 +57,16 @@ public class TraumschreiberService {
         return bluetoothDeviceName.startsWith("T");
     }
 
-    public static void setSignalScaling(int newShift) {
+    public static void setSignalScaling(int[] newShift) {
         signalBitShift = newShift;
     }
 
     /***
-     * decompress takes a bytearray data_bytes and converts it to integers, according to the way the Traumschreiber transmits the data via bluetooth
-     * @param data_bytes
+     * decompress takes a bytearray dataBytes and converts it to integers, according to the way the Traumschreiber transmits the data via bluetooth
+     * @param dataBytes
      * @return int[] data_ints of the datapoint values as integers
      */
-    public int[] decompress(byte[] data_bytes, boolean newModel, int characteristicNumber) {
+    public int[] decompress(byte[] dataBytes, boolean newModel, String characteristicId) {
 
         boolean dpcmEncoded = true;
         int[] data_ints;
@@ -61,12 +74,12 @@ public class TraumschreiberService {
         int bLen = newModel ? 3 : 2; // bytes needed to encode 1 int (old encodings)
         // ____OLD TRAUMSCHREIBER ____
         if (!newModel) {
-            data_ints = new int[data_bytes.length / bLen];
-            Log.d("Decompressing", "decompress: " + String.format("%02X %02X ", data_bytes[0], data_bytes[1]));
+            data_ints = new int[dataBytes.length / bLen];
+            Log.d("Decompressing", "decompress: " + String.format("%02X %02X ", dataBytes[0], dataBytes[1]));
             //https://stackoverflow.com/questions/9581530/converting-from-byte-to-int-in-java
             //Example: rno[0]&0x000000ff)<<24|(rno[1]&0x000000ff)<<16|
-            for (int ch = 0; ch < data_bytes.length / bLen; ch++) {
-                new_int = (data_bytes[ch * bLen + 1]) << 8 | (data_bytes[ch * bLen]) & 0xff;
+            for (int ch = 0; ch < dataBytes.length / bLen; ch++) {
+                new_int = (dataBytes[ch * bLen + 1]) << 8 | (dataBytes[ch * bLen]) & 0xff;
                 //new_int = new_int << 8;
                 data_ints[ch] = new_int;
             }
@@ -74,42 +87,50 @@ public class TraumschreiberService {
             // ____NEW TRAUMSCHREIBER____
         } else if (!dpcmEncoded) {
             // Process Header
-            int header = data_bytes[0] & 0xff; // Unsigned Byte
+            int header = dataBytes[0] & 0xff; // Unsigned Byte
             int pkg_id = header / 16; // 1. Nibble
             int pkgs_lost = header % 16; // 2. Nibble
 
             //Log.v(TAG, String.format("ID: %02d  Lost pkgs: %02d",pkg_id, pkgs_lost));
 
             // Prepare Data Array
-            data_ints = new int[data_bytes.length / bLen + 2];   // +2: 1 for pkg id, 1 for lost pkg count
+            data_ints = new int[dataBytes.length / bLen + 2];   // +2: 1 for pkg id, 1 for lost pkg count
             data_ints[0] = pkg_id;
             data_ints[data_ints.length - 1] = pkgs_lost;
 
             // Decode
-            /* value of channel n is encoded by 3 bytes placed at positions 3n+1, 3n+2 and 3n+3 in data_bytes*/
-            for (int ch = 0; ch < data_bytes.length / bLen; ch++) {
-                new_int = (data_bytes[ch * bLen + 1]) << 16 | (data_bytes[ch * bLen + 2] & 0xff) << 8 | (data_bytes[ch * bLen + 3] & 0xff);
+            /* value of channel n is encoded by 3 bytes placed at positions 3n+1, 3n+2 and 3n+3 in dataBytes*/
+            for (int ch = 0; ch < dataBytes.length / bLen; ch++) {
+                new_int = (dataBytes[ch * bLen + 1]) << 16 | (dataBytes[ch * bLen + 2] & 0xff) << 8 | (dataBytes[ch * bLen + 3] & 0xff);
                 data_ints[ch + 1] = new_int;
             }
 
             // ____ DPCM DECODING ____
         } else {
-            if (characteristicNumber == 0) {
-                System.arraycopy(data_bytes, 0, dpcmBuffer, 0, 20);
+            if (characteristicId.equals("0")) {
+                System.arraycopy(dataBytes, 0, dpcmBuffer, 0, 20);
                 characteristic0Ready = true;
                 data_ints = null;
                 return data_ints;
 
-            } else if (characteristic0Ready && characteristicNumber == 1) {
-                System.arraycopy(data_bytes, 0, dpcmBuffer, 20, 10);
-                System.arraycopy(data_bytes, 10, dpcmBuffer2, 0, 10);
+            } else if (characteristic0Ready && characteristicId.equals("1")) {
+                System.arraycopy(dataBytes, 0, dpcmBuffer, 20, 10);
+                System.arraycopy(dataBytes, 10, dpcmBuffer2, 0, 10);
                 data_ints = decodeDpcm(dpcmBuffer);
 
-            } else if (characteristic0Ready && characteristicNumber == 2) {
-                System.arraycopy(data_bytes, 0, dpcmBuffer2, 10, 20);
+            } else if (characteristic0Ready && characteristicId.equals("2")) {
+                System.arraycopy(dataBytes, 0, dpcmBuffer2, 10, 20);
                 data_ints = decodeDpcm(dpcmBuffer2);
                 characteristic0Ready = false;
 
+            } else if (characteristicId.equals("e")){
+                for(int i = 0; i < 12; i++){
+                    signalBitShift[i*2] = (dataBytes[i]>>4) & 0xf;
+                    signalBitShift[i*2+1] = dataBytes[i] & 0xf;
+                }
+                Log.d(TAG, "RECEIVED FROM C0DE Characteritistic!" + Arrays.toString(signalBitShift));
+                data_ints = null;
+                return data_ints;
             } else {
                 data_ints = null;
                 return data_ints;
@@ -131,9 +152,12 @@ public class TraumschreiberService {
         //Log.v(TAG, "Decoded Delta: " + Arrays.toString(data));
 
         for (int i = 0; i < delta.length; i++) {
-            decodedSignal[i] += delta[i] << signalBitShift;
+            decodedSignal[i] += delta[i] << signalBitShift[i];
+            //if (pkgCount < 1000) signalOffset[i] += 0.001 * decodedSignal[i]; //Average over first 1000 pkgs
+            //if (pkgCount == 1000) decodedSignal[i] -= signalOffset[i];
         }
 
+        //pkgCount++;
         return decodedSignal;
     }
 

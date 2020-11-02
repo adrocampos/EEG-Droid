@@ -90,7 +90,6 @@ public class Record extends AppCompatActivity {
         }
     };
     private final String serviceUuid = "00000ee6-0000-1000-8000-00805f9b34fb";
-    private final ArrayList<BluetoothGattCharacteristic> notifyingCharacteristics = new ArrayList<>();
     private final ArrayList<String> notifyingUUIDs = new ArrayList<String>() {
         {
             add("0000ee60-0000-1000-8000-00805f9b34fb");
@@ -99,20 +98,23 @@ public class Record extends AppCompatActivity {
         }
     };
     private final String configCharacteristicUuid = "0000ecc0-0000-1000-8000-00805f9b34fb";
-    private final String selectedGain = "1";
-    private final byte selectedGainB = 0b00000000;
-    private final boolean generateDummy = false;
-    private final byte generateDummyB = (byte) 0b00000000;
-    private final boolean halfDummy = false;
-    private final byte halfDummyB = (byte) 0b00000000;
+    private final String codeCharacteristicUuid = "0000c0de-0000-1000-8000-00805f9b34fb";
+    private final ArrayList<BluetoothGattCharacteristic> notifyingCharacteristics = new ArrayList<>();
+    private BluetoothGattCharacteristic configCharacteristic;
+    private BluetoothGattCharacteristic codeCharacteristic;
+    private BluetoothGattCharacteristic mNotifyCharacteristic;
+    private String selectedGain = "1";
+    private byte selectedGainB = 0b00000000;
+    private boolean generateDummy = false;
+    private byte generateDummyB = (byte) 0b00000000;
+    private boolean halfDummy = false;
+    private byte halfDummyB = (byte) 0b00000000;
     private final int[] channelColors = new int[nChannels];
     private final boolean[] channelsShown = new boolean[nChannels];
     private final CheckBox[] checkBoxes = new CheckBox[nChannels];
     private final TextView[] channelValueViews = new TextView[nChannels];
     LSL.StreamInfo streamInfo;
     LSL.StreamOutlet streamOutlet = null;
-    private BluetoothGattCharacteristic mNotifyCharacteristic;
-    private BluetoothGattCharacteristic configCharacteristic;
     private TextView mConnectionState;
     private TextView viewDeviceAddress;
     private boolean mNewDevice;
@@ -154,7 +156,7 @@ public class Record extends AppCompatActivity {
     private ImageButton imageButtonRecord;
     private ImageButton imageButtonSave;
     private ImageButton imageButtonDiscard;
-    private Switch switch_plots;
+    private androidx.appcompat.widget.SwitchCompat switch_plots;
     private View layout_plots;
     private boolean plotting = false;
     private List<float[]> main_data;
@@ -286,6 +288,8 @@ public class Record extends AppCompatActivity {
                 enableCheckboxes(1);
                 microV = transData(Objects.requireNonNull(intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA)));
                 streamData(microV);
+                //if (data_cnt==1) Toast.makeText(getApplicationContext(), "Callibrating offset..", Toast.LENGTH_LONG);
+                //if (data_cnt==1000) Toast.makeText(getApplicationContext(), "Callibrated offset", Toast.LENGTH_LONG);
                 if (data_cnt % 30 == 0) displayData(microV);
                 if (plotting & data_cnt % 2 == 0) {
                     accumulated.add(microV);
@@ -332,9 +336,16 @@ public class Record extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 int parsed = Integer.parseInt(gain_spinner.getSelectedItem().toString());
-                selectedScaleB = (byte) (parsed << 4);
-                Log.i(TAG, "SELECTED SCALE: " + Integer.toString(selectedScaleB));
-                TraumschreiberService.setSignalScaling(parsed);
+                    switch(parsed) {
+                        case 1:
+                            generateDummy = false;
+                            generateDummyB = (byte) 0;
+                            break;
+                        case 2:
+                            generateDummy = true;
+                            generateDummyB = (byte) 0b00110000;
+
+                    }
                 /*switch (position) {
                     case 1:
                         selectedGain = "2";
@@ -368,18 +379,12 @@ public class Record extends AppCompatActivity {
 
         // Concatenate binary strings
         configBytes[0] = (byte) (selectedGainB | generateDummyB | halfDummyB);
-        configBytes[1] = selectedScaleB;
+        //configBytes[1] = selectedScaleB;
         configBytes[2] = 0b00000000;
 
 
-        // write to characteristic
-        int WRITECHAR_DELAY = 100;
-        final int TOGGLE_DELAY = 500;
-        handler.postDelayed(() -> {
-            configCharacteristic.setValue(configBytes);
-            mBluetoothLeService.writeCharacteristic(configCharacteristic);
-            //handler.postDelayed(this::, TOGGLE_DELAY);
-        }, WRITECHAR_DELAY);
+        configCharacteristic.setValue(configBytes);
+        mBluetoothLeService.writeCharacteristic(configCharacteristic);
     }
 
     private void initializeTimerTask() {
@@ -391,7 +396,8 @@ public class Record extends AppCompatActivity {
                     res_freq = data_cnt;
                     @SuppressLint("DefaultLocale") String resolution = String.format("%.2f", res_time) + "ms - ";
                     String content = resolution + hertz;
-                    mDataResolution.setText(content);
+                    if (data_cnt != 0) mDataResolution.setText(content);
+                    if (!notifying) mDataResolution.setText("No data");
                     data_cnt = 0;
                 });
             }
@@ -458,67 +464,75 @@ public class Record extends AppCompatActivity {
 
         getChannelColors(); // fills int[] channelColors with values
         for (int i = 0; i < nChannels; i++) {
-            // Create View for Channel Value
-            TextView channelValueView = new TextView(getApplicationContext());
-            LinearLayout.LayoutParams valueLayout = new LinearLayout.LayoutParams(15, -1, 1f);
-            //valueLayout.width = 6;
-            //valueLayout.height = ViewGroup.LayoutParams.MATCH_PARENT;
-            //valueLayout.weight = 1;
-            valueLayout.topMargin = 2;
-            channelValueView.setLayoutParams(valueLayout);
-            channelValueView.setTextAlignment(RelativeLayout.TEXT_ALIGNMENT_VIEW_END);
-            channelValueView.setText("0μV");
-            channelValueView.setTextColor(channelColors[i]);
-            channelValueView.setTextSize(13);
-            // channelValueView.setGravity(0);
-            channelValueViews[i] = channelValueView;
-            channelValueRows[i / 8].addView(channelValueView);
 
-            // Create Checkbox for displaying channel
-            CheckBox box = new CheckBox(getApplicationContext());
-            LinearLayout.LayoutParams boxLayout = new LinearLayout.LayoutParams(15, -2, 1f);
-            //boxLayout.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            //boxLayout.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            //boxLayout.weight = 1;
-            box.setLayoutParams(boxLayout);
-            box.setText(Integer.toString(i + 1));
-            box.setTextColor(channelColors[i]);
-            box.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                int channelId = Integer.parseInt(buttonView.getText().toString()) - 1;
-                if (isChecked) {
-                    enabledCheckboxes++;
-                    if (enabledCheckboxes <= 8) {
-                        channelsShown[channelId] = true;
-                    } else {
-                        Toast.makeText(
-                                getApplicationContext(),
-                                "Can't plot more than 8 channels simultaneously.",
-                                Toast.LENGTH_LONG
-                        ).show();
-                        box.setChecked(false);
-                        enabledCheckboxes--;
-                    }
-                }
-                if (!isChecked) {
-                    if (!plotting | enabledCheckboxes > 1) {
-                        enabledCheckboxes--;
-                        channelsShown[channelId] = false;
-                    } else {
-                        Toast.makeText(
-                                getApplicationContext(),
-                                "Need to plot at least one channel",
-                                Toast.LENGTH_SHORT
-                        ).show();
-                        buttonView.setChecked(true); //Check this box again
-                    }
-                }
-            });
-            checkBoxes[i] = box;
-            checkBoxRows[i / 8].addView(box);
+            channelValueViews[i] = createChannelValueView(i);
+            channelValueRows[i / 8].addView(channelValueViews[i]);
+
+            checkBoxes[i] = createPlottingCheckbox(i);
+            checkBoxRows[i / 8].addView(checkBoxes[i]);
         }
         mDataResolution = findViewById(R.id.resolution_value);
         setChart();
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+    }
+
+    private TextView createChannelValueView (int i){
+        // Create View for Channel Value
+        TextView channelValueView = new TextView(getApplicationContext());
+        LinearLayout.LayoutParams valueLayout = new LinearLayout.LayoutParams(15, -1, 1f);
+        //valueLayout.width = 6;
+        //valueLayout.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        //valueLayout.weight = 1;
+        valueLayout.topMargin = 2;
+        channelValueView.setLayoutParams(valueLayout);
+        channelValueView.setTextAlignment(RelativeLayout.TEXT_ALIGNMENT_VIEW_END);
+        channelValueView.setText("0μV");
+        channelValueView.setTextColor(channelColors[i]);
+        channelValueView.setTextSize(13);
+        // channelValueView.setGravity(0);
+        return channelValueView;
+    }
+    private CheckBox createPlottingCheckbox (int i) {
+        // Create Checkbox for displaying channel
+        CheckBox box = new CheckBox(getApplicationContext());
+        LinearLayout.LayoutParams boxLayout = new LinearLayout.LayoutParams(15, -2, 1f);
+        //boxLayout.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        //boxLayout.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        //boxLayout.weight = 1;
+        box.setLayoutParams(boxLayout);
+        box.setText(Integer.toString(i + 1));
+        box.setTextColor(channelColors[i]);
+        box.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            int channelId = Integer.parseInt(buttonView.getText().toString()) - 1;
+            if (isChecked) {
+                enabledCheckboxes++;
+                if (enabledCheckboxes <= 8) {
+                    channelsShown[channelId] = true;
+                } else {
+                    Toast.makeText(
+                            getApplicationContext(),
+                            "Can't plot more than 8 channels simultaneously.",
+                            Toast.LENGTH_LONG
+                    ).show();
+                    box.setChecked(false);
+                    enabledCheckboxes--;
+                }
+            }
+            if (!isChecked) {
+                if (!plotting | enabledCheckboxes > 1) {
+                    enabledCheckboxes--;
+                    channelsShown[channelId] = false;
+                } else {
+                    Toast.makeText(
+                            getApplicationContext(),
+                            "Need to plot at least one channel",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    buttonView.setChecked(true); //Check this box again
+                }
+            }
+        });
+        return box;
     }
 
     @Override
@@ -540,7 +554,11 @@ public class Record extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(mServiceConnection);
+        try {
+            unbindService(mServiceConnection);
+        } catch(Exception e) {
+            Log.w(TAG, e.toString());
+        }
         mBluetoothLeService = null;
     }
 
@@ -616,14 +634,21 @@ public class Record extends AppCompatActivity {
 
     private void toggleNotifying() {
         MenuItem menuItemNotify = menu.findItem(R.id.notify);
+        menuItemNotify.setEnabled(false);
+        waitForBluetoothCallback(mBluetoothLeService);
         if (!notifying) {
             notifying = true;
+            mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, notifying);
             menuItemNotify.setIcon(R.drawable.ic_notifications_active_blue_24dp);
         } else {
             notifying = false;
+            mDataResolution.setText("No data");
+            mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, notifying);
             menuItemNotify.setIcon(R.drawable.ic_notifications_off_white_24dp);
         }
-        mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, notifying);
+
+        menuItemNotify.setEnabled(true);
+
     }
 
     @Override
@@ -662,125 +687,39 @@ public class Record extends AppCompatActivity {
                     if (notifyingUUIDs.contains(charUuid)) {
                         notifyingCharacteristics.add(gattCharacteristic);
                         mBluetoothLeService.setCharacteristicNotification(gattCharacteristic, false);
-                        mNotifyCharacteristic = gattCharacteristic; // store the last one here.
+                        mNotifyCharacteristic = gattCharacteristic; // Store the last one here for toggling
                     } else if (configCharacteristicUuid.contains(charUuid)) {
                         configCharacteristic = gattCharacteristic;
+                    } else if (codeCharacteristicUuid.contains(charUuid)) {
+                        codeCharacteristic = gattCharacteristic;
                     }
                 }
                 prepareNotifications();
+                waitForBluetoothCallback(mBluetoothLeService);
+                mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
             }
         }
     }
 
     private void prepareNotifications() {
         // set notifications of all notifyingCharacteristics except the one used for toggling.
-        for (BluetoothGattCharacteristic characteristic : notifyingCharacteristics) {
-            mBluetoothLeService.setNewTraumschreiber(mNewDevice);
-            // Wait until setting the previous notification was successful
-            while (mBluetoothLeService.isBusy) {
+        mBluetoothLeService.setNewTraumschreiber(mNewDevice);
 
-                Handler handler = new Handler();
-                handler.postDelayed(() -> Log.d(TAG, "Waiting for notification descriptor write to finish."), 300);
-            }
+        for (BluetoothGattCharacteristic characteristic : notifyingCharacteristics) {
+            waitForBluetoothCallback(mBluetoothLeService);
             if (characteristic != mNotifyCharacteristic) {
                 mBluetoothLeService.setCharacteristicNotification(characteristic, true);
             }
         }
     }
 
-//    private void writeGattCharacteristic(List<BluetoothGattService> gattServices) {
-//        if (gattServices == null) return;
-//        UUID serviceUuid = mNewDevice ? TraumschreiberService.WRITE_SERVICE_UUID_NEW : TraumschreiberService.WRITE_SERVICE_UUID_OLD;
-//        UUID charUuid = mNewDevice ? TraumschreiberService.WRITE_CHAR_UUID_NEW : TraumschreiberService.WRITE_CHAR_UUID_OLD;
-//        BluetoothGattService gattService = mBluetoothLeService.mBluetoothGatt.getService(serviceUuid);
-//        BluetoothGattCharacteristic gattChar = gattService.getCharacteristic(charUuid);
-//        toggleNotifying();
-//
-//        final int charaProp = gattChar.getProperties();
-//        if (((charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE) |
-//                (charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) > 0) {
-//            /*  gains:\
-//                old -> {0.5:0b111, 1:0b000, 2:0b001, 4:0b010, 8:0b011, 16:0b100, 32:0b101, 64:0b110}
-//                new -> {1:0b00, 2:0b01, 4:0b10, 8:0b11}
-//             */
-//            final byte[] newValue;
-//            if (!mNewDevice) {
-//                newValue = new byte[6];
-//                switch (selectedGain) {
-//                    case "0.5":
-//                        newValue[4] = 0b111;
-//                        break;
-//                    case "1":
-//                        newValue[4] = 0b000;
-//                        break;
-//                    case "2":
-//                        newValue[4] = 0b001;
-//                        break;
-//                    case "4":
-//                        newValue[4] = 0b010;
-//                        break;
-//                    case "8":
-//                        newValue[4] = 0b011;
-//                        break;
-//                    case "16":
-//                        newValue[4] = 0b100;
-//                        break;
-//                    case "32":
-//                        newValue[4] = 0b101;
-//                        break;
-//                    case "64":
-//                        newValue[4] = 0b110;
-//                        break;
-//                }
-//            } else {
-//                newValue = new byte[1];
-//                // set bits 3 and 4 to 1 for real + dummy data: 0b00xx0000 -> x to 1
-//                // set only bit 3 to 1 for dummy data only:     0b00x00000 -> x to 1
-//                switch (selectedGain) {
-//                    case "1":
-//                        newValue[0] = (byte) 0b00000000;
-//                        break;
-//                    case "2":
-//                        newValue[0] = (byte) 0b01000000;
-//                        break;
-//                    case "4":
-//                        newValue[0] = (byte) 0b10000000;
-//                        break;
-//                    case "8":
-//                        newValue[0] = (byte) 0b11000000;
-//                        break;
-//                }
-//            }
-//            int WRITECHAR_DELAY = 500;
-//            final int TOGGLE_DELAY = 500;
-//            handler.postDelayed(() -> {
-//                gattChar.setValue(newValue);
-//                mBluetoothLeService.writeCharacteristic(gattChar);
-//                handler.postDelayed(this::toggleNotifying, TOGGLE_DELAY);
-//            }, WRITECHAR_DELAY);
-//        }
-//    }
+    private void waitForBluetoothCallback(BluetoothLeService service){
+        while (service.isBusy) {
+            Handler handler = new Handler();
+            handler.postDelayed(() -> Log.d(TAG, "Waiting for bluetooth operation to finish."), 300);
+        }
 
-//    private void readGattCharacteristic(List<BluetoothGattService> gattServices) {
-//        if (gattServices == null) return;
-//        UUID serviceUuid = mNewDevice ? TraumschreiberService.READ_SERVICE_UUID_NEW : TraumschreiberService.READ_SERVICE_UUID_OLD;
-//        UUID charUuid = mNewDevice ? TraumschreiberService.READ_CHAR_UUID_NEW : TraumschreiberService.READ_CHAR_UUID_OLD;
-//        BluetoothGattService gattService = mBluetoothLeService.mBluetoothGatt.getService(serviceUuid);
-//        BluetoothGattCharacteristic gattChar = gattService.getCharacteristic(charUuid);
-//        final int charaProp = gattChar.getProperties();
-//        if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
-//            if (mNotifyCharacteristic != null) {
-//                mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, false);
-//                mNotifyCharacteristic = null;
-//            }
-//            mNotifyCharacteristic = gattChar;
-//            // hack for reconnection and in case of notification set to true
-//            mBluetoothLeService.setCharacteristicNotification(gattChar, false);
-//            // normal setCharNotification call
-//            mBluetoothLeService.setCharacteristicNotification(gattChar, notifying);
-//            if (notifying) mBluetoothLeService.readCharacteristic(gattChar, mNewDevice);
-//        }
-//    }
+    }
 
     private void clearUI() {
         for (TextView view : channelValueViews) view.setText("0μV");
@@ -822,10 +761,10 @@ public class Record extends AppCompatActivity {
                 //if(signalMicroV.get(i) > 0) value += "+";
                 if (channelValueF >= 1000 | channelValueF <= -1000) {
                     channelValueF = channelValueF / 1000;
-                    channelValueS += String.format("%.2f", channelValueF);
+                    channelValueS += String.format("%.1f", channelValueF);
                     channelValueS += "mV";
                 } else {
-                    channelValueS += String.format("%.1f", channelValueF);
+                    channelValueS += String.format("%.0f", channelValueF);
                     channelValueS += "μV";
                 }
                 channelValueViews[i].setText(channelValueS);
@@ -840,7 +779,7 @@ public class Record extends AppCompatActivity {
             sample[i] = data_microV.get(i);
         }
         streamOutlet.push_sample(sample);
-        Log.d("LSL", "Sample sent!");
+        Log.v("LSL", "Sample sent!");
 //        try {
 //            streamOutlet.push_sample(sample);
 //        } catch (Exception ex) {
@@ -1292,6 +1231,5 @@ public class Record extends AppCompatActivity {
         }
 
     }
-
 
 }
