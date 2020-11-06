@@ -1,6 +1,9 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
 import android.util.Log;
+import android.widget.Toast;
+import android.content.Context;
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +37,7 @@ public class TraumschreiberService {
     private final byte[] dpcmBuffer = new byte[30];
     private final byte[] dpcmBuffer2 = new byte[30];
     private final int[] decodedSignal = new int[24];
-    private static int[] signalBitShift = new int[24];
+    public static int[] signalBitShift = new int[24];
     private static int[] signalOffset = new int[24];
     private int pkgCount;
     private boolean characteristic0Ready = false;
@@ -129,7 +132,7 @@ public class TraumschreiberService {
                     signalBitShift[i*2+1] = dataBytes[i] & 0xf;
                 }
                 Log.d(TAG, "RECEIVED FROM C0DE Characteritistic!" + Arrays.toString(signalBitShift));
-                data_ints = null;
+                data_ints = new int[] {10000};
                 return data_ints;
             } else {
                 data_ints = null;

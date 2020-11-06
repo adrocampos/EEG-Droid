@@ -282,6 +282,14 @@ public class Record extends AppCompatActivity {
                 data_cnt = 0;
                 discoverCharacteristics(mBluetoothLeService.getSupportedGattServices());
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action) && deviceConnected) {
+                int[] data = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
+                if (data[0] == 10000){
+                    String bitshiftch1 = Integer.toString(TraumschreiberService.signalBitShift[0]);
+                    Toast.makeText(getApplicationContext(),
+                            "Adaptive Encoding, Ch1 shifted by " + bitshiftch1 + "bits",
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
                 data_cnt++;
                 if (!timerRunning) startTimer();
                 long last_data = System.currentTimeMillis();
