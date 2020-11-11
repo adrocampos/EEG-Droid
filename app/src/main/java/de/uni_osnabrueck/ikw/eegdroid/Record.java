@@ -762,7 +762,7 @@ public class Record extends AppCompatActivity {
             // This is the last processing step before the data is displayed and saved
             // Note that gain is 1 by default
         } else {
-            for (float datapoint : data) data_trans.add(datapoint * 298/(100000*gain));
+            for (float datapoint : data) data_trans.add(datapoint * 298/(1000*gain));
         }
         return data_trans;
     }
