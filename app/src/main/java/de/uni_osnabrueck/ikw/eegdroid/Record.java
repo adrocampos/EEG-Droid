@@ -160,6 +160,8 @@ public class Record extends AppCompatActivity {
     private View layout_plots;
     private boolean plotting = false;
     private List<float[]> main_data;
+    private int adaptiveEncodingFlag = 0; //Indicates whether adaptive encoding took place in this instant.
+    private final ArrayList<Integer> adaptiveEncodingFlags = new ArrayList<>();
     private final View.OnClickListener imageDiscardOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -286,11 +288,9 @@ public class Record extends AppCompatActivity {
 
                 // 10000 means the pkg came from c0de and no further processing is required.
                 if (data[0] == 10000){
-                    String bitshiftch1 = Integer.toString(TraumschreiberService.signalBitShift[0]);
-                    Toast.makeText(getApplicationContext(),
-                            "Adaptive Encoding, Ch1 shifted by " + bitshiftch1 + "bits",
-                            Toast.LENGTH_LONG).show();
-                    return;
+                    Toast.makeText(getApplicationContext(), "Adaptive Encoding took place.", Toast.LENGTH_LONG).show();
+                    adaptiveEncodingFlag = 1;
+                    return; //prevent further processing
                 }
 
                 data_cnt++;
@@ -1010,6 +1010,9 @@ public class Record extends AppCompatActivity {
         for (Float f : data_microV)
             f_microV[i++] = (f != null ? f : Float.NaN); // Or whatever default you want
         main_data.add(f_microV);
+
+        adaptiveEncodingFlags.add(adaptiveEncodingFlag);
+        adaptiveEncodingFlag = 0;
     }
 
     private void saveSession() {
@@ -1033,8 +1036,11 @@ public class Record extends AppCompatActivity {
         int rows = main_data.size();
         int cols = main_data.get(0).length;
         final StringBuilder header = new StringBuilder();
-        for (int i = 1; i < cols; i++) header.append(String.format("Ch-%d,", i));
-        header.append(String.format("Ch-%d", cols));
+        for (int i = 1; i <= cols; i++) header.append(String.format("Ch-%d,", i));
+        for (int i = 1; i <= cols; i++) header.append(String.format("Bitshift-Ch%d,",i));
+        header.append("Bitshift-Notification");
+        //header.append(String.format("Ch-%d", cols));
+
         new Thread(() -> {
             try {
                 File formatted = new File(MainActivity.getDirSessions(),
@@ -1083,10 +1089,18 @@ public class Record extends AppCompatActivity {
                     //fileWriter.append(delimiter);
                     //fileWriter.append(String.valueOf(dp_received.get(i)));
                     //fileWriter.append(delimiter);
+                    // ACTUAL DATA
                     for (int j = 0; j < cols; j++) {
                         fileWriter.append(String.valueOf(main_data.get(i)[j]));
                         fileWriter.append(delimiter);
                     }
+                    // MONITORING CODE BOOK
+                    for(int j=0; j < cols;j++) {
+                        fileWriter.append(String.valueOf(TraumschreiberService.signalBitShift[j]));
+                        fileWriter.append(delimiter);
+                    }
+                    // MONITORING CODE BOOK UPDATE NOTIFICATIONS
+                    fileWriter.append(String.valueOf(adaptiveEncodingFlags.get(i)));
                     fileWriter.append(break_line);
                 }
                 fileWriter.flush();
