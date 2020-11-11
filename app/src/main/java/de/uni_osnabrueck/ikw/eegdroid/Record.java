@@ -283,6 +283,8 @@ public class Record extends AppCompatActivity {
                 discoverCharacteristics(mBluetoothLeService.getSupportedGattServices());
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action) && deviceConnected) {
                 int[] data = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
+
+                // 10000 means the pkg came from c0de and no further processing is required.
                 if (data[0] == 10000){
                     String bitshiftch1 = Integer.toString(TraumschreiberService.signalBitShift[0]);
                     Toast.makeText(getApplicationContext(),
@@ -290,6 +292,7 @@ public class Record extends AppCompatActivity {
                             Toast.LENGTH_LONG).show();
                     return;
                 }
+
                 data_cnt++;
                 if (!timerRunning) startTimer();
                 long last_data = System.currentTimeMillis();
@@ -746,7 +749,8 @@ public class Record extends AppCompatActivity {
     private List<Float> transData(int[] data) {
         // Conversion formula (old): V_in = X * 1.65V / (1000 * GAIN * PRECISION)
         // Conversion formula (new): V_in = X * (298 / (1000 * gain))
-        float gain = Float.parseFloat(selectedGain);
+
+        float gain = Float.parseFloat(selectedGain); // = 1 by default
         List<Float> data_trans = new ArrayList<>();
         if (!mNewDevice) { // old model
             pkgIDs.add((int) data_cnt); // store pkg ID
@@ -754,8 +758,11 @@ public class Record extends AppCompatActivity {
             float numerator = 1650;
             float denominator = gain * precision;
             for (int datapoint : data) data_trans.add((datapoint * numerator) / denominator);
+
+            // This is the last processing step before the data is displayed and saved
+            // Note that gain is 1 by default
         } else {
-            for (float datapoint : data) data_trans.add(datapoint * 298 / (10 ^ 6) / gain);
+            for (float datapoint : data) data_trans.add(datapoint * 298/(100000*gain));
         }
         return data_trans;
     }

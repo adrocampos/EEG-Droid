@@ -110,30 +110,38 @@ public class TraumschreiberService {
 
             // ____ DPCM DECODING ____
         } else {
+            // Characteristic 1
             if (characteristicId.equals("0")) {
                 System.arraycopy(dataBytes, 0, dpcmBuffer, 0, 20);
                 characteristic0Ready = true;
                 data_ints = null;
                 return data_ints;
 
+                // Characteristic 2
             } else if (characteristic0Ready && characteristicId.equals("1")) {
                 System.arraycopy(dataBytes, 0, dpcmBuffer, 20, 10);
                 System.arraycopy(dataBytes, 10, dpcmBuffer2, 0, 10);
                 data_ints = decodeDpcm(dpcmBuffer);
 
+                // Characteristic 3
             } else if (characteristic0Ready && characteristicId.equals("2")) {
                 System.arraycopy(dataBytes, 0, dpcmBuffer2, 10, 20);
                 data_ints = decodeDpcm(dpcmBuffer2);
                 characteristic0Ready = false;
 
+                // Characteristic c0de
             } else if (characteristicId.equals("e")){
+
+                // Iterate through the 12 received bytes and split them into unsigned nibbles
                 for(int i = 0; i < 12; i++){
                     signalBitShift[i*2] = (dataBytes[i]>>4) & 0xf;
                     signalBitShift[i*2+1] = dataBytes[i] & 0xf;
                 }
+
                 Log.d(TAG, "RECEIVED FROM C0DE Characteritistic!" + Arrays.toString(signalBitShift));
-                data_ints = new int[] {10000};
+                data_ints = new int[] {10000}; // 100000 just an arbitrary flag for the next handler
                 return data_ints;
+
             } else {
                 data_ints = null;
                 return data_ints;
@@ -159,7 +167,6 @@ public class TraumschreiberService {
             //if (pkgCount < 1000) signalOffset[i] += 0.001 * decodedSignal[i]; //Average over first 1000 pkgs
             //if (pkgCount == 1000) decodedSignal[i] -= signalOffset[i];
         }
-
         //pkgCount++;
         return decodedSignal;
     }
