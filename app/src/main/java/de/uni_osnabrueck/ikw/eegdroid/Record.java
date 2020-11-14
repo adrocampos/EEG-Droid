@@ -1,5 +1,5 @@
 package de.uni_osnabrueck.ikw.eegdroid;
-// initial commit
+// initial commits
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
