@@ -347,14 +347,21 @@ public class Record extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 int parsed = Integer.parseInt(gain_spinner.getSelectedItem().toString());
-                    switch(parsed) {
-                        case 1:
+                Log.d(TAG,gain_spinner.getSelectedItem().toString());
+                selectedGainB = (byte) parsed;
+                updateConfiguration();
+
+                switch(parsed) {
+
+                        /*case 1:
                             generateDummy = false;
                             generateDummyB = (byte) 0;
                             break;
                         case 2:
                             generateDummy = true;
-                            generateDummyB = (byte) 0b00110000;
+                            generateDummyB = (byte) 0b00110000;*/
+
+
 
                     }
                 /*switch (position) {
@@ -390,7 +397,7 @@ public class Record extends AppCompatActivity {
 
         // Concatenate binary strings
         configBytes[0] = (byte) (selectedGainB | generateDummyB | halfDummyB);
-        //configBytes[1] = selectedScaleB;
+        configBytes[1] = selectedScaleB;
         configBytes[2] = 0b00000000;
 
 
