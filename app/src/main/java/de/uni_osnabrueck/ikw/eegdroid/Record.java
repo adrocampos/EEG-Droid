@@ -348,9 +348,8 @@ public class Record extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 int parsed = Integer.parseInt(gain_spinner.getSelectedItem().toString());
                 Log.d(TAG,gain_spinner.getSelectedItem().toString());
-                selectedGainB = (byte) parsed;
-                updateConfiguration();
-
+                selectedGainB = (byte) (parsed&0xff);
+                Log.d(TAG, "Selected Gain:" + Integer.toBinaryString(selectedGainB) +"  "+ Integer.toString(selectedGainB));
                 switch(parsed) {
 
                         /*case 1:

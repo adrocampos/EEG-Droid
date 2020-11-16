@@ -33,14 +33,14 @@ public class TraumschreiberService {
     private final String codeCharacteristicUuid = "0000c0de-0000-1000-8000-00805f9b34fb";
     private final static String TAG = "TraumschreiberService";
     private static final int signalScale = 298 / 1000000;
-    public String mTraumschreiberDeviceAddress;
-    private final byte[] dpcmBuffer = new byte[30];
-    private final byte[] dpcmBuffer2 = new byte[30];
-    private final int[] decodedSignal = new int[24];
+    public static String mTraumschreiberDeviceAddress;
+    private static final byte[] dpcmBuffer = new byte[30];
+    private static final byte[] dpcmBuffer2 = new byte[30];
+    private static final int[] decodedSignal = new int[24];
     public static int[] signalBitShift = new int[24];
     private static int[] signalOffset = new int[24];
-    private int pkgCount;
-    private boolean characteristic0Ready = false;
+    private static int pkgCount;
+    private static boolean characteristic0Ready = false;
 
 
     public TraumschreiberService() {
@@ -69,7 +69,7 @@ public class TraumschreiberService {
      * @param dataBytes
      * @return int[] data_ints of the datapoint values as integers
      */
-    public int[] decompress(byte[] dataBytes, boolean newModel, String characteristicId) {
+    public static int[] decompress(byte[] dataBytes, boolean newModel, String characteristicId) {
 
         boolean dpcmEncoded = true;
         int[] data_ints;
@@ -157,7 +157,7 @@ public class TraumschreiberService {
      * @param  deltaBytes
      * @return int[] data
      */
-    public int[] decodeDpcm(byte[] deltaBytes) {
+    public static int[] decodeDpcm(byte[] deltaBytes) {
         //Log.v(TAG, "Encoded Delta: " + Arrays.toString(bytes));
         int[] delta = bytesTo10bitInts(deltaBytes);
         //Log.v(TAG, "Decoded Delta: " + Arrays.toString(data));
@@ -176,7 +176,7 @@ public class TraumschreiberService {
      * @param bytes
      * @return int[] data
      */
-    public int[] bytesTo10bitInts(byte[] bytes) {
+    public static int[] bytesTo10bitInts(byte[] bytes) {
         // Number of ints : bytes*8/10 (8bits per byte and 10bits per int)
         int[] data = new int[bytes.length * 8 / 10];
 
