@@ -76,7 +76,7 @@ public class Record extends AppCompatActivity {
     public static final String EXTRAS_DEVICE_MODEL = "DEVICE_MODEL"; // "2": old, "3": new
     private final static String TAG = Record.class.getSimpleName();
     private final Handler handler = new Handler();
-    private final List<Float> dp_received = new ArrayList<>();
+    private final List<Float> timestamps = new ArrayList<>();
     private final List<List<Float>> accumulated = new ArrayList<>();
     private final int MAX_VISIBLE = 1000;  // see 500ms at the time on the plot
     private final ArrayList<Integer> pkgIDs = new ArrayList<>();
@@ -159,13 +159,13 @@ public class Record extends AppCompatActivity {
     private androidx.appcompat.widget.SwitchCompat switch_plots;
     private View layout_plots;
     private boolean plotting = false;
-    private List<float[]> main_data;
+    private List<float[]> mainData;
     private int adaptiveEncodingFlag = 0; //Indicates whether adaptive encoding took place in this instant.
     private final ArrayList<Integer> adaptiveEncodingFlags = new ArrayList<>();
     private final View.OnClickListener imageDiscardOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            main_data = new ArrayList<>();
+            mainData = new ArrayList<>();
             Toast.makeText(
                     getApplicationContext(),
                     "Your EEG session was discarded.",
@@ -177,7 +177,7 @@ public class Record extends AppCompatActivity {
     private float data_cnt = 0;
     private String start_time;
     private String end_time;
-    private long start_watch;
+    private long startTime;
     private String recording_time;
     private long start_timestamp;
     private long end_timestamp;
@@ -286,21 +286,19 @@ public class Record extends AppCompatActivity {
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action) && deviceConnected) {
                 int[] data = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
 
+                if(data==null) return;
+
                 // 10000 means the pkg came from c0de and no further processing is required.
                 if (data[0] == 10000){
-                    Toast.makeText(getApplicationContext(), "Adaptive Encoding took place.", Toast.LENGTH_LONG).show();
-                    adaptiveEncodingFlag = 1;
+                    adaptiveEncodingFlag = 1; // The next package will receive an adaptive recording flag.
                     return; //prevent further processing
                 }
 
                 data_cnt++;
                 if (!timerRunning) startTimer();
                 long last_data = System.currentTimeMillis();
-                enableCheckboxes(1);
                 microV = transData(Objects.requireNonNull(intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA)));
-                streamData(microV);
-                //if (data_cnt==1) Toast.makeText(getApplicationContext(), "Callibrating offset..", Toast.LENGTH_LONG);
-                //if (data_cnt==1000) Toast.makeText(getApplicationContext(), "Callibrated offset", Toast.LENGTH_LONG);
+                //streamData(microV);
                 if (data_cnt % 30 == 0) displayData(microV);
                 if (plotting & data_cnt % 2 == 0) {
                     accumulated.add(microV);
@@ -776,7 +774,7 @@ public class Record extends AppCompatActivity {
     @SuppressLint("DefaultLocale")
     private void displayData(List<Float> signalMicroV) {
         if (signalMicroV != null) {
-            for (int i = 0; i < 24; i++) {
+            for (int i = 0; i < 1; i++) {
                 String channelValueS = "";
                 float channelValueF = signalMicroV.get(i);
                 //if(signalMicroV.get(i) > 0) value += "+";
@@ -889,10 +887,10 @@ public class Record extends AppCompatActivity {
             x = cnt * DATAPOINT_TIME; // timestamp for x axis in ms
             List<Float> f = e_list.get(i);
 
-            /***  add the entries of every shown channel.**/
-            for (int n = 0; n < nChannels; n++) {
+
+            /*  Creating and adding entries to Entrylists */
+            for (int n = 0; n < 1; n++) {
                 //the ith entryList represents the stored data of the ith channel
-                // TODO: Chec if if condition makes a difference. CUrrent: NO
                 lineEntryLists.get(n).add(new Entry(x, f.get(n)));
             }
         }
@@ -901,8 +899,8 @@ public class Record extends AppCompatActivity {
         if (thread != null) thread.interrupt();
         final Runnable runnable = () -> {
 
-            // PLOTTABLE DATASET CREATION
-            for (int i = 0; i < nChannels; i++) {
+            /* Create Datasets from the Entrylists filled above */
+            for (int i = 0; i < 1; i++) {
                 if (channelsShown[i]) {
                     LineDataSet set = createSet(i);
                     datasets.add(set);
@@ -989,9 +987,9 @@ public class Record extends AppCompatActivity {
     @SuppressLint({"SimpleDateFormat", "SetTextI18n"})
     private void startTrial() {
         cnt = 0;
-        main_data = new ArrayList<>();
+        mainData = new ArrayList<>();
         start_time = new SimpleDateFormat("HH:mm:ss.SSS").format(new Date());
-        start_timestamp = new Timestamp(start_watch).getTime();
+        start_timestamp = new Timestamp(startTime).getTime();
         recording = true;
     }
 
@@ -1002,20 +1000,20 @@ public class Record extends AppCompatActivity {
         end_time = new SimpleDateFormat("HH:mm:ss.SSS").format(new Date());
         long stop_watch = System.currentTimeMillis();
         end_timestamp = new Timestamp(stop_watch).getTime();
-        recording_time = Long.toString(stop_watch - start_watch);
+        recording_time = Long.toString(stop_watch - startTime);
     }
 
 
     //Stores data while session is running
     private void storeData(List<Float> data_microV) {
-        if (dp_received.size() == 0) start_watch = System.currentTimeMillis();
+        if (timestamps.size() == 0) startTime = System.currentTimeMillis();
         float[] f_microV = new float[data_microV.size()];
-        float curr_received = System.currentTimeMillis() - start_watch;
-        dp_received.add(curr_received);
+        float curr_received = System.currentTimeMillis() - startTime;
+        timestamps.add(curr_received);
         int i = 0;
         for (Float f : data_microV)
             f_microV[i++] = (f != null ? f : Float.NaN); // Or whatever default you want
-        main_data.add(f_microV);
+        mainData.add(f_microV);
 
         adaptiveEncodingFlags.add(adaptiveEncodingFlag);
         adaptiveEncodingFlag = 0;
@@ -1039,12 +1037,14 @@ public class Record extends AppCompatActivity {
         final char delimiter = ',';
         final char break_line = '\n';
 
-        int rows = main_data.size();
-        int cols = main_data.get(0).length;
+        int rows = mainData.size();
+        //int cols = mainData.get(0).length;
+        int cols = 1;
         final StringBuilder header = new StringBuilder();
-        for (int i = 1; i <= cols; i++) header.append(String.format("Ch-%d,", i));
-        for (int i = 1; i <= cols; i++) header.append(String.format("Bitshift-Ch%d,",i));
-        header.append("Bitshift-Notification");
+        header.append("time,");
+        for (int i = 1; i <= cols; i++) header.append(String.format("ch%d,", i));
+        for (int i = 1; i <= cols; i++) header.append(String.format("enc_ch%d,",i));
+        header.append("enc_flag");
         //header.append(String.format("Ch-%d", cols));
 
         new Thread(() -> {
@@ -1093,11 +1093,11 @@ public class Record extends AppCompatActivity {
                     //fileWriter.append(delimiter);
                     //fileWriter.append(String.valueOf(pkgsLost.get(i)));
                     //fileWriter.append(delimiter);
-                    //fileWriter.append(String.valueOf(dp_received.get(i)));
-                    //fileWriter.append(delimiter);
+                    fileWriter.append(String.valueOf(timestamps.get(i)));
+                    fileWriter.append(delimiter);
                     // ACTUAL DATA
                     for (int j = 0; j < cols; j++) {
-                        fileWriter.append(String.valueOf(main_data.get(i)[j]));
+                        fileWriter.append(String.valueOf(mainData.get(i)[j]));
                         fileWriter.append(delimiter);
                     }
                     // MONITORING CODE BOOK
