@@ -32,7 +32,6 @@ public class TraumschreiberService {
     private final String configCharacteristicUuid = "0000ecc0-0000-1000-8000-00805f9b34fb";
     private final String codeCharacteristicUuid = "0000c0de-0000-1000-8000-00805f9b34fb";
     private final static String TAG = "TraumschreiberService";
-    private static final int signalScale = 298 / 1000000;
     public static String mTraumschreiberDeviceAddress;
     private static final byte[] dpcmBuffer = new byte[30];
     private static final byte[] dpcmBuffer2 = new byte[30];
@@ -133,13 +132,13 @@ public class TraumschreiberService {
             } else if (characteristicId.equals("e")){
 
                 // Iterate through the 12 received bytes and split them into unsigned nibbles
-                for(int i = 0; i < 12; i++){
+                for(int i = 0; i < 1; i++){
                     signalBitShift[i*2] = (dataBytes[i]>>4) & 0xf;
                     signalBitShift[i*2+1] = dataBytes[i] & 0xf;
                 }
 
                 Log.d(TAG, "RECEIVED FROM C0DE Characteritistic!" + Arrays.toString(signalBitShift));
-                data_ints = new int[] {10000}; // 100000 just an arbitrary flag for the next handler
+                data_ints = new int[] {10000}; // just an arbitrary flag for the next handler, since normal values <512
                 return data_ints;
 
             } else {
@@ -190,12 +189,12 @@ public class TraumschreiberService {
         for (int i = 0; i <= bytes.length - 5; i += 5) {
             idx = i * 4 / 5;
             data[idx + 0] = ((bytes[i + 0] & 0xff) << 2) | ((bytes[i + 1] & 0xc0) >>> 6);
-            data[idx + 1] = ((bytes[i + 1] & 0x3f) << 4) | ((bytes[i + 2] & 0xf0) >>> 4);
+            /*data[idx + 1] = ((bytes[i + 1] & 0x3f) << 4) | ((bytes[i + 2] & 0xf0) >>> 4);
             data[idx + 2] = ((bytes[i + 2] & 0x0f) << 6) | ((bytes[i + 3] & 0xfc) >>> 2);
-            data[idx + 3] = ((bytes[i + 3] & 0x03) << 8) | ((bytes[i + 4] & 0xff) >>> 0);
+            data[idx + 3] = ((bytes[i + 3] & 0x03) << 8) | ((bytes[i + 4] & 0xff) >>> 0);*/
         }
         // Subtracting 1024 turns unsigned 10bit ints into their 2's complement
-        for (int i = 0; i < data.length; i++) {
+        for (int i = 0; i < 1; i++) {
             if (data[i] > 511) data[i] -= 1024;
         }
 
