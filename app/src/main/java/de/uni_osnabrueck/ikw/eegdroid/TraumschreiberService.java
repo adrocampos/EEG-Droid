@@ -162,7 +162,7 @@ public class TraumschreiberService {
         int[] delta = bytesTo10bitInts(deltaBytes);
         //Log.v(TAG, "Decoded Delta: " + Arrays.toString(data));
 
-        for (int i = 0; i < delta.length; i++) {
+        for (int i = 0; i < 1; i++) {
             decodedSignal[i] += delta[i] << signalBitShift[i];
             //if (pkgCount < 1000) signalOffset[i] += 0.001 * decodedSignal[i]; //Average over first 1000 pkgs
             //if (pkgCount == 1000) decodedSignal[i] -= signalOffset[i];
