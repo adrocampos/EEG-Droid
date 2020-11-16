@@ -138,7 +138,7 @@ public class TraumschreiberService {
                 }
 
                 Log.d(TAG, "RECEIVED FROM C0DE Characteritistic!" + Arrays.toString(signalBitShift));
-                data_ints = new int[] {10000}; // just an arbitrary flag for the next handler, since normal values <512
+                data_ints = new int[] {10000, signalBitShift[0]}; // just an arbitrary flag for the next handler, since normal values <512
                 return data_ints;
 
             } else {

@@ -162,6 +162,7 @@ public class Record extends AppCompatActivity {
     private List<float[]> mainData;
     private int adaptiveEncodingFlag = 0; //Indicates whether adaptive encoding took place in this instant.
     private final ArrayList<Integer> adaptiveEncodingFlags = new ArrayList<>();
+    private int signalBitShift = 0;
     private final View.OnClickListener imageDiscardOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -290,6 +291,7 @@ public class Record extends AppCompatActivity {
 
                 // 10000 means the pkg came from c0de and no further processing is required.
                 if (data[0] == 10000){
+                    signalBitShift = data[1];
                     adaptiveEncodingFlag = 1; // The next package will receive an adaptive recording flag.
                     return; //prevent further processing
                 }
@@ -1008,8 +1010,8 @@ public class Record extends AppCompatActivity {
     private void storeData(List<Float> data_microV) {
         if (timestamps.size() == 0) startTime = System.currentTimeMillis();
         float[] f_microV = new float[data_microV.size()];
-        float curr_received = System.currentTimeMillis() - startTime;
-        timestamps.add(curr_received);
+        float timestamp = System.currentTimeMillis() - startTime;
+        timestamps.add(timestamp);
         int i = 0;
         for (Float f : data_microV)
             f_microV[i++] = (f != null ? f : Float.NaN); // Or whatever default you want
@@ -1102,7 +1104,7 @@ public class Record extends AppCompatActivity {
                     }
                     // MONITORING CODE BOOK
                     for(int j=0; j < cols;j++) {
-                        fileWriter.append(String.valueOf(TraumschreiberService.signalBitShift[j]));
+                        fileWriter.append(Integer.toString(signalBitShift));
                         fileWriter.append(delimiter);
                     }
                     // MONITORING CODE BOOK UPDATE NOTIFICATIONS
