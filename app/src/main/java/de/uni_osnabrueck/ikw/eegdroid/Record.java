@@ -163,6 +163,7 @@ public class Record extends AppCompatActivity {
     private int adaptiveEncodingFlag = 0; //Indicates whether adaptive encoding took place in this instant.
     private final ArrayList<Integer> adaptiveEncodingFlags = new ArrayList<>();
     private int signalBitShift = 0;
+    private final ArrayList<Integer> signalBitShifts =  new ArrayList<>();
     private final View.OnClickListener imageDiscardOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -292,6 +293,7 @@ public class Record extends AppCompatActivity {
                 // 10000 means the pkg came from c0de and no further processing is required.
                 if (data[0] == 10000){
                     signalBitShift = data[1];
+                    Log.d(TAG,"Updated signalBitshift of CH1: " + Integer.toString(signalBitShift));
                     adaptiveEncodingFlag = 1; // The next package will receive an adaptive recording flag.
                     return; //prevent further processing
                 }
@@ -1019,6 +1021,7 @@ public class Record extends AppCompatActivity {
 
         adaptiveEncodingFlags.add(adaptiveEncodingFlag);
         adaptiveEncodingFlag = 0;
+        signalBitShifts.add(signalBitShift);
     }
 
     private void saveSession() {
@@ -1104,7 +1107,7 @@ public class Record extends AppCompatActivity {
                     }
                     // MONITORING CODE BOOK
                     for(int j=0; j < cols;j++) {
-                        fileWriter.append(Integer.toString(signalBitShift));
+                        fileWriter.append(Integer.toString(signalBitShifts.get(i)));
                         fileWriter.append(delimiter);
                     }
                     // MONITORING CODE BOOK UPDATE NOTIFICATIONS

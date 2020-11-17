@@ -271,19 +271,28 @@ public class BluetoothLeService extends Service {
      * @param enabled        If true, enable notification.  False otherwise.
      */
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
-                                              boolean enabled) {
+                                              boolean enabled, boolean setIndication) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
-        mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+        boolean result = mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+        Log.d(TAG, "Characteristic " + characteristic.getUuid().toString() + "enabled: " + String.format("%b", result));
+
         BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
                 UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
+
         if (descriptor != null) {
             isBusy = true; // Changes once onDescriptorWrite callback is called
-            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            if(!setIndication) descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            else descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
             mBluetoothGatt.writeDescriptor(descriptor);
         }
+    }
+
+    public void setCharacteristicIndication(BluetoothGattCharacteristic characteristic, boolean enabled){
+
+
     }
 
     /**
