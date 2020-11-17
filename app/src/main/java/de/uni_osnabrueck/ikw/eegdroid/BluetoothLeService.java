@@ -290,11 +290,6 @@ public class BluetoothLeService extends Service {
         }
     }
 
-    public void setCharacteristicIndication(BluetoothGattCharacteristic characteristic, boolean enabled){
-
-
-    }
-
     /**
      * Request a write on a give {@code BluetoothGattCharacteristic}. The write result is reported
      * asynchronously through the {@code BluetoothGattCallback#onCharacteristicWrite(andorid.bluetooth.BluetoothGatt, android.bluetooth.BluetoothGattCharacteristic, int)}

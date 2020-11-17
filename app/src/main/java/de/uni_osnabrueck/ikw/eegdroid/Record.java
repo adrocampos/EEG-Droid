@@ -715,7 +715,9 @@ public class Record extends AppCompatActivity {
                 }
                 prepareNotifications();
                 waitForBluetoothCallback(mBluetoothLeService);
-                mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
+                mBluetoothLeService.setCharacteristicNotification(codeCharacteristic,
+                                                                true,
+                                                                true);
             }
         }
     }
@@ -727,7 +729,7 @@ public class Record extends AppCompatActivity {
         for (BluetoothGattCharacteristic characteristic : notifyingCharacteristics) {
             waitForBluetoothCallback(mBluetoothLeService);
             if (characteristic != mNotifyCharacteristic) {
-                mBluetoothLeService.setCharacteristicNotification(characteristic, true);
+                mBluetoothLeService.setCharacteristicNotification(characteristic, true, false);
             }
         }
     }
