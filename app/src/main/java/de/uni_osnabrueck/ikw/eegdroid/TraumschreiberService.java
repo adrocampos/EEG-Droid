@@ -74,26 +74,13 @@ public class TraumschreiberService {
         int[] data_ints;
         int new_int;
         int bLen = newModel ? 3 : 2; // bytes needed to encode 1 int (old encodings)
-        // ____OLD TRAUMSCHREIBER ____
-        if (!newModel) {
-            data_ints = new int[dataBytes.length / bLen];
-            Log.d("Decompressing", "decompress: " + String.format("%02X %02X ", dataBytes[0], dataBytes[1]));
-            //https://stackoverflow.com/questions/9581530/converting-from-byte-to-int-in-java
-            //Example: rno[0]&0x000000ff)<<24|(rno[1]&0x000000ff)<<16|
-            for (int ch = 0; ch < dataBytes.length / bLen; ch++) {
-                new_int = (dataBytes[ch * bLen + 1]) << 8 | (dataBytes[ch * bLen]) & 0xff;
-                //new_int = new_int << 8;
-                data_ints[ch] = new_int;
-            }
 
             // ____NEW TRAUMSCHREIBER____
-        } else if (!dpcmEncoded) {
+        if (!dpcmEncoded) {
             // Process Header
             int header = dataBytes[0] & 0xff; // Unsigned Byte
             int pkg_id = header / 16; // 1. Nibble
             int pkgs_lost = header % 16; // 2. Nibble
-
-            //Log.v(TAG, String.format("ID: %02d  Lost pkgs: %02d",pkg_id, pkgs_lost));
 
             // Prepare Data Array
             data_ints = new int[dataBytes.length / bLen + 2];   // +2: 1 for pkg id, 1 for lost pkg count
@@ -163,10 +150,10 @@ public class TraumschreiberService {
 
         for (int i = 0; i < 1; i++) {
             decodedSignal[i] += delta[i] << signalBitShift[i];
-            //if (pkgCount < 1000) signalOffset[i] += 0.001 * decodedSignal[i]; //Average over first 1000 pkgs
-            //if (pkgCount == 1000) decodedSignal[i] -= signalOffset[i];
+            if (pkgCount < 1000) signalOffset[i] += 0.001 * decodedSignal[i]; //Average over first 1000 pkgs
+            if (pkgCount == 1000) decodedSignal[i] -= signalOffset[i];
         }
-        //pkgCount++;
+        pkgCount++;
         return decodedSignal;
     }
 
