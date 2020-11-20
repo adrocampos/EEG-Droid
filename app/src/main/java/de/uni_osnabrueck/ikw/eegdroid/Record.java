@@ -1,5 +1,5 @@
 package de.uni_osnabrueck.ikw.eegdroid;
-// test
+// initial commits
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
@@ -28,7 +28,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -76,7 +75,7 @@ public class Record extends AppCompatActivity {
     public static final String EXTRAS_DEVICE_MODEL = "DEVICE_MODEL"; // "2": old, "3": new
     private final static String TAG = Record.class.getSimpleName();
     private final Handler handler = new Handler();
-    private final List<Float> dp_received = new ArrayList<>();
+    private final List<Float> timestamps = new ArrayList<>();
     private final List<List<Float>> accumulated = new ArrayList<>();
     private final int MAX_VISIBLE = 1000;  // see 500ms at the time on the plot
     private final ArrayList<Integer> pkgIDs = new ArrayList<>();
@@ -106,9 +105,9 @@ public class Record extends AppCompatActivity {
     private String selectedGain = "1";
     private byte selectedGainB = 0b00000000;
     private boolean generateDummy = false;
-    private byte generateDummyB = (byte) 0b00000000;
+    private byte generateDummyB = (byte) 0;
     private boolean halfDummy = false;
-    private byte halfDummyB = (byte) 0b00000000;
+    private byte halfDummyB = (byte) 0;
     private final int[] channelColors = new int[nChannels];
     private final boolean[] channelsShown = new boolean[nChannels];
     private final CheckBox[] checkBoxes = new CheckBox[nChannels];
@@ -159,13 +158,15 @@ public class Record extends AppCompatActivity {
     private androidx.appcompat.widget.SwitchCompat switch_plots;
     private View layout_plots;
     private boolean plotting = false;
-    private List<float[]> main_data;
+    private List<float[]> mainData;
     private int adaptiveEncodingFlag = 0; //Indicates whether adaptive encoding took place in this instant.
     private final ArrayList<Integer> adaptiveEncodingFlags = new ArrayList<>();
+    private int signalBitShift = 0;
+    private final ArrayList<Integer> signalBitShifts =  new ArrayList<>();
     private final View.OnClickListener imageDiscardOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            main_data = new ArrayList<>();
+            mainData = new ArrayList<>();
             Toast.makeText(
                     getApplicationContext(),
                     "Your EEG session was discarded.",
@@ -177,7 +178,7 @@ public class Record extends AppCompatActivity {
     private float data_cnt = 0;
     private String start_time;
     private String end_time;
-    private long start_watch;
+    private long startTime;
     private String recording_time;
     private long start_timestamp;
     private long end_timestamp;
@@ -286,21 +287,21 @@ public class Record extends AppCompatActivity {
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action) && deviceConnected) {
                 int[] data = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
 
+                if(data==null) return;
+
                 // 10000 means the pkg came from c0de and no further processing is required.
                 if (data[0] == 10000){
-                    Toast.makeText(getApplicationContext(), "Adaptive Encoding took place.", Toast.LENGTH_LONG).show();
-                    adaptiveEncodingFlag = 1;
+                    signalBitShift = data[1];
+                    Log.d(TAG,"Updated signalBitshift of CH1: " + Integer.toString(signalBitShift));
+                    adaptiveEncodingFlag = 1; // The next package will receive an adaptive recording flag.
                     return; //prevent further processing
                 }
 
                 data_cnt++;
                 if (!timerRunning) startTimer();
                 long last_data = System.currentTimeMillis();
-                enableCheckboxes(1);
                 microV = transData(Objects.requireNonNull(intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA)));
-                streamData(microV);
-                //if (data_cnt==1) Toast.makeText(getApplicationContext(), "Callibrating offset..", Toast.LENGTH_LONG);
-                //if (data_cnt==1000) Toast.makeText(getApplicationContext(), "Callibrated offset", Toast.LENGTH_LONG);
+                //streamData(microV);
                 if (data_cnt % 30 == 0) displayData(microV);
                 if (plotting & data_cnt % 2 == 0) {
                     accumulated.add(microV);
@@ -347,14 +348,20 @@ public class Record extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 int parsed = Integer.parseInt(gain_spinner.getSelectedItem().toString());
-                    switch(parsed) {
-                        case 1:
+                Log.d(TAG,gain_spinner.getSelectedItem().toString());
+                selectedGainB = (byte) ( (parsed<<4) & 0xff );
+                Log.d(TAG, "Selected Gain:" + Integer.toBinaryString(selectedGainB) +"  "+ Integer.toString(selectedGainB));
+                switch(parsed) {
+
+                        /*case 1:
                             generateDummy = false;
                             generateDummyB = (byte) 0;
                             break;
                         case 2:
                             generateDummy = true;
-                            generateDummyB = (byte) 0b00110000;
+                            generateDummyB = (byte) 0b00110000;*/
+
+
 
                     }
                 /*switch (position) {
@@ -386,12 +393,12 @@ public class Record extends AppCompatActivity {
 
     private void updateConfiguration() {
         // Declare bytearray
-        byte[] configBytes = new byte[3];
+        byte[] configBytes = new byte[4];
 
         // Concatenate binary strings
-        configBytes[0] = (byte) (selectedGainB | generateDummyB | halfDummyB);
-        //configBytes[1] = selectedScaleB;
-        configBytes[2] = 0b00000000;
+        configBytes[1] = (byte) (selectedGainB | generateDummyB | halfDummyB);
+        configBytes[2] = (byte) (selectedScaleB & 0xff);
+        configBytes[3] = 0b00000000;
 
 
         configCharacteristic.setValue(configBytes);
@@ -576,7 +583,7 @@ public class Record extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.bluethoot_conect, menu);
+        getMenuInflater().inflate(R.menu.bluetooth_connect, menu);
         this.menu = menu;
         return true;
     }
@@ -640,6 +647,14 @@ public class Record extends AppCompatActivity {
                 menuItemCast.setIcon(R.drawable.ic_cast_white_24dp);
             }
         }
+
+        if (id==R.id.centering) {
+            Toast.makeText(getApplicationContext(),
+                    "Centering Signal around 0 in 6 seconds",
+                    Toast.LENGTH_LONG).show();
+            TraumschreiberService.initiateCentering();
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -647,14 +662,17 @@ public class Record extends AppCompatActivity {
         MenuItem menuItemNotify = menu.findItem(R.id.notify);
         menuItemNotify.setEnabled(false);
         waitForBluetoothCallback(mBluetoothLeService);
+
+
         if (!notifying) {
             notifying = true;
-            mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, notifying);
+            Toast.makeText(this,"Callibrating for 6 seconds..", Toast.LENGTH_LONG).show();
+            mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, notifying,false);
             menuItemNotify.setIcon(R.drawable.ic_notifications_active_blue_24dp);
         } else {
             notifying = false;
             mDataResolution.setText("No data");
-            mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, notifying);
+            mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, notifying,false);
             menuItemNotify.setIcon(R.drawable.ic_notifications_off_white_24dp);
         }
 
@@ -697,7 +715,9 @@ public class Record extends AppCompatActivity {
                     // If the characteristic is a notifying characteristic
                     if (notifyingUUIDs.contains(charUuid)) {
                         notifyingCharacteristics.add(gattCharacteristic);
-                        mBluetoothLeService.setCharacteristicNotification(gattCharacteristic, false);
+                        mBluetoothLeService.setCharacteristicNotification(gattCharacteristic,
+                                                                false,
+                                                                false);
                         mNotifyCharacteristic = gattCharacteristic; // Store the last one here for toggling
                     } else if (configCharacteristicUuid.contains(charUuid)) {
                         configCharacteristic = gattCharacteristic;
@@ -707,7 +727,9 @@ public class Record extends AppCompatActivity {
                 }
                 prepareNotifications();
                 waitForBluetoothCallback(mBluetoothLeService);
-                mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
+                mBluetoothLeService.setCharacteristicNotification(codeCharacteristic,
+                                                                true,
+                                                                true);
             }
         }
     }
@@ -719,7 +741,7 @@ public class Record extends AppCompatActivity {
         for (BluetoothGattCharacteristic characteristic : notifyingCharacteristics) {
             waitForBluetoothCallback(mBluetoothLeService);
             if (characteristic != mNotifyCharacteristic) {
-                mBluetoothLeService.setCharacteristicNotification(characteristic, true);
+                mBluetoothLeService.setCharacteristicNotification(characteristic, true, false);
             }
         }
     }
@@ -770,7 +792,7 @@ public class Record extends AppCompatActivity {
     @SuppressLint("DefaultLocale")
     private void displayData(List<Float> signalMicroV) {
         if (signalMicroV != null) {
-            for (int i = 0; i < 24; i++) {
+            for (int i = 0; i < nChannels; i++) {
                 String channelValueS = "";
                 float channelValueF = signalMicroV.get(i);
                 //if(signalMicroV.get(i) > 0) value += "+";
@@ -883,10 +905,10 @@ public class Record extends AppCompatActivity {
             x = cnt * DATAPOINT_TIME; // timestamp for x axis in ms
             List<Float> f = e_list.get(i);
 
-            /***  add the entries of every shown channel.**/
+
+            /*  Creating and adding entries to Entrylists */
             for (int n = 0; n < nChannels; n++) {
                 //the ith entryList represents the stored data of the ith channel
-                // TODO: Chec if if condition makes a difference. CUrrent: NO
                 lineEntryLists.get(n).add(new Entry(x, f.get(n)));
             }
         }
@@ -895,8 +917,8 @@ public class Record extends AppCompatActivity {
         if (thread != null) thread.interrupt();
         final Runnable runnable = () -> {
 
-            // PLOTTABLE DATASET CREATION
-            for (int i = 0; i < nChannels; i++) {
+            /* Create Datasets from the Entrylists filled above */
+            for (int i = 0; i < 1; i++) {
                 if (channelsShown[i]) {
                     LineDataSet set = createSet(i);
                     datasets.add(set);
@@ -983,9 +1005,9 @@ public class Record extends AppCompatActivity {
     @SuppressLint({"SimpleDateFormat", "SetTextI18n"})
     private void startTrial() {
         cnt = 0;
-        main_data = new ArrayList<>();
+        mainData = new ArrayList<>();
         start_time = new SimpleDateFormat("HH:mm:ss.SSS").format(new Date());
-        start_timestamp = new Timestamp(start_watch).getTime();
+        start_timestamp = new Timestamp(startTime).getTime();
         recording = true;
     }
 
@@ -996,23 +1018,24 @@ public class Record extends AppCompatActivity {
         end_time = new SimpleDateFormat("HH:mm:ss.SSS").format(new Date());
         long stop_watch = System.currentTimeMillis();
         end_timestamp = new Timestamp(stop_watch).getTime();
-        recording_time = Long.toString(stop_watch - start_watch);
+        recording_time = Long.toString(stop_watch - startTime);
     }
 
 
     //Stores data while session is running
     private void storeData(List<Float> data_microV) {
-        if (dp_received.size() == 0) start_watch = System.currentTimeMillis();
+        if (timestamps.size() == 0) startTime = System.currentTimeMillis();
         float[] f_microV = new float[data_microV.size()];
-        float curr_received = System.currentTimeMillis() - start_watch;
-        dp_received.add(curr_received);
+        float timestamp = System.currentTimeMillis() - startTime;
+        timestamps.add(timestamp);
         int i = 0;
         for (Float f : data_microV)
             f_microV[i++] = (f != null ? f : Float.NaN); // Or whatever default you want
-        main_data.add(f_microV);
+        mainData.add(f_microV);
 
         adaptiveEncodingFlags.add(adaptiveEncodingFlag);
         adaptiveEncodingFlag = 0;
+        signalBitShifts.add(signalBitShift);
     }
 
     private void saveSession() {
@@ -1033,12 +1056,14 @@ public class Record extends AppCompatActivity {
         final char delimiter = ',';
         final char break_line = '\n';
 
-        int rows = main_data.size();
-        int cols = main_data.get(0).length;
+        int rows = mainData.size();
+        //int cols = mainData.get(0).length;
+        int cols = nChannels;
         final StringBuilder header = new StringBuilder();
-        for (int i = 1; i <= cols; i++) header.append(String.format("Ch-%d,", i));
-        for (int i = 1; i <= cols; i++) header.append(String.format("Bitshift-Ch%d,",i));
-        header.append("Bitshift-Notification");
+        header.append("time,");
+        for (int i = 0; i <= cols; i++) header.append(String.format("ch%d,", i));
+        for (int i = 1; i <= cols; i++) header.append(String.format("enc_ch%d,",i));
+        header.append("enc_flag");
         //header.append(String.format("Ch-%d", cols));
 
         new Thread(() -> {
@@ -1087,16 +1112,16 @@ public class Record extends AppCompatActivity {
                     //fileWriter.append(delimiter);
                     //fileWriter.append(String.valueOf(pkgsLost.get(i)));
                     //fileWriter.append(delimiter);
-                    //fileWriter.append(String.valueOf(dp_received.get(i)));
-                    //fileWriter.append(delimiter);
+                    fileWriter.append(String.valueOf(timestamps.get(i)));
+                    fileWriter.append(delimiter);
                     // ACTUAL DATA
                     for (int j = 0; j < cols; j++) {
-                        fileWriter.append(String.valueOf(main_data.get(i)[j]));
+                        fileWriter.append(String.valueOf(mainData.get(i)[j]));
                         fileWriter.append(delimiter);
                     }
                     // MONITORING CODE BOOK
                     for(int j=0; j < cols;j++) {
-                        fileWriter.append(String.valueOf(TraumschreiberService.signalBitShift[j]));
+                        fileWriter.append(Integer.toString(signalBitShifts.get(i)));
                         fileWriter.append(delimiter);
                     }
                     // MONITORING CODE BOOK UPDATE NOTIFICATIONS
@@ -1150,6 +1175,8 @@ public class Record extends AppCompatActivity {
         MenuItem menuItem = menu.findItem(R.id.scan);
         MenuItem menuItemNotify = menu.findItem(R.id.notify);
         MenuItem menuItemCast = menu.findItem(R.id.cast);
+        MenuItem menuItemCentering = menu.findItem(R.id.centering);
+
         if (connected) {
             menuItem.setIcon(R.drawable.ic_bluetooth_connected_blue_24dp);
             mConnectionState.setText(R.string.device_connected);
@@ -1159,6 +1186,7 @@ public class Record extends AppCompatActivity {
             viewDeviceAddress.setText(mDeviceAddress);
             menuItemNotify.setVisible(true);
             menuItemCast.setVisible(true);
+            menuItemCentering.setVisible(true);
         } else {
             menuItem.setIcon(R.drawable.ic_bluetooth_searching_white_24dp);
             mConnectionState.setText(R.string.no_device);
@@ -1169,6 +1197,7 @@ public class Record extends AppCompatActivity {
             viewDeviceAddress.setText(R.string.no_address);
             menuItemNotify.setVisible(false);
             menuItemCast.setVisible(false);
+            menuItemCentering.setVisible(false);
         }
     }
 

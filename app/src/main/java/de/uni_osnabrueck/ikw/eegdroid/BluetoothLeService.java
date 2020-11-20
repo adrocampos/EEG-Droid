@@ -61,7 +61,7 @@ public class BluetoothLeService extends Service {
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
     private int mConnectionState = STATE_DISCONNECTED;
-    private TraumschreiberService mTraumschreiberService = new TraumschreiberService();
+    //private TraumschreiberService mTraumschreiberService = new TraumschreiberService();
     private int[] dataDecoded;
     private boolean newTraumschreiber = false;
     public boolean isBusy = false;
@@ -142,7 +142,7 @@ public class BluetoothLeService extends Service {
         if (data != null && data.length > 0) {
             //We have to decompress the EEG-Data here. This is done by TraumschreiberService.decompress();
             String characteristicId = characteristic.getUuid().toString().substring(7,8);
-            dataDecoded = mTraumschreiberService.decompress(data, newTraumschreiber, characteristicId);
+            dataDecoded = TraumschreiberService.decompress(data, newTraumschreiber, characteristicId);
             if(dataDecoded != null) intent.putExtra(EXTRA_DATA, dataDecoded);
         }
         if(dataDecoded != null) sendBroadcast(intent);
@@ -271,17 +271,21 @@ public class BluetoothLeService extends Service {
      * @param enabled        If true, enable notification.  False otherwise.
      */
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
-                                              boolean enabled) {
+                                              boolean enabled, boolean setIndication) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
-        mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+        boolean result = mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+        Log.d(TAG, "Characteristic " + characteristic.getUuid().toString() + "enabled: " + String.format("%b", result));
+
         BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
                 UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
+
         if (descriptor != null) {
             isBusy = true; // Changes once onDescriptorWrite callback is called
-            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            if(!setIndication) descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            else descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
             mBluetoothGatt.writeDescriptor(descriptor);
         }
     }
