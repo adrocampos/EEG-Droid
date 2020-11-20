@@ -655,14 +655,17 @@ public class Record extends AppCompatActivity {
         MenuItem menuItemNotify = menu.findItem(R.id.notify);
         menuItemNotify.setEnabled(false);
         waitForBluetoothCallback(mBluetoothLeService);
+
+
         if (!notifying) {
             notifying = true;
-            mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, notifying);
+            Toast.makeText(this,"Callibrating for 6 seconds..", Toast.LENGTH_LONG).show();
+            mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, notifying,false);
             menuItemNotify.setIcon(R.drawable.ic_notifications_active_blue_24dp);
         } else {
             notifying = false;
             mDataResolution.setText("No data");
-            mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, notifying);
+            mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, notifying,false);
             menuItemNotify.setIcon(R.drawable.ic_notifications_off_white_24dp);
         }
 
@@ -705,7 +708,9 @@ public class Record extends AppCompatActivity {
                     // If the characteristic is a notifying characteristic
                     if (notifyingUUIDs.contains(charUuid)) {
                         notifyingCharacteristics.add(gattCharacteristic);
-                        mBluetoothLeService.setCharacteristicNotification(gattCharacteristic, false);
+                        mBluetoothLeService.setCharacteristicNotification(gattCharacteristic,
+                                                                false,
+                                                                false);
                         mNotifyCharacteristic = gattCharacteristic; // Store the last one here for toggling
                     } else if (configCharacteristicUuid.contains(charUuid)) {
                         configCharacteristic = gattCharacteristic;
