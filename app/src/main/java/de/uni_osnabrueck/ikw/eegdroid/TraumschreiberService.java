@@ -63,6 +63,11 @@ public class TraumschreiberService {
         signalBitShift = newShift;
     }
 
+    public static void initiateCentering(){
+        signalOffset = new int[24];
+        pkgCount = 0;
+    }
+
     /***
      * decompress takes a bytearray dataBytes and converts it to integers, according to the way the Traumschreiber transmits the data via bluetooth
      * @param dataBytes

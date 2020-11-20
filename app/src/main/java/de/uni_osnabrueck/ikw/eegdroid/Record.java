@@ -28,7 +28,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -584,7 +583,7 @@ public class Record extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.bluethoot_conect, menu);
+        getMenuInflater().inflate(R.menu.bluetooth_connect, menu);
         this.menu = menu;
         return true;
     }
@@ -648,6 +647,14 @@ public class Record extends AppCompatActivity {
                 menuItemCast.setIcon(R.drawable.ic_cast_white_24dp);
             }
         }
+
+        if (id==R.id.centering) {
+            Toast.makeText(getApplicationContext(),
+                    "Centering Signal around 0 in 6 seconds",
+                    Toast.LENGTH_LONG).show();
+            TraumschreiberService.initiateCentering();
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -1168,6 +1175,8 @@ public class Record extends AppCompatActivity {
         MenuItem menuItem = menu.findItem(R.id.scan);
         MenuItem menuItemNotify = menu.findItem(R.id.notify);
         MenuItem menuItemCast = menu.findItem(R.id.cast);
+        MenuItem menuItemCentering = menu.findItem(R.id.centering);
+
         if (connected) {
             menuItem.setIcon(R.drawable.ic_bluetooth_connected_blue_24dp);
             mConnectionState.setText(R.string.device_connected);
@@ -1177,6 +1186,7 @@ public class Record extends AppCompatActivity {
             viewDeviceAddress.setText(mDeviceAddress);
             menuItemNotify.setVisible(true);
             menuItemCast.setVisible(true);
+            menuItemCentering.setVisible(true);
         } else {
             menuItem.setIcon(R.drawable.ic_bluetooth_searching_white_24dp);
             mConnectionState.setText(R.string.no_device);
@@ -1187,6 +1197,7 @@ public class Record extends AppCompatActivity {
             viewDeviceAddress.setText(R.string.no_address);
             menuItemNotify.setVisible(false);
             menuItemCast.setVisible(false);
+            menuItemCentering.setVisible(false);
         }
     }
 
