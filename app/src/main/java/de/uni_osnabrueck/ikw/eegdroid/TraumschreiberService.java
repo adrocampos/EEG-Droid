@@ -80,7 +80,7 @@ public class TraumschreiberService {
         int new_int;
         int bLen = newModel ? 3 : 2; // bytes needed to encode 1 int (old encodings)
 
-            // ____NEW TRAUMSCHREIBER____
+            // ____ NORMAL DECODING ____
         if (!dpcmEncoded) {
             // Process Header
             int header = dataBytes[0] & 0xff; // Unsigned Byte
@@ -120,11 +120,11 @@ public class TraumschreiberService {
                 data_ints = decodeDpcm(dpcmBuffer2);
                 characteristic0Ready = false;
 
-                // Characteristic c0de
+                // Characteristic c0de - Updates Codebook
             } else if (characteristicId.equals("e")){
 
                 // Iterate through the 12 received bytes and split them into unsigned nibbles
-                for(int i = 0; i < 1; i++){
+                for(int i = 0; i < 12; i++){
                     signalBitShift[i*2] = (dataBytes[i]>>4) & 0xf;
                     signalBitShift[i*2+1] = dataBytes[i] & 0xf;
                 }
@@ -153,7 +153,7 @@ public class TraumschreiberService {
         int[] delta = bytesTo10bitInts(deltaBytes);
         //Log.v(TAG, "Decoded Delta: " + Arrays.toString(data));
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 24; i++) {
             decodedSignal[i] += delta[i] << signalBitShift[i];
             if (pkgCount < 1000) signalOffset[i] += 0.001 * decodedSignal[i]; //Average over first 1000 pkgs
             if (pkgCount == 1000) decodedSignal[i] -= signalOffset[i];
@@ -181,9 +181,9 @@ public class TraumschreiberService {
         for (int i = 0; i <= bytes.length - 5; i += 5) {
             idx = i * 4 / 5;
             data[idx + 0] = ((bytes[i + 0] & 0xff) << 2) | ((bytes[i + 1] & 0xc0) >>> 6);
-            /*data[idx + 1] = ((bytes[i + 1] & 0x3f) << 4) | ((bytes[i + 2] & 0xf0) >>> 4);
+            data[idx + 1] = ((bytes[i + 1] & 0x3f) << 4) | ((bytes[i + 2] & 0xf0) >>> 4);
             data[idx + 2] = ((bytes[i + 2] & 0x0f) << 6) | ((bytes[i + 3] & 0xfc) >>> 2);
-            data[idx + 3] = ((bytes[i + 3] & 0x03) << 8) | ((bytes[i + 4] & 0xff) >>> 0);*/
+            data[idx + 3] = ((bytes[i + 3] & 0x03) << 8) | ((bytes[i + 4] & 0xff) >>> 0);
         }
         // Subtracting 1024 turns unsigned 10bit ints into their 2's complement
         for (int i = 0; i < 1; i++) {

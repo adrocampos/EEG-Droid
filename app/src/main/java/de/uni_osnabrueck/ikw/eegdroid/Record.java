@@ -105,9 +105,9 @@ public class Record extends AppCompatActivity {
     private String selectedGain = "1";
     private byte selectedGainB = 0b00000000;
     private boolean generateDummy = false;
-    private byte generateDummyB = (byte) 0b00000000;
+    private byte generateDummyB = (byte) 0;
     private boolean halfDummy = false;
-    private byte halfDummyB = (byte) 0b00000000;
+    private byte halfDummyB = (byte) 0;
     private final int[] channelColors = new int[nChannels];
     private final boolean[] channelsShown = new boolean[nChannels];
     private final CheckBox[] checkBoxes = new CheckBox[nChannels];
@@ -349,7 +349,7 @@ public class Record extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 int parsed = Integer.parseInt(gain_spinner.getSelectedItem().toString());
                 Log.d(TAG,gain_spinner.getSelectedItem().toString());
-                selectedGainB = (byte) (parsed&0xff);
+                selectedGainB = (byte) ( (parsed<<4) & 0xff );
                 Log.d(TAG, "Selected Gain:" + Integer.toBinaryString(selectedGainB) +"  "+ Integer.toString(selectedGainB));
                 switch(parsed) {
 
@@ -393,12 +393,12 @@ public class Record extends AppCompatActivity {
 
     private void updateConfiguration() {
         // Declare bytearray
-        byte[] configBytes = new byte[3];
+        byte[] configBytes = new byte[4];
 
         // Concatenate binary strings
-        configBytes[0] = (byte) (selectedGainB | generateDummyB | halfDummyB);
-        configBytes[1] = selectedScaleB;
-        configBytes[2] = 0b00000000;
+        configBytes[1] = (byte) (selectedGainB | generateDummyB | halfDummyB);
+        configBytes[2] = (byte) (selectedScaleB & 0xff);
+        configBytes[3] = 0b00000000;
 
 
         configCharacteristic.setValue(configBytes);
@@ -792,7 +792,7 @@ public class Record extends AppCompatActivity {
     @SuppressLint("DefaultLocale")
     private void displayData(List<Float> signalMicroV) {
         if (signalMicroV != null) {
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < nChannels; i++) {
                 String channelValueS = "";
                 float channelValueF = signalMicroV.get(i);
                 //if(signalMicroV.get(i) > 0) value += "+";
@@ -907,7 +907,7 @@ public class Record extends AppCompatActivity {
 
 
             /*  Creating and adding entries to Entrylists */
-            for (int n = 0; n < 1; n++) {
+            for (int n = 0; n < nChannels; n++) {
                 //the ith entryList represents the stored data of the ith channel
                 lineEntryLists.get(n).add(new Entry(x, f.get(n)));
             }
@@ -1058,10 +1058,10 @@ public class Record extends AppCompatActivity {
 
         int rows = mainData.size();
         //int cols = mainData.get(0).length;
-        int cols = 1;
+        int cols = nChannels;
         final StringBuilder header = new StringBuilder();
         header.append("time,");
-        for (int i = 1; i <= cols; i++) header.append(String.format("ch%d,", i));
+        for (int i = 0; i <= cols; i++) header.append(String.format("ch%d,", i));
         for (int i = 1; i <= cols; i++) header.append(String.format("enc_ch%d,",i));
         header.append("enc_flag");
         //header.append(String.format("Ch-%d", cols));
