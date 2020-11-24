@@ -2,6 +2,7 @@ package de.uni_osnabrueck.ikw.eegdroid;
 // initial commits
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -60,6 +61,7 @@ import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -393,16 +395,18 @@ public class Record extends AppCompatActivity {
 
     private void updateConfiguration() {
         // Declare bytearray
-        byte[] configBytes = new byte[3];
+        byte[] configBytes = new byte[4];
 
         // Concatenate binary strings
-        configBytes[0] = (byte) (selectedGainB | generateDummyB | halfDummyB);
+        configBytes[0] = (byte) ((selectedGainB | generateDummyB | halfDummyB)&0xff);
         configBytes[1] = (byte) (selectedScaleB & 0xff); //traumschreiber code:"spi_enc_factor_safe_encoding"
-        configBytes[2] = 0b00000000;
-
+        configBytes[2] = 0;
+        configBytes[3] = 0;
 
         configCharacteristic.setValue(configBytes);
         mBluetoothLeService.writeCharacteristic(configCharacteristic);
+
+        Log.d(TAG, "New Value of Config: " + Arrays.toString(configCharacteristic.getValue()));
     }
 
     private void initializeTimerTask() {
@@ -660,24 +664,44 @@ public class Record extends AppCompatActivity {
 
     private void toggleNotifying() {
         MenuItem menuItemNotify = menu.findItem(R.id.notify);
-        menuItemNotify.setEnabled(false);
+        //menuItemNotify.setEnabled(false);
         waitForBluetoothCallback(mBluetoothLeService);
 
 
+
         if (!notifying) {
+            Log.d(TAG, "Notifications Button pressed: ENABLED");
             notifying = true;
-            Toast.makeText(this,"Callibrating for 6 seconds..", Toast.LENGTH_LONG).show();
-            mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, notifying);
+            mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, true);
+            waitForBluetoothCallback(mBluetoothLeService);
+            mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
             menuItemNotify.setIcon(R.drawable.ic_notifications_active_blue_24dp);
         } else {
+            Log.d(TAG, "Notifications Button pressed: DISABLED");
             notifying = false;
             mDataResolution.setText("No data");
-            mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, notifying);
+            mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, false);
+            waitForBluetoothCallback(mBluetoothLeService);
+            mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, false);
             menuItemNotify.setIcon(R.drawable.ic_notifications_off_white_24dp);
         }
 
+        logDescriptorValue(notifyingCharacteristics.get(0));
+        logDescriptorValue(notifyingCharacteristics.get(1));
+        logDescriptorValue(notifyingCharacteristics.get(2));
+        logDescriptorValue(codeCharacteristic);
+
         menuItemNotify.setEnabled(true);
 
+    }
+
+    public void logDescriptorValue(BluetoothGattCharacteristic c){
+        String cId = c.getUuid().toString().substring(4,8);
+        BluetoothGattDescriptor descriptor = c.getDescriptor(
+                UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
+        byte[] descVal = descriptor.getValue();
+        String descValS = (descVal==BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE) ? "NOTIFICATIONS DISABLED" : "NOTIFICATIONS ENABLED";
+        Log.d(TAG, "Characteristic " + cId + " DESCRIPTOR VALUE: " + descValS);
     }
 
     @Override
@@ -745,7 +769,7 @@ public class Record extends AppCompatActivity {
     private void waitForBluetoothCallback(BluetoothLeService service){
         while (service.isBusy) {
             Handler handler = new Handler();
-            handler.postDelayed(() -> Log.d(TAG, "Waiting for bluetooth operation to finish."), 300);
+            handler.postDelayed(() -> Log.v(TAG, "Waiting for bluetooth operation to finish."), 300);
         }
 
     }
@@ -788,7 +812,7 @@ public class Record extends AppCompatActivity {
     @SuppressLint("DefaultLocale")
     private void displayData(List<Float> signalMicroV) {
         if (signalMicroV != null) {
-            for (int i = 0; i < nChannels; i++) {
+            for (int i = 0; i < 1; i++) {
                 String channelValueS = "";
                 float channelValueF = signalMicroV.get(i);
                 //if(signalMicroV.get(i) > 0) value += "+";
@@ -903,7 +927,7 @@ public class Record extends AppCompatActivity {
 
 
             /*  Creating and adding entries to Entrylists */
-            for (int n = 0; n < nChannels; n++) {
+            for (int n = 0; n < 1; n++) {
                 //the ith entryList represents the stored data of the ith channel
                 lineEntryLists.get(n).add(new Entry(x, f.get(n)));
             }
@@ -914,7 +938,7 @@ public class Record extends AppCompatActivity {
         final Runnable runnable = () -> {
 
             /* Create Datasets from the Entrylists filled above */
-            for (int i = 0; i < nChannels; i++) {
+            for (int i = 0; i < 1; i++) {
                 if (channelsShown[i]) {
                     LineDataSet set = createSet(i);
                     datasets.add(set);
@@ -1054,7 +1078,7 @@ public class Record extends AppCompatActivity {
 
         int rows = mainData.size();
         //int cols = mainData.get(0).length;
-        int cols = nChannels;
+        int cols = 1;
         final StringBuilder header = new StringBuilder();
         header.append("time,");
         for (int i = 1; i <= cols; i++) header.append(String.format("ch%d,", i));

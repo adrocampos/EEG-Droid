@@ -279,7 +279,8 @@ public class BluetoothLeService extends Service {
 
         // Set Notification
         boolean result = mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
-        Log.d(TAG, "Characteristic " + characteristic.getUuid().toString() + "enabled: " + String.format("%b", result));
+        Log.d(TAG, "set Notification of Characteristic " + characteristic.getUuid().toString() +
+                " success: " + String.format("%b", result));
 
         // Update Descriptor of the Characteristic
         BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
@@ -290,10 +291,13 @@ public class BluetoothLeService extends Service {
             // Need to handle Notifications and Indications Differently
             int properties = characteristic.getProperties();
             boolean indicate = (properties & BluetoothGattCharacteristic.PROPERTY_INDICATE) > 0;
+            if(indicate) Log.d(TAG, "WATCH OUT, PROPERTY TREATED AS INDICATE, OK?");
             if (!enabled)      descriptor.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
             else if (indicate) descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
             else               descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-            mBluetoothGatt.writeDescriptor(descriptor);
+            if(!indicate) result = mBluetoothGatt.writeDescriptor(descriptor);
+            Log.d(TAG, "writeDescriptor" +
+                    characteristic.getUuid().toString() + " Succes: " + String.format("%b",result));
         }
     }
 
