@@ -918,7 +918,7 @@ public class Record extends AppCompatActivity {
         final Runnable runnable = () -> {
 
             /* Create Datasets from the Entrylists filled above */
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < nChannels; i++) {
                 if (channelsShown[i]) {
                     LineDataSet set = createSet(i);
                     datasets.add(set);
@@ -1061,8 +1061,8 @@ public class Record extends AppCompatActivity {
         int cols = nChannels;
         final StringBuilder header = new StringBuilder();
         header.append("time,");
-        for (int i = 0; i <= cols; i++) header.append(String.format("ch%d,", i));
-        for (int i = 1; i <= cols; i++) header.append(String.format("enc_ch%d,",i));
+        for (int i = 1; i <= cols; i++) header.append(String.format("ch%d,", i));
+        for (int i = 1; i <= 1; i++) header.append(String.format("enc_ch%d,",i));
         header.append("enc_flag");
         //header.append(String.format("Ch-%d", cols));
 
@@ -1120,7 +1120,7 @@ public class Record extends AppCompatActivity {
                         fileWriter.append(delimiter);
                     }
                     // MONITORING CODE BOOK
-                    for(int j=0; j < cols;j++) {
+                    for(int j=0; j < 1;j++) {
                         fileWriter.append(Integer.toString(signalBitShifts.get(i)));
                         fileWriter.append(delimiter);
                     }
