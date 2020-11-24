@@ -150,7 +150,7 @@ public class Record extends AppCompatActivity {
     private int enabledCheckboxes = 0;
     private TextView mXAxis;
     private TextView mDataResolution;
-    private Spinner gain_spinner;
+    private Spinner gainSpinner;
     private LineChart mChart;
     private ImageButton imageButtonRecord;
     private ImageButton imageButtonSave;
@@ -337,20 +337,20 @@ public class Record extends AppCompatActivity {
 
     private void setGainSpinner() {
         int gains_set = mNewDevice ? R.array.gains_new : R.array.gains_old;
-        gain_spinner.setAdapter(new ArrayAdapter<>(getApplicationContext(),
+        gainSpinner.setAdapter(new ArrayAdapter<>(getApplicationContext(),
                 android.R.layout.simple_spinner_dropdown_item,
                 getResources().getStringArray(gains_set)));
         int gain_default = 1;
-        gain_spinner.setSelection(gain_default);
-        gain_spinner.setEnabled(true);
+        gainSpinner.setSelection(gain_default);
+        gainSpinner.setEnabled(true);
         //selectedGain = gain_spinner.getSelectedItem().toString();
-        gain_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        gainSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                int parsed = Integer.parseInt(gain_spinner.getSelectedItem().toString());
-                Log.d(TAG,gain_spinner.getSelectedItem().toString());
-                selectedGainB = (byte) ( (parsed<<4) & 0xff );
-                Log.d(TAG, "Selected Gain:" + Integer.toBinaryString(selectedGainB) +"  "+ Integer.toString(selectedGainB));
+                int parsed = Integer.parseInt(gainSpinner.getSelectedItem().toString());
+                Log.d(TAG,gainSpinner.getSelectedItem().toString());
+                selectedScaleB = (byte) ( (parsed<<4) & 0xff );
+                Log.d(TAG, "Selected Gain:" + Integer.toBinaryString(selectedScaleB) +"  "+ Integer.toString(selectedScaleB));
                 switch(parsed) {
 
                         /*case 1:
@@ -393,12 +393,12 @@ public class Record extends AppCompatActivity {
 
     private void updateConfiguration() {
         // Declare bytearray
-        byte[] configBytes = new byte[4];
+        byte[] configBytes = new byte[3];
 
         // Concatenate binary strings
-        configBytes[1] = (byte) (selectedGainB | generateDummyB | halfDummyB);
-        configBytes[2] = (byte) (selectedScaleB & 0xff);
-        configBytes[3] = 0b00000000;
+        configBytes[0] = (byte) (selectedGainB | generateDummyB | halfDummyB);
+        configBytes[1] = (byte) (selectedScaleB & 0xff); //traumschreiber code:"spi_enc_factor_safe_encoding"
+        configBytes[2] = 0b00000000;
 
 
         configCharacteristic.setValue(configBytes);
@@ -453,7 +453,7 @@ public class Record extends AppCompatActivity {
         imageButtonSave = findViewById(R.id.imageButtonSave);
         imageButtonDiscard = findViewById(R.id.imageButtonDiscard);
         switch_plots = findViewById(R.id.switch_plots);
-        gain_spinner = findViewById(R.id.gain_spinner);
+        gainSpinner = findViewById(R.id.gain_spinner);
 
         layout_plots = findViewById(R.id.linearLayout_chart);
         layout_plots.setVisibility(ViewStub.VISIBLE);
@@ -1182,7 +1182,7 @@ public class Record extends AppCompatActivity {
             mConnectionState.setText(R.string.device_connected);
             mConnectionState.setTextColor(Color.GREEN);
             switch_plots.setEnabled(true);
-            gain_spinner.setEnabled(true);
+            gainSpinner.setEnabled(true);
             viewDeviceAddress.setText(mDeviceAddress);
             menuItemNotify.setVisible(true);
             menuItemCast.setVisible(true);
@@ -1193,7 +1193,7 @@ public class Record extends AppCompatActivity {
             mConnectionState.setTextColor(Color.LTGRAY);
             buttons_nodata();
             switch_plots.setEnabled(false);
-            gain_spinner.setEnabled(false);
+            gainSpinner.setEnabled(false);
             viewDeviceAddress.setText(R.string.no_address);
             menuItemNotify.setVisible(false);
             menuItemCast.setVisible(false);
