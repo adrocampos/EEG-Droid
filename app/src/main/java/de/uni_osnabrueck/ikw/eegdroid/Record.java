@@ -812,7 +812,7 @@ public class Record extends AppCompatActivity {
     @SuppressLint("DefaultLocale")
     private void displayData(List<Float> signalMicroV) {
         if (signalMicroV != null) {
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < 8; i++) {
                 String channelValueS = "";
                 float channelValueF = signalMicroV.get(i);
                 //if(signalMicroV.get(i) > 0) value += "+";
@@ -927,7 +927,7 @@ public class Record extends AppCompatActivity {
 
 
             /*  Creating and adding entries to Entrylists */
-            for (int n = 0; n < 1; n++) {
+            for (int n = 0; n < 8; n++) {
                 //the ith entryList represents the stored data of the ith channel
                 lineEntryLists.get(n).add(new Entry(x, f.get(n)));
             }
@@ -938,7 +938,7 @@ public class Record extends AppCompatActivity {
         final Runnable runnable = () -> {
 
             /* Create Datasets from the Entrylists filled above */
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < 8; i++) {
                 if (channelsShown[i]) {
                     LineDataSet set = createSet(i);
                     datasets.add(set);

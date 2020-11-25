@@ -149,9 +149,9 @@ public class TraumschreiberService {
      * @return int[] data
      */
     public static int[] decodeDpcm(byte[] deltaBytes) {
-        //Log.v(TAG, "Encoded Delta: " + Arrays.toString(bytes));
+        //Log.v(TAG, "Encoded Delta: " + Arrays.toString(deltaBytes));
         int[] delta = bytesTo10bitInts(deltaBytes);
-        //Log.v(TAG, "Decoded Delta: " + Arrays.toString(data));
+        Log.v(TAG, "Decoded Delta: " + Arrays.toString(deltaBytes));
 
         for (int i = 0; i < 24; i++) {
             decodedSignal[i] += delta[i] << signalBitShift[i];
