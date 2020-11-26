@@ -291,11 +291,11 @@ public class BluetoothLeService extends Service {
             // Need to handle Notifications and Indications Differently
             int properties = characteristic.getProperties();
             boolean indicate = (properties & BluetoothGattCharacteristic.PROPERTY_INDICATE) > 0;
-            if(indicate) Log.d(TAG, "WATCH OUT, PROPERTY TREATED AS INDICATE, OK?");
+            // if(indicate) Log.d(TAG, "WATCH OUT, PROPERTY TREATED AS INDICATE, OK?");
             if (!enabled)      descriptor.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
             else if (indicate) descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
             else               descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-            if(!indicate) result = mBluetoothGatt.writeDescriptor(descriptor);
+            result = mBluetoothGatt.writeDescriptor(descriptor);
             Log.d(TAG, "writeDescriptor" +
                     characteristic.getUuid().toString() + " Succes: " + String.format("%b",result));
         }
