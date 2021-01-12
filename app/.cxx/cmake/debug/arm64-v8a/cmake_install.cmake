@@ -2,7 +2,7 @@
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/install")
+  set(CMAKE_INSTALL_PREFIX "/usr/local")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -56,16 +56,6 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xliblslx" OR NOT CMAKE_INSTALL_COMPO
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xliblslx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/lslver")
-  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/lslver" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/lslver")
-    if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/lslver")
-    endif()
-  endif()
-endif()
-
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xliblslx" OR NOT CMAKE_INSTALL_COMPONENT)
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/LSL/LSLTargets.cmake")
     file(DIFFERENT EXPORT_FILE_CHANGED FILES
          "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/LSL/LSLTargets.cmake"
@@ -94,6 +84,16 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xliblslx" OR NOT CMAKE_INSTALL_COMPO
     "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/LSLConfig.cmake"
     "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/LSLConfigVersion.cmake"
     )
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xliblslx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/lslver")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/lslver" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/lslver")
+    if(CMAKE_INSTALL_DO_STRIP)
+      execute_process(COMMAND "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/lslver")
+    endif()
+  endif()
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)

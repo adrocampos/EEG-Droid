@@ -10,6 +10,8 @@ Detecting CXX compile features
 Detecting CXX compile features - done
 Found Git: /app/bin/git (found version "2.28.0") 
 Git version information: master/
+Looking for clock_gettime
+Looking for clock_gettime - found
 Looking for pthread.h
 Looking for pthread.h - found
 Performing Test CMAKE_HAVE_LIBC_PTHREAD
@@ -21,14 +23,8 @@ Looking for pthread_create in pthread - not found
 Check if compiler accepts -pthread
 Check if compiler accepts -pthread - yes
 Found Threads: TRUE  
-Included LSL CMake helpers, rev. 12, /home/mvidaldepalo/github/EEG-Droid/liblsl/cmake
-CMake Warning at /home/mvidaldepalo/github/EEG-Droid/liblsl/cmake/LSLCMake.cmake:21 (message):
-  CMAKE_INSTALL_PREFIX default initialized to
-  /home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86/install
-Call Stack (most recent call first):
-  CMakeLists.txt:277 (include)
-
-
+Included LSL CMake helpers, rev. 15, /home/mvidaldepalo/github/EEG-Droid/liblsl/cmake
+Detected architecture: i386
 Installing Components: liblsl
 Configuring done
 CMake Deprecation Warning:

@@ -12,7 +12,7 @@ arguments :
 -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=/home/mvidaldepalo/github/EEG-Droid/app/build/intermediates/cmake/debug/obj/x86_64
 -DCMAKE_MAKE_PROGRAM=/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja
 -DCMAKE_SYSTEM_NAME=Android
--DCMAKE_SYSTEM_VERSION=21
+-DCMAKE_SYSTEM_VERSION=24
 -DANDROID_CPP_FEATURES=rtti exceptions
 -DLSL_NO_FANCY_LIBNAME=1
 -DANDROID_PLATFORM=24

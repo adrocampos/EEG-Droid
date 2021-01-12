@@ -11,13 +11,6 @@
   ],
   "buildTargetsCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja  -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64\" {LIST_OF_TARGETS_TO_BUILD}",
   "libraries": {
-    "lsl-Debug-x86_64": {
-      "artifactName": "lsl",
-      "buildCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64\" lsl",
-      "abi": "x86_64",
-      "output": "/home/mvidaldepalo/github/EEG-Droid/app/build/intermediates/cmake/debug/obj/x86_64/liblsl.so",
-      "runtimeFiles": []
-    },
     "lslver-Debug-x86_64": {
       "artifactName": "lslver",
       "buildCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64\" lslver",
@@ -26,6 +19,13 @@
       "runtimeFiles": [
         "/home/mvidaldepalo/github/EEG-Droid/app/build/intermediates/cmake/debug/obj/x86_64/liblsl.so"
       ]
+    },
+    "lsl-Debug-x86_64": {
+      "artifactName": "lsl",
+      "buildCommand": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -C \"/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64\" lsl",
+      "abi": "x86_64",
+      "output": "/home/mvidaldepalo/github/EEG-Droid/app/build/intermediates/cmake/debug/obj/x86_64/liblsl.so",
+      "runtimeFiles": []
     },
     "lslboost-Debug-x86_64": {
       "artifactName": "lslboost",

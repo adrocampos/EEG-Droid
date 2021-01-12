@@ -74,6 +74,7 @@ de/uni_osnabrueck/ikw/eegdroid/utilities/FFTWWrapper.java
  de.uni_osnabrueck.ikw.eegdroid.utilities.FFTWWrapper
 de/uni_osnabrueck/ikw/eegdroid/TraumschreiberService.java
  de.uni_osnabrueck.ikw.eegdroid.TraumschreiberService
+ de.uni_osnabrueck.ikw.eegdroid.TraumschreiberService$1
 de/uni_osnabrueck/ikw/eegdroid/utilities/CustomFFT.java
  de.uni_osnabrueck.ikw.eegdroid.utilities.CustomFFT
 de/uni_osnabrueck/ikw/eegdroid/LSL.java

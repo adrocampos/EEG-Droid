@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.12)
 project (liblsl
-	VERSION 1.13.1
+	VERSION 1.14.0
 	LANGUAGES C CXX
 	DESCRIPTION "Labstreaminglayer C/C++ library"
 	HOMEPAGE_URL "https://github.com/sccn/liblsl"
@@ -13,8 +13,9 @@ if(NOT MSVC_VERSION VERSION_LESS 1700)
 endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+option(LSL_DEBUGLOG "Enable (lots of) additional debug messages" OFF)
 option(LSL_UNIXFOLDERS "Use the unix folder layout for install targets" On)
-option(LSL_NO_FANCY_LIBNAME "Skip library name decorations (32/64/-debug)")
+option(LSL_FORCE_FANCY_LIBNAME "Add library name decorations (32/64/-debug)" OFF)
 option(LSL_BUILD_EXAMPLES "Build example programs in examples/" OFF)
 option(LSL_BUILD_STATIC "Also build static LSL library." OFF)
 option(LSL_LEGACY_CPP_ABI "Build legacy C++ ABI into lsl-static" OFF)
@@ -24,9 +25,10 @@ set(LSL_WINVER "0x0601" CACHE STRING
 	"Windows version (_WIN32_WINNT) to target (defaults to 0x0601 for Windows 7)")
 
 # Add an object library so all files are only compiled once
-set(lslobj_sources
+add_library(lslobj OBJECT
 	src/api_config.cpp
 	src/api_config.h
+	src/api_types.hpp
 	src/cancellable_streambuf.h
 	src/cancellation.h
 	src/cancellation.cpp
@@ -41,14 +43,19 @@ set(lslobj_sources
 	src/forward.h
 	src/info_receiver.cpp
 	src/info_receiver.h
+	src/inireader.h
+	src/inireader.cpp
 	src/inlet_connection.cpp
 	src/inlet_connection.h
-	src/lsl_continuous_resolver_c.cpp
-	src/lsl_freefuncs_c.cpp
+	src/loguru/loguru.hpp
+	src/loguru/loguru.cpp
+	src/lsl_resolver_c.cpp
 	src/lsl_inlet_c.cpp
 	src/lsl_outlet_c.cpp
 	src/lsl_streaminfo_c.cpp
 	src/lsl_xml_element_c.cpp
+	src/netinterfaces.h
+	src/netinterfaces.cpp
 	src/portable_archive/portable_archive_exception.hpp
 	src/portable_archive/portable_archive_includes.hpp
 	src/portable_archive/portable_iarchive.hpp
@@ -83,9 +90,14 @@ set(lslobj_sources
 	# headers
 	include/lsl_c.h
 	include/lsl_cpp.h
-	include/lsl/constants.h
+	include/lsl/common.h
+	include/lsl/inlet.h
+	include/lsl/outlet.h
+	include/lsl/resolver.h
+	include/lsl/streaminfo.h
+	include/lsl/types.h
+	include/lsl/xml.h
 )
-add_library(lslobj OBJECT ${lslobj_sources})
 
 # try to find out which revision is currently checked out
 find_package(Git)
@@ -109,51 +121,40 @@ else()
 	set(lslgitrevision "unknown")
 	set(lslgitbranch "unknown")
 endif()
-set(LSL_VERSION_INFO "\"git:${lslgitrevision}/branch:${lslgitbranch}/build:${CMAKE_BUILD_TYPE}/compiler:${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}/boost:\" BOOST_LIB_VERSION")
-set_source_files_properties("src/lsl_freefuncs_c.cpp" PROPERTIES COMPILE_DEFINITIONS LSL_LIBRARY_INFO_STR=${LSL_VERSION_INFO})
-
+set(LSL_VERSION_INFO "git:${lslgitrevision}/branch:${lslgitbranch}/build:${CMAKE_BUILD_TYPE}/compiler:${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}")
+set_source_files_properties("src/loguru/loguru.cpp" PROPERTIES COMPILE_DEFINITIONS LOGURU_STACKTRACES=$<BOOL:${LSL_DEBUGLOG}>)
 
 ## create the lslboost target
 add_library(lslboost OBJECT
 	lslboost/asio_objects.cpp
-	lslboost/libs/atomic/src/lockpool.cpp
-	lslboost/libs/chrono/src/chrono.cpp
-	lslboost/libs/serialization/src/archive_exception.cpp
-	lslboost/libs/serialization/src/basic_archive.cpp
-	lslboost/libs/serialization/src/basic_iarchive.cpp
-	lslboost/libs/serialization/src/basic_iserializer.cpp
-	lslboost/libs/serialization/src/basic_oarchive.cpp
-	lslboost/libs/serialization/src/basic_oserializer.cpp
-	lslboost/libs/serialization/src/basic_serializer_map.cpp
-	lslboost/libs/serialization/src/extended_type_info.cpp
-	lslboost/libs/serialization/src/extended_type_info_typeid.cpp
-	lslboost/libs/serialization/src/void_cast.cpp
+	lslboost/serialization_objects.cpp
 )
-if (UNIX)
-	target_sources(lslboost PRIVATE
-		lslboost/libs/thread/src/pthread/once.cpp
-		lslboost/libs/thread/src/pthread/thread.cpp
+
+if(UNIX)
+	include(CheckSymbolExists)
+	# look for clock_gettime, if not we need to link against librt
+	check_symbol_exists(clock_gettime time.h HAS_GETTIME)
+	if(NOT HAS_GETTIME)
+		set(NEEDS_LIBRT ON CACHE INTERNAL "Link to librt")
+	endif()
+endif()
+
+find_package(Threads REQUIRED)
+target_link_libraries(lslboost
+	PUBLIC
+		Threads::Threads
+	PRIVATE
+		$<$<PLATFORM_ID:Windows>:bcrypt>
+		$<$<PLATFORM_ID:Windows>:iphlpapi>
 	)
-	find_package(Threads REQUIRED)
-	target_link_libraries(lslboost PUBLIC Threads::Threads)
-	target_compile_features(lslboost PUBLIC cxx_std_11)
-else ()  # WIN32
-	target_sources(lslboost PRIVATE
-		lslboost/libs/serialization/src/codecvt_null.cpp
-		lslboost/libs/thread/src/win32/thread.cpp
-		lslboost/libs/thread/src/win32/tss_dll.cpp
-		lslboost/libs/thread/src/win32/tss_pe.cpp
-	)
-	target_link_libraries(lslboost PRIVATE
-		bcrypt
-		$<$<BOOL:${MINGW}>:wsock32 ws2_32 winmm>
-	)
-endif ()
+target_compile_features(lslboost PUBLIC cxx_std_11 cxx_lambda_init_captures)
 
 target_compile_definitions(lslboost
 	PUBLIC
 		BOOST_ALL_NO_LIB
+		BOOST_ASIO_STANDALONE
 		BOOST_ASIO_SEPARATE_COMPILATION
+		BOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS
 		$<$<PLATFORM_ID:Windows>:_WIN32_WINNT=${LSL_WINVER}>
 	PRIVATE
 		$<$<PLATFORM_ID:Windows>:BOOST_THREAD_BUILD_DLL>
@@ -162,59 +163,58 @@ target_include_directories(lslboost PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lslboost>)
 
 
-target_link_libraries(lslobj PRIVATE lslboost)
+target_link_libraries(lslobj
+	PRIVATE
+		lslboost
+	PUBLIC
+		$<$<AND:$<BOOL:${LSL_DEBUGLOG}>,$<PLATFORM_ID:Linux>>:dl>
+		$<$<BOOL:${NEEDS_LIBRT}>:rt>
+	)
 target_include_directories(lslobj
 	PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
 )
 target_compile_definitions(lslobj
 	PRIVATE LIBLSL_EXPORTS $<$<PLATFORM_ID:Windows>:_CRT_SECURE_NO_WARNINGS>
+		LOGURU_DEBUG_LOGGING=$<BOOL:${LSL_DEBUGLOG}>
 	INTERFACE LSLNOAUTOLINK # don't use #pragma(lib) in CMake builds
 )
 
 # shared library
-if (CMAKE_GENERATOR MATCHES "Xcode")
-    # Xcode is rather annoying in that it doesn't build SHARED libs unless they have source files.
-    # So we need to build from source, and then add all the other settings missing due to lack of lslobj
-    add_library(lsl SHARED ${lslobj_sources})
-    target_link_libraries(lsl PRIVATE lslboost)
-else()
-    add_library(lsl SHARED)
-    target_link_libraries(lsl
-		PUBLIC lslobj
-		PRIVATE lslboost)
-endif()
-target_include_directories(lsl
-	PUBLIC
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-		$<INSTALL_INTERFACE:include>
-)
-target_compile_definitions(lsl
-	PRIVATE LIBLSL_EXPORTS $<$<PLATFORM_ID:Windows>:_CRT_SECURE_NO_WARNINGS>
-	INTERFACE LSLNOAUTOLINK # don't use #pragma(lib) in CMake builds
-)
-
+add_library(lsl SHARED src/buildinfo.cpp)
+target_compile_definitions(lsl PRIVATE
+	LSL_LIBRARY_INFO_STR="${LSL_VERSION_INFO}/link:shared"
+	LIBLSL_EXPORTS)
+target_link_libraries(lsl
+	PUBLIC lslobj
+	PRIVATE lslboost)
 set_target_properties(lsl PROPERTIES
 	VERSION ${liblsl_VERSION_MAJOR}.${liblsl_VERSION_MINOR}.${liblsl_VERSION_PATCH}
 )
 
-set(LSL_EXPORT_TARGETS lsl lslobj lslboost lslver)
+set(LSL_EXPORT_TARGETS lsl lslobj lslboost)
 if(LSL_BUILD_STATIC)
-	add_library(lsl-static STATIC)
+	add_library(lsl-static STATIC src/buildinfo.cpp)
+	target_compile_definitions(lsl-static PRIVATE LSL_LIBRARY_INFO_STR="${LSL_VERSION_INFO}/link:static")
 	target_link_libraries(lsl-static PUBLIC lslobj PRIVATE lslboost)
-	# for LSL_CPP_API export header
-	target_compile_definitions(lsl-static INTERFACE LIBLSL_STATIC)
-	add_executable(lslver-static testing/lslver.c)
-	target_link_libraries(lslver-static PRIVATE lsl-static)
 	list(APPEND LSL_EXPORT_TARGETS lsl-static)
+	# for LSL_CPP_API export header
+	target_compile_definitions(lsl-static PUBLIC LIBLSL_STATIC)
 endif()
 
-if(NOT LSL_NO_FANCY_LIBNAME)
-	set(CMAKE_DEBUG_POSTFIX "-debug")
+if(LSL_FORCE_FANCY_LIBNAME)
 	math(EXPR lslplatform "8 * ${CMAKE_SIZEOF_VOID_P}")
 	set_target_properties(lsl PROPERTIES
 		PREFIX ""
 		OUTPUT_NAME "liblsl${lslplatform}"
+		DEBUG_POSTFIX "-debug"
+	)
+	if(LSL_BUILD_STATIC)
+		set_target_properties(lsl-static PROPERTIES
+			PREFIX ""
+			OUTPUT_NAME "liblsl${lslplatform}-static"
+			DEBUG_POSTFIX "-debug"
 		)
+	endif()
 endif()
 
 if(LSL_UNIXFOLDERS)
@@ -225,9 +225,6 @@ else()
 	set(CMAKE_INSTALL_INCLUDEDIR LSL/include)
 	set(CMAKE_INSTALL_DATAROOTDIR LSL/share)
 endif()
-
-add_executable(lslver testing/lslver.c)
-target_link_libraries(lslver PRIVATE lsl)
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
@@ -275,6 +272,15 @@ install(FILES
 )
 
 include(cmake/LSLCMake.cmake)
+
+add_executable(lslver testing/lslver.c)
+target_link_libraries(lslver PRIVATE lsl)
+installLSLApp(lslver)
+if(LSL_BUILD_STATIC)
+	add_executable(lslver-static testing/lslver.c)
+	target_link_libraries(lslver-static PRIVATE lsl-static)
+	installLSLApp(lslver-static)
+endif()
 
 if(LSL_UNITTESTS)
 	add_subdirectory(testing)
