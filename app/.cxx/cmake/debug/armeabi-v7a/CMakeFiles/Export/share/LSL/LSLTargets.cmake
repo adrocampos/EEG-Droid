@@ -16,7 +16,7 @@ set(CMAKE_IMPORT_FILE_VERSION 1)
 set(_targetsDefined)
 set(_targetsNotDefined)
 set(_expectedTargets)
-foreach(_expectedTarget LSL::lsl LSL::lslobj LSL::lslboost LSL::lslver)
+foreach(_expectedTarget LSL::lsl LSL::lslobj LSL::lslboost)
   list(APPEND _expectedTargets ${_expectedTarget})
   if(NOT TARGET ${_expectedTarget})
     list(APPEND _targetsNotDefined ${_expectedTarget})
@@ -53,8 +53,7 @@ endif()
 add_library(LSL::lsl SHARED IMPORTED)
 
 set_target_properties(LSL::lsl PROPERTIES
-  INTERFACE_COMPILE_DEFINITIONS "LSLNOAUTOLINK"
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include;${_IMPORT_PREFIX}/include"
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
   INTERFACE_LINK_LIBRARIES "LSL::lslobj"
 )
 
@@ -64,24 +63,17 @@ add_library(LSL::lslobj INTERFACE IMPORTED)
 set_target_properties(LSL::lslobj PROPERTIES
   INTERFACE_COMPILE_DEFINITIONS "LSLNOAUTOLINK"
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:LSL::lslboost>"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:LSL::lslboost>;\$<\$<AND:\$<BOOL:OFF>,\$<PLATFORM_ID:Linux>>:dl>;\$<\$<BOOL:>:rt>"
 )
 
 # Create imported target LSL::lslboost
 add_library(LSL::lslboost INTERFACE IMPORTED)
 
 set_target_properties(LSL::lslboost PROPERTIES
-  INTERFACE_COMPILE_DEFINITIONS "BOOST_ALL_NO_LIB;BOOST_ASIO_SEPARATE_COMPILATION;\$<\$<PLATFORM_ID:Windows>:_WIN32_WINNT=0x0601>"
-  INTERFACE_COMPILE_FEATURES "cxx_std_11"
+  INTERFACE_COMPILE_DEFINITIONS "BOOST_ALL_NO_LIB;BOOST_ASIO_STANDALONE;BOOST_ASIO_SEPARATE_COMPILATION;BOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS;\$<\$<PLATFORM_ID:Windows>:_WIN32_WINNT=0x0601>"
+  INTERFACE_COMPILE_FEATURES "cxx_std_11;cxx_lambda_init_captures"
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
-  INTERFACE_LINK_LIBRARIES "Threads::Threads"
-)
-
-# Create imported target LSL::lslver
-add_executable(LSL::lslver IMPORTED)
-
-set_target_properties(LSL::lslver PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
+  INTERFACE_LINK_LIBRARIES "Threads::Threads;\$<LINK_ONLY:\$<\$<PLATFORM_ID:Windows>:bcrypt>>;\$<LINK_ONLY:\$<\$<PLATFORM_ID:Windows>:iphlpapi>>"
 )
 
 if(CMAKE_VERSION VERSION_LESS 3.0.0)

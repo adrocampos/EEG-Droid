@@ -12,13 +12,12 @@ android {
     compileSdkVersion 30
     defaultConfig {
         applicationId "de.uni_osnabrueck.ikw.eegdroid"
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 30
         versionCode 1
         versionName '1.1'
         vectorDrawables.useSupportLibrary = true
         // uncomment it for building liblsl.so (LSL) using cmake
-        // specify cmake.dir=path-to-cmake on local.properties
 //        externalNativeBuild {
 //            cmake {
 //                arguments "-DANDROID_CPP_FEATURES=rtti exceptions","-DLSL_NO_FANCY_LIBNAME=1","-DANDROID_PLATFORM=24"
@@ -32,8 +31,13 @@ android {
     // make sure the libs aren't existing on /root-folder/app/src/main/jniLibs/, if so delete them
 //    externalNativeBuild.cmake {
 //        // If the Android SDK CMake is older than 3.12, you need to install CMake locally and
-//        // configure the path in your local.properties file, e.g.
-//        // cmake.dir=path-to-cmake
+//        // configure the cmake path in your local.properties file (cmake.dir=path-to-cmake), e.g.:
+//        // cmake.dir=/home/username/Android/Sdk/cmake/custom
+//        // Download cmake from: https://cmake.org/download/ (for building LSL -> liblsl.so)
+//        // also, add ninja binary inside path-to-cmake/bin
+//        // download from: https://github.com/ninja-build/ninja/releases/latest
+//        // If building the library liblsl.so works, you'll find it on app/src/main/jniLibs/
+//        // folders for each android-compatible architecture will be created containing liblsl in it
 //        version "3.12.0+"
 //        path "../liblsl/CMakeLists.txt"
 //    }
@@ -54,6 +58,7 @@ android {
                 java.srcDirs "src/${dir}/java"
                 res.srcDirs "src/${dir}/res"
             }
+            jniLibs.srcDir 'src/main/jniLibs'  // change to a directory of your choice
         }
     }
     compileOptions {
@@ -66,8 +71,8 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.3.0-alpha02'
-    implementation 'com.google.android.material:material:1.3.0-alpha03'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
+    implementation 'com.google.android.material:material:1.3.0-beta01'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.vectordrawable:vectordrawable:1.2.0-alpha02'
     implementation 'androidx.multidex:multidex:2.0.1'

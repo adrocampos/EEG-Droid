@@ -1,13 +1,13 @@
 [
   {
     "level": "INFO",
-    "message": "Start JSON generation. Platform version: 21 min SDK version: x86",
+    "message": "Start JSON generation. Platform version: 24 min SDK version: x86",
     "file": "/home/mvidaldepalo/github/EEG-Droid/liblsl/CMakeLists.txt",
     "tag": "debug|x86"
   },
   {
     "level": "INFO",
-    "message": "- CMake found from cmake.dir at \u0027/home/mvidaldepalo/Android/Sdk/cmake/custom\u0027 had version \u00273.18.4\u0027",
+    "message": "- CMake found from cmake.dir at \u0027/home/mvidaldepalo/Android/Sdk/cmake/custom\u0027 had version \u00273.19.2\u0027",
     "file": "/home/mvidaldepalo/github/EEG-Droid/liblsl/CMakeLists.txt",
     "tag": "debug|x86"
   },

@@ -1,48 +1,68 @@
 # Common functions and settings for LSL
 
-# Dummy function that should be called after find_package(LSL)
-# Does nothing at the moment, but the entire code below should be within this
-# function so it's not executed by accident
+option(LSL_DEPLOYAPPLIBS "Copy library dependencies (at the moment Qt + liblsl) to the installation dir" ON)
+option(LSL_COMFY_DEFAULTS "Set some quality of life options, e.g. a sensible 'install' directory" OFF)
+
 macro(LSLAPP_Setup_Boilerplate)
+	message(WARNING "This function is deprecated, set LSL_COMFY_DEFAULTS instead")
+	set(LSL_COMFY_DEFAULTS ON)
 endmacro()
 
-message(STATUS "Included LSL CMake helpers, rev. 12, ${CMAKE_CURRENT_LIST_DIR}")
-option(LSL_DEPLOYAPPLIBS "Copy library dependencies (at the moment Qt + liblsl) to the installation dir" ON)
+# helper script to determine the target architecture for package naming
+# The code below is compiled with the target compiler so it should work even
+# when cross compiling and doesn't require the executable to be run
+function(LSL_get_target_arch)
+	if(LSL_ARCH)
+		return()
+	endif()
+	file(WRITE "${CMAKE_BINARY_DIR}/arch.c" "
+#if defined(__ARM_ARCH_ISA_A64) || defined(__aarch64__)
+#error cmake_ARCH arm64
+#elif defined(__arm__) || defined(__TARGET_ARCH_ARM)
+#error cmake_ARCH arm
+#elif defined(__i386) || defined(__i386__) || defined(_M_IX86)
+#error cmake_ARCH i386
+#elif defined(__x86_64) || defined(__x86_64__) || defined(__amd64) || defined(_M_X64)
+#error cmake_ARCH amd64
+#elif defined(__ia64) || defined(__ia64__) || defined(_M_IA64)
+#error cmake_ARCH ia64
+#elif defined(__ppc__) || defined(__ppc) || defined(__powerpc__) \\
+  || defined(_ARCH_COM) || defined(_ARCH_PWR) || defined(_ARCH_PPC)  \\
+  || defined(_M_MPPC) || defined(_M_PPC)
+#if defined(__ppc64__) || defined(__powerpc64__) || defined(__64BIT__)
+#error cmake_ARCH ppc64
+#else
+#error cmake_ARCH powerpc
+#endif
+#else
+#error cmake_ARCH unknown
+#endif")
+	try_compile(dummy_result "${CMAKE_BINARY_DIR}"
+		SOURCES "${CMAKE_BINARY_DIR}/arch.c"
+		OUTPUT_VARIABLE ARCH)
+	string(REGEX REPLACE ".*cmake_ARCH ([a-z0-9]+).*" "\\1" ARCH "${ARCH}")
+	message(STATUS "Detected architecture: ${ARCH}")
+	set(LSL_ARCH "${ARCH}" CACHE INTERNAL "target architecture")
+endfunction()
 
-# set build type and default install dir if not done already
-if(NOT CMAKE_BUILD_TYPE)
+message(STATUS "Included LSL CMake helpers, rev. 15, ${CMAKE_CURRENT_LIST_DIR}")
+
+# set build type and default install dir if not done already or undesired
+if(LSL_COMFY_DEFAULTS AND NOT CMAKE_BUILD_TYPE)
 	message(STATUS "CMAKE_BUILD_TYPE was default initialized to Release")
 	set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
 endif()
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-# OR ((${MSVC_VERSION} GREATER_EQUAL 1910) AND ("${CMAKE_GENERATOR}" STREQUAL "Ninja"))
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND COMFY_DEFAULTS)
 	set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH
 		"Where to put redistributable binaries" FORCE)
-	message(WARNING "CMAKE_INSTALL_PREFIX default initialized to ${CMAKE_INSTALL_PREFIX}")
 endif()
 
-# Generate folders for IDE targets (e.g., VisualStudio solutions)
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+if(LSL_COMFY_DEFAULTS)
+	# Generate folders for IDE targets (e.g., VisualStudio solutions)
+	set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# Set runtime path, i.e. where shared libs are searched relative to the exe
-if(APPLE)
-	list(APPEND CMAKE_INSTALL_RPATH "@executable_path/../LSL/lib")
-	list(APPEND CMAKE_INSTALL_RPATH "@executable_path/../lib")
-	list(APPEND CMAKE_INSTALL_RPATH "@executable_path/")
-elseif(UNIX)
-	list(APPEND CMAKE_INSTALL_RPATH "\$ORIGIN/../LSL/lib:\$ORIGIN/../lib/:\$ORIGIN")
-endif()
-
-set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "limited configs" FORCE)
-
-# Qt5
-set(CMAKE_INCLUDE_CURRENT_DIR ON) # Because the ui_mainwindow.h file.
-
-# Boost
-#SET(Boost_DEBUG OFF) #Switch this and next to ON for help debugging Boost problems.
-#SET(Boost_DETAILED_FAILURE_MSG ON)
-if(WIN32)
-	set(Boost_USE_STATIC_LIBS ON)
+	# Qt5, include e.g. "mainwindow.h"
+	set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
 
 # LSL functions, mostly for Apps
@@ -65,6 +85,8 @@ endfunction()
 
 # installLSLApp: adds the specified target to the install list and
 # add some quality-of-life improvements for Qt executables
+# After the target, additional libraries to install alongside the target can be
+# specified, e.g. 	installLSLApp(FooApp libXY libZ)
 function(installLSLApp target)
 	get_target_property(TARGET_LIBRARIES ${target} LINK_LIBRARIES)
 	string(REGEX MATCH ";Qt5::" qtapp ";${TARGET_LIBRARIES}")
@@ -76,9 +98,21 @@ function(installLSLApp target)
 			AUTORCC ON
 		)
 	endif()
-	# add start menu shortcut if supported by installer
-	set_property(INSTALL "${PROJECT_NAME}/$<TARGET_FILE_NAME:${target}>" PROPERTY
-		CPACK_START_MENU_SHORTCUTS "${target}")
+
+	# Set runtime path, i.e. where shared libs are searched relative to the exe
+	# CMake>=3.16: set(LIBDIR "../$<IF:$<BOOL:${LSL_UNIXFOLDERS}>,lib/,LSL/lib/>")
+	if(LSL_UNIXFOLDERS)
+		set(LIBDIR "../lib")
+	else()
+		set(LIBDIR "../LSL/lib")
+	endif()
+	if(APPLE)
+		set_property(TARGET ${target} APPEND
+			PROPERTY INSTALL_RPATH "@executable_path/;@executable_path/${LIBDIR}")
+	elseif(UNIX)
+		set_property(TARGET ${target}
+			PROPERTY INSTALL_RPATH "\$ORIGIN:\$ORIGIN/${LIBDIR}")
+	endif()
 
 	if(LSL_UNIXFOLDERS)
 		include(GNUInstallDirs)
@@ -88,6 +122,19 @@ function(installLSLApp target)
 		set(CMAKE_INSTALL_LIBDIR ${PROJECT_NAME})
 		set(lsldir "\${CMAKE_INSTALL_PREFIX}/LSL")
 	endif()
+	
+	# add start menu shortcut if supported by installer
+	set_property(INSTALL "${CMAKE_INSTALL_BINDIR}/$<TARGET_FILE_NAME:${target}>" PROPERTY
+		CPACK_START_MENU_SHORTCUTS "${target}")
+
+	# install additional library dependencies supplied after the target argument
+	foreach(libdependency ${ARGN})
+		if(NOT TARGET ${libdependency})
+			message(FATAL_ERROR "Additional arguments to installLSLApp must be library targets, ${libdependency} isn't.")
+		endif()
+		install(CODE "file(INSTALL $<TARGET_FILE:${libdependency}> DESTINATION \${CMAKE_INSTALL_PREFIX}/$<IF:$<PLATFORM_ID:Windows>,${CMAKE_INSTALL_BINDIR},${CMAKE_INSTALL_LIBDIR}>)")
+	endforeach()
+
 	set_property(GLOBAL APPEND PROPERTY
 		"LSLDEPENDS_${PROJECT_NAME}" liblsl)
 	install(TARGETS ${target} COMPONENT ${PROJECT_NAME}
@@ -108,29 +155,45 @@ function(installLSLApp target)
 	# Some Windows installers have problems with several components having the same file,
 	# so libs shared between targets are copied into the SHAREDLIBCOMPONENT component if set
 	if(NOT SHAREDLIBCOMPONENT)
-		set(SHAREDLIBCOMPONENT ${target})
+		set(SHAREDLIBCOMPONENT ${PROJECT_NAME})
 	endif()
 
-	# Copy lsl library for WIN32 or MacOS.
-	# On Mac, dylib is only needed for macdeployqt and for non bundles when not using system liblsl.
-	# Copy anyway, and fixup_bundle can deal with the dylib already being present.
-	if(NOT TARGET liblsl AND NOT LSL_UNIXFOLDERS)
-		install(FILES $<TARGET_FILE:LSL::lsl>
-			DESTINATION ${CMAKE_INSTALL_BINDIR}
-			COMPONENT ${SHAREDLIBCOMPONENT})
-	endif()
-	if(APPLE AND NOT qtapp)
-		# fixup_bundle appears to be broken for Qt apps. Use only for non-Qt.
+	# For MacOS we need to know if the installed target will be a .app bundle...
+	if(APPLE)
 		get_target_property(target_is_bundle ${target} MACOSX_BUNDLE)
-		if(target_is_bundle)
-			install(CODE "
+		set(APPLE_APP_PATH "\${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}/${target}.app")
+	endif(APPLE)
+	
+	# Copy lsl library. Logic is a bit complicated.
+	# If we are not building liblsl, and the (app) target is not using system liblsl
+	# (LSL_UNIXFOLDERS is maybe a poor proxy for use of system liblsl...),
+	# then the application needs to have liblsl in an expected location.
+	if(NOT TARGET liblsl AND NOT LSL_UNIXFOLDERS)
+		if(APPLE AND target_is_bundle)
+			# Copy the dylib into the bundle
+			install(FILES $<TARGET_FILE:LSL::lsl>
+				DESTINATION ${CMAKE_INSTALL_BINDIR}/${target}.app/Contents/MacOS/
+				COMPONENT ${SHAREDLIBCOMPONENT})
+		else()
+			# Copy the dll/dylib/so next to the executable binary.
+			install(FILES $<TARGET_FILE:LSL::lsl>
+				DESTINATION ${CMAKE_INSTALL_BINDIR}
+				COMPONENT ${SHAREDLIBCOMPONENT})
+		endif(APPLE AND target_is_bundle)
+	endif(NOT TARGET liblsl AND NOT LSL_UNIXFOLDERS)
+	# Mac bundles need further fixup (mostly for 3rd party libs)
+	# fixup_bundle appears to be broken for Qt apps. Use only for non-Qt.
+	if(APPLE AND target_is_bundle AND NOT qtapp)
+		install(CODE
+			"
+				get_filename_component(LIBDIR $<TARGET_FILE:LSL::lsl> DIRECTORY)
+				message(STATUS \${LIBDIR})
 				include(BundleUtilities)
 				set(BU_CHMOD_BUNDLE_ITEMS ON)
-				fixup_bundle(\${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}/${target}.app \"\" \"${lsldir}\")
-				"
-				COMPONENT ${PROJECT_NAME}
-			)
-		endif()
+				fixup_bundle(${APPLE_APP_PATH} \"\" \"\${LIBDIR}\")
+			"
+			COMPONENT ${PROJECT_NAME}
+		)
 	endif()
 
 	# skip the rest if qt doesn't need to be deployed
@@ -143,9 +206,13 @@ function(installLSLApp target)
 		findQtInstallationTool("windeployqt")
 		install(CODE "
 			message (STATUS \"Running windeployqt on $<TARGET_FILE:${target}>\")
+			set(qml_dir $<TARGET_PROPERTY:${target},qml_directory>)
+			message(STATUS \"qml directory: \${qml_dir}\")
 			execute_process(
-				COMMAND \"${QT_DEPLOYQT_EXECUTABLE}\" --no-translations
-				--no-system-d3d-compiler --no-opengl-sw --no-virtualkeyboard
+				COMMAND \"${QT_DEPLOYQT_EXECUTABLE}\"
+				\$<\$<BOOL:\${qml_dir}>:--qmldir \${qml_dir}>
+				--no-translations
+				--no-system-d3d-compiler --no-opengl-sw
 				--no-compiler-runtime --dry-run --list mapping
 				\"$<TARGET_FILE:${target}>\"
 				OUTPUT_VARIABLE output
@@ -161,21 +228,25 @@ function(installLSLApp target)
 			endwhile()"
 			COMPONENT ${SHAREDLIBCOMPONENT})
 	elseif(APPLE)
-		# It should be enough to call fixup_bundle (see below),
+		# It should be enough to call fixup_bundle (see above),
 		# but this fails to install qt plugins (cocoa).
-		# Use macdeployqt instead (but this is bad at grabbing lsl dylib, so we did that above)
+		# Use macdeployqt instead. This is bad at grabbing lsl dylib, so we already did it above.
 		findQtInstallationTool("macdeployqt")
 		install(CODE "
-			if(\${CMAKE_INSTALL_CONFIG_NAME} STREQUAL Debug)
-				set(debug 1)
-			endif()
 			message(STATUS \"Running Qt Deploy Tool for $<TARGET_FILE:${target}>...\")
 			execute_process(COMMAND
-				echo \"${QT_DEPLOYQT_EXECUTABLE}\"
-				$<TARGET_FILE:${target}>
-				-verbose=1
-				$<$<BOOL:\${debug}>:--use-debug-libs>
+				\"${QT_DEPLOYQT_EXECUTABLE}\"
+				\"${APPLE_APP_PATH}\"
+				-verbose=1 -always-overwrite
+				\$<\$<STREQUAL:\${CMAKE_INSTALL_CONFIG_NAME},\"Debug\">:--use-debug-libs>
+				COMMAND_ECHO STDOUT
+				OUTPUT_VARIABLE DEPLOYOUTPUT
+				ERROR_VARIABLE DEPLOYOUTPUT
+				RESULT_VARIABLE DEPLOYSTATUS
 			)
+			if(\${DEPLOYSTATUS})
+				message(WARNING \"\${DEPLOYOUTPUT}\")
+			endif()
 		")
 	endif()
 endfunction()
@@ -195,89 +266,6 @@ function(findQtInstallationTool qtdeploytoolname)
 	endif()
 endfunction()
 
-# default paths, versions and magic to guess it on windows
-# guess default paths for Windows / VC
-
-# Boost autoconfig:
-# Original author: Ryan Pavlik <ryan@sensics.com> <ryan.pavlik@gmail.com
-# Released with the same license as needed to integrate into CMake.
-# Modified by Chadwick Boulay Jan 2018
-
-if (CMAKE_SIZEOF_VOID_P EQUAL 8)
-	set(lslplatform 64)
-else()
-	set(lslplatform 32)
-endif()
-
-if(WIN32 AND MSVC)
-	# see https://cmake.org/cmake/help/latest/variable/MSVC_VERSION.html
-	if(MSVC_VERSION EQUAL 1500)
-		set(VCYEAR 2008)
-		set(_vs_ver 9.0)
-	elseif(MSVC_VERSION EQUAL 1600)
-		set(VCYEAR 2010)
-		set(_vs_ver 10.0)
-	elseif(MSVC_VERSION EQUAL 1700)
-		set(VCYEAR 2012)
-		set(_vs_ver 11.0)
-	elseif(MSVC_VERSION EQUAL 1800)
-		set(VCYEAR 2013)
-		set(_vs_ver 12.0)
-	elseif(MSVC_VERSION EQUAL 1900)
-		set(VCYEAR 2015)
-		set(_vs_ver 14.0)
-	elseif(MSVC_VERSION GREATER 1910 AND MSVC_VERSION LESS 1929)
-		set(VCYEAR 2017)
-		set(_vs_ver 14.1)
-		# Also VS 2019, but it's binary compatible with 2017 so Boost
-		# and Qt still use the 2017 binaries
-	else()
-		message(WARNING "You're using an untested Visual C++ compiler (MSVC_VERSION: ${MSVC_VERSION}).")
-	endif()
-
-	if(NOT Qt5_DIR)
-		message(STATUS "You didn't specify a Qt5_DIR.")
-		file(GLOB_RECURSE Qt5ConfGlobbed
-			LIST_DIRECTORIES true
-			"C:/Qt/5.1*/msvc${VCYEAR}_${lslplatform}/lib/cmake/Qt5/")
-		list(FILTER Qt5ConfGlobbed INCLUDE REGEX "Qt5$")
-		if(Qt5ConfGlobbed)
-			message(STATUS "Found Qt directories: ${Qt5ConfGlobbed}")
-			list(SORT Qt5ConfGlobbed)
-			list(GET Qt5ConfGlobbed -1 Qt5_DIR)
-			set(Qt5_DIR ${Qt5_DIR} CACHE PATH "Qt5 dir")
-		endif()
-		message(STATUS "If this is wrong and you are building Apps that require Qt, please add the correct dir:")
-		message(STATUS "  -DQt5_DIR=/path/to/Qt5/5.x.y/msvc_${VCYEAR}_${lslplatform}/lib/cmake/Qt5")
-	endif()
-
-	if((NOT BOOST_ROOT) AND (NOT Boost_INCLUDE_DIR) AND (NOT Boost_LIBRARY_DIR))
-		message(STATUS "Attempting to find Boost, whether or not you need it.")
-		set(_libdir "lib${lslplatform}-msvc-${_vs_ver}")
-		set(_haslibs)
-		if(EXISTS "c:/local")
-			file(GLOB _possibilities "c:/local/boost*")
-			list(REVERSE _possibilities)
-			foreach(DIR ${_possibilities})
-				if(EXISTS "${DIR}/${_libdir}")
-					list(APPEND _haslibs "${DIR}")
-				endif()
-			endforeach()
-			if(_haslibs)
-				list(APPEND CMAKE_PREFIX_PATH ${_haslibs})
-				find_package(Boost QUIET)
-				if(Boost_FOUND AND NOT Boost_LIBRARY_DIR)
-					set(BOOST_ROOT "${Boost_INCLUDE_DIR}" CACHE PATH "")
-					set(BOOST_LIBRARYDIR "${Boost_INCLUDE_DIR}/${_libdir}" CACHE PATH "")
-				endif()
-			endif()
-		endif()
-	endif()
-	if(NOT BOOST_ROOT)
-		message(STATUS "Did not find Boost. If you need it then set BOOST_ROOT and/or BOOST_LIBRARYDIR")
-	endif()
-endif()
-
 macro(LSLGenerateCPackConfig)
 	# CPack configuration
 	string(TOUPPER "${PROJECT_NAME}" PROJECT_NAME_UPPER)
@@ -288,6 +276,7 @@ macro(LSLGenerateCPackConfig)
 
 	# top level CMakeLists.txt?
 	if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+		LSL_get_target_arch()
 		# CPack configuration
 		set(CPACK_PACKAGE_INSTALL_DIRECTORY "lsl")
 		set(CPACK_STRIP_FILES ON)
@@ -309,9 +298,10 @@ macro(LSLGenerateCPackConfig)
 			set(CPACK_WIX_UPGRADE_GUID "ee28a351-3b27-4c2b-8b48-259c87d1b1b4")
 			set(CPACK_WIX_PROPERTY_ARPHELPLINK
 				"https://labstreaminglayer.readthedocs.io/info/getting_started.html#getting-help")
-			set(LSL_OS "Win${lslplatform}")
+			set(LSL_OS "Win")
 		elseif(UNIX)
 			set(LSL_CPACK_DEFAULT_GEN DEB)
+			set(LSL_OS "Linux")
 			set(CPACK_SET_DESTDIR 1)
 			set(CPACK_INSTALL_PREFIX "/usr")
 			set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Tristan Stenner <ttstenner@gmail.com>")
@@ -328,29 +318,37 @@ macro(LSLGenerateCPackConfig)
 				OUTPUT_STRIP_TRAILING_WHITESPACE
 				RESULT_VARIABLE LSB_RELEASE_RESULT
 			)
-			if(LSB_RELEASE_RESULT)
+			if(LSB_RELEASE_CODENAME)
 				set(CPACK_DEBIAN_PACKAGE_RELEASE ${LSB_RELEASE_CODENAME})
+				set(LSL_OS "${LSB_RELEASE_CODENAME}")
 			endif()
-			set(LSL_OS "Linux${lslplatform}-${LSB_RELEASE_CODENAME}")
 		endif()
 		set(CPACK_GENERATOR ${LSL_CPACK_DEFAULT_GEN} CACHE STRING "CPack pkg type(s) to generate")
-		get_cmake_property(CPACK_COMPONENTS_ALL COMPONENTS)
-		foreach(component ${CPACK_COMPONENTS_ALL})
+		get_cmake_property(LSL_COMPONENTS COMPONENTS)
+		foreach(component ${LSL_COMPONENTS})
 			string(TOUPPER ${component} COMPONENT)
-			set(LSL_CPACK_FILENAME "${component}-${PROJECT_VERSION}-${LSL_OS}")
+			set(LSL_CPACK_FILENAME "${component}-${PROJECT_VERSION}-${LSL_OS}_${LSL_ARCH}")
 			get_property(LSLDEPENDS GLOBAL PROPERTY "LSLDEPENDS_${component}")
 			if(LSLDEPENDS)
 				list(REMOVE_DUPLICATES LSLDEPENDS)
+				# remove dependencies we don't package ourselves
+				set(MISSING ${LSLDEPENDS})
+				list(REMOVE_ITEM MISSING ${LSL_COMPONENTS})
+				if(MISSING)
+					list(REMOVE_ITEM LSLDEPENDS ${MISSING})
+				endif()
 				set("CPACK_COMPONENT_${COMPONENT}_DEPENDS" ${LSLDEPENDS})
 			endif()
 
 			set("CPACK_DEBIAN_${COMPONENT}_PACKAGE_NAME" ${component})
 			set("CPACK_DEBIAN_${COMPONENT}_FILE_NAME" "${LSL_CPACK_FILENAME}.deb")
 			set("CPACK_ARCHIVE_${COMPONENT}_FILE_NAME" ${LSL_CPACK_FILENAME})
-			#set(CPACK_DEBIAN_${component}_FILE_NAME "${FILENAME}.deb")
 		endforeach()
 
-		message(STATUS "Installing Components: ${CPACK_COMPONENTS_ALL}")
+		message(STATUS "Installing Components: ${LSL_COMPONENTS}")
+
+		# force component install even if only one component is to be installed
+		set(CPACK_COMPONENTS_ALL ${LSL_COMPONENTS})
 		include(CPack)
 	endif()
 endmacro()

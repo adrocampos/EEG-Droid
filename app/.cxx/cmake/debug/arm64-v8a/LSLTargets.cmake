@@ -16,7 +16,7 @@ set(CMAKE_IMPORT_FILE_VERSION 1)
 set(_targetsDefined)
 set(_targetsNotDefined)
 set(_expectedTargets)
-foreach(_expectedTarget LSL::lsl LSL::lslobj LSL::lslboost LSL::lslver)
+foreach(_expectedTarget LSL::lsl LSL::lslobj LSL::lslboost)
   list(APPEND _expectedTargets ${_expectedTarget})
   if(NOT TARGET ${_expectedTarget})
     list(APPEND _targetsNotDefined ${_expectedTarget})
@@ -45,8 +45,6 @@ unset(_expectedTargets)
 add_library(LSL::lsl SHARED IMPORTED)
 
 set_target_properties(LSL::lsl PROPERTIES
-  INTERFACE_COMPILE_DEFINITIONS "LSLNOAUTOLINK"
-  INTERFACE_INCLUDE_DIRECTORIES "/home/mvidaldepalo/github/EEG-Droid/liblsl/include"
   INTERFACE_LINK_LIBRARIES "LSL::lslobj"
 )
 
@@ -56,21 +54,18 @@ add_library(LSL::lslobj OBJECT IMPORTED)
 set_target_properties(LSL::lslobj PROPERTIES
   INTERFACE_COMPILE_DEFINITIONS "LSLNOAUTOLINK"
   INTERFACE_INCLUDE_DIRECTORIES "/home/mvidaldepalo/github/EEG-Droid/liblsl/include"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:LSL::lslboost>"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:LSL::lslboost>;\$<\$<AND:\$<BOOL:OFF>,\$<PLATFORM_ID:Linux>>:dl>;\$<\$<BOOL:>:rt>"
 )
 
 # Create imported target LSL::lslboost
 add_library(LSL::lslboost OBJECT IMPORTED)
 
 set_target_properties(LSL::lslboost PROPERTIES
-  INTERFACE_COMPILE_DEFINITIONS "BOOST_ALL_NO_LIB;BOOST_ASIO_SEPARATE_COMPILATION;\$<\$<PLATFORM_ID:Windows>:_WIN32_WINNT=0x0601>"
-  INTERFACE_COMPILE_FEATURES "cxx_std_11"
+  INTERFACE_COMPILE_DEFINITIONS "BOOST_ALL_NO_LIB;BOOST_ASIO_STANDALONE;BOOST_ASIO_SEPARATE_COMPILATION;BOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS;\$<\$<PLATFORM_ID:Windows>:_WIN32_WINNT=0x0601>"
+  INTERFACE_COMPILE_FEATURES "cxx_std_11;cxx_lambda_init_captures"
   INTERFACE_INCLUDE_DIRECTORIES "/home/mvidaldepalo/github/EEG-Droid/liblsl/lslboost"
-  INTERFACE_LINK_LIBRARIES "Threads::Threads"
+  INTERFACE_LINK_LIBRARIES "Threads::Threads;\$<LINK_ONLY:\$<\$<PLATFORM_ID:Windows>:bcrypt>>;\$<LINK_ONLY:\$<\$<PLATFORM_ID:Windows>:iphlpapi>>"
 )
-
-# Create imported target LSL::lslver
-add_executable(LSL::lslver IMPORTED)
 
 # Import target "LSL::lsl" for configuration "Debug"
 set_property(TARGET LSL::lsl APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
@@ -83,20 +78,14 @@ set_target_properties(LSL::lsl PROPERTIES
 set_property(TARGET LSL::lslobj APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
 set_target_properties(LSL::lslobj PROPERTIES
   IMPORTED_COMMON_LANGUAGE_RUNTIME_DEBUG ""
-  IMPORTED_OBJECTS_DEBUG "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/api_config.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/cancellation.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/cast.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/common.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/consumer_queue.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/data_receiver.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/info_receiver.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/inlet_connection.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/lsl_continuous_resolver_c.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/lsl_freefuncs_c.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/lsl_inlet_c.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/lsl_outlet_c.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/lsl_streaminfo_c.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/lsl_xml_element_c.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/pugixml/pugixml.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/resolver_impl.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/resolve_attempt_udp.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/sample.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/send_buffer.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/socket_utils.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/stream_info_impl.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/stream_outlet_impl.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/tcp_server.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/time_postprocessor.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/time_receiver.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/udp_server.cpp.o"
+  IMPORTED_OBJECTS_DEBUG "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/api_config.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/cancellation.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/cast.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/common.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/consumer_queue.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/data_receiver.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/info_receiver.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/inireader.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/inlet_connection.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/loguru/loguru.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/lsl_resolver_c.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/lsl_inlet_c.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/lsl_outlet_c.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/lsl_streaminfo_c.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/lsl_xml_element_c.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/netinterfaces.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/pugixml/pugixml.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/resolver_impl.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/resolve_attempt_udp.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/sample.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/send_buffer.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/socket_utils.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/stream_info_impl.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/stream_outlet_impl.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/tcp_server.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/time_postprocessor.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/time_receiver.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslobj.dir/./src/udp_server.cpp.o"
   )
 
 # Import target "LSL::lslboost" for configuration "Debug"
 set_property(TARGET LSL::lslboost APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
 set_target_properties(LSL::lslboost PROPERTIES
   IMPORTED_COMMON_LANGUAGE_RUNTIME_DEBUG ""
-  IMPORTED_OBJECTS_DEBUG "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/./lslboost/asio_objects.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/./lslboost/libs/atomic/src/lockpool.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/./lslboost/libs/chrono/src/chrono.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/./lslboost/libs/serialization/src/archive_exception.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/./lslboost/libs/serialization/src/basic_archive.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/./lslboost/libs/serialization/src/basic_iarchive.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/./lslboost/libs/serialization/src/basic_iserializer.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/./lslboost/libs/serialization/src/basic_oarchive.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/./lslboost/libs/serialization/src/basic_oserializer.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/./lslboost/libs/serialization/src/basic_serializer_map.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/./lslboost/libs/serialization/src/extended_type_info.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/./lslboost/libs/serialization/src/extended_type_info_typeid.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/./lslboost/libs/serialization/src/void_cast.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/./lslboost/libs/thread/src/pthread/once.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/./lslboost/libs/thread/src/pthread/thread.cpp.o"
-  )
-
-# Import target "LSL::lslver" for configuration "Debug"
-set_property(TARGET LSL::lslver APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
-set_target_properties(LSL::lslver PROPERTIES
-  IMPORTED_LOCATION_DEBUG "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/lslver"
+  IMPORTED_OBJECTS_DEBUG "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/./lslboost/asio_objects.cpp.o;/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a/CMakeFiles/lslboost.dir/./lslboost/serialization_objects.cpp.o"
   )
 
 # This file does not depend on other imported targets which have
