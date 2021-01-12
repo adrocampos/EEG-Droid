@@ -105,7 +105,7 @@ public class Record extends AppCompatActivity {
     private BluetoothGattCharacteristic codeCharacteristic;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
     private String selectedGain = "1";
-    private byte selectedGainB = 0b00000000;
+    private byte selectedGainB = (byte) 0;
     private boolean generateDummy = false;
     private byte generateDummyB = (byte) 0;
     private boolean halfDummy = false;
@@ -304,8 +304,8 @@ public class Record extends AppCompatActivity {
                 long last_data = System.currentTimeMillis();
                 microV = transData(Objects.requireNonNull(intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA)));
                 //streamData(microV);
-                if (data_cnt % 30 == 0) displayData(microV);
-                if (plotting & data_cnt % 2 == 0) {
+                if (data_cnt % 25 == 0) displayData(microV);
+                if (plotting) { //cut out ' & data_cnt % 2 == 0 '
                     accumulated.add(microV);
                     long plotting_elapsed = last_data - plotting_start;
                     int ACCUM_PLOT_MS = 30;
@@ -398,8 +398,10 @@ public class Record extends AppCompatActivity {
         byte[] configBytes = new byte[4];
 
         // Concatenate binary strings
-        configBytes[0] = (byte) ((selectedGainB | generateDummyB | halfDummyB)&0xff);
-        configBytes[1] = (byte) (selectedScaleB & 0xff); //traumschreiber code:"spi_enc_factor_safe_encoding"
+        // configBytes[0] = (byte) ((selectedGainB | generateDummyB | halfDummyB)&0xff);
+        configBytes[0] = 0x20; // 0x20 <=> 0b 0010 0000   --"Gain = 0, Generate Dummy = True, Generate Half = False"
+        // configBytes[1] = (byte) (selectedScaleB & 0xff); //traumschreiber code:"spi_enc_factor_safe_encoding"
+        configBytes[1] = 0; // Right now responsible for slowdown
         configBytes[2] = 0;
         configBytes[3] = 0;
 
@@ -812,7 +814,7 @@ public class Record extends AppCompatActivity {
     @SuppressLint("DefaultLocale")
     private void displayData(List<Float> signalMicroV) {
         if (signalMicroV != null) {
-            for (int i = 0; i < 8; i++) {
+            for (int i = 0; i < nChannels; i++) {
                 String channelValueS = "";
                 float channelValueF = signalMicroV.get(i);
                 //if(signalMicroV.get(i) > 0) value += "+";
@@ -927,7 +929,7 @@ public class Record extends AppCompatActivity {
 
 
             /*  Creating and adding entries to Entrylists */
-            for (int n = 0; n < 8; n++) {
+            for (int n = 0; n < nChannels; n++) {
                 //the ith entryList represents the stored data of the ith channel
                 lineEntryLists.get(n).add(new Entry(x, f.get(n)));
             }
@@ -938,7 +940,7 @@ public class Record extends AppCompatActivity {
         final Runnable runnable = () -> {
 
             /* Create Datasets from the Entrylists filled above */
-            for (int i = 0; i < 8; i++) {
+            for (int i = 0; i < nChannels; i++) {
                 if (channelsShown[i]) {
                     LineDataSet set = createSet(i);
                     datasets.add(set);
@@ -1078,7 +1080,7 @@ public class Record extends AppCompatActivity {
 
         int rows = mainData.size();
         //int cols = mainData.get(0).length;
-        int cols = 1;
+        int cols = nChannels;
         final StringBuilder header = new StringBuilder();
         header.append("time,");
         for (int i = 1; i <= cols; i++) header.append(String.format("ch%d,", i));
@@ -1139,7 +1141,7 @@ public class Record extends AppCompatActivity {
                         fileWriter.append(String.valueOf(mainData.get(i)[j]));
                         fileWriter.append(delimiter);
                     }
-                    // MONITORING CODE BOOK
+                    // MONITORING CODE BOOK (of CH1 Only)
                     for(int j=0; j < 1;j++) {
                         fileWriter.append(Integer.toString(signalBitShifts.get(i)));
                         fileWriter.append(delimiter);
