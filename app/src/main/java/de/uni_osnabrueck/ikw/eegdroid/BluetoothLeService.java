@@ -271,22 +271,33 @@ public class BluetoothLeService extends Service {
      * @param enabled        If true, enable notification.  False otherwise.
      */
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
-                                              boolean enabled, boolean setIndication) {
+                                              boolean enabled) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
-        boolean result = mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
-        Log.d(TAG, "Characteristic " + characteristic.getUuid().toString() + "enabled: " + String.format("%b", result));
 
+        // Set Notification
+        boolean result = mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+        Log.d(TAG, "set Notification of Characteristic " + characteristic.getUuid().toString() +
+                " success: " + String.format("%b", result));
+
+        // Update Descriptor of the Characteristic
         BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
                 UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
-
         if (descriptor != null) {
-            isBusy = true; // Changes once onDescriptorWrite callback is called
-            if(!setIndication) descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-            else descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
-            mBluetoothGatt.writeDescriptor(descriptor);
+            isBusy = true; // Changes during onDescriptorWrite-callback
+
+            // Need to handle Notifications and Indications Differently
+            int properties = characteristic.getProperties();
+            boolean indicate = (properties & BluetoothGattCharacteristic.PROPERTY_INDICATE) > 0;
+            // if(indicate) Log.d(TAG, "WATCH OUT, PROPERTY TREATED AS INDICATE, OK?");
+            if (!enabled)      descriptor.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
+            else if (indicate) descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+            else               descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            result = mBluetoothGatt.writeDescriptor(descriptor);
+            Log.d(TAG, "writeDescriptor" +
+                    characteristic.getUuid().toString() + " Succes: " + String.format("%b",result));
         }
     }
 

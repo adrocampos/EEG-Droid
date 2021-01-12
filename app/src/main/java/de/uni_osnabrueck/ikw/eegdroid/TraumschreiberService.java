@@ -71,12 +71,13 @@ public class TraumschreiberService {
     /***
      * decompress takes a bytearray dataBytes and converts it to integers, according to the way the Traumschreiber transmits the data via bluetooth
      * @param dataBytes
-     * @return int[] data_ints of the datapoint values as integers
+     * @return int[] intsToReturn of the datapoint values as integers
      */
     public static int[] decompress(byte[] dataBytes, boolean newModel, String characteristicId) {
+        //Log.v(TAG, "Encoded Delta: " + Arrays.toString(dataBytes));
 
         boolean dpcmEncoded = true;
-        int[] data_ints;
+        int[] intsToReturn;
         int new_int;
         int bLen = newModel ? 3 : 2; // bytes needed to encode 1 int (old encodings)
 
@@ -88,37 +89,43 @@ public class TraumschreiberService {
             int pkgs_lost = header % 16; // 2. Nibble
 
             // Prepare Data Array
-            data_ints = new int[dataBytes.length / bLen + 2];   // +2: 1 for pkg id, 1 for lost pkg count
-            data_ints[0] = pkg_id;
-            data_ints[data_ints.length - 1] = pkgs_lost;
+            intsToReturn = new int[dataBytes.length / bLen + 2];   // +2: 1 for pkg id, 1 for lost pkg count
+            intsToReturn[0] = pkg_id;
+            intsToReturn[intsToReturn.length - 1] = pkgs_lost;
 
             // Decode
             /* value of channel n is encoded by 3 bytes placed at positions 3n+1, 3n+2 and 3n+3 in dataBytes*/
             for (int ch = 0; ch < dataBytes.length / bLen; ch++) {
                 new_int = (dataBytes[ch * bLen + 1]) << 16 | (dataBytes[ch * bLen + 2] & 0xff) << 8 | (dataBytes[ch * bLen + 3] & 0xff);
-                data_ints[ch + 1] = new_int;
+                intsToReturn[ch + 1] = new_int;
             }
 
             // ____ DPCM DECODING ____
         } else {
+
+            // NOTE TO SELF FOR DEBUGGING: WRITING ON THE DPCM BUFFER IS OK! NO NEED FOR FURTHER CHECKS
             // Characteristic 1
             if (characteristicId.equals("0")) {
                 System.arraycopy(dataBytes, 0, dpcmBuffer, 0, 20);
+                //Log.v(TAG, "DataBytes 0: " + Arrays.toString(dataBytes));
                 characteristic0Ready = true;
-                data_ints = null;
-                return data_ints;
+                intsToReturn = null;
+                return intsToReturn;
 
                 // Characteristic 2
             } else if (characteristic0Ready && characteristicId.equals("1")) {
                 System.arraycopy(dataBytes, 0, dpcmBuffer, 20, 10);
                 System.arraycopy(dataBytes, 10, dpcmBuffer2, 0, 10);
-                data_ints = decodeDpcm(dpcmBuffer);
+                intsToReturn = decodeDpcm(dpcmBuffer);
+                //Log.v(TAG, "DataBytes 1: " + Arrays.toString(dataBytes));
+                //Log.v(TAG, "dpcmBuffer 1:  " + Arrays.toString(dpcmBuffer));
 
                 // Characteristic 3
             } else if (characteristic0Ready && characteristicId.equals("2")) {
                 System.arraycopy(dataBytes, 0, dpcmBuffer2, 10, 20);
-                data_ints = decodeDpcm(dpcmBuffer2);
-                characteristic0Ready = false;
+                intsToReturn = decodeDpcm(dpcmBuffer2);
+                //Log.v(TAG, "DataBytes 2 " + Arrays.toString(dataBytes));
+                //Log.v(TAG, "dpcmBuffer 2:  " + Arrays.toString(dpcmBuffer2));
 
                 // Characteristic c0de - Updates Codebook
             } else if (characteristicId.equals("e")){
@@ -130,16 +137,16 @@ public class TraumschreiberService {
                 }
 
                 Log.d(TAG, "RECEIVED FROM C0DE Characteritistic!" + Arrays.toString(signalBitShift));
-                data_ints = new int[] {10000, signalBitShift[0]}; // just an arbitrary flag for the next handler, since normal values <512
-                return data_ints;
+                intsToReturn = new int[] {10000, signalBitShift[0]}; // just an arbitrary flag for the next handler, since normal values <512
+                return intsToReturn;
 
             } else {
-                data_ints = null;
-                return data_ints;
+                intsToReturn = null;
+                return intsToReturn;
             }
 
         }
-        return data_ints;
+        return intsToReturn;
 
     }
 
@@ -149,13 +156,13 @@ public class TraumschreiberService {
      * @return int[] data
      */
     public static int[] decodeDpcm(byte[] deltaBytes) {
-        //Log.v(TAG, "Encoded Delta: " + Arrays.toString(bytes));
+        //Log.v(TAG, "Encoded Delta: " + Arrays.toString(deltaBytes));
         int[] delta = bytesTo10bitInts(deltaBytes);
-        //Log.v(TAG, "Decoded Delta: " + Arrays.toString(data));
+        Log.v(TAG, "Decoded Delta: " + Arrays.toString(delta));
 
         for (int i = 0; i < 24; i++) {
-            decodedSignal[i] += delta[i] << signalBitShift[i];
-            if (pkgCount < 1000) signalOffset[i] += 0.001 * decodedSignal[i]; //Average over first 1000 pkgs
+            decodedSignal[i] += (delta[i] << signalBitShift[i]);
+            if (pkgCount < 1000) signalOffset[i] += 0.001 * decodedSignal[i]; // moving average over 1000 pkgs
             if (pkgCount == 1000) decodedSignal[i] -= signalOffset[i];
         }
         pkgCount++;
@@ -186,7 +193,7 @@ public class TraumschreiberService {
             data[idx + 3] = ((bytes[i + 3] & 0x03) << 8) | ((bytes[i + 4] & 0xff) >>> 0);
         }
         // Subtracting 1024 turns unsigned 10bit ints into their 2's complement
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < data.length; i++) { 
             if (data[i] > 511) data[i] -= 1024;
         }
 

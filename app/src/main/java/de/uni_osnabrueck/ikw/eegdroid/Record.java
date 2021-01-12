@@ -2,6 +2,7 @@ package de.uni_osnabrueck.ikw.eegdroid;
 // initial commits
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -60,6 +61,7 @@ import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -103,7 +105,7 @@ public class Record extends AppCompatActivity {
     private BluetoothGattCharacteristic codeCharacteristic;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
     private String selectedGain = "1";
-    private byte selectedGainB = 0b00000000;
+    private byte selectedGainB = (byte) 0;
     private boolean generateDummy = false;
     private byte generateDummyB = (byte) 0;
     private boolean halfDummy = false;
@@ -150,7 +152,7 @@ public class Record extends AppCompatActivity {
     private int enabledCheckboxes = 0;
     private TextView mXAxis;
     private TextView mDataResolution;
-    private Spinner gain_spinner;
+    private Spinner gainSpinner;
     private LineChart mChart;
     private ImageButton imageButtonRecord;
     private ImageButton imageButtonSave;
@@ -302,8 +304,8 @@ public class Record extends AppCompatActivity {
                 long last_data = System.currentTimeMillis();
                 microV = transData(Objects.requireNonNull(intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA)));
                 //streamData(microV);
-                if (data_cnt % 30 == 0) displayData(microV);
-                if (plotting & data_cnt % 2 == 0) {
+                if (data_cnt % 25 == 0) displayData(microV);
+                if (plotting) { //cut out ' & data_cnt % 2 == 0 '
                     accumulated.add(microV);
                     long plotting_elapsed = last_data - plotting_start;
                     int ACCUM_PLOT_MS = 30;
@@ -337,20 +339,20 @@ public class Record extends AppCompatActivity {
 
     private void setGainSpinner() {
         int gains_set = mNewDevice ? R.array.gains_new : R.array.gains_old;
-        gain_spinner.setAdapter(new ArrayAdapter<>(getApplicationContext(),
+        gainSpinner.setAdapter(new ArrayAdapter<>(getApplicationContext(),
                 android.R.layout.simple_spinner_dropdown_item,
                 getResources().getStringArray(gains_set)));
         int gain_default = 1;
-        gain_spinner.setSelection(gain_default);
-        gain_spinner.setEnabled(true);
+        gainSpinner.setSelection(gain_default);
+        gainSpinner.setEnabled(true);
         //selectedGain = gain_spinner.getSelectedItem().toString();
-        gain_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        gainSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                int parsed = Integer.parseInt(gain_spinner.getSelectedItem().toString());
-                Log.d(TAG,gain_spinner.getSelectedItem().toString());
-                selectedGainB = (byte) ( (parsed<<4) & 0xff );
-                Log.d(TAG, "Selected Gain:" + Integer.toBinaryString(selectedGainB) +"  "+ Integer.toString(selectedGainB));
+                int parsed = Integer.parseInt(gainSpinner.getSelectedItem().toString());
+                Log.d(TAG,gainSpinner.getSelectedItem().toString());
+                selectedScaleB = (byte) ( (parsed<<4) & 0xff );
+                Log.d(TAG, "Selected Gain:" + Integer.toBinaryString(selectedScaleB) +"  "+ Integer.toString(selectedScaleB));
                 switch(parsed) {
 
                         /*case 1:
@@ -396,13 +398,17 @@ public class Record extends AppCompatActivity {
         byte[] configBytes = new byte[4];
 
         // Concatenate binary strings
-        configBytes[1] = (byte) (selectedGainB | generateDummyB | halfDummyB);
-        configBytes[2] = (byte) (selectedScaleB & 0xff);
-        configBytes[3] = 0b00000000;
-
+        // configBytes[0] = (byte) ((selectedGainB | generateDummyB | halfDummyB)&0xff);
+        configBytes[0] = 0x20; // 0x20 <=> 0b 0010 0000   --"Gain = 0, Generate Dummy = True, Generate Half = False"
+        // configBytes[1] = (byte) (selectedScaleB & 0xff); //traumschreiber code:"spi_enc_factor_safe_encoding"
+        configBytes[1] = 0; // Right now responsible for slowdown
+        configBytes[2] = 0;
+        configBytes[3] = 0;
 
         configCharacteristic.setValue(configBytes);
         mBluetoothLeService.writeCharacteristic(configCharacteristic);
+
+        Log.d(TAG, "New Value of Config: " + Arrays.toString(configCharacteristic.getValue()));
     }
 
     private void initializeTimerTask() {
@@ -453,7 +459,7 @@ public class Record extends AppCompatActivity {
         imageButtonSave = findViewById(R.id.imageButtonSave);
         imageButtonDiscard = findViewById(R.id.imageButtonDiscard);
         switch_plots = findViewById(R.id.switch_plots);
-        gain_spinner = findViewById(R.id.gain_spinner);
+        gainSpinner = findViewById(R.id.gain_spinner);
 
         layout_plots = findViewById(R.id.linearLayout_chart);
         layout_plots.setVisibility(ViewStub.VISIBLE);
@@ -660,24 +666,44 @@ public class Record extends AppCompatActivity {
 
     private void toggleNotifying() {
         MenuItem menuItemNotify = menu.findItem(R.id.notify);
-        menuItemNotify.setEnabled(false);
+        //menuItemNotify.setEnabled(false);
         waitForBluetoothCallback(mBluetoothLeService);
 
 
+
         if (!notifying) {
+            Log.d(TAG, "Notifications Button pressed: ENABLED");
             notifying = true;
-            Toast.makeText(this,"Callibrating for 6 seconds..", Toast.LENGTH_LONG).show();
-            mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, notifying,false);
+            mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, true);
+            waitForBluetoothCallback(mBluetoothLeService);
+            mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
             menuItemNotify.setIcon(R.drawable.ic_notifications_active_blue_24dp);
         } else {
+            Log.d(TAG, "Notifications Button pressed: DISABLED");
             notifying = false;
             mDataResolution.setText("No data");
-            mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, notifying,false);
+            mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, false);
+            waitForBluetoothCallback(mBluetoothLeService);
+            mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, false);
             menuItemNotify.setIcon(R.drawable.ic_notifications_off_white_24dp);
         }
 
+        logDescriptorValue(notifyingCharacteristics.get(0));
+        logDescriptorValue(notifyingCharacteristics.get(1));
+        logDescriptorValue(notifyingCharacteristics.get(2));
+        logDescriptorValue(codeCharacteristic);
+
         menuItemNotify.setEnabled(true);
 
+    }
+
+    public void logDescriptorValue(BluetoothGattCharacteristic c){
+        String cId = c.getUuid().toString().substring(4,8);
+        BluetoothGattDescriptor descriptor = c.getDescriptor(
+                UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
+        byte[] descVal = descriptor.getValue();
+        String descValS = (descVal==BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE) ? "NOTIFICATIONS DISABLED" : "NOTIFICATIONS ENABLED";
+        Log.d(TAG, "Characteristic " + cId + " DESCRIPTOR VALUE: " + descValS);
     }
 
     @Override
@@ -715,9 +741,7 @@ public class Record extends AppCompatActivity {
                     // If the characteristic is a notifying characteristic
                     if (notifyingUUIDs.contains(charUuid)) {
                         notifyingCharacteristics.add(gattCharacteristic);
-                        mBluetoothLeService.setCharacteristicNotification(gattCharacteristic,
-                                                                false,
-                                                                false);
+                        mBluetoothLeService.setCharacteristicNotification(gattCharacteristic, false);
                         mNotifyCharacteristic = gattCharacteristic; // Store the last one here for toggling
                     } else if (configCharacteristicUuid.contains(charUuid)) {
                         configCharacteristic = gattCharacteristic;
@@ -727,9 +751,7 @@ public class Record extends AppCompatActivity {
                 }
                 prepareNotifications();
                 waitForBluetoothCallback(mBluetoothLeService);
-                mBluetoothLeService.setCharacteristicNotification(codeCharacteristic,
-                                                                true,
-                                                                true);
+                mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
             }
         }
     }
@@ -741,7 +763,7 @@ public class Record extends AppCompatActivity {
         for (BluetoothGattCharacteristic characteristic : notifyingCharacteristics) {
             waitForBluetoothCallback(mBluetoothLeService);
             if (characteristic != mNotifyCharacteristic) {
-                mBluetoothLeService.setCharacteristicNotification(characteristic, true, false);
+                mBluetoothLeService.setCharacteristicNotification(characteristic, true);
             }
         }
     }
@@ -749,7 +771,7 @@ public class Record extends AppCompatActivity {
     private void waitForBluetoothCallback(BluetoothLeService service){
         while (service.isBusy) {
             Handler handler = new Handler();
-            handler.postDelayed(() -> Log.d(TAG, "Waiting for bluetooth operation to finish."), 300);
+            handler.postDelayed(() -> Log.v(TAG, "Waiting for bluetooth operation to finish."), 300);
         }
 
     }
@@ -918,7 +940,7 @@ public class Record extends AppCompatActivity {
         final Runnable runnable = () -> {
 
             /* Create Datasets from the Entrylists filled above */
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < nChannels; i++) {
                 if (channelsShown[i]) {
                     LineDataSet set = createSet(i);
                     datasets.add(set);
@@ -1061,8 +1083,8 @@ public class Record extends AppCompatActivity {
         int cols = nChannels;
         final StringBuilder header = new StringBuilder();
         header.append("time,");
-        for (int i = 0; i <= cols; i++) header.append(String.format("ch%d,", i));
-        for (int i = 1; i <= cols; i++) header.append(String.format("enc_ch%d,",i));
+        for (int i = 1; i <= cols; i++) header.append(String.format("ch%d,", i));
+        for (int i = 1; i <= 1; i++) header.append(String.format("enc_ch%d,",i));
         header.append("enc_flag");
         //header.append(String.format("Ch-%d", cols));
 
@@ -1119,8 +1141,8 @@ public class Record extends AppCompatActivity {
                         fileWriter.append(String.valueOf(mainData.get(i)[j]));
                         fileWriter.append(delimiter);
                     }
-                    // MONITORING CODE BOOK
-                    for(int j=0; j < cols;j++) {
+                    // MONITORING CODE BOOK (of CH1 Only)
+                    for(int j=0; j < 1;j++) {
                         fileWriter.append(Integer.toString(signalBitShifts.get(i)));
                         fileWriter.append(delimiter);
                     }
@@ -1182,7 +1204,7 @@ public class Record extends AppCompatActivity {
             mConnectionState.setText(R.string.device_connected);
             mConnectionState.setTextColor(Color.GREEN);
             switch_plots.setEnabled(true);
-            gain_spinner.setEnabled(true);
+            gainSpinner.setEnabled(true);
             viewDeviceAddress.setText(mDeviceAddress);
             menuItemNotify.setVisible(true);
             menuItemCast.setVisible(true);
@@ -1193,7 +1215,7 @@ public class Record extends AppCompatActivity {
             mConnectionState.setTextColor(Color.LTGRAY);
             buttons_nodata();
             switch_plots.setEnabled(false);
-            gain_spinner.setEnabled(false);
+            gainSpinner.setEnabled(false);
             viewDeviceAddress.setText(R.string.no_address);
             menuItemNotify.setVisible(false);
             menuItemCast.setVisible(false);
