@@ -129,7 +129,6 @@ public class TraumschreiberService {
 
                 // Characteristic c0de - Updates Codebook
             } else if (characteristicId.equals("e")){
-
                 // Iterate through the 12 received bytes and split them into unsigned nibbles
                 for(int i = 0; i < 12; i++){
                     signalBitShift[i*2] = (dataBytes[i]>>4) & 0xf;
@@ -139,7 +138,6 @@ public class TraumschreiberService {
                 Log.d(TAG, "RECEIVED FROM C0DE Characteritistic!" + Arrays.toString(signalBitShift));
                 intsToReturn = new int[] {10000, signalBitShift[0]}; // just an arbitrary flag for the next handler, since normal values <512
                 return intsToReturn;
-
             } else {
                 intsToReturn = null;
                 return intsToReturn;
@@ -158,7 +156,7 @@ public class TraumschreiberService {
     public static int[] decodeDpcm(byte[] deltaBytes) {
         //Log.v(TAG, "Encoded Delta: " + Arrays.toString(deltaBytes));
         int[] delta = bytesTo10bitInts(deltaBytes);
-        Log.v(TAG, "Decoded Delta: " + Arrays.toString(delta));
+        //Log.v(TAG, "Decoded Delta: " + Arrays.toString(delta));
 
         for (int i = 0; i < 24; i++) {
             decodedSignal[i] += (delta[i] << signalBitShift[i]);

@@ -100,7 +100,7 @@ public class Record extends AppCompatActivity {
     };
     private final String configCharacteristicUuid = "0000ecc0-0000-1000-8000-00805f9b34fb";
     private final String codeCharacteristicUuid = "0000c0de-0000-1000-8000-00805f9b34fb";
-    private final ArrayList<BluetoothGattCharacteristic> notifyingCharacteristics = new ArrayList<>();
+    private ArrayList<BluetoothGattCharacteristic> notifyingCharacteristics = new ArrayList<>();
     private BluetoothGattCharacteristic configCharacteristic;
     private BluetoothGattCharacteristic codeCharacteristic;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
@@ -302,9 +302,9 @@ public class Record extends AppCompatActivity {
                 data_cnt++;
                 if (!timerRunning) startTimer();
                 long last_data = System.currentTimeMillis();
-                microV = transData(Objects.requireNonNull(intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA)));
+                microV = transData(data);
                 //streamData(microV);
-                if (data_cnt % 25 == 0) displayData(microV);
+                if (data_cnt % 50 == 0) displayData(microV);
                 if (plotting) { //cut out ' & data_cnt % 2 == 0 '
                     accumulated.add(microV);
                     long plotting_elapsed = last_data - plotting_start;
@@ -512,7 +512,7 @@ public class Record extends AppCompatActivity {
         channelValueView.setTextAlignment(RelativeLayout.TEXT_ALIGNMENT_VIEW_END);
         channelValueView.setText("0μV");
         channelValueView.setTextColor(channelColors[i]);
-        channelValueView.setTextSize(13);
+        channelValueView.setTextSize(11);
         // channelValueView.setGravity(0);
         return channelValueView;
     }
@@ -525,6 +525,7 @@ public class Record extends AppCompatActivity {
         //boxLayout.weight = 1;
         box.setLayoutParams(boxLayout);
         box.setText(Integer.toString(i + 1));
+        box.setTextSize(11);
         box.setTextColor(channelColors[i]);
         box.setOnCheckedChangeListener((buttonView, isChecked) -> {
             int channelId = Integer.parseInt(buttonView.getText().toString()) - 1;
@@ -669,29 +670,27 @@ public class Record extends AppCompatActivity {
         //menuItemNotify.setEnabled(false);
         waitForBluetoothCallback(mBluetoothLeService);
 
-
-
         if (!notifying) {
             Log.d(TAG, "Notifications Button pressed: ENABLED");
             notifying = true;
             mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, true);
-            waitForBluetoothCallback(mBluetoothLeService);
-            mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
+            //waitForBluetoothCallback(mBluetoothLeService);
+            //mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
             menuItemNotify.setIcon(R.drawable.ic_notifications_active_blue_24dp);
         } else {
             Log.d(TAG, "Notifications Button pressed: DISABLED");
             notifying = false;
             mDataResolution.setText("No data");
             mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, false);
-            waitForBluetoothCallback(mBluetoothLeService);
-            mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, false);
+            //waitForBluetoothCallback(mBluetoothLeService);
+            //mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, false);
             menuItemNotify.setIcon(R.drawable.ic_notifications_off_white_24dp);
         }
 
         logDescriptorValue(notifyingCharacteristics.get(0));
         logDescriptorValue(notifyingCharacteristics.get(1));
         logDescriptorValue(notifyingCharacteristics.get(2));
-        logDescriptorValue(codeCharacteristic);
+        if(codeCharacteristic!=null) logDescriptorValue(codeCharacteristic);
 
         menuItemNotify.setEnabled(true);
 
@@ -741,7 +740,7 @@ public class Record extends AppCompatActivity {
                     // If the characteristic is a notifying characteristic
                     if (notifyingUUIDs.contains(charUuid)) {
                         notifyingCharacteristics.add(gattCharacteristic);
-                        mBluetoothLeService.setCharacteristicNotification(gattCharacteristic, false);
+                        //mBluetoothLeService.setCharacteristicNotification(gattCharacteristic, false);
                         mNotifyCharacteristic = gattCharacteristic; // Store the last one here for toggling
                     } else if (configCharacteristicUuid.contains(charUuid)) {
                         configCharacteristic = gattCharacteristic;
@@ -751,7 +750,7 @@ public class Record extends AppCompatActivity {
                 }
                 prepareNotifications();
                 waitForBluetoothCallback(mBluetoothLeService);
-                mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
+                //mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
             }
         }
     }
@@ -760,6 +759,10 @@ public class Record extends AppCompatActivity {
         // set notifications of all notifyingCharacteristics except the one used for toggling.
         mBluetoothLeService.setNewTraumschreiber(mNewDevice);
 
+        if (codeCharacteristic!=null) {
+            waitForBluetoothCallback(mBluetoothLeService);
+            mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
+        }
         for (BluetoothGattCharacteristic characteristic : notifyingCharacteristics) {
             waitForBluetoothCallback(mBluetoothLeService);
             if (characteristic != mNotifyCharacteristic) {
@@ -923,7 +926,7 @@ public class Record extends AppCompatActivity {
 
         /*** Loop through all "rows",each row has nChannels entries **/
         for (int i = 0; i < e_list.size(); i++) {
-            cnt += 2; // TODO: manage skipping every other frame in a cleaner way
+            cnt += 1;
             x = cnt * DATAPOINT_TIME; // timestamp for x axis in ms
             List<Float> f = e_list.get(i);
 
@@ -1083,9 +1086,9 @@ public class Record extends AppCompatActivity {
         int cols = nChannels;
         final StringBuilder header = new StringBuilder();
         header.append("time,");
-        for (int i = 1; i <= cols; i++) header.append(String.format("ch%d,", i));
-        for (int i = 1; i <= 1; i++) header.append(String.format("enc_ch%d,",i));
-        header.append("enc_flag");
+        for (int i = 1; i <= cols; i++) header.append(String.format("ch%d,", i)); // log values
+        for (int i = 1; i <= 1; i++) header.append(String.format("enc_ch%d,",i)); // log encodings
+        header.append("enc_flag");                                                // log encoding updates
         //header.append(String.format("Ch-%d", cols));
 
         new Thread(() -> {
