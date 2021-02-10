@@ -160,8 +160,9 @@ public class TraumschreiberService {
 
         for (int i = 0; i < 24; i++) {
             decodedSignal[i] += (delta[i] << signalBitShift[i]);
-            if (pkgCount < 1000) signalOffset[i] += 0.001 * decodedSignal[i]; // moving average over 1000 pkgs
-            if (pkgCount == 1000) decodedSignal[i] -= signalOffset[i];
+            // Centering the Signal 
+            if (pkgCount < 333) signalOffset[i] += 1/333 * decodedSignal[i]; // moving average over 1000 pkgs
+            if (pkgCount == 333) decodedSignal[i] -= signalOffset[i];
         }
         pkgCount++;
         return decodedSignal;
