@@ -291,11 +291,12 @@ public class Record extends AppCompatActivity {
 
                 if(data==null) return;
 
-                // 10000 means the pkg came from c0de and no further processing is required.
-                if (data[0] == 10000){
+                // if the pkg was an encoding update, no further processing is required here
+                if (data[0] == 0xc0de){
                     signalBitShift = data[1];
                     Log.d(TAG,"Updated signalBitshift of CH1: " + Integer.toString(signalBitShift));
-                    adaptiveEncodingFlag = 1; // The next package will receive an adaptive recording flag.
+                    // Give the next row in our recording an adaptive encoding flag
+                    adaptiveEncodingFlag = 1;
                     return; //prevent further processing
                 }
 
