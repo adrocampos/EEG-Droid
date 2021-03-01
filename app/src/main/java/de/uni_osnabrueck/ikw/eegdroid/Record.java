@@ -304,7 +304,7 @@ public class Record extends AppCompatActivity {
                 if (!timerRunning) startTimer();
                 long last_data = System.currentTimeMillis();
                 microV = transData(data);
-                //streamData(microV);
+                streamData(microV);
                 if (data_cnt % 50 == 0) displayData(microV);
                 if (plotting) { //cut out ' & data_cnt % 2 == 0 '
                     accumulated.add(microV);
@@ -340,6 +340,7 @@ public class Record extends AppCompatActivity {
 
     private void setGainSpinner() {
         int gains_set = mNewDevice ? R.array.gains_new : R.array.gains_old;
+
         gainSpinner.setAdapter(new ArrayAdapter<>(getApplicationContext(),
                 android.R.layout.simple_spinner_dropdown_item,
                 getResources().getStringArray(gains_set)));
@@ -399,12 +400,13 @@ public class Record extends AppCompatActivity {
         byte[] configBytes = new byte[4];
 
         // Concatenate binary strings
-        // configBytes[0] = (byte) ((selectedGainB | generateDummyB | halfDummyB)&0xff);
-        configBytes[0] = 0x20; // 0x20 <=> 0b 0010 0000   --"Gain = 0, Generate Dummy = True, Generate Half = False"
-        // configBytes[1] = (byte) (selectedScaleB & 0xff); //traumschreiber code:"spi_enc_factor_safe_encoding"
-        configBytes[1] = 0; // Right now responsible for slowdown
+        configBytes[0] = (byte) ((selectedGainB | generateDummyB | halfDummyB)&0xff);
+        // configBytes[0] = 0x20; // 0x20 <=> 0b 0010 0000   --"Gain = 0, Generate Dummy = True, Generate Half = False"
+        configBytes[1] = (byte) (selectedScaleB & 0xff); //traumschreiber code:"spi_enc_factor_safe_encoding"
+        //configBytes[1] = 0; // Right now responsible for slowdown
         configBytes[2] = 0;
         configBytes[3] = 0;
+
 
         configCharacteristic.setValue(configBytes);
         mBluetoothLeService.writeCharacteristic(configCharacteristic);
@@ -658,7 +660,7 @@ public class Record extends AppCompatActivity {
 
         if (id==R.id.centering) {
             Toast.makeText(getApplicationContext(),
-                    "Centering Signal around 0 in 6 seconds",
+                    "Centering Signal around 0 in 2 seconds",
                     Toast.LENGTH_LONG).show();
             TraumschreiberService.initiateCentering();
         }
@@ -991,7 +993,7 @@ public class Record extends AppCompatActivity {
         if (recentlyDisplayedData == null) {
             recentlyDisplayedData = new ArrayList<>();
         }
-        if (recentlyDisplayedData.size() > 50 * e_list.size())
+        if (recentlyDisplayedData.size() > 2 * e_list.size())
             recentlyDisplayedData = recentlyDisplayedData.subList(e_list.size(), recentlyDisplayedData.size());
         for (List<Float> innerList : e_list) {
             recentlyDisplayedData.add(innerList);

@@ -136,7 +136,7 @@ public class TraumschreiberService {
                 }
 
                 Log.d(TAG, "RECEIVED FROM C0DE Characteritistic!" + Arrays.toString(signalBitShift));
-                intsToReturn = new int[] {0xc0de, signalBitShift[0]}; // just a flag for the next handler
+                intsToReturn = new int[] {0xc0de, signalBitShift[0]}; // just an arbitrary flag for the next handler, since normal values <512
                 return intsToReturn;
             } else {
                 intsToReturn = null;
@@ -161,8 +161,8 @@ public class TraumschreiberService {
         for (int i = 0; i < 24; i++) {
             decodedSignal[i] += (delta[i] << signalBitShift[i]);
             // Centering the Signal 
-            if (pkgCount < 333) signalOffset[i] += 1/333 * decodedSignal[i]; // moving average over 1000 pkgs
-            if (pkgCount == 333) decodedSignal[i] -= signalOffset[i];
+            if (pkgCount < 200) signalOffset[i] += 0.005 * decodedSignal[i]; // moving average over 200 pkgs
+            if (pkgCount == 200) decodedSignal[i] -= signalOffset[i];
         }
         pkgCount++;
         return decodedSignal;

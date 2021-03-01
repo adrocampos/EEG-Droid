@@ -152,7 +152,7 @@
         <item>32</item>
         <item>64</item>
     </string-array>
-    <string name="label_gain">Scale:</string>
+    <string name="label_gain">Filter Coefficients:</string>
 
     <string name="no_address">No address</string>
     <string name="ch1_label">ch1</string>
