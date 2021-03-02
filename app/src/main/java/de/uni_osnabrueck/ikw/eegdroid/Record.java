@@ -355,36 +355,7 @@ public class Record extends AppCompatActivity {
                 Log.d(TAG,gainSpinner.getSelectedItem().toString());
                 selectedScaleB = (byte) ( (parsed<<4) & 0xff );
                 Log.d(TAG, "Selected Gain:" + Integer.toBinaryString(selectedScaleB) +"  "+ Integer.toString(selectedScaleB));
-                switch(parsed) {
 
-                        /*case 1:
-                            generateDummy = false;
-                            generateDummyB = (byte) 0;
-                            break;
-                        case 2:
-                            generateDummy = true;
-                            generateDummyB = (byte) 0b00110000;*/
-
-
-
-                    }
-                /*switch (position) {
-                    case 1:
-                        selectedGain = "2";
-                        selectedGainB = (byte) 0b01000000;
-                        break;
-                    case 2:
-                        selectedGain = "4";
-                        selectedGainB = (byte) 0b10000000;
-                        break;
-                    case 3:
-                        selectedGain = "8";
-                        selectedGainB = (byte) 0b11000000;
-                        break;
-                    default:
-                        selectedGain = "1";
-                        selectedGainB = (byte) 0b00000000;
-                }*/
                 if (configCharacteristic != null) updateConfiguration();
             }
 
@@ -1201,6 +1172,7 @@ public class Record extends AppCompatActivity {
 
     private void setConnectionStatus(boolean connected) {
         MenuItem menuItem = menu.findItem(R.id.scan);
+        MenuItem menuItemSettings = menu.findItem(R.id.traumSettings);
         MenuItem menuItemNotify = menu.findItem(R.id.notify);
         MenuItem menuItemCast = menu.findItem(R.id.cast);
         MenuItem menuItemCentering = menu.findItem(R.id.centering);
@@ -1212,6 +1184,7 @@ public class Record extends AppCompatActivity {
             switch_plots.setEnabled(true);
             gainSpinner.setEnabled(true);
             viewDeviceAddress.setText(mDeviceAddress);
+            menuItemSettings.setVisible(true);
             menuItemNotify.setVisible(true);
             menuItemCast.setVisible(true);
             menuItemCentering.setVisible(true);
