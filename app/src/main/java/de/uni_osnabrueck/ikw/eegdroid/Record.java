@@ -11,15 +11,18 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -27,6 +30,8 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -142,6 +147,10 @@ public class Record extends AppCompatActivity {
             if (mBluetoothLeService != null) mBluetoothLeService = null;
         }
     };
+
+    private AlertDialog.Builder dialogBuilder;
+    private AlertDialog dialog;
+
     private int selectedScale;
     private byte selectedScaleB = 0b00000000;
     private boolean recording = false;
@@ -636,6 +645,8 @@ public class Record extends AppCompatActivity {
             TraumschreiberService.initiateCentering();
         }
 
+        if (id==R.id.traumConfig) showTraumConfigMenu();
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -677,6 +688,24 @@ public class Record extends AppCompatActivity {
         byte[] descVal = descriptor.getValue();
         String descValS = (descVal==BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE) ? "NOTIFICATIONS DISABLED" : "NOTIFICATIONS ENABLED";
         Log.d(TAG, "Characteristic " + cId + " DESCRIPTOR VALUE: " + descValS);
+    }
+
+    public void showTraumConfigMenu(){
+
+        Rect displayRectangle = new Rect();
+        Window window = this.getWindow();
+        window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
+
+        View traumConfigView = getLayoutInflater().inflate(R.layout.traum_config_popup, null);
+        traumConfigView.setMinimumWidth((int) (displayRectangle.width() * 0.9f));
+        traumConfigView.setMinimumHeight((int) (displayRectangle.height() * 0.9f));
+
+        dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setView(traumConfigView);
+        dialog = dialogBuilder.create();
+        dialog.show();
+
+
     }
 
     @Override
@@ -1172,7 +1201,7 @@ public class Record extends AppCompatActivity {
 
     private void setConnectionStatus(boolean connected) {
         MenuItem menuItem = menu.findItem(R.id.scan);
-        MenuItem menuItemSettings = menu.findItem(R.id.traumSettings);
+        MenuItem menuItemSettings = menu.findItem(R.id.traumConfig);
         MenuItem menuItemNotify = menu.findItem(R.id.notify);
         MenuItem menuItemCast = menu.findItem(R.id.cast);
         MenuItem menuItemCentering = menu.findItem(R.id.centering);

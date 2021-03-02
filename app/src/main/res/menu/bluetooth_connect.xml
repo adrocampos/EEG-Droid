@@ -26,7 +26,7 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/traumSettings"
+        android:id="@+id/traumConfig"
         android:icon="@drawable/ic_baseline_settings_24"
         android:title="Settings"
         android:visible="false"
