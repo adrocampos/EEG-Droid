@@ -282,4 +282,17 @@
     <string name="menu_record_notify">Notify</string>
     <string name="permission_storage">The app needs permission to access storage</string>
 
+
+    <!-- Strings Related to Traumschreiber Configuration -->
+
+    <string name="gain_prompt">Select Gain</string>
+    <string-array name="gain_entries">
+        <item>1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>8</item>
+    </string-array>
+
+
+
 </resources>

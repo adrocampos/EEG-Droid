@@ -119,6 +119,7 @@ public class Record extends AppCompatActivity {
     private final boolean[] channelsShown = new boolean[nChannels];
     private final CheckBox[] checkBoxes = new CheckBox[nChannels];
     private final TextView[] channelValueViews = new TextView[nChannels];
+    private AlertDialog traumConfigDialog;
     LSL.StreamInfo streamInfo;
     LSL.StreamOutlet streamOutlet = null;
     private TextView mConnectionState;
@@ -148,8 +149,7 @@ public class Record extends AppCompatActivity {
         }
     };
 
-    private AlertDialog.Builder dialogBuilder;
-    private AlertDialog dialog;
+
 
     private int selectedScale;
     private byte selectedScaleB = 0b00000000;
@@ -459,6 +459,7 @@ public class Record extends AppCompatActivity {
         viewDeviceAddress = findViewById(R.id.device_address);
         mConnectionState = findViewById(R.id.connection_state);
 
+        // Checkboxes and Channel Values
         LinearLayout[] checkBoxRows = new LinearLayout[3];
         checkBoxRows[0] = findViewById(R.id.checkBoxRow1);
         checkBoxRows[1] = findViewById(R.id.checkBoxRow2);
@@ -478,6 +479,10 @@ public class Record extends AppCompatActivity {
             checkBoxes[i] = createPlottingCheckbox(i);
             checkBoxRows[i / 8].addView(checkBoxes[i]);
         }
+
+        // Traumschreiber Config Dialog
+        traumConfigDialog = createTraumConfigDialog();
+
         mDataResolution = findViewById(R.id.resolution_value);
         setChart();
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
@@ -645,7 +650,7 @@ public class Record extends AppCompatActivity {
             TraumschreiberService.initiateCentering();
         }
 
-        if (id==R.id.traumConfig) showTraumConfigMenu();
+        if (id==R.id.traumConfig) traumConfigDialog.show();
 
         return super.onOptionsItemSelected(item);
     }
@@ -690,23 +695,19 @@ public class Record extends AppCompatActivity {
         Log.d(TAG, "Characteristic " + cId + " DESCRIPTOR VALUE: " + descValS);
     }
 
-    public void showTraumConfigMenu(){
-
-        Rect displayRectangle = new Rect();
-        Window window = this.getWindow();
-        window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
-
+    private AlertDialog createTraumConfigDialog(){
+        // inflate the view
         View traumConfigView = getLayoutInflater().inflate(R.layout.traum_config_popup, null);
-        traumConfigView.setMinimumWidth((int) (displayRectangle.width() * 0.9f));
-        traumConfigView.setMinimumHeight((int) (displayRectangle.height() * 0.9f));
 
-        dialogBuilder = new AlertDialog.Builder(this);
-        dialogBuilder.setView(traumConfigView);
-        dialog = dialogBuilder.create();
-        dialog.show();
+        // create the dialog
+        AlertDialog.Builder configDialogBuilder = new AlertDialog.Builder(this,
+                R.style.traumConfigDialog);
+        configDialogBuilder.setView(traumConfigView);
+        AlertDialog configDialog = configDialogBuilder.create();
 
-
+        return configDialog;
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
