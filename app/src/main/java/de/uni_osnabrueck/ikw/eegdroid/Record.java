@@ -11,27 +11,23 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
-import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -39,6 +35,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -110,11 +107,18 @@ public class Record extends AppCompatActivity {
     private BluetoothGattCharacteristic codeCharacteristic;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
     private String selectedGain = "1";
-    private byte selectedGainB = (byte) 0;
-    private boolean generateDummy = false;
-    private byte generateDummyB = (byte) 0;
-    private boolean halfDummy = false;
-    private byte halfDummyB = (byte) 0;
+    private byte selectedGainB;
+    private byte runningAverageFilterB;
+    private byte sendOnOneCharB;
+    private byte generateDataB;
+    private byte o1HighpassB;
+    private byte iirHighpassB;
+    private byte lowpassB;
+    private byte filter50hzB;
+    private byte bitshiftMinB;
+    private byte bitshiftMaxB;
+    private byte encodingSafetyFactorB;
+
     private final int[] channelColors = new int[nChannels];
     private final boolean[] channelsShown = new boolean[nChannels];
     private final CheckBox[] checkBoxes = new CheckBox[nChannels];
@@ -161,7 +165,6 @@ public class Record extends AppCompatActivity {
     private int enabledCheckboxes = 0;
     private TextView mXAxis;
     private TextView mDataResolution;
-    private Spinner gainSpinner;
     private LineChart mChart;
     private ImageButton imageButtonRecord;
     private ImageButton imageButtonSave;
@@ -347,49 +350,28 @@ public class Record extends AppCompatActivity {
         return intentFilter;
     }
 
-    private void setGainSpinner() {
-        int gains_set = mNewDevice ? R.array.gains_new : R.array.gains_old;
-
-        gainSpinner.setAdapter(new ArrayAdapter<>(getApplicationContext(),
-                android.R.layout.simple_spinner_dropdown_item,
-                getResources().getStringArray(gains_set)));
-        int gain_default = 1;
-        gainSpinner.setSelection(gain_default);
-        gainSpinner.setEnabled(true);
-        //selectedGain = gain_spinner.getSelectedItem().toString();
-        gainSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                int parsed = Integer.parseInt(gainSpinner.getSelectedItem().toString());
-                Log.d(TAG,gainSpinner.getSelectedItem().toString());
-                selectedScaleB = (byte) ( (parsed<<4) & 0xff );
-                Log.d(TAG, "Selected Gain:" + Integer.toBinaryString(selectedScaleB) +"  "+ Integer.toString(selectedScaleB));
-
-                if (configCharacteristic != null) updateConfiguration();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // sometimes you need nothing here
-            }
-        });
-    }
-
     private void updateConfiguration() {
         // Declare bytearray
-        byte[] configBytes = new byte[4];
+        byte[] configBytes = new byte[8];
 
         // Concatenate binary strings
-        configBytes[0] = (byte) ((selectedGainB | generateDummyB | halfDummyB)&0xff);
-        // configBytes[0] = 0x20; // 0x20 <=> 0b 0010 0000   --"Gain = 0, Generate Dummy = True, Generate Half = False"
-        configBytes[1] = (byte) (selectedScaleB & 0xff); //traumschreiber code:"spi_enc_factor_safe_encoding"
-        //configBytes[1] = 0; // Right now responsible for slowdown
-        configBytes[2] = 0;
-        configBytes[3] = 0;
+        configBytes[0] = (byte) ((byte) (selectedGainB | runningAverageFilterB) | sendOnOneCharB | generateDataB);
+        configBytes[1] = (byte) 0; // Reserved
+        configBytes[2] = (byte) (o1HighpassB | iirHighpassB);
+        configBytes[3] = (byte) (lowpassB | filter50hzB);
+        configBytes[4] = (byte) (bitshiftMinB | bitshiftMaxB);
+        configBytes[5] = (byte) encodingSafetyFactorB;
+        configBytes[6] = (byte) 0; // battery status
+        configBytes[7] = (byte) 0; // battery status
 
-
+        Log.d(TAG, "configBytes before writing: " + Arrays.toString(configBytes));
         configCharacteristic.setValue(configBytes);
+
+        boolean togglingRequired = notifying;
+
+        if (togglingRequired) toggleNotifying();
         mBluetoothLeService.writeCharacteristic(configCharacteristic);
+        if (togglingRequired) toggleNotifying();
 
         Log.d(TAG, "New Value of Config: " + Arrays.toString(configCharacteristic.getValue()));
     }
@@ -442,7 +424,6 @@ public class Record extends AppCompatActivity {
         imageButtonSave = findViewById(R.id.imageButtonSave);
         imageButtonDiscard = findViewById(R.id.imageButtonDiscard);
         switch_plots = findViewById(R.id.switch_plots);
-        gainSpinner = findViewById(R.id.gain_spinner);
 
         layout_plots = findViewById(R.id.linearLayout_chart);
         layout_plots.setVisibility(ViewStub.VISIBLE);
@@ -650,7 +631,7 @@ public class Record extends AppCompatActivity {
             TraumschreiberService.initiateCentering();
         }
 
-        if (id==R.id.traumConfig) traumConfigDialog.show();
+        if (id==R.id.traumConfig) showTraumConfigDialog();
 
         return super.onOptionsItemSelected(item);
     }
@@ -703,9 +684,193 @@ public class Record extends AppCompatActivity {
         AlertDialog.Builder configDialogBuilder = new AlertDialog.Builder(this,
                 R.style.traumConfigDialog);
         configDialogBuilder.setView(traumConfigView);
-        AlertDialog configDialog = configDialogBuilder.create();
 
-        return configDialog;
+
+        return configDialogBuilder.create();
+    }
+
+    private void showTraumConfigDialog(){
+        traumConfigDialog.show();
+        // Link the Items to Functions
+
+        // Link Close Button
+        View closeConfig = (View) traumConfigDialog.findViewById(R.id.traum_config_close_button);
+        closeConfig.setOnClickListener(v -> {traumConfigDialog.cancel();});
+
+        // Link gainSpinner
+        Spinner gainSpinner = (Spinner) traumConfigDialog.findViewById(R.id.gain_spinner);
+        gainSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //Itempositions: {0,1,2,3} <=> {00,01,10,11} -- (<<6) --> {0b00..,0b01..,0b10..
+                selectedGainB = (byte) ((gainSpinner.getSelectedItemPosition() & 0xff) << 6);
+                byte[] binaryString = {selectedGainB};
+                Log.d(TAG, "Binary rep of selected value: " + Arrays.toString(binaryString));
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // nothing
+            }
+        });
+
+        // Link RunningAverageSwitch
+        SwitchCompat rafSwitch = (SwitchCompat) traumConfigDialog.findViewById(R.id.average_filter_switch);
+        rafSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    runningAverageFilterB = 1 << 3;
+                } else {
+                    runningAverageFilterB = 0;
+                }
+            }
+        });
+
+        // Link oneCharacteristicSwitch
+        SwitchCompat oneCharSwitch = (SwitchCompat) traumConfigDialog.findViewById(R.id.one_char_switch);
+        oneCharSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    sendOnOneCharB = 1 << 2;
+                } else {
+                    sendOnOneCharB = 0;
+                }
+            }
+        });
+
+        // Link GenerateDataSwitch
+        SwitchCompat genDataSwitch = (SwitchCompat) traumConfigDialog.findViewById(R.id.generate_data_switch);
+        genDataSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    generateDataB = 0b10;
+                } else {
+                    generateDataB = 0;
+                }
+            }
+        });
+
+        // Link o1HighpassSpinner
+        Spinner o1HighpassSpinner = (Spinner) traumConfigDialog.findViewById(R.id.o1_highpass_spinner);
+        o1HighpassSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                o1HighpassB = (byte) ((o1HighpassSpinner.getSelectedItemPosition() & 0xff) << 4);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // well Nothing
+            }
+
+        });
+
+        // Link IIRSpinner
+        Spinner IRRSpinner = (Spinner) traumConfigDialog.findViewById(R.id.iir_highpass_spinner);
+        IRRSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                iirHighpassB = (byte) (IRRSpinner.getSelectedItemPosition() & 0xff);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // well Nothing
+            }
+
+        });
+
+        // Link LowPass
+        Spinner lowPassSpinner = (Spinner) traumConfigDialog.findViewById(R.id.lowpass_spinner);
+        lowPassSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                lowpassB = (byte) ((lowPassSpinner.getSelectedItemPosition() & 0xff) << 4);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // well Nothing
+            }
+
+        });
+
+        // Link 50hz
+        Spinner filter50hzSpinner = (Spinner) traumConfigDialog.findViewById(R.id.filter50hz_spinner);
+        filter50hzSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                filter50hzB = (byte) (filter50hzSpinner.getSelectedItemPosition() & 0xff);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // well Nothing
+            }
+
+        });
+
+        // Link bitshift min
+        Spinner bitshiftMinSpinner = (Spinner) traumConfigDialog.findViewById(R.id.bitshift_min_spinner);
+        bitshiftMinSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                bitshiftMinB = (byte)((bitshiftMinSpinner.getSelectedItemPosition() & 0xff) <<4);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // well Nothing
+            }
+
+        });
+
+        // Link bitshift max
+        Spinner bitshiftMaxSpinner = (Spinner) traumConfigDialog.findViewById(R.id.bitshift_max_spinner);
+        bitshiftMaxSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                bitshiftMaxB = (byte)(bitshiftMaxSpinner.getSelectedItemPosition() & 0xff);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // well Nothing
+            }
+
+        });
+
+        // Links safeEncodingFactor
+        Spinner encodingSafetySpinner = (Spinner) traumConfigDialog.findViewById(R.id.encoding_safety_spinner);
+        encodingSafetySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                int parsed = encodingSafetySpinner.getSelectedItemPosition();
+
+                Log.i(TAG, "Selected Encoding Safety Factor : " + parsed);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // well Nothing
+            }
+
+        });
+
+        // Link UpdateConfigButton
+        Button updateConfigButton = (Button) traumConfigDialog.findViewById(R.id.apply_config_button);
+        updateConfigButton.setOnClickListener(v -> updateConfiguration());
+
+
+
     }
 
 
@@ -722,7 +887,6 @@ public class Record extends AppCompatActivity {
                 mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
                 String model = intent.getStringExtra(EXTRAS_DEVICE_MODEL);
                 if (model != null) mNewDevice = model.equals("3");
-                setGainSpinner();
                 Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
                 bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
             }
@@ -1212,7 +1376,6 @@ public class Record extends AppCompatActivity {
             mConnectionState.setText(R.string.device_connected);
             mConnectionState.setTextColor(Color.GREEN);
             switch_plots.setEnabled(true);
-            gainSpinner.setEnabled(true);
             viewDeviceAddress.setText(mDeviceAddress);
             menuItemSettings.setVisible(true);
             menuItemNotify.setVisible(true);
@@ -1224,7 +1387,6 @@ public class Record extends AppCompatActivity {
             mConnectionState.setTextColor(Color.LTGRAY);
             buttons_nodata();
             switch_plots.setEnabled(false);
-            gainSpinner.setEnabled(false);
             viewDeviceAddress.setText(R.string.no_address);
             menuItemNotify.setVisible(false);
             menuItemCast.setVisible(false);

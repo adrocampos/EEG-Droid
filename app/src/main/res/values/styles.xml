@@ -8,8 +8,6 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="AppThemeDark" parent="ThemeOverlay.AppCompat.Dark"></style>
-
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
@@ -17,7 +15,7 @@
     <style name="traumConfigDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="windowFixedWidthMajor">70%</item>
         <item name="windowFixedWidthMinor">70%</item>
-        <item name="windowFixedHeightMajor">80%</item>
+        <item name="windowFixedHeightMajor">90%</item>
         <item name="windowFixedHeightMinor">70%</item>
     </style>
 

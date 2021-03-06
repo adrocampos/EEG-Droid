@@ -117,6 +117,7 @@ public class BluetoothLeService extends Service {
                                           BluetoothGattCharacteristic characteristic,
                                           int status) {
             Log.d(TAG, "------------- onCharacteristicWrite status: " + status);
+            Log.d(TAG, "New Value of Config: " + Arrays.toString(characteristic.getValue()));
             isBusy = false;
         }
 

@@ -7,6 +7,20 @@
 
 
     <TextView
+        android:id="@+id/traum_config_close_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="X"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/traum_config_popup_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.918"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.64"
+        tools:ignore="HardcodedText" />
+
+    <TextView
         android:id="@+id/traum_config_popup_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,10 +29,11 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.05" />
+        app:layout_constraintVertical_bias="0.08"
+        tools:ignore="HardcodedText" />
 
     <GridLayout
         android:id="@+id/config_table"
@@ -64,7 +79,7 @@
 
             <Spinner
                 android:id="@+id/gain_spinner"
-                android:layout_width="180dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:entries="@array/gain_entries" />
@@ -107,12 +122,13 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:paddingEnd="20dp"
+                android:paddingStart="20dp"
                 android:text="" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/config_row_one_characteristic"
+            android:id="@+id/config_row_one_char"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -141,11 +157,12 @@
                 android:layout_weight="1" />
 
             <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/one_characteristic_switch"
+                android:id="@+id/one_char_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:paddingEnd="20dp"
+                android:paddingStart="20dp"
                 android:text="" />
 
         </LinearLayout>
@@ -186,12 +203,13 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:paddingEnd="20dp"
+                android:paddingStart="20dp"
                 android:text="" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/config_row_order1_highpass"
+            android:id="@+id/config_row_o11_highpass"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -215,17 +233,17 @@
                 android:layout_weight="1" />
 
             <Spinner
-                android:id="@+id/order1_highpass_spinner"
-                android:layout_width="180dp"
+                android:id="@+id/o1_highpass_spinner"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:entries="@array/gain_entries" />
+                android:entries="@array/o1_highpass_entries" />
 
         </LinearLayout>
 
 
         <LinearLayout
-            android:id="@+id/config_row_irr_highpass"
+            android:id="@+id/config_row_iir_highpass"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -249,11 +267,11 @@
                 android:layout_weight="1" />
 
             <Spinner
-                android:id="@+id/irr_highpass_spinner"
-                android:layout_width="180dp"
+                android:id="@+id/iir_highpass_spinner"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:entries="@array/gain_entries" />
+                android:entries="@array/iir_highpass_entries" />
 
         </LinearLayout>
 
@@ -283,10 +301,10 @@
 
             <Spinner
                 android:id="@+id/lowpass_spinner"
-                android:layout_width="180dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:entries="@array/gain_entries" />
+                android:entries="@array/lowpass_entries" />
 
         </LinearLayout>
 
@@ -317,10 +335,10 @@
 
             <Spinner
                 android:id="@+id/filter50hz_spinner"
-                android:layout_width="180dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:entries="@array/gain_entries" />
+                android:entries="@array/filter50hz_entries" />
 
         </LinearLayout>
 
@@ -349,10 +367,10 @@
 
             <Spinner
                 android:id="@+id/bitshift_min_spinner"
-                android:layout_width="180dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:entries="@array/gain_entries" />
+                android:entries="@array/bitshift_min_entries" />
 
         </LinearLayout>
 
@@ -370,7 +388,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="Bitshift Min"
+                android:text="Bitshift Max"
 
                 tools:ignore="HardcodedText" />
 
@@ -381,10 +399,41 @@
 
             <Spinner
                 android:id="@+id/bitshift_max_spinner"
-                android:layout_width="180dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:entries="@array/gain_entries" />
+                android:entries="@array/bitshift_max_entries" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/config_row_encoding_safty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.157">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Encoding Safety Factor"
+
+                tools:ignore="HardcodedText" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <Spinner
+                android:id="@+id/encoding_safety_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:entries="@array/encoding_safety_entries" />
         </LinearLayout>
 
     </GridLayout>
@@ -405,19 +454,19 @@
         <Space
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
+
         <Button
             android:id="@+id/apply_config_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Apply Configuration"
-
             />
 
         <Space
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
 
 
     </LinearLayout>
