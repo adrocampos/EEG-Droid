@@ -170,6 +170,7 @@ public class Record extends AppCompatActivity {
     private ImageButton imageButtonSave;
     private ImageButton imageButtonDiscard;
     private androidx.appcompat.widget.SwitchCompat switch_plots;
+    private androidx.appcompat.widget.SwitchCompat channelViewsSwitch;
     private View layout_plots;
     private boolean plotting = false;
     private List<float[]> mainData;
@@ -257,6 +258,14 @@ public class Record extends AppCompatActivity {
             }
         }
     };
+    private final CompoundButton.OnCheckedChangeListener channelViewsSwitchListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            LinearLayout channelViewsContainer = findViewById(R.id.ChannelViewsContainer);
+            if (isChecked) channelViewsContainer.setVisibility(View.GONE);
+            else channelViewsContainer.setVisibility(View.VISIBLE);
+        }
+    };
     private boolean deviceConnected = false;
     private boolean casting = false;
     private Menu menu;
@@ -339,6 +348,9 @@ public class Record extends AppCompatActivity {
             }
         }
     };
+
+    public Record() {
+    }
 
     private static IntentFilter makeGattUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
@@ -427,6 +439,7 @@ public class Record extends AppCompatActivity {
         imageButtonSave = findViewById(R.id.imageButtonSave);
         imageButtonDiscard = findViewById(R.id.imageButtonDiscard);
         switch_plots = findViewById(R.id.switch_plots);
+        channelViewsSwitch = findViewById(R.id.channel_views_switch);
 
         layout_plots = findViewById(R.id.linearLayout_chart);
         layout_plots.setVisibility(ViewStub.VISIBLE);
@@ -437,6 +450,7 @@ public class Record extends AppCompatActivity {
         imageButtonSave.setOnClickListener(imageSaveOnClickListener);
         imageButtonDiscard.setOnClickListener(imageDiscardOnClickListener);
         switch_plots.setOnCheckedChangeListener(switchPlotsOnCheckedChangeListener);
+        channelViewsSwitch.setOnCheckedChangeListener(channelViewsSwitchListener);
 
         // Sets up UI references.
         mConnectionState = findViewById(R.id.connection_state);
