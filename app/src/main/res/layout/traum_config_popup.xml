@@ -35,408 +35,432 @@
         app:layout_constraintVertical_bias="0.08"
         tools:ignore="HardcodedText" />
 
-    <GridLayout
-        android:id="@+id/config_table"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:orientation="vertical"
+    <ScrollView
+        android:id="@+id/config_scrollview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
 
-
-        android:useDefaultMargins="true"
-
+        app:layout_constraintHeight_percent="0.7"
+        app:layout_constraintWidth_percent="0.95"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/traum_config_popup_title"
-        app:layout_constraintVertical_bias="0.36">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:id="@+id/config_row_gain"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.157">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="Gain"
-
-
-                tools:ignore="HardcodedText" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <Spinner
-                android:id="@+id/gain_spinner"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/config_row_gain"
+                style="@style/traumConfigDialogRow"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:entries="@array/gain_entries" />
 
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/config_row_average"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.247">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Running Average Filter"
-                android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.263"
-                tools:ignore="HardcodedText" />
+                app:layout_constraintVertical_bias="0.157">
 
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Gain"
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/average_filter_switch"
-                android:layout_width="wrap_content"
+
+                    tools:ignore="HardcodedText" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <Spinner
+                    android:id="@+id/gain_spinner"
+                    style="@style/traumConfigDialogRow"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:entries="@array/gain_entries" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/config_row_average"
+                style="@style/traumConfigDialogRow"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:paddingEnd="20dp"
-                android:paddingStart="20dp"
-                android:text="" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/config_row_one_char"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.338">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Send on one Characteristic"
-                android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.263"
-                tools:ignore="HardcodedText" />
+                app:layout_constraintVertical_bias="0.247">
 
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Running Average Filter"
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.263"
+                    tools:ignore="HardcodedText" />
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/one_char_switch"
-                android:layout_width="wrap_content"
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/average_filter_switch"
+                    style="@style/traumConfigDialogRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/config_row_one_char"
+                style="@style/traumConfigDialogRow"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:paddingEnd="20dp"
-                android:paddingStart="20dp"
-                android:text="" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/config_row_generate_data"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.338">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Generate Data"
-
-                android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.263"
-                tools:ignore="HardcodedText" />
+                app:layout_constraintVertical_bias="0.338">
 
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Send on one Characteristic"
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.263"
+                    tools:ignore="HardcodedText" />
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/generate_data_switch"
-                android:layout_width="wrap_content"
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/one_char_switch"
+                    style="@style/traumConfigDialogRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/config_row_generate_data"
+                style="@style/traumConfigDialogRow"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:paddingEnd="20dp"
-                android:paddingStart="20dp"
-                android:text="" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.338">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Generate Data"
+
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.263"
+                    tools:ignore="HardcodedText" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/generate_data_switch"
+                    style="@style/traumConfigDialogRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/config_row_o11_highpass"
+                style="@style/traumConfigDialogRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.157">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="First Order High Pass"
+
+
+                    tools:ignore="HardcodedText" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <Spinner
+                    android:id="@+id/o1_highpass_spinner"
+                    style="@style/traumConfigDialogRow"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:entries="@array/o1_highpass_entries" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/config_row_iir_highpass"
+                style="@style/traumConfigDialogRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.157">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="IRR High Pass"
+
+
+                    tools:ignore="HardcodedText" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <Spinner
+                    android:id="@+id/iir_highpass_spinner"
+                    style="@style/traumConfigDialogRow"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:entries="@array/iir_highpass_entries" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/config_row_lowpass"
+                style="@style/traumConfigDialogRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.157">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Low Pass Filter"
+
+
+                    tools:ignore="HardcodedText" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <Spinner
+                    android:id="@+id/lowpass_spinner"
+                    style="@style/traumConfigDialogRow"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:entries="@array/lowpass_entries" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/config_row_filter50hz"
+                style="@style/traumConfigDialogRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.157">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="50 Hz Filter"
+
+
+                    tools:ignore="HardcodedText" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <Spinner
+                    android:id="@+id/filter50hz_spinner"
+                    style="@style/traumConfigDialogRow"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:entries="@array/filter50hz_entries" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/config_row_bitshift_min"
+                style="@style/traumConfigDialogRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.157">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Bitshift Min"
+
+                    tools:ignore="HardcodedText" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <Spinner
+                    android:id="@+id/bitshift_min_spinner"
+                    style="@style/traumConfigDialogRow"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:entries="@array/bitshift_min_entries" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/config_row_bitshift_max"
+                style="@style/traumConfigDialogRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.157">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Bitshift Max"
+
+                    tools:ignore="HardcodedText" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <Spinner
+                    android:id="@+id/bitshift_max_spinner"
+                    style="@style/traumConfigDialogRow"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:entries="@array/bitshift_max_entries" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/config_row_encoding_safty"
+                style="@style/traumConfigDialogRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.157">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Encoding Safety Factor"
+
+                    tools:ignore="HardcodedText" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <Spinner
+                    android:id="@+id/encoding_safety_spinner"
+                    style="@style/traumConfigDialogRow"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:entries="@array/encoding_safety_entries" />
+            </LinearLayout>
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/config_row_o11_highpass"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.157">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="First Order High Pass"
-
-
-                tools:ignore="HardcodedText" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <Spinner
-                android:id="@+id/o1_highpass_spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:entries="@array/o1_highpass_entries" />
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/config_row_iir_highpass"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.157">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="IRR High Pass"
-
-
-                tools:ignore="HardcodedText" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <Spinner
-                android:id="@+id/iir_highpass_spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:entries="@array/iir_highpass_entries" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/config_row_lowpass"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.157">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="Low Pass Filter"
-
-
-                tools:ignore="HardcodedText" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <Spinner
-                android:id="@+id/lowpass_spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:entries="@array/lowpass_entries" />
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/config_row_filter50hz"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.157">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="50 Hz Filter"
-
-
-                tools:ignore="HardcodedText" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <Spinner
-                android:id="@+id/filter50hz_spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:entries="@array/filter50hz_entries" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/config_row_bitshift_min"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.157">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="Bitshift Min"
-
-                tools:ignore="HardcodedText" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <Spinner
-                android:id="@+id/bitshift_min_spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:entries="@array/bitshift_min_entries" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/config_row_bitshift_max"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.157">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="Bitshift Max"
-
-                tools:ignore="HardcodedText" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <Spinner
-                android:id="@+id/bitshift_max_spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:entries="@array/bitshift_max_entries" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/config_row_encoding_safty"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.157">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="Encoding Safety Factor"
-
-                tools:ignore="HardcodedText" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <Spinner
-                android:id="@+id/encoding_safety_spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:entries="@array/encoding_safety_entries" />
-        </LinearLayout>
-
-    </GridLayout>
+    </ScrollView>
 
     <LinearLayout
         android:id="@+id/apply_config_layout"
@@ -447,7 +471,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/config_table"
+        app:layout_constraintTop_toBottomOf="@+id/config_scrollview"
         app:layout_constraintVertical_bias="0.7"
         tools:ignore="HardcodedText">
 
@@ -460,8 +484,7 @@
             android:id="@+id/apply_config_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Apply Configuration"
-            />
+            android:text="Apply Configuration" />
 
         <Space
             android:layout_width="0dp"

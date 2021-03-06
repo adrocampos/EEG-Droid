@@ -369,11 +369,14 @@ public class Record extends AppCompatActivity {
 
         boolean togglingRequired = notifying;
 
+
         if (togglingRequired) toggleNotifying();
         mBluetoothLeService.writeCharacteristic(configCharacteristic);
         if (togglingRequired) toggleNotifying();
 
         Log.d(TAG, "New Value of Config: " + Arrays.toString(configCharacteristic.getValue()));
+
+        Toast.makeText(getApplicationContext(), "Succesfully applied configuration.", Toast.LENGTH_SHORT).show();
     }
 
     private void initializeTimerTask() {
@@ -867,7 +870,10 @@ public class Record extends AppCompatActivity {
 
         // Link UpdateConfigButton
         Button updateConfigButton = (Button) traumConfigDialog.findViewById(R.id.apply_config_button);
-        updateConfigButton.setOnClickListener(v -> updateConfiguration());
+        updateConfigButton.setOnClickListener(v -> {
+            if(deviceConnected) updateConfiguration();
+            else Toast.makeText(getApplicationContext(), "No Device Connected", Toast.LENGTH_SHORT).show();
+        });
 
 
 

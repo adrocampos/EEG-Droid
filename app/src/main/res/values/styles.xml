@@ -19,5 +19,10 @@
         <item name="windowFixedHeightMinor">70%</item>
     </style>
 
+    <style name="traumConfigDialogRow" parent="Theme.AppCompat.Light">
+        <item name="android:paddingBottom">15dp</item>
+
+    </style>
+
 
 </resources>
