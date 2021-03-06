@@ -170,9 +170,10 @@ public class Record extends AppCompatActivity {
     private ImageButton imageButtonSave;
     private ImageButton imageButtonDiscard;
     private androidx.appcompat.widget.SwitchCompat switch_plots;
-    private androidx.appcompat.widget.SwitchCompat channelViewsSwitch;
     private View layout_plots;
-    private boolean plotting = false;
+    private boolean plotting = true;
+    private androidx.appcompat.widget.SwitchCompat channelViewsSwitch;
+    private boolean channelViewsEnabled = true;
     private List<float[]> mainData;
     private int adaptiveEncodingFlag = 0; //Indicates whether adaptive encoding took place in this instant.
     private final ArrayList<Integer> adaptiveEncodingFlags = new ArrayList<>();
@@ -262,8 +263,14 @@ public class Record extends AppCompatActivity {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             LinearLayout channelViewsContainer = findViewById(R.id.ChannelViewsContainer);
-            if (isChecked) channelViewsContainer.setVisibility(View.GONE);
-            else channelViewsContainer.setVisibility(View.VISIBLE);
+            if (isChecked) {
+                channelViewsEnabled = true;
+                channelViewsContainer.setVisibility(View.VISIBLE);
+            }
+            else  {
+                channelViewsEnabled = false;
+                channelViewsContainer.setVisibility(View.GONE);
+            }
         }
     };
     private boolean deviceConnected = false;
@@ -326,7 +333,7 @@ public class Record extends AppCompatActivity {
                 long last_data = System.currentTimeMillis();
                 microV = transData(data);
                 streamData(microV);
-                if (data_cnt % 50 == 0) displayData(microV);
+                if (data_cnt % 50 == 0 && channelViewsEnabled) displayData(microV);
                 if (plotting) { //cut out ' & data_cnt % 2 == 0 '
                     accumulated.add(microV);
                     long plotting_elapsed = last_data - plotting_start;
@@ -348,6 +355,7 @@ public class Record extends AppCompatActivity {
             }
         }
     };
+
 
     public Record() {
     }
@@ -398,10 +406,30 @@ public class Record extends AppCompatActivity {
                     res_time = 1000 / data_cnt;
                     String hertz = (int) data_cnt + "Hz";
                     res_freq = data_cnt;
+
+
                     @SuppressLint("DefaultLocale") String resolution = String.format("%.2f", res_time) + "ms - ";
                     String content = resolution + hertz;
-                    if (data_cnt != 0) mDataResolution.setText(content);
-                    if (!notifying) mDataResolution.setText("No data");
+
+                    float delta_freq = res_freq - 167;
+
+                    int color;
+                    if (Math.abs(delta_freq) < 3) color = getResources().getColor(R.color.green);
+                    else if (Math.abs(delta_freq) < 7) color = getResources().getColor(R.color.orange);
+                    else {
+                        content += "  Bad Signal";
+                        color = getResources().getColor(R.color.red);
+                    }
+
+                    if (data_cnt != 0) {
+                        mDataResolution.setText(content);
+                        mDataResolution.setTextColor(color);
+                    }
+                    if (!notifying) {
+
+                        mDataResolution.setText("No data");
+                        mDataResolution.setTextColor(getResources().getColor(R.color.black));
+                    }
                     data_cnt = 0;
                 });
             }
@@ -456,6 +484,7 @@ public class Record extends AppCompatActivity {
         mConnectionState = findViewById(R.id.connection_state);
         viewDeviceAddress = findViewById(R.id.device_address);
         mConnectionState = findViewById(R.id.connection_state);
+        mDataResolution = findViewById(R.id.resolution_value);
 
         // Checkboxes and Channel Values
         LinearLayout[] checkBoxRows = new LinearLayout[3];
@@ -477,11 +506,13 @@ public class Record extends AppCompatActivity {
             checkBoxes[i] = createPlottingCheckbox(i);
             checkBoxRows[i / 8].addView(checkBoxes[i]);
         }
+        if(plotting) checkBoxes[0].setChecked(true);
+
+
 
         // Traumschreiber Config Dialog
         traumConfigDialog = createTraumConfigDialog();
 
-        mDataResolution = findViewById(R.id.resolution_value);
         setChart();
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
     }
