@@ -320,9 +320,9 @@ public class Record extends AppCompatActivity {
                 if(data==null) return;
 
                 // if the pkg was an encoding update, no further processing is required here
-                if (data[0] == 0xc0de){
+                if (data[0] == 0xC0DE){
                     signalBitShift = data[1];
-                    Log.d(TAG,"Updated signalBitshift of CH1: " + Integer.toString(signalBitShift));
+                    Log.d(TAG,"Updated signalBitshift of CH1: " + signalBitShift);
                     // Give the next row in our recording an adaptive encoding flag
                     adaptiveEncodingFlag = 1;
                     return; //prevent further processing
@@ -399,23 +399,24 @@ public class Record extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Succesfully applied configuration.", Toast.LENGTH_SHORT).show();
     }
 
+
+
     private void initializeTimerTask() {
+
         timerTask = new TimerTask() {
             public void run() {
                 handler.post(() -> {
-                    res_time = 1000 / data_cnt;
-                    String hertz = (int) data_cnt + "Hz";
-                    res_freq = data_cnt;
+                    res_time = 5000 / data_cnt;
+                    res_freq = data_cnt / 5;
+                    String hertz = (int) res_freq + "Hz";
 
 
                     @SuppressLint("DefaultLocale") String resolution = String.format("%.2f", res_time) + "ms - ";
                     String content = resolution + hertz;
 
-                    float delta_freq = res_freq - 167;
-
                     int color;
-                    if (Math.abs(delta_freq) < 3) color = getResources().getColor(R.color.green);
-                    else if (Math.abs(delta_freq) < 7) color = getResources().getColor(R.color.orange);
+                    if (res_freq >= 166) color = getResources().getColor(R.color.green);
+                    else if (res_freq >= 165) color = getResources().getColor(R.color.orange);
                     else {
                         content += "  Bad Signal";
                         color = getResources().getColor(R.color.red);
@@ -442,7 +443,8 @@ public class Record extends AppCompatActivity {
         //initialize the TimerTask's job
         initializeTimerTask();
         // schedule the timer, the stimulus presence will repeat every 1 seconds
-        timer.schedule(timerTask, 1000, 1000);
+        timer.schedule(timerTask, 5000, 5000);
+        mDataResolution.setText("calculating");
         timerRunning = true;
     }
 

@@ -91,6 +91,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="35dp"
             android:text="@string/no_data"
+            android:textColor="@color/black"
             android:textSize="14sp" />
 
         <View
