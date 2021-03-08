@@ -108,16 +108,27 @@ public class Record extends AppCompatActivity {
     private BluetoothGattCharacteristic mNotifyCharacteristic;
     private String selectedGain = "1";
     private byte selectedGainB;
+    private int selectedGainPos = 0;
     private byte runningAverageFilterB;
+    private boolean runningAverageFilterCheck = true;
     private byte sendOnOneCharB;
+    private boolean sendOnOneCharCheck = false;
     private byte generateDataB;
+    private boolean generateDataCheck = false;
     private byte o1HighpassB;
+    private int o1HighpassPos = 0;
     private byte iirHighpassB;
+    private int  iirHighpassPos = 1;
     private byte lowpassB;
+    private int lowpassPos = 1;
     private byte filter50hzB;
+    private int filter50hzPos = 1;
     private byte bitshiftMinB;
+    private int bitshiftMinPos = 0;
     private byte bitshiftMaxB;
+    private int bitshiftMaxPos = 15;
     private byte encodingSafetyFactorB;
+    private int encodingSafetyPos = 8;
 
     private final int[] channelColors = new int[nChannels];
     private final boolean[] channelsShown = new boolean[nChannels];
@@ -355,6 +366,7 @@ public class Record extends AppCompatActivity {
             }
         }
     };
+
 
 
     public Record() {
@@ -749,11 +761,13 @@ public class Record extends AppCompatActivity {
 
         // Link gainSpinner
         Spinner gainSpinner = (Spinner) traumConfigDialog.findViewById(R.id.gain_spinner);
+        gainSpinner.setSelection(selectedGainPos);
         gainSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //Itempositions: {0,1,2,3} <=> {00,01,10,11} -- (<<6) --> {0b00..,0b01..,0b10..
-                selectedGainB = (byte) ((gainSpinner.getSelectedItemPosition() & 0xff) << 6);
+                selectedGainPos = position;
+                selectedGainB = (byte) ((position& 0xff) << 6);
                 byte[] binaryString = {selectedGainB};
                 Log.d(TAG, "Binary rep of selected value: " + Arrays.toString(binaryString));
             }
@@ -765,12 +779,15 @@ public class Record extends AppCompatActivity {
 
         // Link RunningAverageSwitch
         SwitchCompat rafSwitch = (SwitchCompat) traumConfigDialog.findViewById(R.id.average_filter_switch);
+        rafSwitch.setChecked(runningAverageFilterCheck);
         rafSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {
+                    runningAverageFilterCheck = true;
                     runningAverageFilterB = 1 << 3;
                 } else {
+                    runningAverageFilterCheck = false;
                     runningAverageFilterB = 0;
                 }
             }
@@ -778,12 +795,15 @@ public class Record extends AppCompatActivity {
 
         // Link oneCharacteristicSwitch
         SwitchCompat oneCharSwitch = (SwitchCompat) traumConfigDialog.findViewById(R.id.one_char_switch);
+        oneCharSwitch.setChecked(sendOnOneCharCheck);
         oneCharSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {
+                    sendOnOneCharCheck = true;
                     sendOnOneCharB = 1 << 2;
                 } else {
+                    sendOnOneCharCheck = false;
                     sendOnOneCharB = 0;
                 }
             }
@@ -791,12 +811,15 @@ public class Record extends AppCompatActivity {
 
         // Link GenerateDataSwitch
         SwitchCompat genDataSwitch = (SwitchCompat) traumConfigDialog.findViewById(R.id.generate_data_switch);
+        genDataSwitch.setChecked(generateDataCheck);
         genDataSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {
+                    generateDataCheck = true;
                     generateDataB = 0b10;
                 } else {
+                    generateDataCheck = false;
                     generateDataB = 0;
                 }
             }
@@ -804,10 +827,12 @@ public class Record extends AppCompatActivity {
 
         // Link o1HighpassSpinner
         Spinner o1HighpassSpinner = (Spinner) traumConfigDialog.findViewById(R.id.o1_highpass_spinner);
+        o1HighpassSpinner.setSelection(o1HighpassPos);
         o1HighpassSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                o1HighpassB = (byte) ((o1HighpassSpinner.getSelectedItemPosition() & 0xff) << 4);
+                o1HighpassPos = position;
+                o1HighpassB = (byte) ((position & 0xff) << 4);
 
             }
 
@@ -819,11 +844,13 @@ public class Record extends AppCompatActivity {
         });
 
         // Link IIRSpinner
-        Spinner IRRSpinner = (Spinner) traumConfigDialog.findViewById(R.id.iir_highpass_spinner);
-        IRRSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        Spinner IIRSpinner = (Spinner) traumConfigDialog.findViewById(R.id.iir_highpass_spinner);
+        IIRSpinner.setSelection(iirHighpassPos);
+        IIRSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                iirHighpassB = (byte) (IRRSpinner.getSelectedItemPosition() & 0xff);
+                iirHighpassPos = position;
+                iirHighpassB = (byte) (position & 0xff);
 
             }
 
@@ -836,10 +863,12 @@ public class Record extends AppCompatActivity {
 
         // Link LowPass
         Spinner lowPassSpinner = (Spinner) traumConfigDialog.findViewById(R.id.lowpass_spinner);
+        lowPassSpinner.setSelection(lowpassPos);
         lowPassSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                lowpassB = (byte) ((lowPassSpinner.getSelectedItemPosition() & 0xff) << 4);
+                lowpassPos = position;
+                lowpassB = (byte) ((position & 0xff) << 4);
 
             }
 
@@ -852,10 +881,12 @@ public class Record extends AppCompatActivity {
 
         // Link 50hz
         Spinner filter50hzSpinner = (Spinner) traumConfigDialog.findViewById(R.id.filter50hz_spinner);
+        filter50hzSpinner.setSelection(filter50hzPos);
         filter50hzSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                filter50hzB = (byte) (filter50hzSpinner.getSelectedItemPosition() & 0xff);
+                filter50hzPos = position;
+                filter50hzB = (byte) (position & 0xff);
 
             }
 
@@ -868,10 +899,12 @@ public class Record extends AppCompatActivity {
 
         // Link bitshift min
         Spinner bitshiftMinSpinner = (Spinner) traumConfigDialog.findViewById(R.id.bitshift_min_spinner);
+        bitshiftMinSpinner.setSelection(bitshiftMinPos);
         bitshiftMinSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                bitshiftMinB = (byte)((bitshiftMinSpinner.getSelectedItemPosition() & 0xff) <<4);
+                bitshiftMinPos = position;
+                bitshiftMinB = (byte)((position & 0xff) <<4);
 
             }
 
@@ -884,10 +917,12 @@ public class Record extends AppCompatActivity {
 
         // Link bitshift max
         Spinner bitshiftMaxSpinner = (Spinner) traumConfigDialog.findViewById(R.id.bitshift_max_spinner);
+        bitshiftMaxSpinner.setSelection(bitshiftMaxPos);
         bitshiftMaxSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                bitshiftMaxB = (byte)(bitshiftMaxSpinner.getSelectedItemPosition() & 0xff);
+                bitshiftMaxPos = position;
+                bitshiftMaxB = (byte)(position & 0xff);
             }
 
             @Override
@@ -899,12 +934,14 @@ public class Record extends AppCompatActivity {
 
         // Links safeEncodingFactor
         Spinner encodingSafetySpinner = (Spinner) traumConfigDialog.findViewById(R.id.encoding_safety_spinner);
+        encodingSafetySpinner.setSelection(encodingSafetyPos);
         encodingSafetySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                int parsed = encodingSafetySpinner.getSelectedItemPosition();
+                encodingSafetyPos = position;
+                encodingSafetyFactorB = (byte) ((position & 0xff) << 4);
 
-                Log.i(TAG, "Selected Encoding Safety Factor : " + parsed);
+                Log.i(TAG, "Selected Encoding Safety Factor : " + encodingSafetyFactorB);
 
             }
 
@@ -1014,6 +1051,9 @@ public class Record extends AppCompatActivity {
         for (CheckBox box : checkBoxes) box.setEnabled(false);
     }
 
+
+    /* This is the last processing step before the data is displayed and saved
+     Note that gain is 1 by default */
     private List<Float> transData(int[] data) {
         // Conversion formula (old): V_in = X * 1.65V / (1000 * GAIN * PRECISION)
         // Conversion formula (new): V_in = X * (298 / (1000 * gain))
@@ -1027,9 +1067,8 @@ public class Record extends AppCompatActivity {
             float denominator = gain * precision;
             for (int datapoint : data) data_trans.add((datapoint * numerator) / denominator);
 
-            // This is the last processing step before the data is displayed and saved
-            // Note that gain is 1 by default
         } else {
+            pkgIDs.add((int) data_cnt); // store pkg ID
             for (float datapoint : data) data_trans.add(datapoint * 298/(1000*gain));
         }
         return data_trans;
@@ -1309,7 +1348,8 @@ public class Record extends AppCompatActivity {
         header.append("time,");
         for (int i = 1; i <= cols; i++) header.append(String.format("ch%d,", i)); // log values
         for (int i = 1; i <= 1; i++) header.append(String.format("enc_ch%d,",i)); // log encodings
-        header.append("enc_flag");                                                // log encoding updates
+        header.append("enc_flag,");                                                // log encoding updates
+        header.append("count");
         //header.append(String.format("Ch-%d", cols));
 
         new Thread(() -> {
@@ -1372,6 +1412,10 @@ public class Record extends AppCompatActivity {
                     }
                     // MONITORING CODE BOOK UPDATE NOTIFICATIONS
                     fileWriter.append(String.valueOf(adaptiveEncodingFlags.get(i)));
+                    fileWriter.append(delimiter);
+
+                    // MONITORING IDs
+                    fileWriter.append(String.valueOf(pkgIDs.get(i)));
                     fileWriter.append(break_line);
                 }
                 fileWriter.flush();
