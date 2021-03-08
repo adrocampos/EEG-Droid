@@ -325,10 +325,19 @@ public class Record extends AppCompatActivity {
                 // Show all the supported services and characteristics on the user interface.
                 data_cnt = 0;
                 discoverCharacteristics(mBluetoothLeService.getSupportedGattServices());
-            } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action) && deviceConnected) {
+                
+            } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 int[] data = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
 
                 if(data==null) return;
+
+                // if the pkg was configData
+                if (data.length < 24) {
+                    int[] configData = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
+                    Toast.makeText(getApplicationContext(),"Received Config Data", Toast.LENGTH_LONG).show();
+                    displayReceivedTraumConfigValues(configData);
+                    return;
+                }
 
                 // if the pkg was an encoding update, no further processing is required here
                 if (data[0] == 0xC0DE){
@@ -752,6 +761,7 @@ public class Record extends AppCompatActivity {
     }
 
     private void showTraumConfigDialog(){
+
         traumConfigDialog.show();
         // Link the Items to Functions
 
@@ -959,11 +969,98 @@ public class Record extends AppCompatActivity {
             else Toast.makeText(getApplicationContext(), "No Device Connected", Toast.LENGTH_SHORT).show();
         });
 
+        // Link readConfigButton
+        Button readConfigButton = (Button) traumConfigDialog.findViewById(R.id.read_config_button);
+        readConfigButton.setOnClickListener(v -> {
+            if(deviceConnected) mBluetoothLeService.readCharacteristic(configCharacteristic, true);
+            else Toast.makeText(getApplicationContext(), "No Device Connected", Toast.LENGTH_SHORT).show();
+        });
+
+        // Link ResetonfigButton
+        Button resetConfigButton = (Button) traumConfigDialog.findViewById(R.id.reset_config_button);
+        resetConfigButton.setOnClickListener(v -> {
+            resetTraumConfig();
+            Toast.makeText(getApplicationContext(), "Selected Default Values", Toast.LENGTH_SHORT).show();
+        });
+
 
 
     }
 
+    private void displayReceivedTraumConfigValues(int[] configData){
+        selectedGainPos = (configData[0] >> 6) & 0xff;
+        runningAverageFilterCheck = ((((configData[0] & 0xf) >> 3) == 1));
+        sendOnOneCharCheck = ((((configData[0] & 0xf) >> 2) == 1));
+        sendOnOneCharCheck = ((((configData[0] & 0xf) >> 1) == 1));
+        o1HighpassPos = (configData[2]&0xff) >> 4;
+        iirHighpassPos = (configData[2]&0xff);
+        lowpassPos = (configData[3]&0xff) >> 4;
+        filter50hzPos = (configData[3]&0x0f);
+        bitshiftMinPos = (configData[4]&0xff) >> 4;
+        bitshiftMinPos = (configData[4]&0x0f);
+        encodingSafetyPos = (configData[5]&0xff) >> 4;
 
+        Spinner gainSpinner = (Spinner) traumConfigDialog.findViewById(R.id.gain_spinner);
+        gainSpinner.setSelection(selectedGainPos);
+        SwitchCompat rafSwitch = (SwitchCompat) traumConfigDialog.findViewById(R.id.average_filter_switch);
+        rafSwitch.setChecked(runningAverageFilterCheck);
+        SwitchCompat oneCharSwitch = (SwitchCompat) traumConfigDialog.findViewById(R.id.one_char_switch);
+        oneCharSwitch.setChecked(sendOnOneCharCheck);
+        SwitchCompat genDataSwitch = (SwitchCompat) traumConfigDialog.findViewById(R.id.generate_data_switch);
+        genDataSwitch.setChecked(generateDataCheck);
+        Spinner o1HighpassSpinner = (Spinner) traumConfigDialog.findViewById(R.id.o1_highpass_spinner);
+        o1HighpassSpinner.setSelection(o1HighpassPos);
+        Spinner IIRSpinner = (Spinner) traumConfigDialog.findViewById(R.id.iir_highpass_spinner);
+        IIRSpinner.setSelection(iirHighpassPos);
+        Spinner lowPassSpinner = (Spinner) traumConfigDialog.findViewById(R.id.lowpass_spinner);
+        lowPassSpinner.setSelection(lowpassPos);
+        Spinner filter50hzSpinner = (Spinner) traumConfigDialog.findViewById(R.id.filter50hz_spinner);
+        filter50hzSpinner.setSelection(filter50hzPos);
+        Spinner bitshiftMinSpinner = (Spinner) traumConfigDialog.findViewById(R.id.bitshift_min_spinner);
+        bitshiftMinSpinner.setSelection(bitshiftMinPos);
+        Spinner bitshiftMaxSpinner = (Spinner) traumConfigDialog.findViewById(R.id.bitshift_max_spinner);
+        bitshiftMaxSpinner.setSelection(bitshiftMaxPos);
+        Spinner encodingSafetySpinner = (Spinner) traumConfigDialog.findViewById(R.id.encoding_safety_spinner);
+        encodingSafetySpinner.setSelection(encodingSafetyPos);
+    }
+    
+    private void resetTraumConfig(){
+        selectedGainPos = 0;
+        runningAverageFilterCheck = true;
+        sendOnOneCharCheck = false;
+        generateDataCheck = false;
+        o1HighpassPos = 0;
+        iirHighpassPos = 1;
+        lowpassPos = 1;
+        filter50hzPos = 1;
+        bitshiftMinPos = 0;
+        bitshiftMaxPos = 15;
+        encodingSafetyPos = 8;
+
+        Spinner gainSpinner = (Spinner) traumConfigDialog.findViewById(R.id.gain_spinner);
+        gainSpinner.setSelection(selectedGainPos);
+        SwitchCompat rafSwitch = (SwitchCompat) traumConfigDialog.findViewById(R.id.average_filter_switch);
+        rafSwitch.setChecked(runningAverageFilterCheck);
+        SwitchCompat oneCharSwitch = (SwitchCompat) traumConfigDialog.findViewById(R.id.one_char_switch);
+        oneCharSwitch.setChecked(sendOnOneCharCheck);
+        SwitchCompat genDataSwitch = (SwitchCompat) traumConfigDialog.findViewById(R.id.generate_data_switch);
+        genDataSwitch.setChecked(generateDataCheck);
+        Spinner o1HighpassSpinner = (Spinner) traumConfigDialog.findViewById(R.id.o1_highpass_spinner);
+        o1HighpassSpinner.setSelection(o1HighpassPos);
+        Spinner IIRSpinner = (Spinner) traumConfigDialog.findViewById(R.id.iir_highpass_spinner);
+        IIRSpinner.setSelection(iirHighpassPos);
+        Spinner lowPassSpinner = (Spinner) traumConfigDialog.findViewById(R.id.lowpass_spinner);
+        lowPassSpinner.setSelection(lowpassPos);
+        Spinner filter50hzSpinner = (Spinner) traumConfigDialog.findViewById(R.id.filter50hz_spinner);
+        filter50hzSpinner.setSelection(filter50hzPos);
+        Spinner bitshiftMinSpinner = (Spinner) traumConfigDialog.findViewById(R.id.bitshift_min_spinner);
+        bitshiftMinSpinner.setSelection(bitshiftMinPos);
+        Spinner bitshiftMaxSpinner = (Spinner) traumConfigDialog.findViewById(R.id.bitshift_max_spinner);
+        bitshiftMaxSpinner.setSelection(bitshiftMaxPos);
+        Spinner encodingSafetySpinner = (Spinner) traumConfigDialog.findViewById(R.id.encoding_safety_spinner);
+        encodingSafetySpinner.setSelection(encodingSafetyPos);
+    }
+    
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         // Check which request we're responding to

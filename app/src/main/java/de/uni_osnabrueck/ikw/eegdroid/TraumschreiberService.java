@@ -73,7 +73,7 @@ public class TraumschreiberService {
      * @param dataBytes
      * @return int[] intsToReturn of the datapoint values as integers
      */
-    public static int[] decompress(byte[] dataBytes, boolean newModel, String characteristicId) {
+    public static int[] decode(byte[] dataBytes, boolean newModel, String characteristicId) {
         //Log.v(TAG, "Encoded Delta: " + Arrays.toString(dataBytes));
 
         boolean dpcmEncoded = true;
@@ -105,7 +105,7 @@ public class TraumschreiberService {
 
             // NOTE TO SELF FOR DEBUGGING: WRITING ON THE DPCM BUFFER IS OK! NO NEED FOR FURTHER CHECKS
             // Characteristic 1
-            if (characteristicId.equals("0")) {
+            if (characteristicId.equals("60")) {
                 System.arraycopy(dataBytes, 0, dpcmBuffer, 0, 20);
                 //Log.v(TAG, "DataBytes 0: " + Arrays.toString(dataBytes));
                 characteristic0Ready = true;
@@ -113,7 +113,7 @@ public class TraumschreiberService {
                 return intsToReturn;
 
                 // Characteristic 2
-            } else if (characteristic0Ready && characteristicId.equals("1")) {
+            } else if (characteristic0Ready && characteristicId.equals("61")) {
                 System.arraycopy(dataBytes, 0, dpcmBuffer, 20, 10);
                 System.arraycopy(dataBytes, 10, dpcmBuffer2, 0, 10);
                 intsToReturn = decodeDpcm(dpcmBuffer);
@@ -121,14 +121,14 @@ public class TraumschreiberService {
                 //Log.v(TAG, "dpcmBuffer 1:  " + Arrays.toString(dpcmBuffer));
 
                 // Characteristic 3
-            } else if (characteristic0Ready && characteristicId.equals("2")) {
+            } else if (characteristic0Ready && characteristicId.equals("62")) {
                 System.arraycopy(dataBytes, 0, dpcmBuffer2, 10, 20);
                 intsToReturn = decodeDpcm(dpcmBuffer2);
                 //Log.v(TAG, "DataBytes 2 " + Arrays.toString(dataBytes));
                 //Log.v(TAG, "dpcmBuffer 2:  " + Arrays.toString(dpcmBuffer2));
 
                 // Characteristic c0de - Updates Codebook
-            } else if (characteristicId.equals("e")){
+            } else if (characteristicId.equals("de")){
                 // Iterate through the 12 received bytes and split them into unsigned nibbles
                 for(int i = 0; i < 12; i++){
                     signalBitShift[i*2] = (dataBytes[i]>>4) & 0xf;
@@ -138,6 +138,15 @@ public class TraumschreiberService {
                 Log.d(TAG, "RECEIVED FROM C0DE Characteritistic!" + Arrays.toString(signalBitShift));
                 intsToReturn = new int[] {0xc0de, signalBitShift[0]}; // just an arbitrary flag for the next handler, since normal values <512
                 return intsToReturn;
+
+            } else if (characteristicId.equals("c0")){
+                Log.d(TAG, "RECEIVED FROM Config Characteritistic!" + Arrays.toString(dataBytes));
+                int[] configData = new int[dataBytes.length];
+                for(int i = 0; i < dataBytes.length; i++){
+                    configData[i] = (int) dataBytes[i];
+                }
+                return configData;
+
             } else {
                 intsToReturn = null;
                 return intsToReturn;
