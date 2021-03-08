@@ -25,7 +25,18 @@ de/uni_osnabrueck/ikw/eegdroid/Record.java
  de.uni_osnabrueck.ikw.eegdroid.Record
  de.uni_osnabrueck.ikw.eegdroid.Record$1
  de.uni_osnabrueck.ikw.eegdroid.Record$10
+ de.uni_osnabrueck.ikw.eegdroid.Record$11
+ de.uni_osnabrueck.ikw.eegdroid.Record$12
+ de.uni_osnabrueck.ikw.eegdroid.Record$13
+ de.uni_osnabrueck.ikw.eegdroid.Record$14
+ de.uni_osnabrueck.ikw.eegdroid.Record$15
+ de.uni_osnabrueck.ikw.eegdroid.Record$16
+ de.uni_osnabrueck.ikw.eegdroid.Record$17
+ de.uni_osnabrueck.ikw.eegdroid.Record$18
+ de.uni_osnabrueck.ikw.eegdroid.Record$19
  de.uni_osnabrueck.ikw.eegdroid.Record$2
+ de.uni_osnabrueck.ikw.eegdroid.Record$20
+ de.uni_osnabrueck.ikw.eegdroid.Record$21
  de.uni_osnabrueck.ikw.eegdroid.Record$3
  de.uni_osnabrueck.ikw.eegdroid.Record$4
  de.uni_osnabrueck.ikw.eegdroid.Record$5
@@ -66,16 +77,15 @@ de/uni_osnabrueck/ikw/eegdroid/TFAnalysis.java
  de.uni_osnabrueck.ikw.eegdroid.TFAnalysis$4
 de/uni_osnabrueck/ikw/eegdroid/DownloadImageTask.java
  de.uni_osnabrueck.ikw.eegdroid.DownloadImageTask
+de/uni_osnabrueck/ikw/eegdroid/TraumschreiberService.java
+ de.uni_osnabrueck.ikw.eegdroid.TraumschreiberService
+ de.uni_osnabrueck.ikw.eegdroid.TraumschreiberService$1
+de/uni_osnabrueck/ikw/eegdroid/utilities/FFTWWrapper.java
+ de.uni_osnabrueck.ikw.eegdroid.utilities.FFTWWrapper
 de/uni_osnabrueck/ikw/eegdroid/utilities/ZoomableImageView.java
  de.uni_osnabrueck.ikw.eegdroid.utilities.ZoomableImageView
  de.uni_osnabrueck.ikw.eegdroid.utilities.ZoomableImageView$1
  de.uni_osnabrueck.ikw.eegdroid.utilities.ZoomableImageView$ScaleListener
-de/uni_osnabrueck/ikw/eegdroid/utilities/FFTWWrapper.java
- de.uni_osnabrueck.ikw.eegdroid.utilities.FFTWWrapper
-de/uni_osnabrueck/ikw/eegdroid/TraumschreiberService.java
- de.uni_osnabrueck.ikw.eegdroid.TraumschreiberService
-de/uni_osnabrueck/ikw/eegdroid/utilities/CustomFFT.java
- de.uni_osnabrueck.ikw.eegdroid.utilities.CustomFFT
 de/uni_osnabrueck/ikw/eegdroid/LSL.java
  de.uni_osnabrueck.ikw.eegdroid.LSL
  de.uni_osnabrueck.ikw.eegdroid.LSL$ArgumentException
@@ -91,6 +101,8 @@ de/uni_osnabrueck/ikw/eegdroid/LSL.java
  de.uni_osnabrueck.ikw.eegdroid.LSL$TimeoutException
  de.uni_osnabrueck.ikw.eegdroid.LSL$XMLElement
  de.uni_osnabrueck.ikw.eegdroid.LSL$dll
+de/uni_osnabrueck/ikw/eegdroid/utilities/CustomFFT.java
+ de.uni_osnabrueck.ikw.eegdroid.utilities.CustomFFT
 de/uni_osnabrueck/ikw/eegdroid/Display.java
  de.uni_osnabrueck.ikw.eegdroid.Display
  de.uni_osnabrueck.ikw.eegdroid.Display$1

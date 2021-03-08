@@ -331,14 +331,6 @@ public class Record extends AppCompatActivity {
 
                 if(data==null) return;
 
-                // if the pkg was configData
-                if (data.length < 24) {
-                    int[] configData = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
-                    Toast.makeText(getApplicationContext(),"Received Config Data", Toast.LENGTH_LONG).show();
-                    displayReceivedTraumConfigValues(configData);
-                    return;
-                }
-
                 // if the pkg was an encoding update, no further processing is required here
                 if (data[0] == 0xC0DE){
                     signalBitShift = data[1];
@@ -346,6 +338,14 @@ public class Record extends AppCompatActivity {
                     // Give the next row in our recording an adaptive encoding flag
                     adaptiveEncodingFlag = 1;
                     return; //prevent further processing
+                }
+
+                // if the pkg was configData
+                if (data.length < nChannels) {
+                    int[] configData = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
+                    Toast.makeText(getApplicationContext(),"Received Config Data", Toast.LENGTH_SHORT).show();
+                    displayReceivedTraumConfigValues(configData);
+                    return;
                 }
 
                 data_cnt++;
@@ -988,16 +988,16 @@ public class Record extends AppCompatActivity {
     }
 
     private void displayReceivedTraumConfigValues(int[] configData){
-        selectedGainPos = (configData[0] >> 6) & 0xff;
+        selectedGainPos = (configData[0] & 0xff) >> 6;
         runningAverageFilterCheck = ((((configData[0] & 0xf) >> 3) == 1));
         sendOnOneCharCheck = ((((configData[0] & 0xf) >> 2) == 1));
-        sendOnOneCharCheck = ((((configData[0] & 0xf) >> 1) == 1));
+        generateDataCheck = ((((configData[0] & 0xf) >> 1) == 1));
         o1HighpassPos = (configData[2]&0xff) >> 4;
-        iirHighpassPos = (configData[2]&0xff);
+        iirHighpassPos = (configData[2]&0x0f);
         lowpassPos = (configData[3]&0xff) >> 4;
         filter50hzPos = (configData[3]&0x0f);
         bitshiftMinPos = (configData[4]&0xff) >> 4;
-        bitshiftMinPos = (configData[4]&0x0f);
+        bitshiftMaxPos= (configData[4]&0x0f);
         encodingSafetyPos = (configData[5]&0xff) >> 4;
 
         Spinner gainSpinner = (Spinner) traumConfigDialog.findViewById(R.id.gain_spinner);
