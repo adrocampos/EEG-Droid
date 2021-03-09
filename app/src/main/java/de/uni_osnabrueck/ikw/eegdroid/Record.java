@@ -334,6 +334,7 @@ public class Record extends AppCompatActivity {
                 // if the pkg was an encoding update, no further processing is required here
                 if (data[0] == 0xC0DE){
                     signalBitShift = data[1];
+                    pkgLossCount = data[2];
                     Log.d(TAG,"Updated signalBitshift of CH1: " + signalBitShift);
                     // Give the next row in our recording an adaptive encoding flag
                     adaptiveEncodingFlag = 1;
@@ -375,7 +376,8 @@ public class Record extends AppCompatActivity {
             }
         }
     };
-
+    private List<Integer> pkgsLost = new ArrayList<>();
+    private int pkgLossCount = 0;
 
 
     public Record() {
@@ -565,7 +567,7 @@ public class Record extends AppCompatActivity {
         //boxLayout.weight = 1;
         box.setLayoutParams(boxLayout);
         box.setText(Integer.toString(i + 1));
-        box.setTextSize(11);
+        box.setTextSize(8);
         box.setTextColor(channelColors[i]);
         box.setOnCheckedChangeListener((buttonView, isChecked) -> {
             int channelId = Integer.parseInt(buttonView.getText().toString()) - 1;
@@ -989,9 +991,9 @@ public class Record extends AppCompatActivity {
 
     private void displayReceivedTraumConfigValues(int[] configData){
         selectedGainPos = (configData[0] & 0xff) >> 6;
-        runningAverageFilterCheck = ((((configData[0] & 0xf) >> 3) == 1));
-        sendOnOneCharCheck = ((((configData[0] & 0xf) >> 2) == 1));
-        generateDataCheck = ((((configData[0] & 0xf) >> 1) == 1));
+        runningAverageFilterCheck = (configData[0] & 0x8) > 1;
+        sendOnOneCharCheck = (configData[0] & 0x4) > 1;
+        generateDataCheck = (configData[0] & 0x2) > 1;
         o1HighpassPos = (configData[2]&0xff) >> 4;
         iirHighpassPos = (configData[2]&0x0f);
         lowpassPos = (configData[3]&0xff) >> 4;
@@ -1418,6 +1420,9 @@ public class Record extends AppCompatActivity {
         adaptiveEncodingFlags.add(adaptiveEncodingFlag);
         adaptiveEncodingFlag = 0;
         signalBitShifts.add(signalBitShift);
+        pkgsLost.add(pkgLossCount);
+        pkgLossCount = 0;
+
     }
 
     private void saveSession() {
@@ -1446,7 +1451,7 @@ public class Record extends AppCompatActivity {
         for (int i = 1; i <= cols; i++) header.append(String.format("ch%d,", i)); // log values
         for (int i = 1; i <= 1; i++) header.append(String.format("enc_ch%d,",i)); // log encodings
         header.append("enc_flag,");                                                // log encoding updates
-        header.append("count");
+        header.append("pkg_loss");
         //header.append(String.format("Ch-%d", cols));
 
         new Thread(() -> {
@@ -1493,7 +1498,7 @@ public class Record extends AppCompatActivity {
                 for (int i = 0; i < rows; i++) {
                     //fileWriter.append(String.valueOf(pkgIDs.get(i)));
                     //fileWriter.append(delimiter);
-                    //fileWriter.append(String.valueOf(pkgsLost.get(i)));
+
                     //fileWriter.append(delimiter);
                     fileWriter.append(String.valueOf(timestamps.get(i)));
                     fileWriter.append(delimiter);
@@ -1511,9 +1516,11 @@ public class Record extends AppCompatActivity {
                     fileWriter.append(String.valueOf(adaptiveEncodingFlags.get(i)));
                     fileWriter.append(delimiter);
 
-                    // MONITORING IDs
-                    fileWriter.append(String.valueOf(pkgIDs.get(i)));
+                    // MONITORING PKG LOSS
+                    fileWriter.append(String.valueOf(pkgsLost.get(i)));
                     fileWriter.append(break_line);
+
+
                 }
                 fileWriter.flush();
                 fileWriter.close();

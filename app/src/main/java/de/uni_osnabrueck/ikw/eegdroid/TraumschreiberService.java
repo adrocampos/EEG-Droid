@@ -1,27 +1,16 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 
 import android.util.Log;
-import android.widget.Toast;
-import android.content.Context;
-import androidx.core.content.ContextCompat;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 
 
+
 public class TraumschreiberService {
 
     public final static String DEVICE_NAME = "traumschreiber";
-    //Names chosen according to the python tflow_edge Traumschreiber.py
-    public final static UUID READ_SERVICE_UUID_OLD = UUID.fromString("a22686cb-9268-bd91-dd4f-b52d03d85593");
-    public final static UUID READ_SERVICE_UUID_NEW = UUID.fromString("00000ee6-0000-1000-8000-00805f9b34fb");
-    public final static UUID READ_CHAR_UUID_OLD = UUID.fromString("faa7b588-19e5-f590-0545-c99f193c5c3e");
-    public final static UUID READ_CHAR_UUID_NEW = UUID.fromString("0000e617-0000-1000-8000-00805f9b34fb");
-    public final static UUID WRITE_SERVICE_UUID_OLD = UUID.fromString("05bbfe57-2f19-ab84-c448-6769fe64d994");
-    public final static UUID WRITE_SERVICE_UUID_NEW = UUID.fromString("00000ee6-0000-1000-8000-00805f9b34fb");
-    public final static UUID WRITE_CHAR_UUID_OLD = UUID.fromString("fcbea85a-4d87-18a2-2141-0d8d2437c0a4");
-    public final static UUID WRITE_CHAR_UUID_NEW = UUID.fromString("0000ecc0-0000-1000-8000-00805f9b34fb");
+
     private final ArrayList<String> notifyingUUIDs = new ArrayList<String>() {
         {
             add("0000ee60-0000-1000-8000-00805f9b34fb");
@@ -69,90 +58,67 @@ public class TraumschreiberService {
     }
 
     /***
-     * decompress takes a bytearray dataBytes and converts it to integers, according to the way the Traumschreiber transmits the data via bluetooth
+     * Decodes all kinds of data packages received via bluetooth from a Traumschreiber:
+     *  # Signal Data - Units of voltage (distributed over the 3 notifying characteristics)
+     *  # Encoding Updates
+     *  # Config Data
      * @param dataBytes
      * @return int[] intsToReturn of the datapoint values as integers
      */
     public static int[] decode(byte[] dataBytes, boolean newModel, String characteristicId) {
-        //Log.v(TAG, "Encoded Delta: " + Arrays.toString(dataBytes));
 
-        boolean dpcmEncoded = true;
         int[] intsToReturn;
-        int new_int;
-        int bLen = newModel ? 3 : 2; // bytes needed to encode 1 int (old encodings)
 
-            // ____ NORMAL DECODING ____
-        if (!dpcmEncoded) {
-            // Process Header
-            int header = dataBytes[0] & 0xff; // Unsigned Byte
-            int pkg_id = header / 16; // 1. Nibble
-            int pkgs_lost = header % 16; // 2. Nibble
+        // NOTE TO SELF FOR DEBUGGING: WRITING ON THE DPCM BUFFER IS OK! NO NEED FOR FURTHER CHECKS
+        // Characteristic 1
+        if (characteristicId.equals("60")) {
+            System.arraycopy(dataBytes, 0, dpcmBuffer, 0, 20);
+            //Log.v(TAG, "DataBytes 0: " + Arrays.toString(dataBytes));
+            characteristic0Ready = true;
+            intsToReturn = null;
+            return intsToReturn;
 
-            // Prepare Data Array
-            intsToReturn = new int[dataBytes.length / bLen + 2];   // +2: 1 for pkg id, 1 for lost pkg count
-            intsToReturn[0] = pkg_id;
-            intsToReturn[intsToReturn.length - 1] = pkgs_lost;
+            // Characteristic 2
+        } else if (characteristic0Ready && characteristicId.equals("61")) {
+            System.arraycopy(dataBytes, 0, dpcmBuffer, 20, 10);
+            System.arraycopy(dataBytes, 10, dpcmBuffer2, 0, 10);
+            intsToReturn = decodeDpcm(dpcmBuffer);
+            //Log.v(TAG, "DataBytes 1: " + Arrays.toString(dataBytes));
+            //Log.v(TAG, "dpcmBuffer 1:  " + Arrays.toString(dpcmBuffer));
 
-            // Decode
-            /* value of channel n is encoded by 3 bytes placed at positions 3n+1, 3n+2 and 3n+3 in dataBytes*/
-            for (int ch = 0; ch < dataBytes.length / bLen; ch++) {
-                new_int = (dataBytes[ch * bLen + 1]) << 16 | (dataBytes[ch * bLen + 2] & 0xff) << 8 | (dataBytes[ch * bLen + 3] & 0xff);
-                intsToReturn[ch + 1] = new_int;
+            // Characteristic 3
+        } else if (characteristic0Ready && characteristicId.equals("62")) {
+            System.arraycopy(dataBytes, 0, dpcmBuffer2, 10, 20);
+            intsToReturn = decodeDpcm(dpcmBuffer2);
+            //Log.v(TAG, "DataBytes 2 " + Arrays.toString(dataBytes));
+            //Log.v(TAG, "dpcmBuffer 2:  " + Arrays.toString(dpcmBuffer2));
+
+            // Characteristic c0de - Updates Codebook
+        } else if (characteristicId.equals("de")){
+            Log.d(TAG, "RECEIVED FROM C0DE, RAW: " + Arrays.toString(dataBytes));
+            // Iterate through the 12 received bytes and split them into unsigned nibbles
+            for(int i = 0; i < 12; i++){
+                signalBitShift[i*2] = (dataBytes[i]>>4) & 0xf;
+                signalBitShift[i*2+1] = dataBytes[i] & 0xf;
             }
 
-            // ____ DPCM DECODING ____
+            //Log.d(TAG, "RECEIVED FROM C0DE Characteritistic!" + Arrays.toString(signalBitShift));
+            intsToReturn = new int[] {0xc0de, signalBitShift[1],dataBytes[13]}; // just an arbitrary flag for the next handler, since normal values <512
+            return intsToReturn;
+
+        } else if (characteristicId.equals("c0")){
+            Log.d(TAG, "RECEIVED FROM Config Characteritistic!" + Arrays.toString(dataBytes));
+            int[] configData = new int[dataBytes.length];
+            for(int i = 0; i < dataBytes.length; i++){
+                configData[i] = (int) dataBytes[i];
+            }
+            return configData;
+
         } else {
-
-            // NOTE TO SELF FOR DEBUGGING: WRITING ON THE DPCM BUFFER IS OK! NO NEED FOR FURTHER CHECKS
-            // Characteristic 1
-            if (characteristicId.equals("60")) {
-                System.arraycopy(dataBytes, 0, dpcmBuffer, 0, 20);
-                //Log.v(TAG, "DataBytes 0: " + Arrays.toString(dataBytes));
-                characteristic0Ready = true;
-                intsToReturn = null;
-                return intsToReturn;
-
-                // Characteristic 2
-            } else if (characteristic0Ready && characteristicId.equals("61")) {
-                System.arraycopy(dataBytes, 0, dpcmBuffer, 20, 10);
-                System.arraycopy(dataBytes, 10, dpcmBuffer2, 0, 10);
-                intsToReturn = decodeDpcm(dpcmBuffer);
-                //Log.v(TAG, "DataBytes 1: " + Arrays.toString(dataBytes));
-                //Log.v(TAG, "dpcmBuffer 1:  " + Arrays.toString(dpcmBuffer));
-
-                // Characteristic 3
-            } else if (characteristic0Ready && characteristicId.equals("62")) {
-                System.arraycopy(dataBytes, 0, dpcmBuffer2, 10, 20);
-                intsToReturn = decodeDpcm(dpcmBuffer2);
-                //Log.v(TAG, "DataBytes 2 " + Arrays.toString(dataBytes));
-                //Log.v(TAG, "dpcmBuffer 2:  " + Arrays.toString(dpcmBuffer2));
-
-                // Characteristic c0de - Updates Codebook
-            } else if (characteristicId.equals("de")){
-                // Iterate through the 12 received bytes and split them into unsigned nibbles
-                for(int i = 0; i < 12; i++){
-                    signalBitShift[i*2] = (dataBytes[i]>>4) & 0xf;
-                    signalBitShift[i*2+1] = dataBytes[i] & 0xf;
-                }
-
-                Log.d(TAG, "RECEIVED FROM C0DE Characteritistic!" + Arrays.toString(signalBitShift));
-                intsToReturn = new int[] {0xc0de, signalBitShift[0]}; // just an arbitrary flag for the next handler, since normal values <512
-                return intsToReturn;
-
-            } else if (characteristicId.equals("c0")){
-                Log.d(TAG, "RECEIVED FROM Config Characteritistic!" + Arrays.toString(dataBytes));
-                int[] configData = new int[dataBytes.length];
-                for(int i = 0; i < dataBytes.length; i++){
-                    configData[i] = (int) dataBytes[i];
-                }
-                return configData;
-
-            } else {
-                intsToReturn = null;
-                return intsToReturn;
-            }
-
+            intsToReturn = null;
+            return intsToReturn;
         }
+
         return intsToReturn;
 
     }
