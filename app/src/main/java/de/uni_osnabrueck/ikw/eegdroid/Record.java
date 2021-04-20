@@ -142,6 +142,8 @@ public class Record extends AppCompatActivity {
     private boolean mNewDevice;
     private String mDeviceAddress;
     private BluetoothLeService mBluetoothLeService;
+    private TraumschreiberService mTraumService = new TraumschreiberService();
+    
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -324,7 +326,15 @@ public class Record extends AppCompatActivity {
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 // Show all the supported services and characteristics on the user interface.
                 data_cnt = 0;
-                discoverCharacteristics(mBluetoothLeService.getSupportedGattServices());
+                BluetoothGattService bleService = mBluetoothLeService.getService(mTraumService.serviceUUID);
+                mNotifyCharacteristic = bleService.getCharacteristic(mTraumService.notifyUUID);
+                codeCharacteristic = bleService.getCharacteristic(mTraumService.codeUUID);
+                configCharacteristic = bleService.getCharacteristic(mTraumService.configUUID);
+
+                mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
+                waitForBluetoothCallback(mBluetoothLeService);
+
+                // discoverCharacteristics(mBluetoothLeService.getSupportedGattServices());
                 
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 int[] data = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
@@ -339,6 +349,12 @@ public class Record extends AppCompatActivity {
                     // Give the next row in our recording an adaptive encoding flag
                     adaptiveEncodingFlag = 1;
                     return; //prevent further processing
+                }
+                // FIRST TRY: HIGHER PAYLOADS ###############################################
+                if(data[0] == 0){
+                    data_cnt++;
+                    if (!timerRunning) startTimer();
+                    return;
                 }
 
                 // if the pkg was configData
@@ -701,7 +717,7 @@ public class Record extends AppCompatActivity {
             Toast.makeText(getApplicationContext(),
                     "Centering Signal around 0 in 2 seconds",
                     Toast.LENGTH_LONG).show();
-            TraumschreiberService.initiateCentering();
+            mTraumService.initiateCentering();
         }
 
         if (id==R.id.traumConfig) showTraumConfigDialog();
@@ -731,9 +747,9 @@ public class Record extends AppCompatActivity {
             menuItemNotify.setIcon(R.drawable.ic_notifications_off_white_24dp);
         }
 
-        logDescriptorValue(notifyingCharacteristics.get(0));
-        logDescriptorValue(notifyingCharacteristics.get(1));
-        logDescriptorValue(notifyingCharacteristics.get(2));
+        //logDescriptorValue(notifyingCharacteristics.get(0));
+        //logDescriptorValue(notifyingCharacteristics.get(1));
+        //logDescriptorValue(notifyingCharacteristics.get(2));
         if(codeCharacteristic!=null) logDescriptorValue(codeCharacteristic);
 
         menuItemNotify.setEnabled(true);
@@ -1126,6 +1142,10 @@ public class Record extends AppCompatActivity {
                 mBluetoothLeService.setCharacteristicNotification(characteristic, true);
             }
         }
+
+        waitForBluetoothCallback(mBluetoothLeService);
+        mBluetoothLeService.requestMtu(45);
+
     }
 
     private void waitForBluetoothCallback(BluetoothLeService service){

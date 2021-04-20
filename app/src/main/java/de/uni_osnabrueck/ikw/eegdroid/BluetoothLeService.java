@@ -79,6 +79,7 @@ public class BluetoothLeService extends Service {
                 // Attempts to discover services after successful connection.
                 Log.i(TAG, "Attempting to start service discovery:" +
                         mBluetoothGatt.discoverServices());
+
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED && (status == BluetoothGatt.GATT_SUCCESS)) {
                 gatt.close();
                 intentAction = ACTION_GATT_DISCONNECTED;
@@ -94,6 +95,14 @@ public class BluetoothLeService extends Service {
                 broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
                 mBluetoothGatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
             } else Log.w(TAG, "onServicesDiscovered received: " + status);
+
+        }
+
+        @Override
+        public void onMtuChanged(BluetoothGatt gatt, int mtu, int status){
+            Log.d(TAG, "New MTU Size: " + mtu);
+            Log.d(TAG, "MTU Request Success: " + status);
+            isBusy = false;
         }
 
         @Override
@@ -317,6 +326,10 @@ public class BluetoothLeService extends Service {
         mBluetoothGatt.writeCharacteristic(characteristic);
     }
 
+    public BluetoothGattService getService(UUID uuid){
+        return (mBluetoothGatt.getService(uuid));
+    }
+
     /**
      * Retrieves a list of supported GATT services on the connected device. This should be
      * invoked only after {@code BluetoothGatt#discoverServices()} completes successfully.
@@ -338,5 +351,16 @@ public class BluetoothLeService extends Service {
     public void setNewTraumschreiber(boolean newDevice){
         Log.d(TAG, "Set newTraumschreiber called");
         newTraumschreiber = newDevice;
+    }
+
+    public void requestMtu(int mtu){
+        isBusy = true;
+        // Request new MTU
+        mBluetoothGatt.requestMtu(mtu);
+        Log.i(TAG, "Requesting Mtu of size" + mtu);
+    }
+
+    public void requestDLE(int dle){
+        
     }
 }

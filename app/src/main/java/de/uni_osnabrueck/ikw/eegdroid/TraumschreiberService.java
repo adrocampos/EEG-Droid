@@ -11,17 +11,22 @@ public class TraumschreiberService {
 
     public final static String DEVICE_NAME = "traumschreiber";
 
-    private final ArrayList<String> notifyingUUIDs = new ArrayList<String>() {
+    // UUIDS
+    public final UUID serviceUUID = UUID.fromString("00000ee6-0000-1000-8000-00805f9b34fb");
+    public final ArrayList<String> notifyingUUIDs = new ArrayList<String>() {
         {
             add("0000ee60-0000-1000-8000-00805f9b34fb");
             add("0000ee61-0000-1000-8000-00805f9b34fb");
             add("0000ee62-0000-1000-8000-00805f9b34fb");
         }
     };
-    private final String configCharacteristicUuid = "0000ecc0-0000-1000-8000-00805f9b34fb";
-    private final String codeCharacteristicUuid = "0000c0de-0000-1000-8000-00805f9b34fb";
+    public final UUID notifyUUID = UUID.fromString("0000ee60-0000-1000-8000-00805f9b34fb");
+    public final UUID configUUID = UUID.fromString("0000ecc0-0000-1000-8000-00805f9b34fb");
+    public final UUID codeUUID = UUID.fromString("0000c0de-0000-1000-8000-00805f9b34fb");
+
     private final static String TAG = "TraumschreiberService";
-    public static String mTraumschreiberDeviceAddress;
+    public  String mTraumschreiberDeviceAddress;
+    public static final int nChannels = 24;
     private static final byte[] dpcmBuffer = new byte[30];
     private static final byte[] dpcmBuffer2 = new byte[30];
     private static final int[] decodedSignal = new int[24];
@@ -29,7 +34,8 @@ public class TraumschreiberService {
     private static int[] signalOffset = new int[24];
     private static int pkgCount;
     private static boolean characteristic0Ready = false;
-
+    private static boolean increasedPayload = true;
+    private static boolean header = false;
 
     public TraumschreiberService() {
 
@@ -52,7 +58,7 @@ public class TraumschreiberService {
         signalBitShift = newShift;
     }
 
-    public static void initiateCentering(){
+    public void initiateCentering(){
         signalOffset = new int[24];
         pkgCount = 0;
     }
@@ -69,54 +75,69 @@ public class TraumschreiberService {
 
         int[] intsToReturn;
 
-        // NOTE TO SELF FOR DEBUGGING: WRITING ON THE DPCM BUFFER IS OK! NO NEED FOR FURTHER CHECKS
-        // Characteristic 1
-        if (characteristicId.equals("60")) {
-            System.arraycopy(dataBytes, 0, dpcmBuffer, 0, 20);
-            //Log.v(TAG, "DataBytes 0: " + Arrays.toString(dataBytes));
-            characteristic0Ready = true;
-            intsToReturn = null;
-            return intsToReturn;
+        if (increasedPayload & characteristicId.equals("60")){
+            // New decoding Scheme
+            //Log.v(TAG, "Array length: " + dataBytes.length);
 
-            // Characteristic 2
-        } else if (characteristic0Ready && characteristicId.equals("61")) {
-            System.arraycopy(dataBytes, 0, dpcmBuffer, 20, 10);
-            System.arraycopy(dataBytes, 10, dpcmBuffer2, 0, 10);
-            intsToReturn = decodeDpcm(dpcmBuffer);
-            //Log.v(TAG, "DataBytes 1: " + Arrays.toString(dataBytes));
-            //Log.v(TAG, "dpcmBuffer 1:  " + Arrays.toString(dpcmBuffer));
-
-            // Characteristic 3
-        } else if (characteristic0Ready && characteristicId.equals("62")) {
-            System.arraycopy(dataBytes, 0, dpcmBuffer2, 10, 20);
-            intsToReturn = decodeDpcm(dpcmBuffer2);
-            //Log.v(TAG, "DataBytes 2 " + Arrays.toString(dataBytes));
-            //Log.v(TAG, "dpcmBuffer 2:  " + Arrays.toString(dpcmBuffer2));
-
-            // Characteristic c0de - Updates Codebook
-        } else if (characteristicId.equals("de")){
-            Log.d(TAG, "RECEIVED FROM C0DE, RAW: " + Arrays.toString(dataBytes));
-            // Iterate through the 12 received bytes and split them into unsigned nibbles
-            for(int i = 0; i < 12; i++){
-                signalBitShift[i*2] = (dataBytes[i]>>4) & 0xf;
-                signalBitShift[i*2+1] = dataBytes[i] & 0xf;
+            // Ignore Header
+            if (header) {
+                intsToReturn = decodeDpcm(Arrays.copyOfRange(dataBytes, 1, dataBytes.length));
+            } else{
+                intsToReturn = decodeDpcm(dataBytes);
             }
 
-            //Log.d(TAG, "RECEIVED FROM C0DE Characteritistic!" + Arrays.toString(signalBitShift));
-            intsToReturn = new int[] {0xc0de, signalBitShift[1],dataBytes[13]}; // just an arbitrary flag for the next handler, since normal values <512
             return intsToReturn;
-
-        } else if (characteristicId.equals("c0")){
-            Log.d(TAG, "RECEIVED FROM Config Characteritistic!" + Arrays.toString(dataBytes));
-            int[] configData = new int[dataBytes.length];
-            for(int i = 0; i < dataBytes.length; i++){
-                configData[i] = (int) dataBytes[i];
-            }
-            return configData;
 
         } else {
-            intsToReturn = null;
-            return intsToReturn;
+            // NOTE TO SELF FOR DEBUGGING: WRITING ON THE DPCM BUFFER IS OK! NO NEED FOR FURTHER CHECKS
+            // Characteristic 1
+            if (characteristicId.equals("60")) {
+                System.arraycopy(dataBytes, 0, dpcmBuffer, 0, 20);
+                //Log.v(TAG, "DataBytes 0: " + Arrays.toString(dataBytes));
+                characteristic0Ready = true;
+                intsToReturn = null;
+                return intsToReturn;
+
+                // Characteristic 2
+            } else if (characteristic0Ready && characteristicId.equals("61")) {
+                System.arraycopy(dataBytes, 0, dpcmBuffer, 20, 10);
+                System.arraycopy(dataBytes, 10, dpcmBuffer2, 0, 10);
+                intsToReturn = decodeDpcm(dpcmBuffer);
+                //Log.v(TAG, "DataBytes 1: " + Arrays.toString(dataBytes));
+                //Log.v(TAG, "dpcmBuffer 1:  " + Arrays.toString(dpcmBuffer));
+
+                // Characteristic 3
+            } else if (characteristic0Ready && characteristicId.equals("62")) {
+                System.arraycopy(dataBytes, 0, dpcmBuffer2, 10, 20);
+                intsToReturn = decodeDpcm(dpcmBuffer2);
+                //Log.v(TAG, "DataBytes 2 " + Arrays.toString(dataBytes));
+                //Log.v(TAG, "dpcmBuffer 2:  " + Arrays.toString(dpcmBuffer2));
+
+                // Characteristic c0de - Updates Codebook
+            } else if (characteristicId.equals("de")) {
+                Log.d(TAG, "RECEIVED FROM C0DE, RAW: " + Arrays.toString(dataBytes));
+                // Iterate through the 12 received bytes and split them into unsigned nibbles
+                for (int i = 0; i < 12; i++) {
+                    signalBitShift[i * 2] = (dataBytes[i] >> 4) & 0xf;
+                    signalBitShift[i * 2 + 1] = dataBytes[i] & 0xf;
+                }
+
+                //Log.d(TAG, "RECEIVED FROM C0DE Characteritistic!" + Arrays.toString(signalBitShift));
+                intsToReturn = new int[]{0xc0de, signalBitShift[1], dataBytes[13]}; // just an arbitrary flag for the next handler, since normal values <512
+                return intsToReturn;
+
+            } else if (characteristicId.equals("c0")) {
+                Log.d(TAG, "RECEIVED FROM Config Characteritistic!" + Arrays.toString(dataBytes));
+                int[] configData = new int[dataBytes.length];
+                for (int i = 0; i < dataBytes.length; i++) {
+                    configData[i] = (int) dataBytes[i];
+                }
+                return configData;
+
+            } else {
+                intsToReturn = null;
+                return intsToReturn;
+            }
         }
 
         return intsToReturn;
@@ -130,7 +151,7 @@ public class TraumschreiberService {
      */
     public static int[] decodeDpcm(byte[] deltaBytes) {
         //Log.v(TAG, "Encoded Delta: " + Arrays.toString(deltaBytes));
-        int[] delta = bytesTo10bitInts(deltaBytes);
+        int[] delta = bytesTo14bitInts(deltaBytes);
         //Log.v(TAG, "Decoded Delta: " + Arrays.toString(delta));
 
         for (int i = 0; i < 24; i++) {
@@ -169,6 +190,49 @@ public class TraumschreiberService {
         // Subtracting 1024 turns unsigned 10bit ints into their 2's complement
         for (int i = 0; i < data.length; i++) { 
             if (data[i] > 511) data[i] -= 1024;
+        }
+
+        return data;
+    }
+
+    public static int[] bytesTo14bitInts(byte[] bytes) {
+        // Number of ints : bytes*8/14 (8bits per byte and 14bits per int)
+        int[] data = new int[nChannels];
+
+        /**
+         * Decoding pattern repeats after 7 Bytes  or 4 14-bit-ints (=56bit). Therefore, we process the data in chunks of
+         * 4.
+         */
+
+        int idx = 0;
+        for (int i = 0; i <= data.length - 4; i += 4) {
+            idx = i * 7/4; //adjusted after every loop step : 7 after 1, 14 after 2, 21 after 3, etc.
+
+            data[i + 0] = ((bytes[idx+0] & 0xff) << 6)  | ((bytes[idx+1] & 0xfc) >> 2);
+            data[i + 1] = ((bytes[idx+1] & 0x03) << 12) | ((bytes[idx+2] & 0xff) << 4) | ((bytes[idx+3] & 0xf0) >> 4);
+            data[i + 2] = ((bytes[idx+3] & 0x0f) << 10) | ((bytes[idx+4] & 0xff) << 2) | ((bytes[idx+5] & 0xc0) >> 6);
+            data[i + 3] = ((bytes[idx+5] & 0x3f) << 8)  | ((bytes[idx+6] & 0xff) >> 0);
+
+        }
+        // Subtracting 2^14 turns unsigned 14bit ints into their 2's complement
+        for (int i = 0; i < data.length; i++) {
+            if (data[i] > Math.pow(2,13)) data[i] -= Math.pow(2,14);
+        }
+
+        return data;
+    }
+
+    public static int[] bytesTo16bitInts(byte[] bytes) {
+        // Number of ints : bytes*8/14 (8bits per byte and 14bits per int)
+        int[] data = new int[nChannels];
+
+        for (int i = 0; i < nChannels; i++) {
+            data[i] = ((bytes[i*2]&0xff) << 8) | (bytes[i*2+1] & 0xff);
+        }
+
+        // Subtracting 2^16 turns unsigned 16bit ints into their 2's complement
+        for (int i = 0; i < data.length; i++) {
+            if (data[i] > Math.pow(2,15)) data[i] -= Math.pow(2,16);
         }
 
         return data;
