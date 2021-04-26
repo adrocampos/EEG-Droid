@@ -21,7 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -74,6 +73,7 @@ import java.util.UUID;
 
 public class Record extends AppCompatActivity {
 
+
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
     public static final String EXTRAS_DEVICE_MODEL = "DEVICE_MODEL"; // "2": old, "3": new
@@ -84,7 +84,7 @@ public class Record extends AppCompatActivity {
     private final int MAX_VISIBLE = 1000;  // see 500ms at the time on the plot
     private final ArrayList<Integer> pkgIDs = new ArrayList<>();
     private final int nChannels = 24;
-    private final ArrayList<ArrayList<Entry>> lineEntryLists = new ArrayList<ArrayList<Entry>>() {
+    private final ArrayList<ArrayList<Entry>> storedPlottingData = new ArrayList<ArrayList<Entry>>() {
         {
             for (int i = 0; i < nChannels; i++) {
                 ArrayList<Entry> lineEntries = new ArrayList<>();
@@ -92,6 +92,8 @@ public class Record extends AppCompatActivity {
             }
         }
     };
+    private int plotMax = 0;
+    private int plotMin = 0;
     private final String serviceUuid = "00000ee6-0000-1000-8000-00805f9b34fb";
     private final ArrayList<String> notifyingUUIDs = new ArrayList<String>() {
         {
@@ -143,7 +145,7 @@ public class Record extends AppCompatActivity {
     private String mDeviceAddress;
     private BluetoothLeService mBluetoothLeService;
     private TraumschreiberService mTraumService = new TraumschreiberService();
-    
+
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -174,7 +176,7 @@ public class Record extends AppCompatActivity {
     private boolean notifying = false;
     private float res_time;
     private float res_freq;
-    private int cnt = 0;
+    private int plottedPkgCount = 0;
     private int enabledCheckboxes = 0;
     private TextView mXAxis;
     private TextView mDataResolution;
@@ -335,7 +337,7 @@ public class Record extends AppCompatActivity {
                 waitForBluetoothCallback(mBluetoothLeService);
 
                 // discoverCharacteristics(mBluetoothLeService.getSupportedGattServices());
-                
+
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 int[] data = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
 
@@ -376,7 +378,7 @@ public class Record extends AppCompatActivity {
                     long plotting_elapsed = last_data - plotting_start;
                     int ACCUM_PLOT_MS = 30;
                     if (plotting_elapsed > ACCUM_PLOT_MS) {
-                        addEntries(accumulated);
+                        storeForPlotting(accumulated);
                         accumulated.clear();
                         plotting_start = System.currentTimeMillis();
                     }
@@ -1041,7 +1043,7 @@ public class Record extends AppCompatActivity {
         Spinner encodingSafetySpinner = (Spinner) traumConfigDialog.findViewById(R.id.encoding_safety_spinner);
         encodingSafetySpinner.setSelection(encodingSafetyPos);
     }
-    
+
     private void resetTraumConfig(){
         selectedGainPos = 0;
         runningAverageFilterCheck = true;
@@ -1078,7 +1080,7 @@ public class Record extends AppCompatActivity {
         Spinner encodingSafetySpinner = (Spinner) traumConfigDialog.findViewById(R.id.encoding_safety_spinner);
         encodingSafetySpinner.setSelection(encodingSafetyPos);
     }
-    
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         // Check which request we're responding to
@@ -1269,8 +1271,8 @@ public class Record extends AppCompatActivity {
         // set the y left axis
         YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.setTextColor(Color.GRAY);
-        leftAxis.setAxisMaximum(30f);
-        leftAxis.setAxisMinimum(-30f);
+        leftAxis.setAxisMaximum(3500f);
+        leftAxis.setAxisMinimum(-3500f);
         leftAxis.setLabelCount(13, true); // from -35 to 35, a label each 5 microV
         leftAxis.setDrawGridLines(true);
         leftAxis.setGridColor(Color.WHITE);
@@ -1286,8 +1288,8 @@ public class Record extends AppCompatActivity {
         bottomAxis.setTextColor(Color.GRAY);
     }
 
-    private LineDataSet createSet(int channelId) {
-        LineDataSet set = new LineDataSet(lineEntryLists.get(channelId), String.format("Ch-%d", channelId + 1));
+    private LineDataSet createPlottableSet(int channelId) {
+        LineDataSet set = new LineDataSet(storedPlottingData.get(channelId), String.format("Ch-%d", channelId + 1));
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
         set.setColor(channelColors[channelId]);
         set.setDrawCircles(false);
@@ -1297,42 +1299,38 @@ public class Record extends AppCompatActivity {
         return set;
     }
 
-    private void addEntries(final List<List<Float>> e_list) {
-        adjustScale(e_list);
-        final List<ILineDataSet> datasets = new ArrayList<>();  // for adding multiple plots
+    private void storeForPlotting(final List<List<Float>> accumulatedSamples) {
+        adjustChartScale(accumulatedSamples);
+        final List<ILineDataSet> plottableDatasets = new ArrayList<>();  // for adding multiple plots
         float x = 0;
         float DATAPOINT_TIME = 6f;
 
-        /*** Loop through all "rows",each row has nChannels entries **/
-        for (int i = 0; i < e_list.size(); i++) {
-            cnt += 1;
-            x = cnt * DATAPOINT_TIME; // timestamp for x axis in ms
-            List<Float> f = e_list.get(i);
+        /** Add all accumulatedSamples to the data frames that are used for plotting **/
+        for (int i = 0; i < accumulatedSamples.size(); i++) {
+            plottedPkgCount += 1;
+            x = plottedPkgCount * DATAPOINT_TIME; // timestamp for x axis in ms
 
-
-            /*  Creating and adding entries to Entrylists */
-            for (int n = 0; n < nChannels; n++) {
-                //the ith entryList represents the stored data of the ith channel
-                lineEntryLists.get(n).add(new Entry(x, f.get(n)));
+            /** Converting individual channel float values to "Entries" */
+            List<Float> channelFloats = accumulatedSamples.get(i);
+            for (int ch = 0; ch < nChannels; ch++) {
+                storedPlottingData.get(ch).add(new Entry(x, channelFloats.get(ch)));
             }
         }
         final float f_x = x;
 
         if (thread != null) thread.interrupt();
         final Runnable runnable = () -> {
-
-            /* Create Datasets from the Entrylists filled above */
+            /* Create plottable datasets from storedPlottingData */
             for (int i = 0; i < nChannels; i++) {
                 if (channelsShown[i]) {
-                    LineDataSet set = createSet(i);
-                    datasets.add(set);
+                    LineDataSet set = createPlottableSet(i);
+                    plottableDatasets.add(set);
                 }
-
             }
-            LineData linedata = new LineData(datasets);
-            linedata.notifyDataChanged();
-            linedata.setDrawValues(false);
-            mChart.setData(linedata);
+            LineData graphData = new LineData(plottableDatasets);
+            graphData.notifyDataChanged();
+            graphData.setDrawValues(false);
+            mChart.setData(graphData);
             mChart.notifyDataSetChanged();
             // limit the number of visible entries
             mChart.setVisibleXRangeMaximum(MAX_VISIBLE);
@@ -1349,10 +1347,10 @@ public class Record extends AppCompatActivity {
 
         // max time range in ms (x value) to store on plot
         int PLOT_MEMO = 2000;
-        // as soon as we have recorded more than PLOT_MEMO miliseconds, remove earlier entries
+        // as soon as we have recorded more than PLOT_MEMO milliseconds, remove earlier entries
         // from chart.
         if (x > PLOT_MEMO) {
-            for (int j = 0; j < e_list.size(); j++) {
+            for (int j = 0; j < accumulatedSamples.size(); j++) {
                 for (int i = 0; i < mChart.getData().getDataSetCount(); i++) {
                     mChart.getData().getDataSetByIndex(i).removeFirst();
                 }
@@ -1363,52 +1361,56 @@ public class Record extends AppCompatActivity {
     /**
      * adjusts the scale according to the maximal and minimal value of the data given in
      *
-     * @param e_list
+     * @param accumulatedSamples
      */
-    private void adjustScale(final List<List<Float>> e_list) {
+    private void adjustChartScale(final List<List<Float>> accumulatedSamples) {
         if (recentlyDisplayedData == null) {
             recentlyDisplayedData = new ArrayList<>();
         }
-        if (recentlyDisplayedData.size() > 2 * e_list.size())
-            recentlyDisplayedData = recentlyDisplayedData.subList(e_list.size(), recentlyDisplayedData.size());
-        for (List<Float> innerList : e_list) {
-            recentlyDisplayedData.add(innerList);
-        }
-        recentlyDisplayedData.addAll(e_list);
+        if (recentlyDisplayedData.size() > 2 * accumulatedSamples.size())
+            //remove old samples
+            recentlyDisplayedData = recentlyDisplayedData.subList(accumulatedSamples.size(), recentlyDisplayedData.size());
+
+        recentlyDisplayedData.addAll(accumulatedSamples);
+
+        //Log.d(TAG, "Recently Displayed Sample Size: " + accumulatedSamples.size());
+
         int max = 0;
         int min = 0;
-        for (List<Float> innerList : recentlyDisplayedData) {
-            int channel = 0;
-            for (Float entry : innerList) {
-                if (channelsShown[channel]) {
-                    if (entry > max) {
-                        max = entry.intValue();
+        for (List<Float> sample : recentlyDisplayedData) {
+            for (int ch=0; ch<sample.size(); ch++) {
+                if (channelsShown[ch]) {
+                    int value = sample.get(ch).intValue();
+                    if (value > max || max == 0) {
+                        max = value;
                     }
-                    if (entry < min) {
-                        min = entry.intValue();
+                    if (value < min || min == 0) {
+                        min = value;
                     }
                 }
-                channel++;
             }
         }
+        //Log.d(TAG, "Current Max and Min: " + max  +" " + min);
+        if (plottedPkgCount % 50 == 0) {
+            // include this part to make the axis symmetric (0 always visible in the middle)
+            if (max < min * -1) max = min * -1;
+            min = max * -1;
 
-        // include this part to make the axis symmetric (0 always visible in the middle)
-        /*if (max < min * -1) max = min * -1;
-        min = max * -1;
-        */
+            int range = max - min;
+            int margin = (int) range;
 
-        int range = max - min;
-        max += 0.1 * range;
-        min -= 0.1 * range;
-        YAxis leftAxis = mChart.getAxisLeft();
-        leftAxis.setAxisMaximum(max);
-        leftAxis.setAxisMinimum(min);
+            //if (range > 10000) mTraumService.initiateCentering();
+            YAxis leftAxis = mChart.getAxisLeft();
+            leftAxis.setAxisMaximum(max + margin);
+            leftAxis.setAxisMinimum(min - margin);
+        }
+
     }
 
     //Starts a recording session
     @SuppressLint({"SimpleDateFormat", "SetTextI18n"})
     private void startTrial() {
-        cnt = 0;
+        plottedPkgCount = 0;
         mainData = new ArrayList<>();
         start_time = new SimpleDateFormat("HH:mm:ss.SSS").format(new Date());
         start_timestamp = new Timestamp(startTime).getTime();

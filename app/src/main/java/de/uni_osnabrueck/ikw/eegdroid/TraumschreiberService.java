@@ -35,7 +35,7 @@ public class TraumschreiberService {
     private static int pkgCount;
     private static boolean characteristic0Ready = false;
     private static boolean increasedPayload = true;
-    private static boolean header = false;
+    private static boolean header = true;
 
     public TraumschreiberService() {
 
@@ -151,8 +151,8 @@ public class TraumschreiberService {
      */
     public static int[] decodeDpcm(byte[] deltaBytes) {
         //Log.v(TAG, "Encoded Delta: " + Arrays.toString(deltaBytes));
-        int[] delta = bytesTo14bitInts(deltaBytes);
-        //Log.v(TAG, "Decoded Delta: " + Arrays.toString(delta));
+        int[] delta = bytesTo16bitInts(deltaBytes);
+        Log.v(TAG, "Decoded Delta: " + Arrays.toString(delta));
 
         for (int i = 0; i < 24; i++) {
             decodedSignal[i] += (delta[i] << signalBitShift[i]);
@@ -216,7 +216,7 @@ public class TraumschreiberService {
         }
         // Subtracting 2^14 turns unsigned 14bit ints into their 2's complement
         for (int i = 0; i < data.length; i++) {
-            if (data[i] > Math.pow(2,13)) data[i] -= Math.pow(2,14);
+            if (data[i] >= Math.pow(2,13)) data[i] -= Math.pow(2,14);
         }
 
         return data;
@@ -232,7 +232,7 @@ public class TraumschreiberService {
 
         // Subtracting 2^16 turns unsigned 16bit ints into their 2's complement
         for (int i = 0; i < data.length; i++) {
-            if (data[i] > Math.pow(2,15)) data[i] -= Math.pow(2,16);
+            if (data[i] >= Math.pow(2,15)) data[i] -= Math.pow(2,16);
         }
 
         return data;
