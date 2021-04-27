@@ -81,7 +81,11 @@ public class Record extends AppCompatActivity {
     private final Handler handler = new Handler();
     private final List<Float> timestamps = new ArrayList<>();
     private final List<List<Float>> accumulated = new ArrayList<>();
-    private final int MAX_VISIBLE = 1000;  // see 500ms at the time on the plot
+    private final int MAX_VISIBLE = 4000;  // see 500ms at the time on the plot
+    private int leftAxisUpperLimit = 3500;
+    private int leftAxisLowerLimit = -3500;
+    private int leftAxisManualVScale = 1;
+    private int leftAxisManualHScale = 1;
     private final ArrayList<Integer> pkgIDs = new ArrayList<>();
     private final int nChannels = 24;
     private final ArrayList<ArrayList<Entry>> storedPlottingData = new ArrayList<ArrayList<Entry>>() {
@@ -1223,13 +1227,13 @@ public class Record extends AppCompatActivity {
         }
         streamOutlet.push_sample(sample);
         Log.v("LSL", "Sample sent!");
-//        try {
-//            streamOutlet.push_sample(sample);
-//        } catch (Exception ex) {
-//            Log.d("LSL issue", Objects.requireNonNull(ex.getMessage()));
-//            streamOutlet.close();
-//            streamInfo.destroy();
-//        }
+        try {
+            streamOutlet.push_sample(sample);
+        } catch (Exception ex) {
+            Log.d("LSL issue", Objects.requireNonNull(ex.getMessage()));
+            streamOutlet.close();
+            streamInfo.destroy();
+        }
     }
 
 
@@ -1256,7 +1260,7 @@ public class Record extends AppCompatActivity {
         mChart.setScaleEnabled(true);
         mChart.setDrawGridBackground(true);
         // if disabled, scaling can be done on x- and y-axis separately
-        mChart.setPinchZoom(true);
+        mChart.setPinchZoom(false);
         // set an alternative background color
         LineData data = new LineData();
         data.setValueTextColor(Color.BLACK);
@@ -1302,21 +1306,28 @@ public class Record extends AppCompatActivity {
     private void storeForPlotting(final List<List<Float>> accumulatedSamples) {
         adjustChartScale(accumulatedSamples);
         final List<ILineDataSet> plottableDatasets = new ArrayList<>();  // for adding multiple plots
-        float x = 0;
+        float t = 0;
         float DATAPOINT_TIME = 6f;
 
         /** Add all accumulatedSamples to the data frames that are used for plotting **/
         for (int i = 0; i < accumulatedSamples.size(); i++) {
             plottedPkgCount += 1;
-            x = plottedPkgCount * DATAPOINT_TIME; // timestamp for x axis in ms
+            t = plottedPkgCount * DATAPOINT_TIME; // timestamp for x axis in ms
 
-            /** Converting individual channel float values to "Entries" */
+            /** Converting individual channel float values to "Entries"
+             *  Here we also consider the current zoom level of the vertical axis,
+             *  to space out the displayed channel values proportionally
+             * */
+
             List<Float> channelFloats = accumulatedSamples.get(i);
+            float zoomY = mChart.getViewPortHandler().getScaleY();
+            Log.v(TAG, "Value of Zoom Level Y: " + zoomY);
             for (int ch = 0; ch < nChannels; ch++) {
-                storedPlottingData.get(ch).add(new Entry(x, channelFloats.get(ch)));
+
+                storedPlottingData.get(ch).add(new Entry(t, channelFloats.get(ch)));
             }
         }
-        final float f_x = x;
+        final float f_t = t;
 
         if (thread != null) thread.interrupt();
         final Runnable runnable = () -> {
@@ -1335,7 +1346,7 @@ public class Record extends AppCompatActivity {
             // limit the number of visible entries
             mChart.setVisibleXRangeMaximum(MAX_VISIBLE);
             // move to the latest entry
-            mChart.moveViewToX(f_x);
+            mChart.moveViewToX(f_t);
         };
         thread = new Thread(new Runnable() {
             @Override
@@ -1346,10 +1357,10 @@ public class Record extends AppCompatActivity {
         thread.start();
 
         // max time range in ms (x value) to store on plot
-        int PLOT_MEMO = 2000;
+        int PLOT_MEMO = 5000;
         // as soon as we have recorded more than PLOT_MEMO milliseconds, remove earlier entries
         // from chart.
-        if (x > PLOT_MEMO) {
+        if (t > PLOT_MEMO) {
             for (int j = 0; j < accumulatedSamples.size(); j++) {
                 for (int i = 0; i < mChart.getData().getDataSetCount(); i++) {
                     mChart.getData().getDataSetByIndex(i).removeFirst();
@@ -1393,16 +1404,16 @@ public class Record extends AppCompatActivity {
         //Log.d(TAG, "Current Max and Min: " + max  +" " + min);
         if (plottedPkgCount % 50 == 0) {
             // include this part to make the axis symmetric (0 always visible in the middle)
-            if (max < min * -1) max = min * -1;
-            min = max * -1;
+            //if (max < min * -1) max = min * -1;
+            //min = max * -1;
 
             int range = max - min;
-            int margin = (int) range;
+            int margin = (10 * range);
 
             //if (range > 10000) mTraumService.initiateCentering();
             YAxis leftAxis = mChart.getAxisLeft();
-            leftAxis.setAxisMaximum(max + margin);
-            leftAxis.setAxisMinimum(min - margin);
+            leftAxis.setAxisMaximum(max+margin);
+            leftAxis.setAxisMinimum(min-margin);
         }
 
     }
