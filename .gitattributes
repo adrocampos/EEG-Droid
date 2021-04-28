@@ -1,4 +1,4 @@
 app/src/main/jniLibs/* linguist-vendored
-app/src/main/jniLibs/ linguist-vendored
 liblsl/* linguist-vendored
-liblsl/ linguist-vendored
+app/.cxx linguist-vendored
+app/src/main/jniLibs/* linguist-vendored
