@@ -1,7 +1,0 @@
-app/src/main/jniLibs/* linguist-vendored
-liblsl/* linguist-vendored
-liblsl/src/ linguist-vendored
-EEG-Droid/liblsl/src/* linguist-vendored
-EEG-Droid/liblsls/src/ linguist-vendored
-app/.cxx linguist-vendored
-app/src/main/jniLibs/* linguist-vendored
