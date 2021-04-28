@@ -1,2 +1,4 @@
-app/src/main/jniLibs/* linguist-vendored=false
-liblsl/* linguist-vendored=false
+app/src/main/jniLibs/* linguist-vendored
+app/src/main/jniLibs/ linguist-vendored
+liblsl/* linguist-vendored
+liblsl/ linguist-vendored
