@@ -82,8 +82,8 @@ public class Record extends AppCompatActivity {
     private final List<Float> timestamps = new ArrayList<>();
     private final List<List<Float>> accumulated = new ArrayList<>();
     private final int MAX_VISIBLE = 4000;  // see 500ms at the time on the plot
-    private int leftAxisUpperLimit = 3500;
-    private int leftAxisLowerLimit = -3500;
+    private int leftAxisUpperLimit = 20000;
+    private int leftAxisLowerLimit = -2000;
     private int leftAxisManualVScale = 1;
     private int leftAxisManualHScale = 1;
     private final ArrayList<Integer> pkgIDs = new ArrayList<>();
@@ -375,7 +375,7 @@ public class Record extends AppCompatActivity {
                 if (!timerRunning) startTimer();
                 long last_data = System.currentTimeMillis();
                 microV = transData(data);
-                streamData(microV);
+                //streamData(microV);
                 if (data_cnt % 50 == 0 && channelViewsEnabled) displayData(microV);
                 if (plotting) { //cut out ' & data_cnt % 2 == 0 '
                     accumulated.add(microV);
@@ -1241,14 +1241,12 @@ public class Record extends AppCompatActivity {
         OnChartValueSelectedListener ol = new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry entry, Highlight h) {
-                //entry.getData() returns null here
             }
-
             @Override
             public void onNothingSelected() {
-
             }
         };
+
         mChart = findViewById(R.id.layout_chart);
         mChart.setOnChartValueSelectedListener(ol);
         // enable description text
@@ -1261,6 +1259,8 @@ public class Record extends AppCompatActivity {
         mChart.setDrawGridBackground(true);
         // if disabled, scaling can be done on x- and y-axis separately
         mChart.setPinchZoom(false);
+        // disable automatic resetting
+        //mChart.setViewPortOffsets(0f,0f,0f,0f);
         // set an alternative background color
         LineData data = new LineData();
         data.setValueTextColor(Color.BLACK);
@@ -1275,9 +1275,9 @@ public class Record extends AppCompatActivity {
         // set the y left axis
         YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.setTextColor(Color.GRAY);
-        leftAxis.setAxisMaximum(3500f);
-        leftAxis.setAxisMinimum(-3500f);
-        leftAxis.setLabelCount(13, true); // from -35 to 35, a label each 5 microV
+        leftAxis.setAxisMaximum(20000f);
+        leftAxis.setAxisMinimum(-2000f);
+        leftAxis.setLabelCount(13, true);
         leftAxis.setDrawGridLines(true);
         leftAxis.setGridColor(Color.WHITE);
         // disable the y right axis
@@ -1304,7 +1304,7 @@ public class Record extends AppCompatActivity {
     }
 
     private void storeForPlotting(final List<List<Float>> accumulatedSamples) {
-        adjustChartScale(accumulatedSamples);
+        //adjustChartScale(accumulatedSamples);
         final List<ILineDataSet> plottableDatasets = new ArrayList<>();  // for adding multiple plots
         float t = 0;
         float DATAPOINT_TIME = 6f;
@@ -1320,11 +1320,11 @@ public class Record extends AppCompatActivity {
              * */
 
             List<Float> channelFloats = accumulatedSamples.get(i);
-            float zoomY = mChart.getViewPortHandler().getScaleY();
-            Log.v(TAG, "Value of Zoom Level Y: " + zoomY);
+            //float zoomY = mChart.getViewPortHandler().getScaleY();
+            //Log.v(TAG, "Value of Zoom Level Y: " + zoomY);
             for (int ch = 0; ch < nChannels; ch++) {
-
-                storedPlottingData.get(ch).add(new Entry(t, channelFloats.get(ch)));
+                float plotValue = channelFloats.get(ch) + ch*30; // + Offset for spacing out channels
+                storedPlottingData.get(ch).add(new Entry(t, plotValue));
             }
         }
         final float f_t = t;
@@ -1339,10 +1339,10 @@ public class Record extends AppCompatActivity {
                 }
             }
             LineData graphData = new LineData(plottableDatasets);
-            graphData.notifyDataChanged();
+            //graphData.notifyDataChanged();
             graphData.setDrawValues(false);
             mChart.setData(graphData);
-            mChart.notifyDataSetChanged();
+            //mChart.notifyDataSetChanged();
             // limit the number of visible entries
             mChart.setVisibleXRangeMaximum(MAX_VISIBLE);
             // move to the latest entry
@@ -1402,13 +1402,13 @@ public class Record extends AppCompatActivity {
             }
         }
         //Log.d(TAG, "Current Max and Min: " + max  +" " + min);
-        if (plottedPkgCount % 50 == 0) {
+        if (plottedPkgCount % 100 == 0) {
             // include this part to make the axis symmetric (0 always visible in the middle)
             //if (max < min * -1) max = min * -1;
             //min = max * -1;
 
             int range = max - min;
-            int margin = (10 * range);
+            int margin = (8 * range);
 
             //if (range > 10000) mTraumService.initiateCentering();
             YAxis leftAxis = mChart.getAxisLeft();
@@ -1470,7 +1470,6 @@ public class Record extends AppCompatActivity {
                 "Unit Measure,Starting Timestamp,Ending Timestamp";
         final String username = getSharedPreferences("userPreferences", 0).getString("username", "user");
         final String userID = getSharedPreferences("userPreferences", 0).getString("userID", "12345678");
-        //final String dp_header = "Pkg ID,Pkg Loss,Time,Ch-1,Ch-2,Ch-3,Ch-4,Ch-5,Ch-6,Ch-7,Ch-8";
         final UUID id = UUID.randomUUID();
         @SuppressLint("SimpleDateFormat") final String date = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss").format(new Date());
         final char delimiter = ',';
@@ -1552,7 +1551,6 @@ public class Record extends AppCompatActivity {
                     // MONITORING PKG LOSS
                     fileWriter.append(String.valueOf(pkgsLost.get(i)));
                     fileWriter.append(break_line);
-
 
                 }
                 fileWriter.flush();
