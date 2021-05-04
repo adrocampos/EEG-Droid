@@ -30,8 +30,12 @@ public class TraumschreiberService {
     private static final int[] decodedSignal = new int[24];
     public static int[] signalBitShift = new int[24];
     private static int[] signalOffset = new int[24];
+    public static int[] averages = new int[24];
+    public static float ch1RunningVarianceEstimate;
+    public static float ch1Sigma;
     private static int pkgCount;
     private static boolean header = true;
+    private static boolean warmedUp = true;
 
     public TraumschreiberService() {}
 
@@ -48,6 +52,12 @@ public class TraumschreiberService {
         pkgCount = 0;
     }
 
+    public void beginWarmUp(){
+        warmedUp = false;
+        initiateCentering();
+
+    }
+
     /***
      * Decodes all kinds of data packages received via bluetooth from a Traumschreiber:
      *  # Signal Data - Units of voltage (distributed over the 3 notifying characteristics)
@@ -60,14 +70,29 @@ public class TraumschreiberService {
 
         /* Decode Channel Values */
         if (characteristicId.equals("60")){
+
             if (header) {
-                return decodeDpcm(Arrays.copyOfRange(dataBytes, 1, dataBytes.length));
+                // Header
+                int[] sample = new int[nChannels+2];
+                sample[0] = (dataBytes[0] >> 4) & 0x0f; // bluetooth pkg id
+                sample[1] = (dataBytes[0] & 0b00001111); // internally dropped sample count
+
+                // Channels
+                int[] deltas = decodeDpcm(Arrays.copyOfRange(dataBytes, 1, dataBytes.length));
+                System.arraycopy(deltas,0,sample,1,deltas.length);
+
+                //Log.v(TAG, "PKG ID: " + sample[0] + "  Lost: " + sample[1]);
+
+                if (warmedUp) return sample;
+                return null;
             } else {
-                return decodeDpcm(dataBytes);
+                if (warmedUp) return decodeDpcm(dataBytes);
+                return null;
             }
 
         /* Decode Channel Encodings Factors */
         } else if (characteristicId.equals("de")) {
+
                 Log.d(TAG, "RECEIVED FROM C0DE, RAW: " + Arrays.toString(dataBytes));
                 // Iterate through the 12 received bytes and split them into unsigned nibbles
                 for (int i = 0; i < 12; i++) {
@@ -80,6 +105,7 @@ public class TraumschreiberService {
 
         /* Decode Config Data */
         } else if (characteristicId.equals("c0")) {
+
                 Log.d(TAG, "RECEIVED FROM CONFIG: " + Arrays.toString(dataBytes));
                 int[] configData = new int[dataBytes.length];
                 for (int i = 0; i < dataBytes.length; i++) {
@@ -102,11 +128,21 @@ public class TraumschreiberService {
         int[] delta = bytesTo16bitInts(deltaBytes);
         //Log.v(TAG, "Decoded Delta: " + Arrays.toString(delta));
 
-        for (int i = 0; i < 24; i++) {
+        for (int i = 0; i < nChannels; i++) {
+            /*ch1RunningVarianceEstimate += 0.001 * Math.pow(delta[0],2);
+            if (pkgCount%1000 == 0){
+                ch1Sigma = (float) Math.sqrt(ch1RunningVarianceEstimate);
+                ch1RunningVarianceEstimate = 0;
+            }*/
+
             decodedSignal[i] += (delta[i] << signalBitShift[i]);
             // Centering the Signal 
-            if (pkgCount < 200) signalOffset[i] += 0.005 * decodedSignal[i]; // moving average over 200 pkgs
-            if (pkgCount == 200) decodedSignal[i] -= signalOffset[i];
+            if (pkgCount < 500) signalOffset[i] += 0.002 * decodedSignal[i]; // moving average over 500 pkgs
+            if (pkgCount == 500) {
+                decodedSignal[i] -= signalOffset[i];
+                Log.d(TAG, "Means of all Channels: " + Arrays.toString(signalOffset));
+                warmedUp = true;
+            }
         }
         pkgCount++;
         return decodedSignal;

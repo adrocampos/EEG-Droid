@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -47,6 +48,8 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.MPPointD;
+import com.github.mikephil.charting.utils.MPPointF;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,6 +62,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.Array;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -81,14 +85,14 @@ public class Record extends AppCompatActivity {
     private final Handler handler = new Handler();
     private final List<Float> timestamps = new ArrayList<>();
     private final List<List<Float>> accumulated = new ArrayList<>();
-    private final int MAX_VISIBLE = 4000;  // see 500ms at the time on the plot
+    private final int maxVisibleXRange = 8000;  // see 4000ms at the time on the plot
     private int leftAxisUpperLimit = 20000;
     private int leftAxisLowerLimit = -2000;
     private int leftAxisManualVScale = 1;
     private int leftAxisManualHScale = 1;
     private final ArrayList<Integer> pkgIDs = new ArrayList<>();
     private final int nChannels = 24;
-    private final ArrayList<ArrayList<Entry>> storedPlottingData = new ArrayList<ArrayList<Entry>>() {
+    private ArrayList<ArrayList<Entry>> storedPlottingData = new ArrayList<ArrayList<Entry>>() {
         {
             for (int i = 0; i < nChannels; i++) {
                 ArrayList<Entry> lineEntries = new ArrayList<>();
@@ -172,8 +176,6 @@ public class Record extends AppCompatActivity {
         }
     };
 
-
-
     private int selectedScale;
     private byte selectedScaleB = 0b00000000;
     private boolean recording = false;
@@ -181,6 +183,7 @@ public class Record extends AppCompatActivity {
     private float res_time;
     private float res_freq;
     private int plottedPkgCount = 0;
+    private int visiblyPlottedPkgs = 0;
     private int enabledCheckboxes = 0;
     private TextView mXAxis;
     private TextView mDataResolution;
@@ -191,6 +194,7 @@ public class Record extends AppCompatActivity {
     private androidx.appcompat.widget.SwitchCompat switch_plots;
     private View layout_plots;
     private boolean plotting = true;
+    private int plottingUpdateInterval= 30;
     private androidx.appcompat.widget.SwitchCompat channelViewsSwitch;
     private boolean channelViewsEnabled = true;
     private List<float[]> mainData;
@@ -254,8 +258,10 @@ public class Record extends AppCompatActivity {
         alertDialogAndroid.show();
         buttons_prerecording();
     };
-    private Thread thread;
-    private long plotting_start;
+    private Thread plottingThread;
+    private Thread plotClearingThread;
+
+    private long plottingStartTime;
     private final CompoundButton.OnCheckedChangeListener switchPlotsOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -268,7 +274,7 @@ public class Record extends AppCompatActivity {
                 //mXAxis.setVisibility(ViewStub.VISIBLE);
                 if (enabledCheckboxes != 0) {
                     plotting = true;
-                    plotting_start = System.currentTimeMillis();
+                    plottingStartTime = System.currentTimeMillis();
                 } else {
                     Toast.makeText(getApplicationContext(),
                             "Need to select a Channel first",
@@ -340,7 +346,7 @@ public class Record extends AppCompatActivity {
                 mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
                 waitForBluetoothCallback(mBluetoothLeService);
 
-                // discoverCharacteristics(mBluetoothLeService.getSupportedGattServices());
+
 
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 int[] data = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
@@ -351,16 +357,10 @@ public class Record extends AppCompatActivity {
                 if (data[0] == 0xC0DE){
                     signalBitShift = data[1];
                     pkgLossCount = data[2];
-                    Log.d(TAG,"Updated signalBitshift of CH1: " + signalBitShift);
+                    //Log.d(TAG,"Updated signalBitshift of CH1: " + signalBitShift);
                     // Give the next row in our recording an adaptive encoding flag
                     adaptiveEncodingFlag = 1;
                     return; //prevent further processing
-                }
-                // FIRST TRY: HIGHER PAYLOADS ###############################################
-                if(data[0] == 0){
-                    data_cnt++;
-                    if (!timerRunning) startTimer();
-                    return;
                 }
 
                 // if the pkg was configData
@@ -371,20 +371,30 @@ public class Record extends AppCompatActivity {
                     return;
                 }
 
+                // exclude the header from conversion
+                if (data.length > nChannels){
+                    if(recording) {
+                        pkgIDs.add(data[0]);
+                        pkgsLost.add(data[1]);
+                    }
+                    microV = convertToMicroVolt(Arrays.copyOfRange(data, 2, data.length));
+                } else {
+                    microV = convertToMicroVolt(data);
+                }
+
                 data_cnt++;
                 if (!timerRunning) startTimer();
-                long last_data = System.currentTimeMillis();
-                microV = transData(data);
+                long currentTime = System.currentTimeMillis();
+                
                 //streamData(microV);
-                if (data_cnt % 50 == 0 && channelViewsEnabled) displayData(microV);
-                if (plotting) { //cut out ' & data_cnt % 2 == 0 '
+                if (channelViewsEnabled &&  data_cnt % 50 == 0) displayData(microV);
+                if (plotting) {
                     accumulated.add(microV);
-                    long plotting_elapsed = last_data - plotting_start;
-                    int ACCUM_PLOT_MS = 30;
-                    if (plotting_elapsed > ACCUM_PLOT_MS) {
+                    long plottingElapsedTime = currentTime - plottingStartTime;
+                    if (plottingElapsedTime > plottingUpdateInterval) {
                         storeForPlotting(accumulated);
                         accumulated.clear();
-                        plotting_start = System.currentTimeMillis();
+                        plottingStartTime = System.currentTimeMillis();
                     }
                 }
                 if (recording) {
@@ -739,6 +749,8 @@ public class Record extends AppCompatActivity {
         if (!notifying) {
             Log.d(TAG, "Notifications Button pressed: ENABLED");
             notifying = true;
+            mTraumService.beginWarmUp();
+            mDataResolution.setText("Warming Up");
             mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, true);
             //waitForBluetoothCallback(mBluetoothLeService);
             //mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
@@ -1023,6 +1035,8 @@ public class Record extends AppCompatActivity {
         bitshiftMinPos = (configData[4]&0xff) >> 4;
         bitshiftMaxPos= (configData[4]&0x0f);
         encodingSafetyPos = (configData[5]&0xff) >> 4;
+        int batteryValue = ((configData[6]&0xff) << 8) + configData[7] & 0xff;
+        Log.d(TAG, "Battery Value: " + batteryValue);
 
         Spinner gainSpinner = (Spinner) traumConfigDialog.findViewById(R.id.gain_spinner);
         gainSpinner.setSelection(selectedGainPos);
@@ -1104,56 +1118,6 @@ public class Record extends AppCompatActivity {
         }
     }
 
-    // Discovers services and characteristics
-    private void discoverCharacteristics(List<BluetoothGattService> gattServices) {
-        if (gattServices == null) return;
-        String charUuid;
-        List<BluetoothGattCharacteristic> gattCharacteristics;
-        // Loops through available GATT Services.
-        for (BluetoothGattService gattService : gattServices) {
-            // If we find the right service
-            if (serviceUuid.equals(gattService.getUuid().toString())) {
-                gattCharacteristics = gattService.getCharacteristics();
-                for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
-                    charUuid = gattCharacteristic.getUuid().toString();
-                    // If the characteristic is a notifying characteristic
-                    if (notifyingUUIDs.contains(charUuid)) {
-                        notifyingCharacteristics.add(gattCharacteristic);
-                        //mBluetoothLeService.setCharacteristicNotification(gattCharacteristic, false);
-                        mNotifyCharacteristic = gattCharacteristic; // Store the last one here for toggling
-                    } else if (configCharacteristicUuid.contains(charUuid)) {
-                        configCharacteristic = gattCharacteristic;
-                    } else if (codeCharacteristicUuid.contains(charUuid)) {
-                        codeCharacteristic = gattCharacteristic;
-                    }
-                }
-                prepareNotifications();
-                waitForBluetoothCallback(mBluetoothLeService);
-                //mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
-            }
-        }
-    }
-
-    private void prepareNotifications() {
-        // set notifications of all notifyingCharacteristics except the one used for toggling.
-        mBluetoothLeService.setNewTraumschreiber(mNewDevice);
-
-        if (codeCharacteristic!=null) {
-            waitForBluetoothCallback(mBluetoothLeService);
-            mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
-        }
-        for (BluetoothGattCharacteristic characteristic : notifyingCharacteristics) {
-            waitForBluetoothCallback(mBluetoothLeService);
-            if (characteristic != mNotifyCharacteristic) {
-                mBluetoothLeService.setCharacteristicNotification(characteristic, true);
-            }
-        }
-
-        waitForBluetoothCallback(mBluetoothLeService);
-        mBluetoothLeService.requestMtu(45);
-
-    }
-
     private void waitForBluetoothCallback(BluetoothLeService service){
         while (service.isBusy) {
             Handler handler = new Handler();
@@ -1176,27 +1140,14 @@ public class Record extends AppCompatActivity {
         for (CheckBox box : checkBoxes) box.setEnabled(false);
     }
 
-
     /* This is the last processing step before the data is displayed and saved
-     Note that gain is 1 by default */
-    private List<Float> transData(int[] data) {
-        // Conversion formula (old): V_in = X * 1.65V / (1000 * GAIN * PRECISION)
+     Default gain : 1 */
+    private List<Float> convertToMicroVolt(int[] data) {
         // Conversion formula (new): V_in = X * (298 / (1000 * gain))
-
-        float gain = Float.parseFloat(selectedGain); // = 1 by default
-        List<Float> data_trans = new ArrayList<>();
-        if (!mNewDevice) { // old model
-            pkgIDs.add((int) data_cnt); // store pkg ID
-            float precision = 2048;
-            float numerator = 1650;
-            float denominator = gain * precision;
-            for (int datapoint : data) data_trans.add((datapoint * numerator) / denominator);
-
-        } else {
-            pkgIDs.add((int) data_cnt); // store pkg ID
-            for (float datapoint : data) data_trans.add(datapoint * 298/(1000*gain));
-        }
-        return data_trans;
+        float gain = Float.parseFloat(selectedGain);
+        List<Float> dataMicroVolt = new ArrayList<>();
+        for (float datapoint : data) dataMicroVolt.add(datapoint * 298/(1000*gain));
+        return dataMicroVolt;
     }
 
     @SuppressLint("DefaultLocale")
@@ -1275,8 +1226,8 @@ public class Record extends AppCompatActivity {
         // set the y left axis
         YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.setTextColor(Color.GRAY);
-        leftAxis.setAxisMaximum(20000f);
-        leftAxis.setAxisMinimum(-2000f);
+        leftAxis.setAxisMaximum(200000f);
+        leftAxis.setAxisMinimum(-200000f);
         leftAxis.setLabelCount(13, true);
         leftAxis.setDrawGridLines(true);
         leftAxis.setGridColor(Color.WHITE);
@@ -1307,66 +1258,70 @@ public class Record extends AppCompatActivity {
         //adjustChartScale(accumulatedSamples);
         final List<ILineDataSet> plottableDatasets = new ArrayList<>();  // for adding multiple plots
         float t = 0;
-        float DATAPOINT_TIME = 6f;
+        float pkgInterval = 6f;
 
         /** Add all accumulatedSamples to the data frames that are used for plotting **/
         for (int i = 0; i < accumulatedSamples.size(); i++) {
             plottedPkgCount += 1;
-            t = plottedPkgCount * DATAPOINT_TIME; // timestamp for x axis in ms
-
-            /** Converting individual channel float values to "Entries"
-             *  Here we also consider the current zoom level of the vertical axis,
-             *  to space out the displayed channel values proportionally
-             * */
+            t = plottedPkgCount * pkgInterval; // timestamp for x axis in ms
 
             List<Float> channelFloats = accumulatedSamples.get(i);
             //float zoomY = mChart.getViewPortHandler().getScaleY();
             //Log.v(TAG, "Value of Zoom Level Y: " + zoomY);
+            int offsetFactor = -1;
             for (int ch = 0; ch < nChannels; ch++) {
-                float plotValue = channelFloats.get(ch) + ch*30; // + Offset for spacing out channels
+                if (channelsShown[ch]) offsetFactor++;
+                float plotValue = channelFloats.get(ch) + offsetFactor * 60; // + Offset for spacing out channels
                 storedPlottingData.get(ch).add(new Entry(t, plotValue));
             }
         }
-        final float f_t = t;
+        final float centerX = t;
+        /** WHAT HAPPENS IF WE DO NOT INTERRUPT THE THREAD HERE?
+         *  No  Obvious effect so far
+         * **/
+        if (plottingThread != null) plottingThread.interrupt();
 
-        if (thread != null) thread.interrupt();
-        final Runnable runnable = () -> {
+        // Remove old entries
+        Log.v(TAG, "Size of Stored Plotting Data: " + storedPlottingData.size());
+        if (storedPlottingData.get(0).size() > maxVisibleXRange/pkgInterval) {
+            int start = accumulatedSamples.size();
+            int end = storedPlottingData.get(0).size() -1;
+            for(int ch=0; ch<nChannels; ch++){
+                ArrayList<Entry> trimmed = new ArrayList<>(storedPlottingData.get(ch).subList(start,end));
+                storedPlottingData.set(ch,trimmed);
+            }
+        }
+
+
+        //Update Plot
+        final Runnable runnablePlottingThread = () -> {
             /* Create plottable datasets from storedPlottingData */
-            for (int i = 0; i < nChannels; i++) {
-                if (channelsShown[i]) {
-                    LineDataSet set = createPlottableSet(i);
+            for (int ch = 0; ch < nChannels; ch++) {
+                if (channelsShown[ch]) {
+                    LineDataSet set = createPlottableSet(ch);
                     plottableDatasets.add(set);
                 }
             }
-            LineData graphData = new LineData(plottableDatasets);
-            //graphData.notifyDataChanged();
-            graphData.setDrawValues(false);
-            mChart.setData(graphData);
-            //mChart.notifyDataSetChanged();
-            // limit the number of visible entries
-            mChart.setVisibleXRangeMaximum(MAX_VISIBLE);
-            // move to the latest entry
-            mChart.moveViewToX(f_t);
-        };
-        thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                runOnUiThread(runnable);
-            }
-        });
-        thread.start();
+            mChart.getLineData().clearValues();
+            mChart.notifyDataSetChanged();
 
-        // max time range in ms (x value) to store on plot
-        int PLOT_MEMO = 5000;
-        // as soon as we have recorded more than PLOT_MEMO milliseconds, remove earlier entries
-        // from chart.
-        if (t > PLOT_MEMO) {
-            for (int j = 0; j < accumulatedSamples.size(); j++) {
-                for (int i = 0; i < mChart.getData().getDataSetCount(); i++) {
-                    mChart.getData().getDataSetByIndex(i).removeFirst();
-                }
-            }
-        }
+            LineData graphData = new LineData(plottableDatasets);
+            mChart.setData(graphData);
+            mChart.notifyDataSetChanged();
+
+            // limit the number of visible entries
+            mChart.setVisibleXRangeMaximum(maxVisibleXRange);
+
+            // keep current Y Position
+            MPPointF centerPointPx = mChart.getViewPortHandler().getContentCenter();
+            MPPointD centerPointValue = mChart.getValuesByTouchPoint(centerPointPx.x, centerPointPx.y, YAxis.AxisDependency.LEFT);
+            float centerY = (float) centerPointValue.y;
+            //Log.d(TAG, "CenterY " +  centerY);
+            mChart.moveViewTo(centerX, centerY, YAxis.AxisDependency.LEFT); // What happens without this? I expect it sticks
+        };
+        // Execute the above defined thread
+        plottingThread = new Thread(() -> runOnUiThread(runnablePlottingThread));
+        plottingThread.start();
     }
 
     /**
@@ -1453,8 +1408,6 @@ public class Record extends AppCompatActivity {
         adaptiveEncodingFlags.add(adaptiveEncodingFlag);
         adaptiveEncodingFlag = 0;
         signalBitShifts.add(signalBitShift);
-        pkgsLost.add(pkgLossCount);
-        pkgLossCount = 0;
 
     }
 
