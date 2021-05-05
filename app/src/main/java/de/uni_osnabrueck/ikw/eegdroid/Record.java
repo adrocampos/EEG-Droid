@@ -47,6 +47,8 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.MPPointD;
+import com.github.mikephil.charting.utils.MPPointF;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -81,9 +83,9 @@ public class Record extends AppCompatActivity {
     private final Handler handler = new Handler();
     private final List<Float> timestamps = new ArrayList<>();
     private final List<List<Float>> accumulated = new ArrayList<>();
-    private final int MAX_VISIBLE = 4000;  // see 500ms at the time on the plot
-    private int leftAxisUpperLimit = 3500;
-    private int leftAxisLowerLimit = -3500;
+    private final int maxVisibleXRange = 8000;  // see 8s at the time on the plot
+    private int leftAxisUpperLimit = 200000;
+    private int leftAxisLowerLimit = -200000;
     private int leftAxisManualVScale = 1;
     private int leftAxisManualHScale = 1;
     private final ArrayList<Integer> pkgIDs = new ArrayList<>();
@@ -254,7 +256,6 @@ public class Record extends AppCompatActivity {
         alertDialogAndroid.show();
         buttons_prerecording();
     };
-    private Thread thread;
     private long plotting_start;
     private final CompoundButton.OnCheckedChangeListener switchPlotsOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
@@ -400,6 +401,7 @@ public class Record extends AppCompatActivity {
     };
     private List<Integer> pkgsLost = new ArrayList<>();
     private int pkgLossCount = 0;
+    private Thread plottingThread;
 
 
     public Record() {
@@ -1261,6 +1263,8 @@ public class Record extends AppCompatActivity {
         mChart.setDrawGridBackground(true);
         // if disabled, scaling can be done on x- and y-axis separately
         mChart.setPinchZoom(false);
+        // disable automatic resetting
+        //mChart.setViewPortOffsets(0f,0f,0f,0f);
         // set an alternative background color
         LineData data = new LineData();
         data.setValueTextColor(Color.BLACK);
@@ -1275,8 +1279,8 @@ public class Record extends AppCompatActivity {
         // set the y left axis
         YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.setTextColor(Color.GRAY);
-        leftAxis.setAxisMaximum(3500f);
-        leftAxis.setAxisMinimum(-3500f);
+        leftAxis.setAxisMaximum(leftAxisUpperLimit);
+        leftAxis.setAxisMinimum(leftAxisLowerLimit);
         leftAxis.setLabelCount(13, true); // from -35 to 35, a label each 5 microV
         leftAxis.setDrawGridLines(true);
         leftAxis.setGridColor(Color.WHITE);
@@ -1304,69 +1308,73 @@ public class Record extends AppCompatActivity {
     }
 
     private void storeForPlotting(final List<List<Float>> accumulatedSamples) {
-        adjustChartScale(accumulatedSamples);
+        //adjustChartScale(accumulatedSamples);
         final List<ILineDataSet> plottableDatasets = new ArrayList<>();  // for adding multiple plots
         float t = 0;
-        float DATAPOINT_TIME = 6f;
+        float pkgInterval = 6f;
 
         /** Add all accumulatedSamples to the data frames that are used for plotting **/
         for (int i = 0; i < accumulatedSamples.size(); i++) {
             plottedPkgCount += 1;
-            t = plottedPkgCount * DATAPOINT_TIME; // timestamp for x axis in ms
-
-            /** Converting individual channel float values to "Entries"
-             *  Here we also consider the current zoom level of the vertical axis,
-             *  to space out the displayed channel values proportionally
-             * */
+            t = plottedPkgCount * pkgInterval; // timestamp for x axis in ms
 
             List<Float> channelFloats = accumulatedSamples.get(i);
-            float zoomY = mChart.getViewPortHandler().getScaleY();
-            Log.v(TAG, "Value of Zoom Level Y: " + zoomY);
+            //float zoomY = mChart.getViewPortHandler().getScaleY();
+            //Log.v(TAG, "Value of Zoom Level Y: " + zoomY);
+            int offsetFactor = -1;
             for (int ch = 0; ch < nChannels; ch++) {
-
-                storedPlottingData.get(ch).add(new Entry(t, channelFloats.get(ch)));
+                if (channelsShown[ch]) offsetFactor++;
+                float plotValue = channelFloats.get(ch) + offsetFactor * 60; // + Offset for spacing out channels
+                storedPlottingData.get(ch).add(new Entry(t, plotValue));
             }
         }
-        final float f_t = t;
+        final float centerX = t;
+        /** WHAT HAPPENS IF WE DO NOT INTERRUPT THE THREAD HERE?
+         *  No  Obvious effect so far
+         * **/
+        if (plottingThread != null) plottingThread.interrupt();
 
-        if (thread != null) thread.interrupt();
-        final Runnable runnable = () -> {
+        // Remove old entries
+        //Log.v(TAG, "Size of Stored Plotting Data: " + storedPlottingData.size());
+        if (storedPlottingData.get(0).size() > maxVisibleXRange/pkgInterval) {
+            int start = accumulatedSamples.size();
+            int end = storedPlottingData.get(0).size() -1;
+            for(int ch=0; ch<nChannels; ch++){
+                ArrayList<Entry> trimmed = new ArrayList<>(storedPlottingData.get(ch).subList(start,end));
+                storedPlottingData.set(ch,trimmed);
+            }
+        }
+
+
+        //Update Plot
+        final Runnable runnablePlottingThread = () -> {
             /* Create plottable datasets from storedPlottingData */
-            for (int i = 0; i < nChannels; i++) {
-                if (channelsShown[i]) {
-                    LineDataSet set = createPlottableSet(i);
+            for (int ch = 0; ch < nChannels; ch++) {
+                if (channelsShown[ch]) {
+                    LineDataSet set = createPlottableSet(ch);
                     plottableDatasets.add(set);
                 }
             }
+            mChart.getLineData().clearValues();
+            mChart.notifyDataSetChanged();
+
             LineData graphData = new LineData(plottableDatasets);
-            graphData.notifyDataChanged();
-            graphData.setDrawValues(false);
             mChart.setData(graphData);
             mChart.notifyDataSetChanged();
-            // limit the number of visible entries
-            mChart.setVisibleXRangeMaximum(MAX_VISIBLE);
-            // move to the latest entry
-            mChart.moveViewToX(f_t);
-        };
-        thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                runOnUiThread(runnable);
-            }
-        });
-        thread.start();
 
-        // max time range in ms (x value) to store on plot
-        int PLOT_MEMO = 5000;
-        // as soon as we have recorded more than PLOT_MEMO milliseconds, remove earlier entries
-        // from chart.
-        if (t > PLOT_MEMO) {
-            for (int j = 0; j < accumulatedSamples.size(); j++) {
-                for (int i = 0; i < mChart.getData().getDataSetCount(); i++) {
-                    mChart.getData().getDataSetByIndex(i).removeFirst();
-                }
-            }
-        }
+            // limit the number of visible entries
+            mChart.setVisibleXRangeMaximum(maxVisibleXRange);
+
+            // keep current Y Position
+            MPPointF centerPointPx = mChart.getViewPortHandler().getContentCenter();
+            MPPointD centerPointValue = mChart.getValuesByTouchPoint(centerPointPx.x, centerPointPx.y, YAxis.AxisDependency.LEFT);
+            float centerY = (float) centerPointValue.y;
+            //Log.d(TAG, "CenterY " +  centerY);
+            mChart.moveViewTo(centerX, centerY, YAxis.AxisDependency.LEFT); // What happens without this? I expect it sticks
+        };
+        // Execute the above defined thread
+        plottingThread = new Thread(() -> runOnUiThread(runnablePlottingThread));
+        plottingThread.start();
     }
 
     /**
@@ -1483,8 +1491,8 @@ public class Record extends AppCompatActivity {
         header.append("time,");
         for (int i = 1; i <= cols; i++) header.append(String.format("ch%d,", i)); // log values
         for (int i = 1; i <= 1; i++) header.append(String.format("enc_ch%d,",i)); // log encodings
-        header.append("enc_flag,");                                                // log encoding updates
-        header.append("pkg_loss");
+        //header.append("enc_flag,");               // log encoding updates
+        //header.append("pkg_loss");                // log pkg losses
         //header.append(String.format("Ch-%d", cols));
 
         new Thread(() -> {
