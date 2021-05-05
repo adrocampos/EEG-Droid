@@ -1187,17 +1187,8 @@ public class Record extends AppCompatActivity {
 
         float gain = Float.parseFloat(selectedGain); // = 1 by default
         List<Float> data_trans = new ArrayList<>();
-        if (!mNewDevice) { // old model
-            pkgIDs.add((int) data_cnt); // store pkg ID
-            float precision = 2048;
-            float numerator = 1650;
-            float denominator = gain * precision;
-            for (int datapoint : data) data_trans.add((datapoint * numerator) / denominator);
-
-        } else {
-            pkgIDs.add((int) data_cnt); // store pkg ID
-            for (float datapoint : data) data_trans.add(datapoint * 298/(1000*gain));
-        }
+        pkgIDs.add((int) data_cnt); // store pkg ID
+        for (float datapoint : data) data_trans.add(datapoint * 5/4 * 298/(1000*gain));
         return data_trans;
     }
 
