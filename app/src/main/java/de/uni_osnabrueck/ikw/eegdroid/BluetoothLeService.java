@@ -150,7 +150,6 @@ public class BluetoothLeService extends Service {
         final Intent intent = new Intent(action);
         final byte[] data = characteristic.getValue();
         if (data != null && data.length > 0) {
-            //We have to decompress the EEG-Data here. This is done by TraumschreiberService.decompress();
             dataDecoded = TraumschreiberService.decode(data, characteristic.getUuid());
             if(dataDecoded != null) intent.putExtra(EXTRA_DATA, dataDecoded);
         }

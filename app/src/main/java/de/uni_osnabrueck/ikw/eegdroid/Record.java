@@ -97,7 +97,7 @@ public class Record extends AppCompatActivity {
     private int leftAxisManualHScale = 1;
     private final ArrayList<Integer> pkgIDs = new ArrayList<>();
     private final int nChannels = 24;
-    private float samplingRate = 500/2;  // alternativ: 500, 500/2, 500/3, 500/4, etc.
+    private float samplingRate = 500/3;  // alternative: 500, 500/2, 500/3, 500/4, etc.
     private final float traumschreiberWarmup = 500/3; // keep same as samplingRate for 1s.
 
     private final ArrayList<ArrayList<Entry>> plottingBuffer = new ArrayList<ArrayList<Entry>>() {
@@ -128,7 +128,7 @@ public class Record extends AppCompatActivity {
     private byte selectedGainB;
     private int selectedGainPos = 0;
     private byte bitsPerChB = 0b00110000; //0b00xx0000
-    private int selectedBitsPerChPos = 2; //16 bit
+    private int selectedBitsPerChPos = 0; //10 bit
     private byte runningAverageFilterB;
     private boolean runningAverageFilterCheck = false;
     private byte sendOnOneCharB;
@@ -136,7 +136,7 @@ public class Record extends AppCompatActivity {
     private byte generateDataB;
     private boolean generateDataCheck = false;
     private byte transmissionRateB = 0b00000001; //0b00000001
-    private int selectedTransmissionRatePos = 1; ///250hz
+    private int selectedTransmissionRatePos = 0; ///167hz
     private byte o1HighpassB;
     private int o1HighpassPos = 0;
     private byte iirHighpassB;
@@ -392,13 +392,14 @@ public class Record extends AppCompatActivity {
                 // CHANNEL DATA
                 pkgCount++;
                 if (!timerRunning) startTimer();
-
                 // no processing (for testing bluetooth transmission rates)
                 if(data==null) return;
+
                 // parse header, if there is a header
                 if (data.length > nChannels){
                     currentPkgId = data[0];
                     currentPkgLoss = data[1];
+                    currentBtPkgLoss = calculateBtPkgLoss();
                     data = Arrays.copyOfRange(data, 2, data.length);
                 }
                 microV = convertToMicroV(data);
@@ -409,10 +410,13 @@ public class Record extends AppCompatActivity {
             }
         }
     };
+
+
     private List<Integer> pkgsLost = new ArrayList<>();
     private int currentPkgLoss = 0;
     private int currentPkgId  = 0;
     private int lastPkgId = 0;
+    private int currentBtPkgLoss = 0;
     private Thread plottingThread;
     private File recordingFile;
     private String tempFileName;
@@ -430,6 +434,19 @@ public class Record extends AppCompatActivity {
         intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
         intentFilter.addAction(BluetoothLeService.EXTRA_DATA);
         return intentFilter;
+    }
+
+    private int calculateBtPkgLoss(){
+        int btloss = 0;
+        if (storedPkgCount>0){
+            if (lastPkgId > currentPkgId){
+                btloss = (15 - lastPkgId) + currentPkgId;
+            } else{
+                btloss = (currentPkgId-1) - lastPkgId;
+            }
+        }
+        lastPkgId = currentPkgId;
+        return btloss;
     }
 
     private void updateConfiguration() {
@@ -806,13 +823,10 @@ public class Record extends AppCompatActivity {
     private AlertDialog createTraumConfigDialog(){
         // inflate the view
         View traumConfigView = getLayoutInflater().inflate(R.layout.traum_config_popup, null);
-
         // create the dialog
         AlertDialog.Builder configDialogBuilder = new AlertDialog.Builder(this,
                 R.style.traumConfigDialog);
         configDialogBuilder.setView(traumConfigView);
-
-
         return configDialogBuilder.create();
     }
 
@@ -1517,7 +1531,6 @@ public class Record extends AppCompatActivity {
         pkgsLost.clear();
         try {
             fileWriter.flush();
-            fileWriter.close();
             Toast.makeText(getApplicationContext(),"Succesfully Stored Session",Toast.LENGTH_LONG);
         } catch (Exception e ){
             Log.e(TAG,"Some Error trying to end the fileWriter: " + e.getMessage());
@@ -1531,53 +1544,48 @@ public class Record extends AppCompatActivity {
      */
     private void storeData(List<Float> data_microV) {
 
-        // Real Time Stamps
-        if (timestamps.size() == 0) startTime = System.currentTimeMillis();
-        float time = System.currentTimeMillis() - startTime;
-        timestamps.add((float) (time));
-
-        // Expected Time Stamps
-        if (samplingTimes.size() == 0) storedPkgCount = 0 ;
-        float samplingInterval = 1/samplingRate;
-        float samplingTime = samplingInterval*storedPkgCount;
-        samplingTimes.add(samplingTime);
-
+        float[] f_microV = new float[nChannels];
+        Arrays.fill(f_microV, Float.NaN);
+        //NaN rows on top (uninitialized)
+        for (int i=0;i<currentPkgLoss; i++) appendSampleToCsv(f_microV);
+        for (int i=0;i<currentBtPkgLoss; i++) appendSampleToCsv(f_microV);
         // Channel Values
-        float[] f_microV = new float[data_microV.size()];
         int i = 0;
         for (Float f : data_microV)
             f_microV[i++] = (f != null ? f : Float.NaN); // Or whatever default you want
-        mainData.add(f_microV);
-        //adaptiveEncodingFlags.add(adaptiveEncodingFlag);
+        appendSampleToCsv(f_microV);
         adaptiveEncodingFlag = 0;
-        //signalBitShifts.add(signalBitShift);
-        pkgIDs.add(currentPkgId);
-        pkgsLost.add(currentPkgLoss);
 
+    }
+
+    private void appendSampleToCsv(float[] sample){
         /*** WRITE TO CSV
          *  order: timestamp, samplingtime,channelvalues,pkgid,pkgsloss **/
+        // Real Time Stamps
+        if (storedPkgCount == 0) startTime = System.currentTimeMillis();
+        float time = System.currentTimeMillis() - startTime;
+
+        // Expected Time Stamps
+        float samplingInterval = 1000/samplingRate;
+        float samplingTime = samplingInterval*storedPkgCount;
+
+        // Correct Pkg loss counts to have "pkg loss" at 0 for NaN rows
+        int NaNCorrectionBtLoss = 0;
+        int NaNCorrectionInternalLoss = 0;
+        if (Float.isNaN(sample[0])){
+            NaNCorrectionBtLoss = currentBtPkgLoss;
+            NaNCorrectionInternalLoss = currentPkgLoss;
+        }
         try {
             String delimiter = ",";
             fileWriter.append(String.valueOf(time));
             fileWriter.append(delimiter + samplingTime);
             for (int j = 0; j < nChannels; j++) {
-                fileWriter.append(delimiter + f_microV[j]);
+                fileWriter.append(delimiter + sample[j]);
             }
-
             fileWriter.append(delimiter + currentPkgId);
-
-            int btloss = 0;
-            if (storedPkgCount>0){
-                if (lastPkgId > currentPkgId){
-                    btloss = (15 - lastPkgId) + currentPkgId;
-                } else{
-                    btloss = (currentPkgId-1) - lastPkgId;
-                }
-            }
-            lastPkgId = currentPkgId;
-
-            fileWriter.append(delimiter + btloss);                      //Bluetooth loss
-            fileWriter.append(delimiter + currentPkgLoss);              //Internal loss
+            fileWriter.append(delimiter + (currentBtPkgLoss - NaNCorrectionBtLoss));      //Bluetooth loss
+            fileWriter.append(delimiter + (currentPkgLoss - NaNCorrectionInternalLoss)); //Internal loss
             fileWriter.append(delimiter + resolutionFrequency);
             fileWriter.append("\n");
             storedPkgCount++;
@@ -1597,15 +1605,40 @@ public class Record extends AppCompatActivity {
     //Saves the data at the end of session
     @SuppressLint("DefaultLocale")
     private void saveSession(final String tag) throws IOException {
+        // Column Names of Footer
+        final String footerLabels = "Username,User ID,Session ID,Session Tag,Date,Shape (rows x columns)," +
+                "Duration (ms),Starting Time,Ending Time,Sampling Rate," +
+                "measurement unit,Starting Timestamp,Ending Timestamp";
+        String delimiter=",";
+        fileWriter.append(footerLabels);
+        fileWriter.append("\n");
+        // Footer Values
+        final String username = getSharedPreferences("userPreferences", 0).getString("username", "user");
+        final String userID = getSharedPreferences("userPreferences", 0).getString("userID", "12345678");
+        final UUID id = UUID.randomUUID();
+        String date = new SimpleDateFormat("yyyyddMMHHmmss").format(new Date());
+
+        fileWriter.append(username);
+        fileWriter.append(delimiter + userID);
+        fileWriter.append(delimiter + id.toString());
+        fileWriter.append(delimiter + tag);
+        fileWriter.append(delimiter + date);
+        fileWriter.append(delimiter + (storedPkgCount + "x" + nChannels));
+        fileWriter.append(delimiter + recording_time);
+        fileWriter.append(delimiter + start_time);
+        fileWriter.append(delimiter + end_time);
+        fileWriter.append(delimiter + samplingRate);
+        fileWriter.append(delimiter + "µV");
+        fileWriter.append(delimiter + start_timestamp);
+        fileWriter.append(delimiter + end_timestamp);
 
         // rename your temp file to the desired tag
-        String date = new SimpleDateFormat("yyyyddMMHHmmss").format(new Date());
         String permFileName = date + "_" + tag + ".csv";
         File tempFile = new File(MainActivity.getDirSessions(),tempFileName);
         File permFile = new File(MainActivity.getDirSessions(),permFileName);
         boolean success = tempFile.renameTo(permFile);
         if (success) Toast.makeText(getApplicationContext(),"Stored Recording as " + permFileName, Toast.LENGTH_LONG);
-
+        fileWriter.close();
 
         /*
         try {

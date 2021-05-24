@@ -50,6 +50,7 @@ public class TraumschreiberService {
     }
 
     public static void setNotifyingUUID(int i){
+        // 0->10bit, 1->14bit, 2->16bit
         notifyingUUID = notifyingUUIDs.get(i);
         Log.d(TAG, "Notifying UUID of TraumschreiberService is now: " + notifyingUUID.toString());
     }
