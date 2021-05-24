@@ -54,7 +54,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -82,7 +84,10 @@ public class Record extends AppCompatActivity {
     private final static String TAG = Record.class.getSimpleName();
     private final Handler handler = new Handler();
     private final List<Float> timestamps = new ArrayList<>();
-    private final List<List<Float>> accumulated = new ArrayList<>();
+    private final List<Float> samplingTimes = new ArrayList<>();
+    private final List<List<Float>> accumulatedSamples = new ArrayList<>();
+    private final int plottingFPS = 25;
+    private Float[] channelOffsets = new Float[24];
     private final int maxVisibleXRange = 8000;  // see 8s at the time on the plot
     private int leftAxisUpperLimit = 200000;
     private int leftAxisLowerLimit = -200000;
@@ -90,7 +95,10 @@ public class Record extends AppCompatActivity {
     private int leftAxisManualHScale = 1;
     private final ArrayList<Integer> pkgIDs = new ArrayList<>();
     private final int nChannels = 24;
-    private final ArrayList<ArrayList<Entry>> storedPlottingData = new ArrayList<ArrayList<Entry>>() {
+    private float samplingRate = 500/2;  // alternativ: 500, 500/2, 500/3, 500/4, etc.
+    private final float traumschreiberWarmup = 500/3; // keep same as samplingRate for 1s.
+
+    private final ArrayList<ArrayList<Entry>> plottingBuffer = new ArrayList<ArrayList<Entry>>() {
         {
             for (int i = 0; i < nChannels; i++) {
                 ArrayList<Entry> lineEntries = new ArrayList<>();
@@ -117,12 +125,16 @@ public class Record extends AppCompatActivity {
     private String selectedGain = "1";
     private byte selectedGainB;
     private int selectedGainPos = 0;
+    private byte bitsPerChB = 0b00110000; //0b00xx0000
+    private int selectedBitsPerChPos = 2; //16 bit
     private byte runningAverageFilterB;
-    private boolean runningAverageFilterCheck = true;
+    private boolean runningAverageFilterCheck = false;
     private byte sendOnOneCharB;
     private boolean sendOnOneCharCheck = false;
     private byte generateDataB;
     private boolean generateDataCheck = false;
+    private byte transmissionRateB = 0b00000001; //0b00000001
+    private int selectedTransmissionRatePos = 1; ///250hz
     private byte o1HighpassB;
     private int o1HighpassPos = 0;
     private byte iirHighpassB;
@@ -180,8 +192,8 @@ public class Record extends AppCompatActivity {
     private byte selectedScaleB = 0b00000000;
     private boolean recording = false;
     private boolean notifying = false;
-    private float res_time;
-    private float res_freq;
+    private float resolutionTime;
+    private float resolutionFrequency;
     private int plottedPkgCount = 0;
     private int enabledCheckboxes = 0;
     private TextView mXAxis;
@@ -190,11 +202,12 @@ public class Record extends AppCompatActivity {
     private ImageButton imageButtonRecord;
     private ImageButton imageButtonSave;
     private ImageButton imageButtonDiscard;
-    private androidx.appcompat.widget.SwitchCompat switch_plots;
+    private androidx.appcompat.widget.SwitchCompat plotSwitch;
     private View layout_plots;
     private boolean plotting = true;
     private androidx.appcompat.widget.SwitchCompat channelViewsSwitch;
     private boolean channelViewsEnabled = true;
+    
     private List<float[]> mainData;
     private int adaptiveEncodingFlag = 0; //Indicates whether adaptive encoding took place in this instant.
     private final ArrayList<Integer> adaptiveEncodingFlags = new ArrayList<>();
@@ -212,16 +225,22 @@ public class Record extends AppCompatActivity {
             buttons_prerecording();
         }
     };
-    private float data_cnt = 0;
+    private int pkgCount;
+    private int  storedPkgCount;
     private String start_time;
     private String end_time;
     private long startTime;
     private String recording_time;
     private long start_timestamp;
     private long end_timestamp;
+    private long plottingLastRefresh;
+    private long pkgArrivalTime;
+    
     private final View.OnClickListener imageRecordOnClickListener = v -> {
         if (!recording) {
-            startTrial();
+            startRecording();
+            mConnectionState.setText(R.string.recording);
+            mConnectionState.setTextColor(Color.RED);
             Toast.makeText(
                     getApplicationContext(),
                     "Recording in process.",
@@ -229,7 +248,9 @@ public class Record extends AppCompatActivity {
             ).show();
             buttons_recording();
         } else {
-            endTrial();
+            endRecording();
+            mConnectionState.setText(R.string.device_connected);
+            mConnectionState.setTextColor(Color.GREEN);
             buttons_postrecording();
         }
     };
@@ -247,29 +268,33 @@ public class Record extends AppCompatActivity {
                 .setMessage(getResources().getString(R.string.enter_session_label))
                 .setPositiveButton(R.string.save, (dialogBox, id) -> {
                     if (!userInputLabel.getText().toString().isEmpty()) {
-                        saveSession(userInputLabel.getText().toString());
-                    } else saveSession();
-                    Toast.makeText(getApplicationContext(), "Your EEG session was successfully stored.", Toast.LENGTH_LONG).show();
+                        try {
+                            saveSession(userInputLabel.getText().toString());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        try {
+                            saveSession();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 });
 
         AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
         alertDialogAndroid.show();
         buttons_prerecording();
     };
-    private long plotting_start;
-    private final CompoundButton.OnCheckedChangeListener switchPlotsOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
+    private final CompoundButton.OnCheckedChangeListener plotSwitchOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if (!isChecked) {
-//                layout_plots.setVisibility(ViewStub.GONE);
-//                mXAxis.setVisibility(ViewStub.GONE);
                 plotting = false;
             } else {
-                //layout_plots.setVisibility(ViewStub.VISIBLE);
-                //mXAxis.setVisibility(ViewStub.VISIBLE);
                 if (enabledCheckboxes != 0) {
                     plotting = true;
-                    plotting_start = System.currentTimeMillis();
+                    plottingLastRefresh = System.currentTimeMillis();
                 } else {
                     Toast.makeText(getApplicationContext(),
                             "Need to select a Channel first",
@@ -306,102 +331,91 @@ public class Record extends AppCompatActivity {
     private TimerTask timerTask;
     private boolean timerRunning = false;
     // Handles various events fired by the Service.
-    // ACTION_GATT_CONNECTED: connected to a GATT server.
-    // ACTION_GATT_DISCONNECTED: disconnected from a GATT server.
-    // ACTION_GATT_SERVICES_DISCOVERED: discovered GATT services.
-    // ACTION_DATA_AVAILABLE: received data from the device.  This can be a result of read or notification operations.
     private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-//            Log.d("Device connected: ", deviceConnected ? "true" : "false");
+
+            // CONNECTION EVENT
             if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
                 deviceConnected = true;
                 buttons_prerecording();
                 setConnectionStatus(true);
+                storedPkgCount = 0;
+            // DISCONNECTION EVENT
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 deviceConnected = false;
                 setConnectionStatus(false);
                 clearUI();
                 disableCheckboxes();
-                data_cnt = 0;
                 if (timer != null) {
                     timer.cancel();
                     timer.purge();
                 }
                 timerRunning = false;
-            } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
-                // Show all the supported services and characteristics on the user interface.
-                data_cnt = 0;
-                BluetoothGattService bleService = mBluetoothLeService.getService(mTraumService.serviceUUID);
-                mNotifyCharacteristic = bleService.getCharacteristic(mTraumService.notifyUUID);
-                codeCharacteristic = bleService.getCharacteristic(mTraumService.codeUUID);
-                configCharacteristic = bleService.getCharacteristic(mTraumService.configUUID);
 
+            // BLUETOOTH SERVICE REGISTRATION
+            } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
+                BluetoothGattService bleService = mBluetoothLeService.getService(TraumschreiberService.serviceUUID);
+                mNotifyCharacteristic = bleService.getCharacteristic(TraumschreiberService.notifyingUUID);
+                codeCharacteristic = bleService.getCharacteristic(TraumschreiberService.codeUUID);
+                configCharacteristic = bleService.getCharacteristic(TraumschreiberService.configUUID);
                 mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
                 waitForBluetoothCallback(mBluetoothLeService);
 
-                // discoverCharacteristics(mBluetoothLeService.getSupportedGattServices());
-
+                // HANDLE INCOMING STREAM
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
+
                 int[] data = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
 
-                if(data==null) return;
-
-                // if the pkg was an encoding update, no further processing is required here
-                if (data[0] == 0xC0DE){
-                    signalBitShift = data[1];
-                    pkgLossCount = data[2];
-                    Log.d(TAG,"Updated signalBitshift of CH1: " + signalBitShift);
-                    // Give the next row in our recording an adaptive encoding flag
-                    adaptiveEncodingFlag = 1;
-                    return; //prevent further processing
-                }
-                // FIRST TRY: HIGHER PAYLOADS ###############################################
-                if(data[0] == 0){
-                    data_cnt++;
-                    if (!timerRunning) startTimer();
-                    return;
-                }
-
-                // if the pkg was configData
-                if (data.length < nChannels) {
+                // CONFIG DATA
+                if (data.length == 8) {
                     int[] configData = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
                     Toast.makeText(getApplicationContext(),"Received Config Data", Toast.LENGTH_SHORT).show();
                     displayReceivedTraumConfigValues(configData);
                     return;
                 }
 
-                data_cnt++;
+                if(!notifying) return;
+
+                // ENCODING UPDATES
+                if (data[0] == 0xC0DE){
+                    signalBitShift = data[1];
+                    //pkgLossCount = data[2];
+                    //Log.v(TAG,"Updated signalBitshift of CH1: " + signalBitShift);
+                    // Give the next row in our recording an adaptive encoding flag
+                    adaptiveEncodingFlag = 1;
+                    return; //prevent further processing
+                }
+
+                // CHANNEL DATA
+                pkgCount++;
                 if (!timerRunning) startTimer();
-                long last_data = System.currentTimeMillis();
-                microV = transData(data);
-                streamData(microV);
-                if (data_cnt % 50 == 0 && channelViewsEnabled) displayData(microV);
-                if (plotting) { //cut out ' & data_cnt % 2 == 0 '
-                    accumulated.add(microV);
-                    long plotting_elapsed = last_data - plotting_start;
-                    int ACCUM_PLOT_MS = 30;
-                    if (plotting_elapsed > ACCUM_PLOT_MS) {
-                        storeForPlotting(accumulated);
-                        accumulated.clear();
-                        plotting_start = System.currentTimeMillis();
-                    }
+
+                // no processing (for testing bluetooth transmission rates)
+                if(data==null) return;
+                // parse header, if there is a header
+                if (data.length > nChannels){
+                    currentPkgId = data[0];
+                    currentPkgLoss = data[1];
+                    data = Arrays.copyOfRange(data, 2, data.length);
                 }
-                if (recording) {
-                    storeData(microV);
-                    mConnectionState.setText(R.string.recording);
-                    mConnectionState.setTextColor(Color.RED);
-                } else {
-                    mConnectionState.setText(R.string.device_connected);
-                    mConnectionState.setTextColor(Color.GREEN);
-                }
+                microV = convertToMicroV(data);
+                //streamData(microV);
+                if (channelViewsEnabled && pkgCount % 100 == 0) displayNumerical(microV);
+                if (plotting) storeForPlotting(microV);
+                if (recording) storeData(microV);
             }
         }
     };
     private List<Integer> pkgsLost = new ArrayList<>();
-    private int pkgLossCount = 0;
+    private int currentPkgLoss = 0;
+    private int currentPkgId  = 0;
+    private int lastPkgId = 0;
     private Thread plottingThread;
+    private File recordingFile;
+    private String tempFileName;
+    private FileWriter fileWriter;
 
 
     public Record() {
@@ -422,7 +436,7 @@ public class Record extends AppCompatActivity {
         byte[] configBytes = new byte[8];
 
         // Concatenate binary strings
-        configBytes[0] = (byte) ((byte) (selectedGainB | runningAverageFilterB) | sendOnOneCharB | generateDataB);
+        configBytes[0] = (byte) (selectedGainB| bitsPerChB | runningAverageFilterB | sendOnOneCharB | generateDataB | transmissionRateB);
         configBytes[1] = (byte) 0; // Reserved
         configBytes[2] = (byte) (o1HighpassB | iirHighpassB);
         configBytes[3] = (byte) (lowpassB | filter50hzB);
@@ -447,53 +461,71 @@ public class Record extends AppCompatActivity {
     }
 
 
-
-    private void initializeTimerTask() {
-
-        timerTask = new TimerTask() {
-            public void run() {
-                handler.post(() -> {
-                    res_time = 5000 / data_cnt;
-                    res_freq = data_cnt / 5;
-                    String hertz = (int) res_freq + "Hz";
-
-
-                    @SuppressLint("DefaultLocale") String resolution = String.format("%.2f", res_time) + "ms - ";
-                    String content = resolution + hertz;
-
-                    int color;
-                    if (res_freq >= 166) color = getResources().getColor(R.color.green);
-                    else if (res_freq >= 165) color = getResources().getColor(R.color.orange);
-                    else {
-                        content += "  Bad Signal";
-                        color = getResources().getColor(R.color.red);
-                    }
-
-                    if (data_cnt != 0) {
-                        mDataResolution.setText(content);
-                        mDataResolution.setTextColor(color);
-                    }
-                    if (!notifying) {
-
-                        mDataResolution.setText("No data");
-                        mDataResolution.setTextColor(getResources().getColor(R.color.black));
-                    }
-                    data_cnt = 0;
-                });
-            }
-        };
-    }
-
     private void startTimer() {
         //set a new Timer
         timer = new Timer();
         //initialize the TimerTask's job
         initializeTimerTask();
-        // schedule the timer, the stimulus presence will repeat every 1 seconds
+        // timerTask will be executed every 5000 ms
         timer.schedule(timerTask, 5000, 5000);
         mDataResolution.setText("calculating");
         timerRunning = true;
     }
+
+    private void endTimer(){
+        // End the Timer Task
+        mDataResolution.setTextColor((int) R.color.defaultTextView);
+        mDataResolution.setText(R.string.default_resolution_text);
+        if (timerRunning) {
+            timerTask.cancel();
+            timerRunning = false;
+        }
+        pkgCount = 0;
+    }
+    private void initializeTimerTask() {
+
+        timerTask = new TimerTask() {
+            public void run() {
+                handler.post(() -> {
+
+                    if (!notifying) {
+                        return;
+                    }
+
+                    if (pkgCount > 0) {
+                        resolutionTime = (float) 5000/pkgCount;    // ms per package
+                        resolutionFrequency = pkgCount / 5;  // packages per second
+                    }
+                    String hertz = (int) resolutionFrequency + "Hz";
+
+
+                    @SuppressLint("DefaultLocale") String resolution = String.format("%.2f", resolutionTime) + "ms - ";
+                    String content = resolution + hertz;
+
+                    // Just here for stability in case I change the code for the transmissionRate selector
+                    //if(transmissionRateB == (byte) 1) samplingRate = 500/2;
+                    //else samplingRate = 500/3;
+
+                    int color;
+                    if (resolutionFrequency >= samplingRate) color = getResources().getColor(R.color.green);
+                    else if (resolutionFrequency >= samplingRate - 2) color = getResources().getColor(R.color.orange);
+                    else {
+                        content += "  Bad Signal";
+                        color = getResources().getColor(R.color.red);
+                    }
+
+                    if (pkgCount != 0) {
+                        mDataResolution.setText(content);
+                        mDataResolution.setTextColor(color);
+                    }
+
+                    pkgCount = 0;
+                });
+            }
+        };
+    }
+
+
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -504,7 +536,11 @@ public class Record extends AppCompatActivity {
 
         // LSL stuff
         final UUID uid = UUID.randomUUID();
-        streamInfo = new LSL.StreamInfo("Traumschreiber-EEG", "Markers", 24, LSL.IRREGULAR_RATE, LSL.ChannelFormat.float32, uid.toString());
+        try {
+            streamInfo = new LSL.StreamInfo("Traumschreiber-EEG", "Markers", 24, LSL.IRREGULAR_RATE, LSL.ChannelFormat.float32, uid.toString());
+        } catch (Error ex){
+            Log.e(TAG, " LSL issue: " + ex.getMessage());
+        }
         try {
             streamOutlet = new LSL.StreamOutlet(streamInfo);
         } catch (IOException ex) {
@@ -515,7 +551,7 @@ public class Record extends AppCompatActivity {
         imageButtonRecord = findViewById(R.id.imageButtonRecord);
         imageButtonSave = findViewById(R.id.imageButtonSave);
         imageButtonDiscard = findViewById(R.id.imageButtonDiscard);
-        switch_plots = findViewById(R.id.switch_plots);
+        plotSwitch = findViewById(R.id.switch_plots);
         channelViewsSwitch = findViewById(R.id.channel_views_switch);
 
         layout_plots = findViewById(R.id.linearLayout_chart);
@@ -526,7 +562,7 @@ public class Record extends AppCompatActivity {
         imageButtonRecord.setOnClickListener(imageRecordOnClickListener);
         imageButtonSave.setOnClickListener(imageSaveOnClickListener);
         imageButtonDiscard.setOnClickListener(imageDiscardOnClickListener);
-        switch_plots.setOnCheckedChangeListener(switchPlotsOnCheckedChangeListener);
+        plotSwitch.setOnCheckedChangeListener(plotSwitchOnCheckedChangeListener);
         channelViewsSwitch.setOnCheckedChangeListener(channelViewsSwitchListener);
 
         // Sets up UI references.
@@ -733,7 +769,7 @@ public class Record extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void toggleNotifying() {
+    public void toggleNotifying() {
         MenuItem menuItemNotify = menu.findItem(R.id.notify);
         //menuItemNotify.setEnabled(false);
         waitForBluetoothCallback(mBluetoothLeService);
@@ -748,20 +784,13 @@ public class Record extends AppCompatActivity {
         } else {
             Log.d(TAG, "Notifications Button pressed: DISABLED");
             notifying = false;
-            mDataResolution.setText("No data");
             mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, false);
-            //waitForBluetoothCallback(mBluetoothLeService);
-            //mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, false);
+            endTimer();
             menuItemNotify.setIcon(R.drawable.ic_notifications_off_white_24dp);
+
         }
-
-        //logDescriptorValue(notifyingCharacteristics.get(0));
-        //logDescriptorValue(notifyingCharacteristics.get(1));
-        //logDescriptorValue(notifyingCharacteristics.get(2));
         if(codeCharacteristic!=null) logDescriptorValue(codeCharacteristic);
-
         menuItemNotify.setEnabled(true);
-
     }
 
     public void logDescriptorValue(BluetoothGattCharacteristic c){
@@ -803,9 +832,58 @@ public class Record extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //Itempositions: {0,1,2,3} <=> {00,01,10,11} -- (<<6) --> {0b00..,0b01..,0b10..
                 selectedGainPos = position;
-                selectedGainB = (byte) ((position& 0xff) << 6);
+                selectedGainB = (byte) ((position& 0x3) << 6);
                 byte[] binaryString = {selectedGainB};
                 Log.d(TAG, "Binary rep of selected value: " + Arrays.toString(binaryString));
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // nothing
+            }
+        });
+
+        // Link bitsPerChSpinner
+        Spinner bitsPerChSpinner = (Spinner) traumConfigDialog.findViewById(R.id.bits_per_ch_spinner);
+        bitsPerChSpinner.setSelection(selectedBitsPerChPos);
+        bitsPerChSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //Itempositions: {0,1,2} <=> {00,01,10,11} -- (<<4) --> {0b0000,0b0001..,0b0010
+                selectedBitsPerChPos = position;
+                bitsPerChB = (byte) ((position& 0x3) << 4);
+
+                int bitsPerCh;
+                Log.d(TAG, "Position of BitsPerCh: " + position);
+                switch(position){
+                    case 0:
+                        bitsPerCh=10;
+                        break;
+                    case 1:
+                        bitsPerCh=14;
+                        break;
+                    case 2:
+                        bitsPerCh=16;
+                        break;
+                    case 3:
+                        position = 0;  // 3 and 0 have same effect, later we set NotifyingUUID, needs to be 0 instead of 3
+                        bitsPerCh=10;
+                        break;
+
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + position);
+                }
+                TraumschreiberService.bitsPerCh = bitsPerCh;
+
+                // Turn notifications off.
+                if(notifying) toggleNotifying();
+                
+                //Update Characteristic on Which data is sent
+                TraumschreiberService.setNotifyingUUID(position); //0, 1 or 2
+                BluetoothGattService bleService = mBluetoothLeService.getService(TraumschreiberService.serviceUUID);
+                mNotifyCharacteristic = bleService.getCharacteristic(TraumschreiberService.notifyingUUID);
+
+                byte[] binaryString = {bitsPerChB};
+                Log.d(TAG, "Binary rep of selected value for bits per CH:  " + Arrays.toString(binaryString));
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -858,6 +936,29 @@ public class Record extends AppCompatActivity {
                     generateDataCheck = false;
                     generateDataB = 0;
                 }
+            }
+        });
+
+        // Link transmissionRateSpinner
+        Spinner transmissionRateSpinner = (Spinner) traumConfigDialog.findViewById(R.id.transmission_rate_spinner);
+        transmissionRateSpinner.setSelection(selectedTransmissionRatePos);
+        transmissionRateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //Itempositions: {0,1,2,3} <=> {00,01,10,11} -- (<<4) --> {0b0000,0b0001..,0b0010..
+                selectedTransmissionRatePos = position;
+                transmissionRateB = (byte) (position); // its 0 or 1 anyways
+
+                // Small Extra for UI
+                if(transmissionRateB == (byte) 1) samplingRate = 500/2;
+                else samplingRate = 500/3;
+
+                byte[] binaryString = {transmissionRateB};
+                Log.d(TAG, "Binary rep of selected value: " + Arrays.toString(binaryString));
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // nothing
             }
         });
 
@@ -1009,15 +1110,15 @@ public class Record extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Selected Default Values", Toast.LENGTH_SHORT).show();
         });
 
-
-
     }
 
     private void displayReceivedTraumConfigValues(int[] configData){
-        selectedGainPos = (configData[0] & 0xff) >> 6;
-        runningAverageFilterCheck = (configData[0] & 0x8) > 1;
-        sendOnOneCharCheck = (configData[0] & 0x4) > 1;
-        generateDataCheck = (configData[0] & 0x2) > 1;
+        selectedGainPos = (configData[0] & 0xff) >> 6; // 0bxx00 0000
+        selectedBitsPerChPos = (configData[0] & 0x30) >> 4; // 0b00xx 0000
+        runningAverageFilterCheck = (configData[0] & 0x8) > 1; //0b0000 x000
+        sendOnOneCharCheck = (configData[0] & 0x4) > 1; // 0b0000 0x00
+        generateDataCheck = (configData[0] & 0x2) > 1; // 0b0000 00x0
+        selectedTransmissionRatePos = (configData[0] & 0x03); // 0b0000 000x
         o1HighpassPos = (configData[2]&0xff) >> 4;
         iirHighpassPos = (configData[2]&0x0f);
         lowpassPos = (configData[3]&0xff) >> 4;
@@ -1028,12 +1129,16 @@ public class Record extends AppCompatActivity {
 
         Spinner gainSpinner = (Spinner) traumConfigDialog.findViewById(R.id.gain_spinner);
         gainSpinner.setSelection(selectedGainPos);
+        Spinner bitsPerChSpinner = (Spinner) traumConfigDialog.findViewById(R.id.bits_per_ch_spinner);
+        bitsPerChSpinner.setSelection(selectedBitsPerChPos);
         SwitchCompat rafSwitch = (SwitchCompat) traumConfigDialog.findViewById(R.id.average_filter_switch);
         rafSwitch.setChecked(runningAverageFilterCheck);
         SwitchCompat oneCharSwitch = (SwitchCompat) traumConfigDialog.findViewById(R.id.one_char_switch);
         oneCharSwitch.setChecked(sendOnOneCharCheck);
         SwitchCompat genDataSwitch = (SwitchCompat) traumConfigDialog.findViewById(R.id.generate_data_switch);
         genDataSwitch.setChecked(generateDataCheck);
+        Spinner transmissionRateSpinner = (Spinner) traumConfigDialog.findViewById(R.id.transmission_rate_spinner);
+        transmissionRateSpinner.setSelection(selectedTransmissionRatePos);
         Spinner o1HighpassSpinner = (Spinner) traumConfigDialog.findViewById(R.id.o1_highpass_spinner);
         o1HighpassSpinner.setSelection(o1HighpassPos);
         Spinner IIRSpinner = (Spinner) traumConfigDialog.findViewById(R.id.iir_highpass_spinner);
@@ -1052,9 +1157,11 @@ public class Record extends AppCompatActivity {
 
     private void resetTraumConfig(){
         selectedGainPos = 0;
+        selectedBitsPerChPos = 2; //16 bit
         runningAverageFilterCheck = true;
         sendOnOneCharCheck = false;
         generateDataCheck = false;
+        selectedTransmissionRatePos = 1; //250Hz
         o1HighpassPos = 0;
         iirHighpassPos = 1;
         lowpassPos = 1;
@@ -1065,12 +1172,16 @@ public class Record extends AppCompatActivity {
 
         Spinner gainSpinner = (Spinner) traumConfigDialog.findViewById(R.id.gain_spinner);
         gainSpinner.setSelection(selectedGainPos);
+        Spinner bitsPerChSpinner = (Spinner) traumConfigDialog.findViewById(R.id.bits_per_ch_spinner);
+        bitsPerChSpinner.setSelection(selectedBitsPerChPos);
         SwitchCompat rafSwitch = (SwitchCompat) traumConfigDialog.findViewById(R.id.average_filter_switch);
         rafSwitch.setChecked(runningAverageFilterCheck);
         SwitchCompat oneCharSwitch = (SwitchCompat) traumConfigDialog.findViewById(R.id.one_char_switch);
         oneCharSwitch.setChecked(sendOnOneCharCheck);
         SwitchCompat genDataSwitch = (SwitchCompat) traumConfigDialog.findViewById(R.id.generate_data_switch);
         genDataSwitch.setChecked(generateDataCheck);
+        Spinner transmissionRateSpinner = (Spinner) traumConfigDialog.findViewById(R.id.transmission_rate_spinner);
+        transmissionRateSpinner.setSelection(selectedTransmissionRatePos);
         Spinner o1HighpassSpinner = (Spinner) traumConfigDialog.findViewById(R.id.o1_highpass_spinner);
         o1HighpassSpinner.setSelection(o1HighpassPos);
         Spinner IIRSpinner = (Spinner) traumConfigDialog.findViewById(R.id.iir_highpass_spinner);
@@ -1106,36 +1217,6 @@ public class Record extends AppCompatActivity {
         }
     }
 
-    // Discovers services and characteristics
-    private void discoverCharacteristics(List<BluetoothGattService> gattServices) {
-        if (gattServices == null) return;
-        String charUuid;
-        List<BluetoothGattCharacteristic> gattCharacteristics;
-        // Loops through available GATT Services.
-        for (BluetoothGattService gattService : gattServices) {
-            // If we find the right service
-            if (serviceUuid.equals(gattService.getUuid().toString())) {
-                gattCharacteristics = gattService.getCharacteristics();
-                for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
-                    charUuid = gattCharacteristic.getUuid().toString();
-                    // If the characteristic is a notifying characteristic
-                    if (notifyingUUIDs.contains(charUuid)) {
-                        notifyingCharacteristics.add(gattCharacteristic);
-                        //mBluetoothLeService.setCharacteristicNotification(gattCharacteristic, false);
-                        mNotifyCharacteristic = gattCharacteristic; // Store the last one here for toggling
-                    } else if (configCharacteristicUuid.contains(charUuid)) {
-                        configCharacteristic = gattCharacteristic;
-                    } else if (codeCharacteristicUuid.contains(charUuid)) {
-                        codeCharacteristic = gattCharacteristic;
-                    }
-                }
-                prepareNotifications();
-                waitForBluetoothCallback(mBluetoothLeService);
-                //mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
-            }
-        }
-    }
-
     private void prepareNotifications() {
         // set notifications of all notifyingCharacteristics except the one used for toggling.
         mBluetoothLeService.setNewTraumschreiber(mNewDevice);
@@ -1166,8 +1247,8 @@ public class Record extends AppCompatActivity {
 
     private void clearUI() {
         for (TextView view : channelValueViews) view.setText("0μV");
-        mDataResolution.setText(R.string.no_data);
-        data_cnt = 0;
+        mDataResolution.setText(R.string.default_resolution_text);
+        pkgCount = 0;
     }
 
     private void enableCheckboxes(int n) {
@@ -1181,19 +1262,18 @@ public class Record extends AppCompatActivity {
 
     /* This is the last processing step before the data is displayed and saved
      Note that gain is 1 by default */
-    private List<Float> transData(int[] data) {
+    private List<Float> convertToMicroV(int[] data) {
         // Conversion formula (old): V_in = X * 1.65V / (1000 * GAIN * PRECISION)
         // Conversion formula (new): V_in = X * (298 / (1000 * gain))
 
         float gain = Float.parseFloat(selectedGain); // = 1 by default
         List<Float> data_trans = new ArrayList<>();
-        pkgIDs.add((int) data_cnt); // store pkg ID
         for (float datapoint : data) data_trans.add(datapoint * 5/4 * 298/(1000*gain));
         return data_trans;
     }
 
     @SuppressLint("DefaultLocale")
-    private void displayData(List<Float> signalMicroV) {
+    private void displayNumerical(List<Float> signalMicroV) {
         if (signalMicroV != null) {
             for (int i = 0; i < nChannels; i++) {
                 String channelValueS = "";
@@ -1254,8 +1334,6 @@ public class Record extends AppCompatActivity {
         mChart.setDrawGridBackground(true);
         // if disabled, scaling can be done on x- and y-axis separately
         mChart.setPinchZoom(false);
-        // disable automatic resetting
-        //mChart.setViewPortOffsets(0f,0f,0f,0f);
         // set an alternative background color
         LineData data = new LineData();
         data.setValueTextColor(Color.BLACK);
@@ -1288,7 +1366,8 @@ public class Record extends AppCompatActivity {
     }
 
     private LineDataSet createPlottableSet(int channelId) {
-        LineDataSet set = new LineDataSet(storedPlottingData.get(channelId), String.format("Ch-%d", channelId + 1));
+
+        LineDataSet set = new LineDataSet(plottingBuffer.get(channelId), String.format("Ch-%d", channelId + 1));
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
         set.setColor(channelColors[channelId]);
         set.setDrawCircles(false);
@@ -1298,48 +1377,56 @@ public class Record extends AppCompatActivity {
         return set;
     }
 
-    private void storeForPlotting(final List<List<Float>> accumulatedSamples) {
-        //adjustChartScale(accumulatedSamples);
+    private void storeForPlotting(final List<Float> microV) {
+
+        accumulatedSamples.add(microV);
+        pkgArrivalTime = System.currentTimeMillis();
+        long plottingElapsed = pkgArrivalTime - plottingLastRefresh;
+        if (plottingElapsed < 1000/plottingFPS) {
+            // only update the plot below if enough time has passed.
+            return;
+        }
+
         final List<ILineDataSet> plottableDatasets = new ArrayList<>();  // for adding multiple plots
         float t = 0;
-        float pkgInterval = 6f;
+        float pkgInterval = 1000/samplingRate;
 
-        /** Add all accumulatedSamples to the data frames that are used for plotting **/
+        /** Add all accumulatedSamples to the datasets that are used for plotting **/
         for (int i = 0; i < accumulatedSamples.size(); i++) {
             plottedPkgCount += 1;
             t = plottedPkgCount * pkgInterval; // timestamp for x axis in ms
-
             List<Float> channelFloats = accumulatedSamples.get(i);
-            //float zoomY = mChart.getViewPortHandler().getScaleY();
-            //Log.v(TAG, "Value of Zoom Level Y: " + zoomY);
-            int offsetFactor = -1;
+            float lastChannelSigma = 0;
+            float displayedChannelsBelow = 0;
             for (int ch = 0; ch < nChannels; ch++) {
-                if (channelsShown[ch]) offsetFactor++;
-                float plotValue = channelFloats.get(ch) + offsetFactor * 60; // + Offset for spacing out channels
-                storedPlottingData.get(ch).add(new Entry(t, plotValue));
+                channelOffsets[ch] = 40 * (lastChannelSigma+1) * displayedChannelsBelow;
+                float plotValue = channelFloats.get(ch) + channelOffsets[ch];
+                plottingBuffer.get(ch).add(new Entry(t, plotValue));
+
+                if(channelsShown[ch]) {
+                    lastChannelSigma = 2 << mTraumService.signalBitShift[ch];
+                    displayedChannelsBelow++;
+                }
             }
         }
-        final float centerX = t;
-        /** WHAT HAPPENS IF WE DO NOT INTERRUPT THE THREAD HERE?
-         *  No  Obvious effect so far
-         * **/
-        if (plottingThread != null) plottingThread.interrupt();
-
+        
         // Remove old entries
-        //Log.v(TAG, "Size of Stored Plotting Data: " + storedPlottingData.size());
-        if (storedPlottingData.get(0).size() > maxVisibleXRange/pkgInterval) {
+        if (plottingBuffer.get(0).size() > maxVisibleXRange/pkgInterval) {
             int start = accumulatedSamples.size();
-            int end = storedPlottingData.get(0).size() -1;
+            int end = plottingBuffer.get(0).size() -1;
             for(int ch=0; ch<nChannels; ch++){
-                ArrayList<Entry> trimmed = new ArrayList<>(storedPlottingData.get(ch).subList(start,end));
-                storedPlottingData.set(ch,trimmed);
+                ArrayList<Entry> trimmed = new ArrayList<>(plottingBuffer.get(ch).subList(start,end));
+                plottingBuffer.set(ch,trimmed);
             }
         }
 
-
+        if (plottingThread != null) plottingThread.interrupt();
         //Update Plot
+        final float centerX = t;
         final Runnable runnablePlottingThread = () -> {
-            /* Create plottable datasets from storedPlottingData */
+            /* Create plottable datasets from plottingBuffer */
+            float lastChannelSigma = 0;
+            float displayedChannelsBelow = 0;
             for (int ch = 0; ch < nChannels; ch++) {
                 if (channelsShown[ch]) {
                     LineDataSet set = createPlottableSet(ch);
@@ -1366,126 +1453,245 @@ public class Record extends AppCompatActivity {
         // Execute the above defined thread
         plottingThread = new Thread(() -> runOnUiThread(runnablePlottingThread));
         plottingThread.start();
-    }
 
-    /**
-     * adjusts the scale according to the maximal and minimal value of the data given in
-     *
-     * @param accumulatedSamples
-     */
-    private void adjustChartScale(final List<List<Float>> accumulatedSamples) {
-        if (recentlyDisplayedData == null) {
-            recentlyDisplayedData = new ArrayList<>();
-        }
-        if (recentlyDisplayedData.size() > 2 * accumulatedSamples.size())
-            //remove old samples
-            recentlyDisplayedData = recentlyDisplayedData.subList(accumulatedSamples.size(), recentlyDisplayedData.size());
-
-        recentlyDisplayedData.addAll(accumulatedSamples);
-
-        //Log.d(TAG, "Recently Displayed Sample Size: " + accumulatedSamples.size());
-
-        int max = 0;
-        int min = 0;
-        for (List<Float> sample : recentlyDisplayedData) {
-            for (int ch=0; ch<sample.size(); ch++) {
-                if (channelsShown[ch]) {
-                    int value = sample.get(ch).intValue();
-                    if (value > max || max == 0) {
-                        max = value;
-                    }
-                    if (value < min || min == 0) {
-                        min = value;
-                    }
-                }
-            }
-        }
-        //Log.d(TAG, "Current Max and Min: " + max  +" " + min);
-        if (plottedPkgCount % 50 == 0) {
-            // include this part to make the axis symmetric (0 always visible in the middle)
-            //if (max < min * -1) max = min * -1;
-            //min = max * -1;
-
-            int range = max - min;
-            int margin = (10 * range);
-
-            //if (range > 10000) mTraumService.initiateCentering();
-            YAxis leftAxis = mChart.getAxisLeft();
-            leftAxis.setAxisMaximum(max+margin);
-            leftAxis.setAxisMinimum(min-margin);
-        }
-
+        plottingLastRefresh = System.currentTimeMillis();
+        accumulatedSamples.clear();
     }
 
     //Starts a recording session
     @SuppressLint({"SimpleDateFormat", "SetTextI18n"})
-    private void startTrial() {
+    private void startRecording() {
+        // Reset Variables used for recording
         plottedPkgCount = 0;
+        storedPkgCount = 0;
         mainData = new ArrayList<>();
         start_time = new SimpleDateFormat("HH:mm:ss.SSS").format(new Date());
         start_timestamp = new Timestamp(startTime).getTime();
         recording = true;
+
+        /** CREATE A FILE TO WRITE TO **/
+        //transmission time, sampling time, channel values, transmissionID, pkgslosses, resolution
+
+        String date = new SimpleDateFormat("yyyyddMM_HH-mm-ss").format(new Date());
+        tempFileName = date+"_" + "recording.temp";
+        try {
+            recordingFile = new File(MainActivity.getDirSessions(),tempFileName);
+            // if file doesn't exists, then create it
+            if (!recordingFile.exists()) //noinspection ResultOfMethodCallIgnored
+                recordingFile.createNewFile();
+            fileWriter = new FileWriter(recordingFile);
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
+        }
+
+        final char delimiter = ',';
+        final char lineBreak = '\n';
+        final StringBuilder header = new StringBuilder();
+        header.append("time");
+        header.append(delimiter + "sampling_time");
+        for (int i = 1; i <= nChannels; i++) header.append(delimiter + String.format("ch%d", i));
+        //for (int i = 1; i <= 1; i++) header.append(String.format("enc_ch%d,",i));
+        header.append(delimiter+"pkgid");
+        header.append(delimiter+"pkgloss_bluetooth");
+        header.append(delimiter+"pkgloss_internal");
+        header.append(delimiter+"transmission_rate");
+        header.append(lineBreak);
+        try {
+            fileWriter.append(header);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     //Finish a recording session
     @SuppressLint("SimpleDateFormat")
-    private void endTrial() {
+    private void endRecording() {
         recording = false;
         end_time = new SimpleDateFormat("HH:mm:ss.SSS").format(new Date());
         long stop_watch = System.currentTimeMillis();
         end_timestamp = new Timestamp(stop_watch).getTime();
         recording_time = Long.toString(stop_watch - startTime);
+
+        timestamps.clear();
+        samplingTimes.clear();
+        pkgIDs.clear();
+        pkgsLost.clear();
+        try {
+            fileWriter.flush();
+            fileWriter.close();
+            Toast.makeText(getApplicationContext(),"Succesfully Stored Session",Toast.LENGTH_LONG);
+        } catch (Exception e ){
+            Log.e(TAG,"Some Error trying to end the fileWriter: " + e.getMessage());
+        }
     }
 
 
-    //Stores data while session is running
+    /** Stores
+     * transmission time, sampling time, channel values, transmissionID, pkgslosses, resolution
+     * @param data_microV
+     */
     private void storeData(List<Float> data_microV) {
+
+        // Real Time Stamps
         if (timestamps.size() == 0) startTime = System.currentTimeMillis();
+        float time = System.currentTimeMillis() - startTime;
+        timestamps.add((float) (time));
+
+        // Expected Time Stamps
+        if (samplingTimes.size() == 0) storedPkgCount = 0 ;
+        float samplingInterval = 1/samplingRate;
+        float samplingTime = samplingInterval*storedPkgCount;
+        samplingTimes.add(samplingTime);
+
+        // Channel Values
         float[] f_microV = new float[data_microV.size()];
-        float timestamp = System.currentTimeMillis() - startTime;
-        timestamps.add(timestamp);
         int i = 0;
         for (Float f : data_microV)
             f_microV[i++] = (f != null ? f : Float.NaN); // Or whatever default you want
         mainData.add(f_microV);
-
-        adaptiveEncodingFlags.add(adaptiveEncodingFlag);
+        //adaptiveEncodingFlags.add(adaptiveEncodingFlag);
         adaptiveEncodingFlag = 0;
-        signalBitShifts.add(signalBitShift);
-        pkgsLost.add(pkgLossCount);
-        pkgLossCount = 0;
+        //signalBitShifts.add(signalBitShift);
+        pkgIDs.add(currentPkgId);
+        pkgsLost.add(currentPkgLoss);
 
+        /*** WRITE TO CSV
+         *  order: timestamp, samplingtime,channelvalues,pkgid,pkgsloss **/
+        try {
+            String delimiter = ",";
+            fileWriter.append(String.valueOf(time));
+            fileWriter.append(delimiter + samplingTime);
+            for (int j = 0; j < nChannels; j++) {
+                fileWriter.append(delimiter + f_microV[j]);
+            }
+
+            fileWriter.append(delimiter + currentPkgId);
+
+            int btloss = 0;
+            if (storedPkgCount>0){
+                if (lastPkgId > currentPkgId){
+                    btloss = (15 - lastPkgId) + currentPkgId;
+                } else{
+                    btloss = (currentPkgId-1) - lastPkgId;
+                }
+            }
+            lastPkgId = currentPkgId;
+
+            fileWriter.append(delimiter + btloss);                      //Bluetooth loss
+            fileWriter.append(delimiter + currentPkgLoss);              //Internal loss
+            fileWriter.append(delimiter + resolutionFrequency);
+            fileWriter.append("\n");
+            storedPkgCount++;
+
+        } catch (Exception e){
+            Log.e(TAG, e.getMessage());
+        }
     }
 
-    private void saveSession() {
+    private void saveSession() throws IOException {
         saveSession("default");
     }
 
+
+
+    //OBSOLETE ATM
     //Saves the data at the end of session
     @SuppressLint("DefaultLocale")
-    private void saveSession(final String tag) {
+    private void saveSession(final String tag) throws IOException {
+
+        // rename your temp file to the desired tag
+        String date = new SimpleDateFormat("yyyyddMMHHmmss").format(new Date());
+        String permFileName = date + "_" + tag + ".csv";
+        File tempFile = new File(MainActivity.getDirSessions(),tempFileName);
+        File permFile = new File(MainActivity.getDirSessions(),permFileName);
+        boolean success = tempFile.renameTo(permFile);
+        if (success) Toast.makeText(getApplicationContext(),"Stored Recording as " + permFileName, Toast.LENGTH_LONG);
+
+
+        /*
+        try {
+            // create a writer for permFile
+            BufferedWriter out = new BufferedWriter(new FileWriter(permFile, true));
+            // create a reader for tmpFile
+            BufferedReader in = new BufferedReader(new FileReader(tmpFile));
+            String str;
+            while ((str = in.readLine()) != null) {
+                out.write(str);
+            }
+            in.close();
+            out.close();
+        } catch (IOException e) {
+        }
+
+
+        // CONSTRUCTING HEADER
         final String top_header = "Username, User ID, Session ID,Session Tag,Date,Shape (rows x columns)," +
                 "Duration (ms),Starting Time,Ending Time,Resolution (ms),Resolution (Hz)," +
                 "Unit Measure,Starting Timestamp,Ending Timestamp";
         final String username = getSharedPreferences("userPreferences", 0).getString("username", "user");
         final String userID = getSharedPreferences("userPreferences", 0).getString("userID", "12345678");
-        //final String dp_header = "Pkg ID,Pkg Loss,Time,Ch-1,Ch-2,Ch-3,Ch-4,Ch-5,Ch-6,Ch-7,Ch-8";
         final UUID id = UUID.randomUUID();
-        @SuppressLint("SimpleDateFormat") final String date = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss").format(new Date());
         final char delimiter = ',';
         final char break_line = '\n';
 
+        File formatted = new File(MainActivity.getDirSessions(),
+                date + "_" + tag + ".csv");
+        // if file doesn't exists, then create it
+        if (!formatted.exists()) //noinspection ResultOfMethodCallIgnored
+            formatted.createNewFile();
+        FileWriter fileWriter = new FileWriter(formatted);
+        // 1st row
+        fileWriter.append(top_header);
+        fileWriter.append(break_line);
+        // 2nd row
+        fileWriter.append(username);
+        fileWriter.append(delimiter);
+        fileWriter.append(userID);
+        fileWriter.append(delimiter);
+        fileWriter.append(id.toString());
+        fileWriter.append(delimiter);
+        fileWriter.append(tag);
+        fileWriter.append(delimiter);
+        fileWriter.append(date);
+        fileWriter.append(delimiter);
+        fileWriter.append(String.valueOf(rows)).append("x").append(String.valueOf(cols));
+        fileWriter.append(delimiter);
+        fileWriter.append(recording_time);
+        fileWriter.append(delimiter);
+        fileWriter.append(start_time);
+        fileWriter.append(delimiter);
+        fileWriter.append(end_time);
+        fileWriter.append(delimiter);
+        fileWriter.append(String.valueOf(resolutionTime));
+        fileWriter.append(delimiter);
+        fileWriter.append(String.valueOf(resolutionFrequency));
+        fileWriter.append(delimiter);
+        fileWriter.append("µV");
+        fileWriter.append(delimiter);
+        fileWriter.append(Long.toString(start_timestamp));
+        fileWriter.append(delimiter);
+        fileWriter.append(Long.toString(end_timestamp));
+        fileWriter.append(delimiter);
+        fileWriter.append(break_line);
+        /***
+        // ADDING ENTRIES
         int rows = mainData.size();
-        //int cols = mainData.get(0).length;
+        Log.d(TAG, "SAVING SESSION, LENGTH OF DATA: " + rows + " Entries ");
+        Log.d(TAG, "SAVING SESSION, LENGTH OF TIMESTAMPS : " + timestamps.size() + " Time Stamps ");
+        Log.d(TAG, "SAVING SESSION, LENGTH OF PKG LOSS: " + pkgsLost.size() + "PKGs" +
+                "Lost ");
         int cols = nChannels;
         final StringBuilder header = new StringBuilder();
-        header.append("time,");
-        for (int i = 1; i <= cols; i++) header.append(String.format("ch%d,", i)); // log values
-        for (int i = 1; i <= 1; i++) header.append(String.format("enc_ch%d,",i)); // log encodings
+        header.append("time");
+        header.append(delimiter + "sampling_time");
+        for (int i = 1; i <= cols; i++) header.append(delimiter + String.format("ch%d", i)); // channel values
+        //for (int i = 1; i <= 1; i++) header.append(String.format("enc_ch%d,",i)); // log encodings
         //header.append("enc_flag,");               // log encoding updates
-        //header.append("pkg_loss");                // log pkg losses
-        //header.append(String.format("Ch-%d", cols));
+        header.append(delimiter+"pkg_id");
+        header.append(delimiter+"pkg_loss_bluetooth");
+        header.append(delimiter+"pkg_loss_internal");
 
+        // Try Unthreaded!
         new Thread(() -> {
             try {
                 File formatted = new File(MainActivity.getDirSessions(),
@@ -1494,8 +1700,10 @@ public class Record extends AppCompatActivity {
                 if (!formatted.exists()) //noinspection ResultOfMethodCallIgnored
                     formatted.createNewFile();
                 FileWriter fileWriter = new FileWriter(formatted);
+                // 1st row
                 fileWriter.append(top_header);
                 fileWriter.append(break_line);
+                // 2nd row
                 fileWriter.append(username);
                 fileWriter.append(delimiter);
                 fileWriter.append(userID);
@@ -1514,9 +1722,9 @@ public class Record extends AppCompatActivity {
                 fileWriter.append(delimiter);
                 fileWriter.append(end_time);
                 fileWriter.append(delimiter);
-                fileWriter.append(String.valueOf(res_time));
+                fileWriter.append(String.valueOf(resolutionTime));
                 fileWriter.append(delimiter);
-                fileWriter.append(String.valueOf(res_freq));
+                fileWriter.append(String.valueOf(resolutionFrequency));
                 fileWriter.append(delimiter);
                 fileWriter.append("µV");
                 fileWriter.append(delimiter);
@@ -1525,41 +1733,58 @@ public class Record extends AppCompatActivity {
                 fileWriter.append(Long.toString(end_timestamp));
                 fileWriter.append(delimiter);
                 fileWriter.append(break_line);
+                // 3nd row
                 fileWriter.append(header.toString());
+                // 4th+ row
                 fileWriter.append(break_line);
                 for (int i = 0; i < rows; i++) {
-                    //fileWriter.append(String.valueOf(pkgIDs.get(i)));
-                    //fileWriter.append(delimiter);
-
-                    //fileWriter.append(delimiter);
+                    //Timestamps
                     fileWriter.append(String.valueOf(timestamps.get(i)));
-                    fileWriter.append(delimiter);
+
+                    //(Expected) SAMPLING TIMES
+                    float samplingInterval = 1000/samplingRate; // e.g. 6ms
+                    fileWriter.append(delimiter + String.valueOf(i*samplingInterval));
+
                     // ACTUAL DATA
                     for (int j = 0; j < cols; j++) {
-                        fileWriter.append(String.valueOf(mainData.get(i)[j]));
-                        fileWriter.append(delimiter);
+                        fileWriter.append(delimiter + String.valueOf(mainData.get(i)[j]));
                     }
                     // MONITORING CODE BOOK (of CH1 Only)
-                    for(int j=0; j < 1;j++) {
+                    /*for(int j=0; j < 1;j++) {
                         fileWriter.append(Integer.toString(signalBitShifts.get(i)));
                         fileWriter.append(delimiter);
                     }
+
                     // MONITORING CODE BOOK UPDATE NOTIFICATIONS
-                    fileWriter.append(String.valueOf(adaptiveEncodingFlags.get(i)));
+                    /*fileWriter.append(String.valueOf(adaptiveEncodingFlags.get(i)));
                     fileWriter.append(delimiter);
 
-                    // MONITORING PKG LOSS
-                    fileWriter.append(String.valueOf(pkgsLost.get(i)));
+                    //MONITORING BLUETOOTH PKG IDs
+                    fileWriter.append(delimiter + String.valueOf(pkgIDs.get(i)));
+
+                    // Monitoring BLUETOOTH PKG LOSS
+                    int btloss = 0;
+                    if (i>0){
+                        if (pkgIDs.get(i-1) > pkgIDs.get(i)){
+                            btloss = (15 - pkgIDs.get(i-1)) + pkgIDs.get(i);
+                        } else{
+                            btloss = (pkgIDs.get(i)-1) - pkgIDs.get(i-1);
+                        }
+                    }
+                    fileWriter.append(delimiter + String.valueOf(btloss));
+
+                    // MONITORING INTERNAL PKG LOSS
+                    fileWriter.append(delimiter + String.valueOf(pkgsLost.get(i)));
                     fileWriter.append(break_line);
-
-
                 }
                 fileWriter.flush();
                 fileWriter.close();
+
             } catch (Exception e) {
                 Log.e(TAG, "Error storing the data into a CSV file: " + e);
             }
-        }).start();
+
+        }).start();*/
     }
 
     private void buttons_nodata() {
@@ -1608,7 +1833,7 @@ public class Record extends AppCompatActivity {
             menuItem.setIcon(R.drawable.ic_bluetooth_connected_blue_24dp);
             mConnectionState.setText(R.string.device_connected);
             mConnectionState.setTextColor(Color.GREEN);
-            switch_plots.setEnabled(true);
+            plotSwitch.setEnabled(true);
             viewDeviceAddress.setText(mDeviceAddress);
             menuItemSettings.setVisible(true);
             menuItemNotify.setVisible(true);
@@ -1619,7 +1844,7 @@ public class Record extends AppCompatActivity {
             mConnectionState.setText(R.string.no_device);
             mConnectionState.setTextColor(Color.LTGRAY);
             buttons_nodata();
-            switch_plots.setEnabled(false);
+            plotSwitch.setEnabled(false);
             viewDeviceAddress.setText(R.string.no_address);
             menuItemNotify.setVisible(false);
             menuItemCast.setVisible(false);

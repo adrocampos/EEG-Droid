@@ -82,7 +82,7 @@
     <string name="label_data">Data:</string>
     <string name="label_device_address">Device address:</string>
     <string name="label_state">Status:</string>
-    <string name="no_data">No data</string>
+    <string name="default_resolution_text"> - - - </string>
     <string name="connected">Connected</string>
     <string name="disconnected">Disconnected</string>
     <string name="title_devices">BLE Device Scan</string>
@@ -97,10 +97,10 @@
     <string name="menu_refresh">Refresh</string>
     <string name="title_activity_connect">Connect</string>
     <string name="Connect_main">Connect</string>
-    <string name="no_device">No device found</string>
+    <string name="no_device"> - - - </string>
 
     <string name="device_found">Device founded</string>
-    <string name="device_connected">Connected to device</string>
+    <string name="device_connected">Connected</string>
     <string name="start_record_button_description">Starts recording</string>
     <string name="pause_record_button_description">Pauses recording</string>
     <string name="save_record_button_description">Saves recording</string>
@@ -290,6 +290,17 @@
         <item>2</item>
         <item>4</item>
         <item>8</item>
+    </string-array>
+
+    <string-array name="bits_per_ch_entries">
+        <item>10</item>
+        <item>14</item>
+        <item>16</item>
+    </string-array>
+
+    <string-array name="transmission_rate_entries">
+        <item>167 Hz</item>
+        <item>250 Hz</item>
     </string-array>
 
     <string-array name="o1_highpass_entries">

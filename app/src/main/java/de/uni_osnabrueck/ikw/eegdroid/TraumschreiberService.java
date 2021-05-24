@@ -6,23 +6,22 @@ import java.util.Arrays;
 import java.util.UUID;
 
 
-
 public class TraumschreiberService {
 
     public final static String DEVICE_NAME = "traumschreiber";
 
     // UUIDS
-    public final UUID serviceUUID = UUID.fromString("00000ee6-0000-1000-8000-00805f9b34fb");
-    public final ArrayList<String> notifyingUUIDs = new ArrayList<String>() {
+    public static final UUID serviceUUID = UUID.fromString("00000ee6-0000-1000-8000-00805f9b34fb");
+    public static final ArrayList<UUID> notifyingUUIDs = new ArrayList<UUID>() {
         {
-            add("0000ee60-0000-1000-8000-00805f9b34fb");
-            add("0000ee61-0000-1000-8000-00805f9b34fb");
-            add("0000ee62-0000-1000-8000-00805f9b34fb");
+            add(UUID.fromString("0000ee60-0000-1000-8000-00805f9b34fb"));
+            add(UUID.fromString("0000ee61-0000-1000-8000-00805f9b34fb"));
+            add(UUID.fromString("0000ee62-0000-1000-8000-00805f9b34fb"));
         }
     };
-    public final UUID notifyUUID = UUID.fromString("0000ee60-0000-1000-8000-00805f9b34fb");
-    public final UUID configUUID = UUID.fromString("0000ecc0-0000-1000-8000-00805f9b34fb");
-    public final UUID codeUUID = UUID.fromString("0000c0de-0000-1000-8000-00805f9b34fb");
+    public static UUID notifyingUUID = UUID.fromString("0000ee60-0000-1000-8000-00805f9b34fb");
+    public static final UUID configUUID = UUID.fromString("0000ecc0-0000-1000-8000-00805f9b34fb");
+    public static final UUID codeUUID = UUID.fromString("0000c0de-0000-1000-8000-00805f9b34fb");
 
     private final static String TAG = "TraumschreiberService";
     public  String mTraumschreiberDeviceAddress;
@@ -30,8 +29,11 @@ public class TraumschreiberService {
     private static final int[] decodedSignal = new int[24];
     public static int[] signalBitShift = new int[24];
     private static int[] signalOffset = new int[24];
+    public static int bitsPerCh = 10;
     private static int pkgCount;
     private static boolean header = true;
+    public static int currentPkgID=0;
+
 
     public TraumschreiberService() {}
 
@@ -48,27 +50,54 @@ public class TraumschreiberService {
         pkgCount = 0;
     }
 
+    public static void setNotifyingUUID(int i){
+        notifyingUUID = notifyingUUIDs.get(i);
+        Log.d(TAG, "Notifying UUID of TraumschreiberService is now: " + notifyingUUID.toString());
+    }
+
+
     /***
      * Decodes all kinds of data packages received via bluetooth from a Traumschreiber:
      *  # Signal Data - Units of voltage (distributed over the 3 notifying characteristics)
      *  # Encoding Updates
      *  # Config Data
-     * @param dataBytes      raw bytes received from the Traumschreiber over bluetooth
-     * @return channelData, encodingData, configData
+     * @param dataBytes     raw bytes received from the Traumschreiber over bluetooth
+     * @param characteristicId id of characteristic from which the data was received
+     * @return decodedPkg   pos 0: bluetooth id, pos 1: dropped samples, pos 2:26 channel values
      */
-    public static int[] decode(byte[] dataBytes, String characteristicId) {
+    public static int[] decode(byte[] dataBytes, UUID characteristicId) {
 
-        /* Decode Channel Values */
-        if (characteristicId.equals("60")){
+        /* CHANNEL VALUES */
+        if (characteristicId.equals(notifyingUUID)){
             if (header) {
-                return decodeDpcm(Arrays.copyOfRange(dataBytes, 1, dataBytes.length));
+                int[] decodedPkg = new int[nChannels + 2];
+
+                // bluetooth pkg id
+                decodedPkg[0] = (dataBytes[0] >> 4) & 0x0f; // bluetooth pkg id
+                if( (decodedPkg[0] - currentPkgID) > 1 ){
+                    Log.d(TAG, "##########LOST A BLUETOOTH PKG!!\n#\n#\n#########");
+                    Log.d(TAG, "Decoded PKG: " + Arrays.toString(decodedPkg));
+                }
+                currentPkgID = decodedPkg[0];
+
+                // dropped sample counts
+                decodedPkg[1] = dataBytes[0] & 0x0f;
+                if(decodedPkg[1] > 0){
+                    Log.v(TAG, "##########DROPPED A SAMPLE!!\n#\n#\n#########");
+                    Log.v(TAG, "Decoded PKG: " + Arrays.toString(decodedPkg));
+                }
+
+                // channel values --- write decodedDeltas to positions [2:26] on decodedPkg
+                int[] decodedDeltas = decodeDpcm(Arrays.copyOfRange(dataBytes, 1, dataBytes.length));
+                System.arraycopy(decodedDeltas,0,decodedPkg,2,decodedDeltas.length);
+                return decodedPkg;
             } else {
                 return decodeDpcm(dataBytes);
             }
 
-        /* Decode Channel Encodings Factors */
-        } else if (characteristicId.equals("de")) {
-                Log.d(TAG, "RECEIVED FROM C0DE, RAW: " + Arrays.toString(dataBytes));
+        /* ENCODING FACTORS */
+        } else if (characteristicId.equals(codeUUID)) {
+                //Log.v(TAG, "RECEIVED FROM C0DE, RAW: " + Arrays.toString(dataBytes));
                 // Iterate through the 12 received bytes and split them into unsigned nibbles
                 for (int i = 0; i < 12; i++) {
                     signalBitShift[i * 2] = (dataBytes[i] >> 4) & 0xf;
@@ -78,8 +107,8 @@ public class TraumschreiberService {
                 int[] encodingData = new int[]{0xc0de, signalBitShift[1], dataBytes[13]}; //
                 return encodingData;
 
-        /* Decode Config Data */
-        } else if (characteristicId.equals("c0")) {
+        /* CONFIG DATA */
+        } else if (characteristicId.equals(configUUID)) {
                 Log.d(TAG, "RECEIVED FROM CONFIG: " + Arrays.toString(dataBytes));
                 int[] configData = new int[dataBytes.length];
                 for (int i = 0; i < dataBytes.length; i++) {
@@ -99,7 +128,21 @@ public class TraumschreiberService {
      */
     public static int[] decodeDpcm(byte[] deltaBytes) {
         //Log.v(TAG, "Encoded Delta: " + Arrays.toString(deltaBytes));
-        int[] delta = bytesTo16bitInts(deltaBytes);
+        int[] delta;
+
+        switch(bitsPerCh) {
+            case 10:
+                delta = bytesTo10bitInts(deltaBytes);
+                break;
+            case 14:
+                delta = bytesTo14bitInts(deltaBytes);
+                break;
+            case 16:
+                delta = bytesTo16bitInts(deltaBytes);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + bitsPerCh);
+        }
         //Log.v(TAG, "Decoded Delta: " + Arrays.toString(delta));
 
         for (int i = 0; i < 24; i++) {

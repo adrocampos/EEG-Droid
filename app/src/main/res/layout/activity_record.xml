@@ -7,70 +7,61 @@
     android:layout_margin="10dp"
     android:orientation="vertical">
 
+    <!--> DEVICE ADDRESS AND STATUS </!-->
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="1dp"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="1dp"
-            android:orientation="horizontal"
-            tools:ignore="UselessParent">
+            android:text="@string/label_device_address"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/label_device_address"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+        <Space
+            android:layout_width="5dp"
+            android:layout_height="wrap_content" />
 
-            <Space
-                android:layout_width="5dp"
-                android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/device_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_device"
+            android:textSize="13sp" />
 
-            <TextView
-                android:id="@+id/device_address"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/no_device"
-                android:textSize="13sp" />
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_state"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/label_state"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <Space
-                android:layout_width="5dp"
-                android:layout_height="wrap_content" />
+        <Space
+            android:layout_width="5dp"
+            android:layout_height="wrap_content" />
 
 
-            <TextView
-                android:id="@+id/connection_state"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="@string/disconnected"
-                android:textSize="14sp"
-                android:textAlignment="viewEnd"/>
+        <TextView
+            android:id="@+id/connection_state"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/disconnected"
+            android:textSize="14sp"
+            android:textAlignment="viewEnd"/>
 
-        </LinearLayout>
     </LinearLayout>
+
     <!--> RESOLUTION AND PLOT SWITCH </!-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="-5dp"
         android:orientation="horizontal">
 
         <TextView
@@ -85,24 +76,19 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:theme="@android:style/Theme.DeviceDefault"
             android:id="@+id/resolution_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="35dp"
-            android:text="@string/no_data"
-            android:textColor="@color/black"
-            android:textSize="14sp" />
+            android:text="@string/default_resolution_text"
+            android:textSize="13sp" />
 
         <View
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_weight="1" />
-
-
-
-
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -110,7 +96,7 @@
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/switch_plots"
         android:layout_width="0dp"
-        android:layout_height="14dp"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
 
         android:checked="true"

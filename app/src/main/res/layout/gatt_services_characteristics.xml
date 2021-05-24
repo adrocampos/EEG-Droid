@@ -189,7 +189,7 @@
             android:id="@+id/data_value"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/no_data"
+            android:text="@string/default_resolution_text"
             android:textSize="18sp" />
     </LinearLayout>
 
