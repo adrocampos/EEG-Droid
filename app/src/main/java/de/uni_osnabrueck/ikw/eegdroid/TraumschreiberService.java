@@ -34,7 +34,6 @@ public class TraumschreiberService {
     private static boolean header = true;
     public static int currentPkgID=0;
 
-
     public TraumschreiberService() {}
 
     public static boolean isTraumschreiberDevice(String bluetoothDeviceName) {
@@ -54,8 +53,6 @@ public class TraumschreiberService {
         notifyingUUID = notifyingUUIDs.get(i);
         Log.d(TAG, "Notifying UUID of TraumschreiberService is now: " + notifyingUUID.toString());
     }
-
-
     /***
      * Decodes all kinds of data packages received via bluetooth from a Traumschreiber:
      *  # Signal Data - Units of voltage (distributed over the 3 notifying characteristics)
@@ -92,7 +89,8 @@ public class TraumschreiberService {
                 System.arraycopy(decodedDeltas,0,decodedPkg,2,decodedDeltas.length);
                 return decodedPkg;
             } else {
-                return decodeDpcm(dataBytes);
+                if (warmedUp) return decodeDpcm(dataBytes);
+                return null;
             }
 
         /* ENCODING FACTORS */
@@ -145,11 +143,21 @@ public class TraumschreiberService {
         }
         //Log.v(TAG, "Decoded Delta: " + Arrays.toString(delta));
 
-        for (int i = 0; i < 24; i++) {
+        for (int i = 0; i < nChannels; i++) {
+            /*ch1RunningVarianceEstimate += 0.001 * Math.pow(delta[0],2);
+            if (pkgCount%1000 == 0){
+                ch1Sigma = (float) Math.sqrt(ch1RunningVarianceEstimate);
+                ch1RunningVarianceEstimate = 0;
+            }*/
+
             decodedSignal[i] += (delta[i] << signalBitShift[i]);
             // Centering the Signal 
-            if (pkgCount < 200) signalOffset[i] += 0.005 * decodedSignal[i]; // moving average over 200 pkgs
-            if (pkgCount == 200) decodedSignal[i] -= signalOffset[i];
+            if (pkgCount < 500) signalOffset[i] += 0.002 * decodedSignal[i]; // moving average over 500 pkgs
+            if (pkgCount == 500) {
+                decodedSignal[i] -= signalOffset[i];
+                Log.d(TAG, "Means of all Channels: " + Arrays.toString(signalOffset));
+                warmedUp = true;
+            }
         }
         pkgCount++;
         return decodedSignal;

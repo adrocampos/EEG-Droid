@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -63,6 +64,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.Array;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -186,8 +188,6 @@ public class Record extends AppCompatActivity {
         }
     };
 
-
-
     private int selectedScale;
     private byte selectedScaleB = 0b00000000;
     private boolean recording = false;
@@ -195,6 +195,7 @@ public class Record extends AppCompatActivity {
     private float resolutionTime;
     private float resolutionFrequency;
     private int plottedPkgCount = 0;
+    private int visiblyPlottedPkgs = 0;
     private int enabledCheckboxes = 0;
     private TextView mXAxis;
     private TextView mDataResolution;
@@ -205,6 +206,7 @@ public class Record extends AppCompatActivity {
     private androidx.appcompat.widget.SwitchCompat plotSwitch;
     private View layout_plots;
     private boolean plotting = true;
+    private int plottingUpdateInterval= 30;
     private androidx.appcompat.widget.SwitchCompat channelViewsSwitch;
     private boolean channelViewsEnabled = true;
     
@@ -362,8 +364,8 @@ public class Record extends AppCompatActivity {
                 configCharacteristic = bleService.getCharacteristic(TraumschreiberService.configUUID);
                 mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
                 waitForBluetoothCallback(mBluetoothLeService);
-
-                // HANDLE INCOMING STREAM
+              
+            // HANDLE INCOMING STREAM
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
 
                 int[] data = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
@@ -387,7 +389,6 @@ public class Record extends AppCompatActivity {
                     adaptiveEncodingFlag = 1;
                     return; //prevent further processing
                 }
-
                 // CHANNEL DATA
                 pkgCount++;
                 if (!timerRunning) startTimer();
@@ -777,6 +778,8 @@ public class Record extends AppCompatActivity {
         if (!notifying) {
             Log.d(TAG, "Notifications Button pressed: ENABLED");
             notifying = true;
+            mTraumService.beginWarmUp();
+            mDataResolution.setText("Warming Up");
             mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, true);
             //waitForBluetoothCallback(mBluetoothLeService);
             //mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
@@ -1126,6 +1129,8 @@ public class Record extends AppCompatActivity {
         bitshiftMinPos = (configData[4]&0xff) >> 4;
         bitshiftMaxPos= (configData[4]&0x0f);
         encodingSafetyPos = (configData[5]&0xff) >> 4;
+        int batteryValue = ((configData[6]&0xff) << 8) + configData[7] & 0xff;
+        Log.d(TAG, "Battery Value: " + batteryValue);
 
         Spinner gainSpinner = (Spinner) traumConfigDialog.findViewById(R.id.gain_spinner);
         gainSpinner.setSelection(selectedGainPos);
@@ -1216,7 +1221,6 @@ public class Record extends AppCompatActivity {
             }
         }
     }
-
     private void prepareNotifications() {
         // set notifications of all notifyingCharacteristics except the one used for toggling.
         mBluetoothLeService.setNewTraumschreiber(mNewDevice);
@@ -1236,7 +1240,6 @@ public class Record extends AppCompatActivity {
         mBluetoothLeService.requestMtu(45);
 
     }
-
     private void waitForBluetoothCallback(BluetoothLeService service){
         while (service.isBusy) {
             Handler handler = new Handler();
@@ -1258,7 +1261,6 @@ public class Record extends AppCompatActivity {
     private void disableCheckboxes() {
         for (CheckBox box : checkBoxes) box.setEnabled(false);
     }
-
 
     /* This is the last processing step before the data is displayed and saved
      Note that gain is 1 by default */
@@ -1314,14 +1316,12 @@ public class Record extends AppCompatActivity {
         OnChartValueSelectedListener ol = new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry entry, Highlight h) {
-                //entry.getData() returns null here
             }
-
             @Override
             public void onNothingSelected() {
-
             }
         };
+
         mChart = findViewById(R.id.layout_chart);
         mChart.setOnChartValueSelectedListener(ol);
         // enable description text
@@ -1334,6 +1334,8 @@ public class Record extends AppCompatActivity {
         mChart.setDrawGridBackground(true);
         // if disabled, scaling can be done on x- and y-axis separately
         mChart.setPinchZoom(false);
+        // disable automatic resetting
+        //mChart.setViewPortOffsets(0f,0f,0f,0f);
         // set an alternative background color
         LineData data = new LineData();
         data.setValueTextColor(Color.BLACK);
@@ -1453,7 +1455,6 @@ public class Record extends AppCompatActivity {
         // Execute the above defined thread
         plottingThread = new Thread(() -> runOnUiThread(runnablePlottingThread));
         plottingThread.start();
-
         plottingLastRefresh = System.currentTimeMillis();
         accumulatedSamples.clear();
     }
