@@ -87,6 +87,40 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/config_row_bits_per_ch"
+                style="@style/traumConfigDialogRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.157">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Bits per channel"
+
+                    tools:ignore="HardcodedText" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <Spinner
+                    android:id="@+id/bits_per_ch_spinner"
+                    style="@style/traumConfigDialogRow"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:entries="@array/bits_per_ch_entries" />
+
+            </LinearLayout>
+
 
             <LinearLayout
                 android:id="@+id/config_row_average"
@@ -214,6 +248,43 @@
                     android:text="" />
 
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/config_row_transmission_rate"
+                style="@style/traumConfigDialogRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.157">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Desired Transmission Rate"
+
+                    tools:ignore="HardcodedText" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <Spinner
+                    android:id="@+id/transmission_rate_spinner"
+                    style="@style/traumConfigDialogRow"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:entries="@array/transmission_rate_entries" />
+
+            </LinearLayout>
+
+
+
 
             <LinearLayout
                 android:id="@+id/config_row_o11_highpass"
