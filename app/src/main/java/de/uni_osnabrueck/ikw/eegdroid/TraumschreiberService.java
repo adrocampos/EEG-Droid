@@ -33,6 +33,7 @@ public class TraumschreiberService {
     private static int pkgCount;
     private static boolean header = true;
     public static int currentPkgID=0;
+    public static boolean warmedUp = false;
 
     public TraumschreiberService() {}
 
@@ -42,6 +43,11 @@ public class TraumschreiberService {
 
     public static boolean isNewModel(String bluetoothDeviceName) {
         return bluetoothDeviceName.startsWith("T");
+    }
+
+    public void warmUp(){
+        warmedUp = false;
+        initiateCentering();
     }
 
     public void initiateCentering(){
@@ -64,7 +70,6 @@ public class TraumschreiberService {
      * @return decodedPkg   pos 0: bluetooth id, pos 1: dropped samples, pos 2:26 channel values
      */
     public static int[] decode(byte[] dataBytes, UUID characteristicId) {
-
         /* CHANNEL VALUES */
         if (characteristicId.equals(notifyingUUID)){
             if (header) {
@@ -88,8 +93,10 @@ public class TraumschreiberService {
                 // channel values --- write decodedDeltas to positions [2:26] on decodedPkg
                 int[] decodedDeltas = decodeDpcm(Arrays.copyOfRange(dataBytes, 1, dataBytes.length));
                 System.arraycopy(decodedDeltas,0,decodedPkg,2,decodedDeltas.length);
+                if(!warmedUp) return null;
                 return decodedPkg;
             } else {
+                if(!warmedUp) return null;
                 return decodeDpcm(dataBytes);
             }
 
@@ -152,10 +159,11 @@ public class TraumschreiberService {
 
             decodedSignal[i] += (delta[i] << signalBitShift[i]);
             // Centering the Signal 
-            if (pkgCount < 500) signalOffset[i] += 0.002 * decodedSignal[i]; // moving average over 500 pkgs
-            if (pkgCount == 500) {
+            if (pkgCount < 250) signalOffset[i] += 0.004 * decodedSignal[i]; // moving average over 500 pkgs
+            if (pkgCount == 250) {
                 decodedSignal[i] -= signalOffset[i];
                 Log.d(TAG, "Means of all Channels: " + Arrays.toString(signalOffset));
+                warmedUp = true;
             }
         }
         pkgCount++;
