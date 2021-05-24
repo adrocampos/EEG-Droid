@@ -1648,7 +1648,7 @@ public class Record extends AppCompatActivity {
         String permFileName = date + "_" + tag + ".csv";
         File tempFile = new File(MainActivity.getDirSessions(),tempFileName);
         File permFile = new File(MainActivity.getDirSessions(),permFileName);
-        boolean fail = tempFile.renameTo(permFile);
+        boolean success = tempFile.renameTo(permFile);
         Toast.makeText(getApplicationContext(),"Stored Recording as " + permFileName, Toast.LENGTH_LONG);
         fileWriter.close();
 
