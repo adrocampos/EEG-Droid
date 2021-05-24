@@ -97,7 +97,7 @@ public class Record extends AppCompatActivity {
     private int leftAxisManualHScale = 1;
     private final ArrayList<Integer> pkgIDs = new ArrayList<>();
     private final int nChannels = 24;
-    private float samplingRate = 500/2;  // alternativ: 500, 500/2, 500/3, 500/4, etc.
+    private float samplingRate = 500/3;  // alternative: 500, 500/2, 500/3, 500/4, etc.
     private final float traumschreiberWarmup = 500/3; // keep same as samplingRate for 1s.
 
     private final ArrayList<ArrayList<Entry>> plottingBuffer = new ArrayList<ArrayList<Entry>>() {
@@ -128,7 +128,7 @@ public class Record extends AppCompatActivity {
     private byte selectedGainB;
     private int selectedGainPos = 0;
     private byte bitsPerChB = 0b00110000; //0b00xx0000
-    private int selectedBitsPerChPos = 2; //16 bit
+    private int selectedBitsPerChPos = 0; //10 bit
     private byte runningAverageFilterB;
     private boolean runningAverageFilterCheck = false;
     private byte sendOnOneCharB;
@@ -136,7 +136,7 @@ public class Record extends AppCompatActivity {
     private byte generateDataB;
     private boolean generateDataCheck = false;
     private byte transmissionRateB = 0b00000001; //0b00000001
-    private int selectedTransmissionRatePos = 1; ///250hz
+    private int selectedTransmissionRatePos = 0; ///167hz
     private byte o1HighpassB;
     private int o1HighpassPos = 0;
     private byte iirHighpassB;
@@ -389,16 +389,20 @@ public class Record extends AppCompatActivity {
                     adaptiveEncodingFlag = 1;
                     return; //prevent further processing
                 }
+
+                // no processing (for testing bluetooth transmission rates)
+                if(data==null) return;
+
                 // CHANNEL DATA
                 pkgCount++;
                 if (!timerRunning) startTimer();
 
-                // no processing (for testing bluetooth transmission rates)
-                if(data==null) return;
+
                 // parse header, if there is a header
                 if (data.length > nChannels){
                     currentPkgId = data[0];
                     currentPkgLoss = data[1];
+                    currentBtPkgLoss = calculateBtPkgLoss();
                     data = Arrays.copyOfRange(data, 2, data.length);
                 }
                 microV = convertToMicroV(data);
@@ -409,10 +413,13 @@ public class Record extends AppCompatActivity {
             }
         }
     };
+
+
     private List<Integer> pkgsLost = new ArrayList<>();
     private int currentPkgLoss = 0;
     private int currentPkgId  = 0;
     private int lastPkgId = 0;
+    private int currentBtPkgLoss = 0;
     private Thread plottingThread;
     private File recordingFile;
     private String tempFileName;
@@ -430,6 +437,19 @@ public class Record extends AppCompatActivity {
         intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
         intentFilter.addAction(BluetoothLeService.EXTRA_DATA);
         return intentFilter;
+    }
+
+    private int calculateBtPkgLoss(){
+        int btloss = 0;
+        if (storedPkgCount>0){
+            if (lastPkgId > currentPkgId){
+                btloss = (15 - lastPkgId) + currentPkgId;
+            } else{
+                btloss = (currentPkgId-1) - lastPkgId;
+            }
+        }
+        lastPkgId = currentPkgId;
+        return btloss;
     }
 
     private void updateConfiguration() {
@@ -778,10 +798,11 @@ public class Record extends AppCompatActivity {
         if (!notifying) {
             Log.d(TAG, "Notifications Button pressed: ENABLED");
             notifying = true;
+            mTraumService.warmUp();
+            mDataResolution.setText("warming up");
             mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, true);
-            //waitForBluetoothCallback(mBluetoothLeService);
-            //mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
             menuItemNotify.setIcon(R.drawable.ic_notifications_active_blue_24dp);
+
         } else {
             Log.d(TAG, "Notifications Button pressed: DISABLED");
             notifying = false;
@@ -806,13 +827,10 @@ public class Record extends AppCompatActivity {
     private AlertDialog createTraumConfigDialog(){
         // inflate the view
         View traumConfigView = getLayoutInflater().inflate(R.layout.traum_config_popup, null);
-
         // create the dialog
         AlertDialog.Builder configDialogBuilder = new AlertDialog.Builder(this,
                 R.style.traumConfigDialog);
         configDialogBuilder.setView(traumConfigView);
-
-
         return configDialogBuilder.create();
     }
 
@@ -1379,6 +1397,13 @@ public class Record extends AppCompatActivity {
 
     private void storeForPlotting(final List<Float> microV) {
 
+        //Track lost packages to keep the chart timing accurate
+        Float[] lostSample = new Float[24];
+        Arrays.fill(lostSample, Float.NaN);
+        List<Float> lostSampleL = Arrays.asList(lostSample);
+        for (int i=0; i<currentBtPkgLoss;i++) accumulatedSamples.add(lostSampleL);
+        for (int i=0; i<currentPkgLoss;i++) accumulatedSamples.add(lostSampleL);
+
         accumulatedSamples.add(microV);
         pkgArrivalTime = System.currentTimeMillis();
         long plottingElapsed = pkgArrivalTime - plottingLastRefresh;
@@ -1517,7 +1542,6 @@ public class Record extends AppCompatActivity {
         pkgsLost.clear();
         try {
             fileWriter.flush();
-            fileWriter.close();
             Toast.makeText(getApplicationContext(),"Succesfully Stored Session",Toast.LENGTH_LONG);
         } catch (Exception e ){
             Log.e(TAG,"Some Error trying to end the fileWriter: " + e.getMessage());
@@ -1531,53 +1555,48 @@ public class Record extends AppCompatActivity {
      */
     private void storeData(List<Float> data_microV) {
 
-        // Real Time Stamps
-        if (timestamps.size() == 0) startTime = System.currentTimeMillis();
-        float time = System.currentTimeMillis() - startTime;
-        timestamps.add((float) (time));
-
-        // Expected Time Stamps
-        if (samplingTimes.size() == 0) storedPkgCount = 0 ;
-        float samplingInterval = 1/samplingRate;
-        float samplingTime = samplingInterval*storedPkgCount;
-        samplingTimes.add(samplingTime);
-
+        float[] f_microV = new float[nChannels];
+        Arrays.fill(f_microV, Float.NaN);
+        //NaN rows on top (uninitialized)
+        for (int i=0;i<currentPkgLoss; i++) appendSampleToCsv(f_microV);
+        for (int i=0;i<currentBtPkgLoss; i++) appendSampleToCsv(f_microV);
         // Channel Values
-        float[] f_microV = new float[data_microV.size()];
         int i = 0;
         for (Float f : data_microV)
             f_microV[i++] = (f != null ? f : Float.NaN); // Or whatever default you want
-        mainData.add(f_microV);
-        //adaptiveEncodingFlags.add(adaptiveEncodingFlag);
+        appendSampleToCsv(f_microV);
         adaptiveEncodingFlag = 0;
-        //signalBitShifts.add(signalBitShift);
-        pkgIDs.add(currentPkgId);
-        pkgsLost.add(currentPkgLoss);
 
+    }
+
+    private void appendSampleToCsv(float[] sample){
         /*** WRITE TO CSV
          *  order: timestamp, samplingtime,channelvalues,pkgid,pkgsloss **/
+        // Real Time Stamps
+        if (storedPkgCount == 0) startTime = System.currentTimeMillis();
+        float time = System.currentTimeMillis() - startTime;
+
+        // Expected Time Stamps
+        float samplingInterval = 1000/samplingRate;
+        float samplingTime = samplingInterval*storedPkgCount;
+
+        // Correct Pkg loss counts to have "pkg loss" at 0 for NaN rows
+        int NaNCorrectionBtLoss = 0;
+        int NaNCorrectionInternalLoss = 0;
+        if (Float.isNaN(sample[0])){
+            NaNCorrectionBtLoss = currentBtPkgLoss;
+            NaNCorrectionInternalLoss = currentPkgLoss;
+        }
         try {
             String delimiter = ",";
             fileWriter.append(String.valueOf(time));
             fileWriter.append(delimiter + samplingTime);
             for (int j = 0; j < nChannels; j++) {
-                fileWriter.append(delimiter + f_microV[j]);
+                fileWriter.append(delimiter + sample[j]);
             }
-
             fileWriter.append(delimiter + currentPkgId);
-
-            int btloss = 0;
-            if (storedPkgCount>0){
-                if (lastPkgId > currentPkgId){
-                    btloss = (15 - lastPkgId) + currentPkgId;
-                } else{
-                    btloss = (currentPkgId-1) - lastPkgId;
-                }
-            }
-            lastPkgId = currentPkgId;
-
-            fileWriter.append(delimiter + btloss);                      //Bluetooth loss
-            fileWriter.append(delimiter + currentPkgLoss);              //Internal loss
+            fileWriter.append(delimiter + (currentBtPkgLoss - NaNCorrectionBtLoss));      //Bluetooth loss
+            fileWriter.append(delimiter + (currentPkgLoss - NaNCorrectionInternalLoss)); //Internal loss
             fileWriter.append(delimiter + resolutionFrequency);
             fileWriter.append("\n");
             storedPkgCount++;
@@ -1597,193 +1616,42 @@ public class Record extends AppCompatActivity {
     //Saves the data at the end of session
     @SuppressLint("DefaultLocale")
     private void saveSession(final String tag) throws IOException {
+        // Column Names of Footer
+        final String footerLabels = "Username,User ID,Session ID,Session Tag,Date,Shape (rows x columns)," +
+                "Duration (ms),Starting Time,Ending Time,Sampling Rate,Bits per Channel," +
+                "measurement unit,Starting Timestamp,Ending Timestamp";
+        String delimiter=",";
+        fileWriter.append(footerLabels);
+        fileWriter.append("\n");
+        // Footer Values
+        final String username = getSharedPreferences("userPreferences", 0).getString("username", "user");
+        final String userID = getSharedPreferences("userPreferences", 0).getString("userID", "12345678");
+        final UUID id = UUID.randomUUID();
+        String date = new SimpleDateFormat("yyyyddMMHHmmss").format(new Date());
+
+        fileWriter.append(username);
+        fileWriter.append(delimiter + userID);
+        fileWriter.append(delimiter + id.toString());
+        fileWriter.append(delimiter + tag);
+        fileWriter.append(delimiter + date);
+        fileWriter.append(delimiter + (storedPkgCount + "x" + nChannels));
+        fileWriter.append(delimiter + recording_time);
+        fileWriter.append(delimiter + start_time);
+        fileWriter.append(delimiter + end_time);
+        fileWriter.append(delimiter + samplingRate);
+        fileWriter.append(delimiter + TraumschreiberService.bitsPerCh);
+        fileWriter.append(delimiter + "µV");
+        fileWriter.append(delimiter + start_timestamp);
+        fileWriter.append(delimiter + end_timestamp);
 
         // rename your temp file to the desired tag
-        String date = new SimpleDateFormat("yyyyddMMHHmmss").format(new Date());
         String permFileName = date + "_" + tag + ".csv";
         File tempFile = new File(MainActivity.getDirSessions(),tempFileName);
         File permFile = new File(MainActivity.getDirSessions(),permFileName);
         boolean success = tempFile.renameTo(permFile);
-        if (success) Toast.makeText(getApplicationContext(),"Stored Recording as " + permFileName, Toast.LENGTH_LONG);
+        Toast.makeText(getApplicationContext(),"Stored Recording as " + permFileName, Toast.LENGTH_LONG);
+        fileWriter.close();
 
-
-        /*
-        try {
-            // create a writer for permFile
-            BufferedWriter out = new BufferedWriter(new FileWriter(permFile, true));
-            // create a reader for tmpFile
-            BufferedReader in = new BufferedReader(new FileReader(tmpFile));
-            String str;
-            while ((str = in.readLine()) != null) {
-                out.write(str);
-            }
-            in.close();
-            out.close();
-        } catch (IOException e) {
-        }
-
-
-        // CONSTRUCTING HEADER
-        final String top_header = "Username, User ID, Session ID,Session Tag,Date,Shape (rows x columns)," +
-                "Duration (ms),Starting Time,Ending Time,Resolution (ms),Resolution (Hz)," +
-                "Unit Measure,Starting Timestamp,Ending Timestamp";
-        final String username = getSharedPreferences("userPreferences", 0).getString("username", "user");
-        final String userID = getSharedPreferences("userPreferences", 0).getString("userID", "12345678");
-        final UUID id = UUID.randomUUID();
-        final char delimiter = ',';
-        final char break_line = '\n';
-
-        File formatted = new File(MainActivity.getDirSessions(),
-                date + "_" + tag + ".csv");
-        // if file doesn't exists, then create it
-        if (!formatted.exists()) //noinspection ResultOfMethodCallIgnored
-            formatted.createNewFile();
-        FileWriter fileWriter = new FileWriter(formatted);
-        // 1st row
-        fileWriter.append(top_header);
-        fileWriter.append(break_line);
-        // 2nd row
-        fileWriter.append(username);
-        fileWriter.append(delimiter);
-        fileWriter.append(userID);
-        fileWriter.append(delimiter);
-        fileWriter.append(id.toString());
-        fileWriter.append(delimiter);
-        fileWriter.append(tag);
-        fileWriter.append(delimiter);
-        fileWriter.append(date);
-        fileWriter.append(delimiter);
-        fileWriter.append(String.valueOf(rows)).append("x").append(String.valueOf(cols));
-        fileWriter.append(delimiter);
-        fileWriter.append(recording_time);
-        fileWriter.append(delimiter);
-        fileWriter.append(start_time);
-        fileWriter.append(delimiter);
-        fileWriter.append(end_time);
-        fileWriter.append(delimiter);
-        fileWriter.append(String.valueOf(resolutionTime));
-        fileWriter.append(delimiter);
-        fileWriter.append(String.valueOf(resolutionFrequency));
-        fileWriter.append(delimiter);
-        fileWriter.append("µV");
-        fileWriter.append(delimiter);
-        fileWriter.append(Long.toString(start_timestamp));
-        fileWriter.append(delimiter);
-        fileWriter.append(Long.toString(end_timestamp));
-        fileWriter.append(delimiter);
-        fileWriter.append(break_line);
-        /***
-        // ADDING ENTRIES
-        int rows = mainData.size();
-        Log.d(TAG, "SAVING SESSION, LENGTH OF DATA: " + rows + " Entries ");
-        Log.d(TAG, "SAVING SESSION, LENGTH OF TIMESTAMPS : " + timestamps.size() + " Time Stamps ");
-        Log.d(TAG, "SAVING SESSION, LENGTH OF PKG LOSS: " + pkgsLost.size() + "PKGs" +
-                "Lost ");
-        int cols = nChannels;
-        final StringBuilder header = new StringBuilder();
-        header.append("time");
-        header.append(delimiter + "sampling_time");
-        for (int i = 1; i <= cols; i++) header.append(delimiter + String.format("ch%d", i)); // channel values
-        //for (int i = 1; i <= 1; i++) header.append(String.format("enc_ch%d,",i)); // log encodings
-        //header.append("enc_flag,");               // log encoding updates
-        header.append(delimiter+"pkg_id");
-        header.append(delimiter+"pkg_loss_bluetooth");
-        header.append(delimiter+"pkg_loss_internal");
-
-        // Try Unthreaded!
-        new Thread(() -> {
-            try {
-                File formatted = new File(MainActivity.getDirSessions(),
-                        date + "_" + tag + ".csv");
-                // if file doesn't exists, then create it
-                if (!formatted.exists()) //noinspection ResultOfMethodCallIgnored
-                    formatted.createNewFile();
-                FileWriter fileWriter = new FileWriter(formatted);
-                // 1st row
-                fileWriter.append(top_header);
-                fileWriter.append(break_line);
-                // 2nd row
-                fileWriter.append(username);
-                fileWriter.append(delimiter);
-                fileWriter.append(userID);
-                fileWriter.append(delimiter);
-                fileWriter.append(id.toString());
-                fileWriter.append(delimiter);
-                fileWriter.append(tag);
-                fileWriter.append(delimiter);
-                fileWriter.append(date);
-                fileWriter.append(delimiter);
-                fileWriter.append(String.valueOf(rows)).append("x").append(String.valueOf(cols));
-                fileWriter.append(delimiter);
-                fileWriter.append(recording_time);
-                fileWriter.append(delimiter);
-                fileWriter.append(start_time);
-                fileWriter.append(delimiter);
-                fileWriter.append(end_time);
-                fileWriter.append(delimiter);
-                fileWriter.append(String.valueOf(resolutionTime));
-                fileWriter.append(delimiter);
-                fileWriter.append(String.valueOf(resolutionFrequency));
-                fileWriter.append(delimiter);
-                fileWriter.append("µV");
-                fileWriter.append(delimiter);
-                fileWriter.append(Long.toString(start_timestamp));
-                fileWriter.append(delimiter);
-                fileWriter.append(Long.toString(end_timestamp));
-                fileWriter.append(delimiter);
-                fileWriter.append(break_line);
-                // 3nd row
-                fileWriter.append(header.toString());
-                // 4th+ row
-                fileWriter.append(break_line);
-                for (int i = 0; i < rows; i++) {
-                    //Timestamps
-                    fileWriter.append(String.valueOf(timestamps.get(i)));
-
-                    //(Expected) SAMPLING TIMES
-                    float samplingInterval = 1000/samplingRate; // e.g. 6ms
-                    fileWriter.append(delimiter + String.valueOf(i*samplingInterval));
-
-                    // ACTUAL DATA
-                    for (int j = 0; j < cols; j++) {
-                        fileWriter.append(delimiter + String.valueOf(mainData.get(i)[j]));
-                    }
-                    // MONITORING CODE BOOK (of CH1 Only)
-                    /*for(int j=0; j < 1;j++) {
-                        fileWriter.append(Integer.toString(signalBitShifts.get(i)));
-                        fileWriter.append(delimiter);
-                    }
-
-                    // MONITORING CODE BOOK UPDATE NOTIFICATIONS
-                    /*fileWriter.append(String.valueOf(adaptiveEncodingFlags.get(i)));
-                    fileWriter.append(delimiter);
-
-                    //MONITORING BLUETOOTH PKG IDs
-                    fileWriter.append(delimiter + String.valueOf(pkgIDs.get(i)));
-
-                    // Monitoring BLUETOOTH PKG LOSS
-                    int btloss = 0;
-                    if (i>0){
-                        if (pkgIDs.get(i-1) > pkgIDs.get(i)){
-                            btloss = (15 - pkgIDs.get(i-1)) + pkgIDs.get(i);
-                        } else{
-                            btloss = (pkgIDs.get(i)-1) - pkgIDs.get(i-1);
-                        }
-                    }
-                    fileWriter.append(delimiter + String.valueOf(btloss));
-
-                    // MONITORING INTERNAL PKG LOSS
-                    fileWriter.append(delimiter + String.valueOf(pkgsLost.get(i)));
-                    fileWriter.append(break_line);
-                }
-                fileWriter.flush();
-                fileWriter.close();
-
-            } catch (Exception e) {
-                Log.e(TAG, "Error storing the data into a CSV file: " + e);
-            }
-
-        }).start();*/
     }
 
     private void buttons_nodata() {
