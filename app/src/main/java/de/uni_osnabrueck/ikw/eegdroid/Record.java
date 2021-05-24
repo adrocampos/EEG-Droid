@@ -778,8 +778,6 @@ public class Record extends AppCompatActivity {
         if (!notifying) {
             Log.d(TAG, "Notifications Button pressed: ENABLED");
             notifying = true;
-            mTraumService.beginWarmUp();
-            mDataResolution.setText("Warming Up");
             mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, true);
             //waitForBluetoothCallback(mBluetoothLeService);
             //mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);

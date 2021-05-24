@@ -89,8 +89,7 @@ public class TraumschreiberService {
                 System.arraycopy(decodedDeltas,0,decodedPkg,2,decodedDeltas.length);
                 return decodedPkg;
             } else {
-                if (warmedUp) return decodeDpcm(dataBytes);
-                return null;
+                return decodeDpcm(dataBytes);
             }
 
         /* ENCODING FACTORS */
@@ -156,7 +155,6 @@ public class TraumschreiberService {
             if (pkgCount == 500) {
                 decodedSignal[i] -= signalOffset[i];
                 Log.d(TAG, "Means of all Channels: " + Arrays.toString(signalOffset));
-                warmedUp = true;
             }
         }
         pkgCount++;
