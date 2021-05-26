@@ -210,16 +210,14 @@ public class Record extends AppCompatActivity {
             Toast.makeText(getApplicationContext(),"Need Data First",Toast.LENGTH_SHORT).show();
             return;
         }
-        //mChart.invalidate();
         tapZoomExponent++;
         if (tapZoomExponent>4) tapZoomExponent = 0;
         int yRange = (int) ((leftAxisUpperLimit*2) / Math.pow(10, tapZoomExponent));
         Log.d(TAG, "Visible yRange + " + yRange);
         mChart.setVisibleYRangeMaximum(yRange, YAxis.AxisDependency.LEFT);
+        mChart.setVisibleYRangeMaximum(leftAxisUpperLimit*2, YAxis.AxisDependency.LEFT);
         if(tapZoomExponent==0) mChart.fitScreen();
         mChart.moveViewTo(plottedPkgCount*1000/samplingRate, 0, YAxis.AxisDependency.LEFT);
-
-        if(tapZoomExponent == 0) mChart.resetZoom();
         tapZoomButton.setText("10^"+tapZoomExponent);
     };
 
@@ -1349,6 +1347,8 @@ public class Record extends AppCompatActivity {
         bottomAxis.setPosition(XAxis.XAxisPosition.TOP);
         bottomAxis.setGridColor(Color.WHITE);
         bottomAxis.setTextColor(Color.GRAY);
+
+        mChart.setDragDecelerationFrictionCoef(0.6f);
     }
 
     private LineDataSet createPlottableSet(int channelId) {
