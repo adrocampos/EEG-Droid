@@ -190,7 +190,7 @@
     <string name="recording">Recording</string>
 
     <string name="session_label_title">Session label</string>
-    <string name="enter_session_label">Please enter the session label</string>
+    <string name="enter_session_label">Please enter the session label\n(Still recording, tap outside to cancel)</string>
     <string name="example_session_label">E.g. walking, eating, sleeping, etc.</string>
     <string name="save">Save</string>
     <string name="default_name">Use default name</string>
