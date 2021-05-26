@@ -201,11 +201,11 @@ public class Record extends AppCompatActivity {
     private TextView mXAxis;
     private TextView mDataResolution;
     private LineChart mChart;
-    private ImageButton imageButtonRecord;
+    private Button tapZoomButton;
+    private ImageButton recordingButton;
     //private ImageButton imageButtonSave;
     //private ImageButton imageButtonDiscard;
     private androidx.appcompat.widget.SwitchCompat plotSwitch;
-    private View layout_plots;
     private boolean plotting = true;
     private int plottingUpdateInterval= 30;
     private androidx.appcompat.widget.SwitchCompat channelViewsSwitch;
@@ -239,7 +239,7 @@ public class Record extends AppCompatActivity {
     private long plottingLastRefresh;
     private long pkgArrivalTime;
     
-    private final View.OnClickListener imageRecordOnClickListener = v -> {
+    private final View.OnClickListener recordingButtonOnClickListener = v -> {
         if (!recording) {
             startRecording();
         } else {
@@ -562,28 +562,17 @@ public class Record extends AppCompatActivity {
             return;
         }
 
-        imageButtonRecord = findViewById(R.id.imageButtonRecord);
-        //imageButtonSave = findViewById(R.id.imageButtonSave);
-        //imageButtonDiscard = findViewById(R.id.imageButtonDiscard);
-        plotSwitch = findViewById(R.id.switch_plots);
-        channelViewsSwitch = findViewById(R.id.channel_views_switch);
-
-        layout_plots = findViewById(R.id.linearLayout_chart);
-        layout_plots.setVisibility(ViewStub.VISIBLE);
-
-        mXAxis = findViewById(R.id.XAxis_title);
-        mXAxis.setVisibility(ViewStub.VISIBLE);
-        imageButtonRecord.setOnClickListener(imageRecordOnClickListener);
-        //imageButtonSave.setOnClickListener(imageSaveOnClickListener);
-        //imageButtonDiscard.setOnClickListener(imageDiscardOnClickListener);
-        plotSwitch.setOnCheckedChangeListener(plotSwitchOnCheckedChangeListener);
-        channelViewsSwitch.setOnCheckedChangeListener(channelViewsSwitchListener);
-
-        // Sets up UI references.
+        // UI References
         mConnectionState = findViewById(R.id.connection_state);
         viewDeviceAddress = findViewById(R.id.device_address);
         mConnectionState = findViewById(R.id.connection_state);
         mDataResolution = findViewById(R.id.resolution_value);
+
+        plotSwitch = findViewById(R.id.switch_plots);
+        channelViewsSwitch = findViewById(R.id.channel_views_switch);
+
+        plotSwitch.setOnCheckedChangeListener(plotSwitchOnCheckedChangeListener);
+        channelViewsSwitch.setOnCheckedChangeListener(channelViewsSwitchListener);
 
         // Checkboxes and Channel Values
         LinearLayout[] checkBoxRows = new LinearLayout[3];
@@ -605,15 +594,23 @@ public class Record extends AppCompatActivity {
             checkBoxes[i] = createPlottingCheckbox(i);
             checkBoxRows[i / 8].addView(checkBoxes[i]);
         }
+
         if(plotting) checkBoxes[0].setChecked(true);
+
+        createChart();
+        mXAxis = findViewById(R.id.XAxis_title);
+        mXAxis.setVisibility(ViewStub.VISIBLE);
+
+        recordingButton = findViewById(R.id.recordingButton);
+        recordingButton.setOnClickListener(recordingButtonOnClickListener);
+        tapZoomButton = findViewById(R.id.tapZoomButton);
         
         // Traumschreiber Config Dialog
         traumConfigDialog = createTraumConfigDialog();
 
-        createChart();
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
-        //Remove temporary files
+        //Remove left over temporary files
         deleteTempFiles();
     }
 
@@ -1334,7 +1331,7 @@ public class Record extends AppCompatActivity {
             }
         };
 
-        mChart = findViewById(R.id.layout_chart);
+        mChart = findViewById(R.id.liveChart);
         mChart.setOnChartValueSelectedListener(ol);
         // enable description text
         mChart.getDescription().setEnabled(false);
@@ -1492,9 +1489,7 @@ public class Record extends AppCompatActivity {
         createRecordingFile();
 
         //UI Feedback
-        mConnectionState.setText(R.string.recording);
-        mConnectionState.setTextColor(Color.RED);
-        Toast.makeText(getApplicationContext(), "Recording in process.", Toast.LENGTH_LONG
+        Toast.makeText(getApplicationContext(), "Recording in progress.", Toast.LENGTH_LONG
         ).show();
         buttons_recording();
     }
@@ -1550,8 +1545,6 @@ public class Record extends AppCompatActivity {
         deleteTempFiles();
 
         // UI Update
-        mConnectionState.setText(R.string.device_connected);
-        mConnectionState.setTextColor(Color.GREEN);
         buttons_prerecording();
 
     }
@@ -1725,8 +1718,8 @@ public class Record extends AppCompatActivity {
     }
 
     private void buttons_nodata() {
-        imageButtonRecord.setImageResource(R.drawable.ic_fiber_manual_record_pink_24dp);
-        imageButtonRecord.setEnabled(false);
+        recordingButton.setImageResource(R.drawable.ic_fiber_manual_record_pink_24dp);
+        recordingButton.setEnabled(false);
         /*imageButtonSave.setImageResource(R.drawable.ic_save_gray_24dp);
         imageButtonSave.setEnabled(false);
         imageButtonDiscard.setImageResource(R.drawable.ic_delete_gray_24dp);
@@ -1734,8 +1727,8 @@ public class Record extends AppCompatActivity {
     }
 
     private void buttons_prerecording() {
-        imageButtonRecord.setImageResource(R.drawable.ic_fiber_manual_record_red_24dp);
-        imageButtonRecord.setEnabled(true);
+        recordingButton.setImageResource(R.drawable.ic_fiber_manual_record_red_24dp);
+        recordingButton.setEnabled(true);
         /*imageButtonSave.setImageResource(R.drawable.ic_save_gray_24dp);
         imageButtonSave.setEnabled(false);
         imageButtonDiscard.setImageResource(R.drawable.ic_delete_gray_24dp);
@@ -1743,7 +1736,7 @@ public class Record extends AppCompatActivity {
     }
 
     private void buttons_recording() {
-        imageButtonRecord.setImageResource(R.drawable.ic_stop_black_24dp);
+        recordingButton.setImageResource(R.drawable.ic_stop_black_24dp);
         /*imageButtonSave.setImageResource(R.drawable.ic_save_gray_24dp);
         imageButtonSave.setEnabled(false);
         imageButtonDiscard.setImageResource(R.drawable.ic_delete_gray_24dp);
@@ -1751,8 +1744,8 @@ public class Record extends AppCompatActivity {
     }
 
     private void buttons_postrecording() {
-        /*imageButtonRecord.setImageResource(R.drawable.ic_fiber_manual_record_pink_24dp);
-        imageButtonRecord.setEnabled(true);
+        /*recordingButton.setImageResource(R.drawable.ic_fiber_manual_record_pink_24dp);
+        recordingButton.setEnabled(true);
         imageButtonSave.setEnabled(true);
         imageButtonSave.setImageResource(R.drawable.ic_save_black_24dp);
         imageButtonDiscard.setEnabled(true);
