@@ -241,19 +241,9 @@ public class Record extends AppCompatActivity {
     private final View.OnClickListener imageRecordOnClickListener = v -> {
         if (!recording) {
             startRecording();
-            mConnectionState.setText(R.string.recording);
-            mConnectionState.setTextColor(Color.RED);
-            Toast.makeText(
-                    getApplicationContext(),
-                    "Recording in process.",
-                    Toast.LENGTH_LONG
-            ).show();
-            buttons_recording();
         } else {
             endRecording();
-            mConnectionState.setText(R.string.device_connected);
-            mConnectionState.setTextColor(Color.GREEN);
-            buttons_postrecording();
+
         }
     };
     private final View.OnClickListener imageSaveOnClickListener = v -> {
@@ -424,6 +414,8 @@ public class Record extends AppCompatActivity {
     private File recordingFile;
     private String tempFileName;
     private FileWriter fileWriter;
+    final String delimiter = ",";
+    final String lineBreak = "\n";
 
 
     public Record() {
@@ -613,14 +605,15 @@ public class Record extends AppCompatActivity {
             checkBoxRows[i / 8].addView(checkBoxes[i]);
         }
         if(plotting) checkBoxes[0].setChecked(true);
-
-
-
+        
         // Traumschreiber Config Dialog
         traumConfigDialog = createTraumConfigDialog();
 
-        setChart();
+        createChart();
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
+        //Remove temporary files
+        deleteTempFiles();
     }
 
     private TextView createChannelValueView (int i){
@@ -1328,7 +1321,7 @@ public class Record extends AppCompatActivity {
     }
 
 
-    private void setChart() {
+    private void createChart() {
         OnChartValueSelectedListener ol = new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry entry, Highlight h) {
@@ -1493,23 +1486,30 @@ public class Record extends AppCompatActivity {
         start_timestamp = new Timestamp(startTime).getTime();
         recording = true;
 
-        /** CREATE A FILE TO WRITE TO **/
-        //transmission time, sampling time, channel values, transmissionID, pkgslosses, resolution
+        createRecordingFile();
 
+        //UI Feedback
+        mConnectionState.setText(R.string.recording);
+        mConnectionState.setTextColor(Color.RED);
+        Toast.makeText(getApplicationContext(), "Recording in process.", Toast.LENGTH_LONG
+        ).show();
+        buttons_recording();
+    }
+
+    private void createRecordingFile(){
+        //transmission time, sampling time, channel values, transmissionID, pkgslosses, resolution
         String date = new SimpleDateFormat("yyyyddMM_HH-mm-ss").format(new Date());
         tempFileName = date+"_" + "recording.temp";
         try {
             recordingFile = new File(MainActivity.getDirSessions(),tempFileName);
             // if file doesn't exists, then create it
-            if (!recordingFile.exists()) //noinspection ResultOfMethodCallIgnored
+            if (!recordingFile.exists())
                 recordingFile.createNewFile();
             fileWriter = new FileWriter(recordingFile);
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
         }
 
-        final char delimiter = ',';
-        final char lineBreak = '\n';
         final StringBuilder header = new StringBuilder();
         header.append("time");
         header.append(delimiter + "sampling_time");
@@ -1530,6 +1530,8 @@ public class Record extends AppCompatActivity {
     //Finish a recording session
     @SuppressLint("SimpleDateFormat")
     private void endRecording() {
+
+        // Resetting and Clearing Variables
         recording = false;
         end_time = new SimpleDateFormat("HH:mm:ss.SSS").format(new Date());
         long stop_watch = System.currentTimeMillis();
@@ -1540,12 +1542,47 @@ public class Record extends AppCompatActivity {
         samplingTimes.clear();
         pkgIDs.clear();
         pkgsLost.clear();
-        try {
-            fileWriter.flush();
-            Toast.makeText(getApplicationContext(),"Succesfully Stored Session",Toast.LENGTH_LONG);
-        } catch (Exception e ){
-            Log.e(TAG,"Some Error trying to end the fileWriter: " + e.getMessage());
-        }
+
+        // Open Save Dialog
+        showSaveDialog();
+
+        // UI Update
+        mConnectionState.setText(R.string.device_connected);
+        mConnectionState.setTextColor(Color.GREEN);
+        buttons_postrecording();
+
+    }
+
+    private void showSaveDialog(){
+        LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getApplicationContext());
+        View mView = layoutInflaterAndroid.inflate(R.layout.input_dialog_string, null);
+        AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(Record.this);
+        alertDialogBuilderUserInput.setView(mView);
+
+        final EditText userInputLabel = mView.findViewById(R.id.input_dialog_string_Input);
+
+        alertDialogBuilderUserInput
+                .setCancelable(true)
+                .setTitle(R.string.session_label_title)
+                .setMessage(getResources().getString(R.string.enter_session_label))
+                .setPositiveButton(R.string.save, (dialogBox, id) -> {
+                    if (!userInputLabel.getText().toString().isEmpty()) {
+                        try {
+                            saveSession(userInputLabel.getText().toString());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        try {
+                            saveSession();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+        AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
+        alertDialogAndroid.show();
     }
 
 
@@ -1588,7 +1625,6 @@ public class Record extends AppCompatActivity {
             NaNCorrectionInternalLoss = currentPkgLoss;
         }
         try {
-            String delimiter = ",";
             fileWriter.append(String.valueOf(time));
             fileWriter.append(delimiter + samplingTime);
             for (int j = 0; j < nChannels; j++) {
@@ -1620,7 +1656,6 @@ public class Record extends AppCompatActivity {
         final String footerLabels = "Username,User ID,Session ID,Session Tag,Date,Shape (rows x columns)," +
                 "Duration (ms),Starting Time,Ending Time,Sampling Rate,Bits per Channel," +
                 "measurement unit,Starting Timestamp,Ending Timestamp";
-        String delimiter=",";
         fileWriter.append(footerLabels);
         fileWriter.append("\n");
         // Footer Values
@@ -1649,7 +1684,8 @@ public class Record extends AppCompatActivity {
         File tempFile = new File(MainActivity.getDirSessions(),tempFileName);
         File permFile = new File(MainActivity.getDirSessions(),permFileName);
         boolean success = tempFile.renameTo(permFile);
-        Toast.makeText(getApplicationContext(),"Stored Recording as " + permFileName, Toast.LENGTH_LONG);
+        Toast.makeText(getApplicationContext(),"Stored Recording as " + permFileName, Toast.LENGTH_LONG
+        ).show();
         fileWriter.close();
 
     }
@@ -1681,12 +1717,14 @@ public class Record extends AppCompatActivity {
     }
 
     private void buttons_postrecording() {
-        imageButtonRecord.setImageResource(R.drawable.ic_fiber_manual_record_pink_24dp);
+        buttons_prerecording();
+        /*imageButtonRecord.setImageResource(R.drawable.ic_fiber_manual_record_pink_24dp);
         imageButtonRecord.setEnabled(true);
         imageButtonSave.setEnabled(true);
         imageButtonSave.setImageResource(R.drawable.ic_save_black_24dp);
         imageButtonDiscard.setEnabled(true);
         imageButtonDiscard.setImageResource(R.drawable.ic_delete_black_24dp);
+         */
     }
 
     private void setConnectionStatus(boolean connected) {
@@ -1747,7 +1785,18 @@ public class Record extends AppCompatActivity {
         channelColors[23] = ContextCompat.getColor(this, R.color.Ch24);
     }
 
+    public void deleteTempFiles(){
+        File dir = new File(MainActivity.getDirSessions(),"");
+        File [] files = dir.listFiles();
+        for (File tempFile : files) {
+            if (tempFile.getName().endsWith(".temp")) {
+                tempFile.delete();
+                Log.d(TAG, "deleted temp file!");
+            }
+        }
+    }
 
+    // Streaming related
     class CastThread extends Thread {
         String IP = getSharedPreferences("userPreferences", 0).getString("IP", getResources().getString(R.string.default_IP));
         String PORT = getSharedPreferences("userPreferences", 0).getString("port", getResources().getString(R.string.default_port));
