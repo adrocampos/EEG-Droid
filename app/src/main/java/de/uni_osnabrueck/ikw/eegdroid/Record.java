@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -242,8 +243,8 @@ public class Record extends AppCompatActivity {
         if (!recording) {
             startRecording();
         } else {
-            endRecording();
-
+            // Open Save Dialog
+            showSaveDialog();
         }
     };
     private final View.OnClickListener imageSaveOnClickListener = v -> {
@@ -891,8 +892,10 @@ public class Record extends AppCompatActivity {
                 
                 //Update Characteristic on Which data is sent
                 TraumschreiberService.setNotifyingUUID(position); //0, 1 or 2
-                BluetoothGattService bleService = mBluetoothLeService.getService(TraumschreiberService.serviceUUID);
-                mNotifyCharacteristic = bleService.getCharacteristic(TraumschreiberService.notifyingUUID);
+                if(deviceConnected) {
+                    BluetoothGattService bleService = mBluetoothLeService.getService(TraumschreiberService.serviceUUID);
+                    mNotifyCharacteristic = bleService.getCharacteristic(TraumschreiberService.notifyingUUID);
+                }
 
                 byte[] binaryString = {bitsPerChB};
                 Log.d(TAG, "Binary rep of selected value for bits per CH:  " + Arrays.toString(binaryString));
@@ -1543,8 +1546,8 @@ public class Record extends AppCompatActivity {
         pkgIDs.clear();
         pkgsLost.clear();
 
-        // Open Save Dialog
-        showSaveDialog();
+        //Clear Files
+        deleteTempFiles();
 
         // UI Update
         mConnectionState.setText(R.string.device_connected);
@@ -1562,33 +1565,60 @@ public class Record extends AppCompatActivity {
         final EditText userInputLabel = mView.findViewById(R.id.input_dialog_string_Input);
 
         alertDialogBuilderUserInput
-                .setCancelable(false)
                 .setTitle(R.string.session_label_title)
                 .setMessage(getResources().getString(R.string.enter_session_label))
+                .setCancelable(true)
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+
+                    }
+                })
                 .setPositiveButton("Save", (dialogBox, id) -> {
                     if (!userInputLabel.getText().toString().isEmpty()) {
                         try {
                             saveSession(userInputLabel.getText().toString());
+                            endRecording();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     } else {
                         try {
                             saveSession();
+                            endRecording();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
                 })
                 .setNegativeButton("Discard", (dialogBox, id) -> {
-                    deleteTempFiles();
-                    recordingFile.delete();
+                    showConfirmDiscardDialog();
                 });
 
         AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
         alertDialogAndroid.show();
     }
 
+    private void showConfirmDiscardDialog() {
+        AlertDialog.Builder confirmDiscardDialogBuilder = new AlertDialog.Builder(Record.this)
+                .setMessage("Discard current recording?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        endRecording();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        showSaveDialog();
+                    }
+                });
+        AlertDialog confirmDiscardDialog = confirmDiscardDialogBuilder.create();
+        confirmDiscardDialog.show();
+
+    }
 
     /** Stores
      * transmission time, sampling time, channel values, transmissionID, pkgslosses, resolution
