@@ -201,8 +201,8 @@ public class Record extends AppCompatActivity {
     private TextView mDataResolution;
     private LineChart mChart;
     private ImageButton imageButtonRecord;
-    private ImageButton imageButtonSave;
-    private ImageButton imageButtonDiscard;
+    //private ImageButton imageButtonSave;
+    //private ImageButton imageButtonDiscard;
     private androidx.appcompat.widget.SwitchCompat plotSwitch;
     private View layout_plots;
     private boolean plotting = true;
@@ -562,8 +562,8 @@ public class Record extends AppCompatActivity {
         }
 
         imageButtonRecord = findViewById(R.id.imageButtonRecord);
-        imageButtonSave = findViewById(R.id.imageButtonSave);
-        imageButtonDiscard = findViewById(R.id.imageButtonDiscard);
+        //imageButtonSave = findViewById(R.id.imageButtonSave);
+        //imageButtonDiscard = findViewById(R.id.imageButtonDiscard);
         plotSwitch = findViewById(R.id.switch_plots);
         channelViewsSwitch = findViewById(R.id.channel_views_switch);
 
@@ -573,8 +573,8 @@ public class Record extends AppCompatActivity {
         mXAxis = findViewById(R.id.XAxis_title);
         mXAxis.setVisibility(ViewStub.VISIBLE);
         imageButtonRecord.setOnClickListener(imageRecordOnClickListener);
-        imageButtonSave.setOnClickListener(imageSaveOnClickListener);
-        imageButtonDiscard.setOnClickListener(imageDiscardOnClickListener);
+        //imageButtonSave.setOnClickListener(imageSaveOnClickListener);
+        //imageButtonDiscard.setOnClickListener(imageDiscardOnClickListener);
         plotSwitch.setOnCheckedChangeListener(plotSwitchOnCheckedChangeListener);
         channelViewsSwitch.setOnCheckedChangeListener(channelViewsSwitchListener);
 
@@ -1549,7 +1549,7 @@ public class Record extends AppCompatActivity {
         // UI Update
         mConnectionState.setText(R.string.device_connected);
         mConnectionState.setTextColor(Color.GREEN);
-        buttons_postrecording();
+        buttons_prerecording();
 
     }
 
@@ -1562,10 +1562,10 @@ public class Record extends AppCompatActivity {
         final EditText userInputLabel = mView.findViewById(R.id.input_dialog_string_Input);
 
         alertDialogBuilderUserInput
-                .setCancelable(true)
+                .setCancelable(false)
                 .setTitle(R.string.session_label_title)
                 .setMessage(getResources().getString(R.string.enter_session_label))
-                .setPositiveButton(R.string.save, (dialogBox, id) -> {
+                .setPositiveButton("Save", (dialogBox, id) -> {
                     if (!userInputLabel.getText().toString().isEmpty()) {
                         try {
                             saveSession(userInputLabel.getText().toString());
@@ -1579,6 +1579,10 @@ public class Record extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
+                })
+                .setNegativeButton("Discard", (dialogBox, id) -> {
+                    deleteTempFiles();
+                    recordingFile.delete();
                 });
 
         AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
@@ -1693,38 +1697,36 @@ public class Record extends AppCompatActivity {
     private void buttons_nodata() {
         imageButtonRecord.setImageResource(R.drawable.ic_fiber_manual_record_pink_24dp);
         imageButtonRecord.setEnabled(false);
-        imageButtonSave.setImageResource(R.drawable.ic_save_gray_24dp);
+        /*imageButtonSave.setImageResource(R.drawable.ic_save_gray_24dp);
         imageButtonSave.setEnabled(false);
         imageButtonDiscard.setImageResource(R.drawable.ic_delete_gray_24dp);
-        imageButtonDiscard.setEnabled(false);
+        imageButtonDiscard.setEnabled(false);*/
     }
 
     private void buttons_prerecording() {
         imageButtonRecord.setImageResource(R.drawable.ic_fiber_manual_record_red_24dp);
         imageButtonRecord.setEnabled(true);
-        imageButtonSave.setImageResource(R.drawable.ic_save_gray_24dp);
+        /*imageButtonSave.setImageResource(R.drawable.ic_save_gray_24dp);
         imageButtonSave.setEnabled(false);
         imageButtonDiscard.setImageResource(R.drawable.ic_delete_gray_24dp);
-        imageButtonDiscard.setEnabled(false);
+        imageButtonDiscard.setEnabled(false);*/
     }
 
     private void buttons_recording() {
         imageButtonRecord.setImageResource(R.drawable.ic_stop_black_24dp);
-        imageButtonSave.setImageResource(R.drawable.ic_save_gray_24dp);
+        /*imageButtonSave.setImageResource(R.drawable.ic_save_gray_24dp);
         imageButtonSave.setEnabled(false);
         imageButtonDiscard.setImageResource(R.drawable.ic_delete_gray_24dp);
-        imageButtonDiscard.setEnabled(false);
+        imageButtonDiscard.setEnabled(false);*/
     }
 
     private void buttons_postrecording() {
-        buttons_prerecording();
         /*imageButtonRecord.setImageResource(R.drawable.ic_fiber_manual_record_pink_24dp);
         imageButtonRecord.setEnabled(true);
         imageButtonSave.setEnabled(true);
         imageButtonSave.setImageResource(R.drawable.ic_save_black_24dp);
         imageButtonDiscard.setEnabled(true);
-        imageButtonDiscard.setImageResource(R.drawable.ic_delete_black_24dp);
-         */
+        imageButtonDiscard.setImageResource(R.drawable.ic_delete_black_24dp);*/
     }
 
     private void setConnectionStatus(boolean connected) {
