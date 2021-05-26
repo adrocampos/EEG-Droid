@@ -92,14 +92,11 @@ public class Record extends AppCompatActivity {
     private final int plottingFPS = 25;
     private Float[] channelOffsets = new Float[24];
     private final int maxVisibleXRange = 8000;  // see 8s at the time on the plot
-    private int leftAxisUpperLimit = 200000;
-    private int leftAxisLowerLimit = -200000;
-    private int leftAxisManualVScale = 1;
-    private int leftAxisManualHScale = 1;
+    private int leftAxisUpperLimit = (int) (2*Math.pow(10,6));
+    private int leftAxisLowerLimit = (int) (-2*Math.pow(10,6));
     private final ArrayList<Integer> pkgIDs = new ArrayList<>();
     private final int nChannels = 24;
     private float samplingRate = 500/3;  // alternative: 500, 500/2, 500/3, 500/4, etc.
-    private final float traumschreiberWarmup = 500/3; // keep same as samplingRate for 1s.
 
     private final ArrayList<ArrayList<Entry>> plottingBuffer = new ArrayList<ArrayList<Entry>>() {
         {
@@ -166,7 +163,6 @@ public class Record extends AppCompatActivity {
     private String mDeviceAddress;
     private BluetoothLeService mBluetoothLeService;
     private TraumschreiberService mTraumService = new TraumschreiberService();
-
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -189,45 +185,59 @@ public class Record extends AppCompatActivity {
         }
     };
 
-    private int selectedScale;
-    private byte selectedScaleB = 0b00000000;
     private boolean recording = false;
     private boolean notifying = false;
     private float resolutionTime;
     private float resolutionFrequency;
-    private int plottedPkgCount = 0;
-    private int visiblyPlottedPkgs = 0;
-    private int enabledCheckboxes = 0;
-    private TextView mXAxis;
     private TextView mDataResolution;
-    private LineChart mChart;
-    private Button tapZoomButton;
-    private ImageButton recordingButton;
-    //private ImageButton imageButtonSave;
-    //private ImageButton imageButtonDiscard;
+
     private androidx.appcompat.widget.SwitchCompat plotSwitch;
     private boolean plotting = true;
     private int plottingUpdateInterval= 30;
     private androidx.appcompat.widget.SwitchCompat channelViewsSwitch;
     private boolean channelViewsEnabled = true;
+
+    private int plottedPkgCount = 0;
+    private int visiblyPlottedPkgs = 0;
+    private int enabledCheckboxes = 0;
+    private TextView mXAxis;
+
+    private LineChart mChart;
+    private Button tapZoomButton;
+    private int tapZoomExponent = 0;
+    private final View.OnClickListener tapZoomButtonOnClickListener = v -> {
+        if(plottingBuffer.size() == 0){
+            Toast.makeText(getApplicationContext(),"Need Data First",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        //mChart.invalidate();
+        tapZoomExponent++;
+        if (tapZoomExponent>4) tapZoomExponent = 0;
+        int yRange = (int) ((leftAxisUpperLimit*2) / Math.pow(10, tapZoomExponent));
+        Log.d(TAG, "Visible yRange + " + yRange);
+        mChart.setVisibleYRangeMaximum(yRange, YAxis.AxisDependency.LEFT);
+        if(tapZoomExponent==0) mChart.fitScreen();
+        mChart.moveViewTo(plottedPkgCount*1000/samplingRate, 0, YAxis.AxisDependency.LEFT);
+
+        if(tapZoomExponent == 0) mChart.resetZoom();
+        tapZoomButton.setText("10^"+tapZoomExponent);
+    };
+
+    private ImageButton recordingButton;
+    private final View.OnClickListener recordingButtonOnClickListener = v -> {
+        if (!recording) {
+            startRecording();
+        } else {
+            // Open Save Dialog
+            showSaveDialog();
+        }
+    };
     
     private List<float[]> mainData;
     private int adaptiveEncodingFlag = 0; //Indicates whether adaptive encoding took place in this instant.
     private final ArrayList<Integer> adaptiveEncodingFlags = new ArrayList<>();
     private int signalBitShift = 0;
     private final ArrayList<Integer> signalBitShifts =  new ArrayList<>();
-    private final View.OnClickListener imageDiscardOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mainData = new ArrayList<>();
-            Toast.makeText(
-                    getApplicationContext(),
-                    "Your EEG session was discarded.",
-                    Toast.LENGTH_LONG
-            ).show();
-            buttons_prerecording();
-        }
-    };
     private int pkgCount;
     private int  storedPkgCount;
     private String start_time;
@@ -238,47 +248,10 @@ public class Record extends AppCompatActivity {
     private long end_timestamp;
     private long plottingLastRefresh;
     private long pkgArrivalTime;
-    
-    private final View.OnClickListener recordingButtonOnClickListener = v -> {
-        if (!recording) {
-            startRecording();
-        } else {
-            // Open Save Dialog
-            showSaveDialog();
-        }
-    };
-    private final View.OnClickListener imageSaveOnClickListener = v -> {
-        LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getApplicationContext());
-        View mView = layoutInflaterAndroid.inflate(R.layout.input_dialog_string, null);
-        AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(Record.this);
-        alertDialogBuilderUserInput.setView(mView);
 
-        final EditText userInputLabel = mView.findViewById(R.id.input_dialog_string_Input);
 
-        alertDialogBuilderUserInput
-                .setCancelable(false)
-                .setTitle(R.string.session_label_title)
-                .setMessage(getResources().getString(R.string.enter_session_label))
-                .setPositiveButton(R.string.save, (dialogBox, id) -> {
-                    if (!userInputLabel.getText().toString().isEmpty()) {
-                        try {
-                            saveSession(userInputLabel.getText().toString());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        try {
-                            saveSession();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
 
-        AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
-        alertDialogAndroid.show();
-        buttons_prerecording();
-    };
+
     private final CompoundButton.OnCheckedChangeListener plotSwitchOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -603,7 +576,9 @@ public class Record extends AppCompatActivity {
 
         recordingButton = findViewById(R.id.recordingButton);
         recordingButton.setOnClickListener(recordingButtonOnClickListener);
+
         tapZoomButton = findViewById(R.id.tapZoomButton);
+        tapZoomButton.setOnClickListener(tapZoomButtonOnClickListener);
         
         // Traumschreiber Config Dialog
         traumConfigDialog = createTraumConfigDialog();
@@ -961,7 +936,7 @@ public class Record extends AppCompatActivity {
                 selectedTransmissionRatePos = position;
                 transmissionRateB = (byte) (position); // its 0 or 1 anyways
 
-                // Small Extra for UI
+                // Small Extra for correct plotting timing
                 if(transmissionRateB == (byte) 1) samplingRate = 500/2;
                 else samplingRate = 500/3;
 
