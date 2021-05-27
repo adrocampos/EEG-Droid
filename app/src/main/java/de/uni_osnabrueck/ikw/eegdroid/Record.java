@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -1411,6 +1412,9 @@ public class Record extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Recording in progress.", Toast.LENGTH_LONG
         ).show();
         buttons_recording();
+
+        //Prevent Screen from turning off
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     private void createRecordingFile(){
@@ -1465,6 +1469,8 @@ public class Record extends AppCompatActivity {
 
         // UI Update
         buttons_prerecording();
+        //Prevent Screen from turning off
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     }
 
