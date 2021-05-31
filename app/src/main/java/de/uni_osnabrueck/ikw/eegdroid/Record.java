@@ -174,7 +174,8 @@ public class Record extends AppCompatActivity {
     private float resolutionTime;
     private float resolutionFrequency;
     private TextView mDataResolution;
-
+    private int batteryValue;
+    private TextView mBatteryValue;
     private androidx.appcompat.widget.SwitchCompat plotSwitch;
     private boolean plotting = true;
     private androidx.appcompat.widget.SwitchCompat channelViewsSwitch;
@@ -311,7 +312,8 @@ public class Record extends AppCompatActivity {
                 if (data.length == 8) {
                     int[] configData = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
                     Toast.makeText(getApplicationContext(),"Received Config Data", Toast.LENGTH_SHORT).show();
-                    displayReceivedTraumConfigValues(configData);
+                    updateTraumConfigValues(configData);
+                    if(traumConfigDialog.isShowing()) displayTraumConfigValues();
                     return;
                 }
 
@@ -513,6 +515,7 @@ public class Record extends AppCompatActivity {
         viewDeviceAddress = findViewById(R.id.device_address);
         mConnectionState = findViewById(R.id.connection_state);
         mDataResolution = findViewById(R.id.resolution_value);
+        mBatteryValue = findViewById(R.id.battery_value);
 
         plotSwitch = findViewById(R.id.switch_plots);
         channelViewsSwitch = findViewById(R.id.channel_views_switch);
@@ -1062,9 +1065,11 @@ public class Record extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Selected Default Values", Toast.LENGTH_SHORT).show();
         });
 
+        displayTraumConfigValues();
+
     }
 
-    private void displayReceivedTraumConfigValues(int[] configData){
+    private void updateTraumConfigValues(int[] configData){
         selectedGainPos = (configData[0] & 0xff) >> 6; // 0bxx00 0000
         selectedBitsPerChPos = (configData[0] & 0x30) >> 4; // 0b00xx 0000
         runningAverageFilterCheck = (configData[0] & 0x8) > 1; //0b0000 x000
@@ -1078,9 +1083,17 @@ public class Record extends AppCompatActivity {
         bitshiftMinPos = (configData[4]&0xff) >> 4;
         bitshiftMaxPos= (configData[4]&0x0f);
         encodingSafetyPos = (configData[5]&0xff) >> 4;
-        int batteryValue = ((configData[6]&0xff) << 8) + configData[7] & 0xff;
-        Log.d(TAG, "Battery Value: " + batteryValue);
 
+
+        float batteryValueF = ((configData[6]&0xff) << 8) + configData[7] & 0xf0;
+        float batteryValueuV = (float) (1/0.4 * batteryValueF*0.298);
+        float batteryValueV = (float) (batteryValueuV / Math.pow(10,6));
+        Log.d(TAG, "Battery Value in V " + batteryValueF);
+        batteryValue = (int) ((3.9f - batteryValueV)/ 0.7 ) * 100;
+        mBatteryValue.setText(batteryValue + "%");
+    }
+
+    private void displayTraumConfigValues(){
         Spinner gainSpinner = traumConfigDialog.findViewById(R.id.gain_spinner);
         gainSpinner.setSelection(selectedGainPos);
         Spinner bitsPerChSpinner = traumConfigDialog.findViewById(R.id.bits_per_ch_spinner);
