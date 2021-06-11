@@ -82,6 +82,8 @@
     <string name="label_data">Data:</string>
     <string name="label_device_address">Device address:</string>
     <string name="label_state">Status:</string>
+    <string name="label_battery">Battery:</string>
+
     <string name="default_resolution_text"> - - - </string>
     <string name="connected">Connected</string>
     <string name="disconnected">Disconnected</string>
