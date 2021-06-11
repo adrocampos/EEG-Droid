@@ -219,9 +219,12 @@ public class Record extends AppCompatActivity {
     private final ArrayList<Integer> adaptiveEncodingFlags = new ArrayList<>();
     private int signalBitShift = 0;
     private final ArrayList<Integer> signalBitShifts =  new ArrayList<>();
-    private int pkgCount;
-    private int  storedPkgCount;
-    private int lostPkgCount;
+    private int pkgCountTotal;                //total count of packages that  arrived
+    private int  storedPkgCount;         //no. of samples added to the csv
+    private int lostPkgCountTotal;            // total count of lost samples based on info in header
+    private float pkgLossPercent;       // proportion of currently lost packages
+    private float pkgLossLimit = 0.02f; // tolerance for this proportion of package loss
+    private boolean ignorePkgLoss = false;
     private float lastTimeStamp;
     private String start_time;
     private String end_time;
@@ -269,15 +272,11 @@ public class Record extends AppCompatActivity {
     private BufferedReader in;
     private List<Float> microV;
     private CastThread caster;
-    private Timer timer;
-    private TimerTask timerTask;
-    private boolean timerRunning = false;
     // Handles various events fired by the Service.
     private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-
             // CONNECTION EVENT
             if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
                 deviceConnected = true;
@@ -290,11 +289,11 @@ public class Record extends AppCompatActivity {
                 setConnectionStatus(false);
                 clearUI();
                 disableCheckboxes();
-                if (timer != null) {
-                    timer.cancel();
-                    timer.purge();
+                if (srmTimer != null) {
+                    srmTimer.cancel();
+                    srmTimer.purge();
                 }
-                timerRunning = false;
+                samplingRateMonitorRunning = false;
 
             // BLUETOOTH SERVICE REGISTRATION
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
@@ -307,7 +306,7 @@ public class Record extends AppCompatActivity {
               
             // HANDLE INCOMING STREAM
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-
+                
                 int[] data = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
 
                 // CONFIG DATA
@@ -335,20 +334,20 @@ public class Record extends AppCompatActivity {
                 //if(data==null) return;
 
                 // CHANNEL DATA
-                pkgCount++;
-                if (!timerRunning) startTimer();
-
-
-                // parse header, if there is a header
+                // First, parse the header (if there is a header)
                 if (data.length > nChannels){
                     currentPkgId = data[0];
                     currentPkgLoss = data[1];
                     currentBtPkgLoss = calculateBtPkgLoss();
                     data = Arrays.copyOfRange(data, 2, data.length);
                 }
+                pkgCountTotal++;
+                lostPkgCountTotal += (currentBtPkgLoss + currentPkgLoss);
+                if (!samplingRateMonitorRunning) startSamplingRateMonitoring();
+
                 microV = convertToMicroV(data);
-                streamData(microV);
-                if (channelViewsEnabled && pkgCount % 100 == 0) displayNumerical(microV);
+                //streamData(microV);
+                if (channelViewsEnabled && pkgCountTotal % 100 == 0) displayNumerical(microV);
                 if (plotting) storeForPlotting(microV);
                 if (recording) storeData(microV);
             }
@@ -424,71 +423,122 @@ public class Record extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Succesfully applied configuration.", Toast.LENGTH_SHORT).show();
     }
 
+    private int srmUpdateInterval = 5000; // ms
+    private boolean samplingRateMonitorRunning = false;
 
-    private void startTimer() {
+    private Timer srmTimer;
+    private TimerTask srmTimerTask;
+    private void startSamplingRateMonitoring() {
         //set a new Timer
-        timer = new Timer();
-        //initialize the TimerTask's job
-        initializeTimerTask();
-        // timerTask will be executed every 5000 ms
-        timer.schedule(timerTask, 5000, 5000);
+        srmTimer = new Timer();
+        initSrmTimerTask();
+        srmTimer.schedule(srmTimerTask, srmUpdateInterval, srmUpdateInterval);
         mDataResolution.setText("calculating");
-        timerRunning = true;
+        samplingRateMonitorRunning = true;
+    }
+
+    private void initSrmTimerTask() {
+        srmTimerTask = new TimerTask() {
+            private int pkgCountSrm = 0; //packages arrived since last check
+            private int lostPkgCountSrm = 0; //packages lost since last check
+
+            public void run() {
+                handler.post(() -> {
+                    if (!notifying || pkgCountTotal == 0) return;
+
+                    pkgCountSrm = pkgCountTotal - pkgCountSrm;
+                    resolutionTime = (float) srmUpdateInterval / pkgCountSrm;    // ms per package
+                    resolutionFrequency = pkgCountSrm / (float) (srmUpdateInterval / 1000);  // packages per second
+
+                    String hertz = (int) resolutionFrequency + "Hz";
+                    String resolution = String.format("%.2f", resolutionTime) + "ms - ";
+                    String content = resolution + hertz;
+
+                    lostPkgCountSrm = lostPkgCountTotal - lostPkgCountSrm;
+                    float expectedPkgs = (float) lostPkgCountSrm + pkgCountSrm;
+                    pkgLossPercent = (float) lostPkgCountSrm / expectedPkgs;
+                    StringBuilder pkgLossDebug  = new StringBuilder();
+                    pkgLossDebug.append("Expected Pkgs: " + expectedPkgs);
+                    pkgLossDebug.append("\nLost Packages: " + lostPkgCountSrm);
+                    pkgLossDebug.append("\nPkg Loss %: " + pkgLossPercent);
+                    Log.d(TAG, pkgLossDebug.toString());
+
+                    int color; //green, orange and red for good, moderate and bad sampling rates
+                    if (pkgLossPercent < 0.01) color = getResources().getColor(R.color.green);
+                    else if (pkgLossPercent < pkgLossLimit)
+                        color = getResources().getColor(R.color.orange);
+                    else {
+                        showPkgLossWarning();
+                        color = getResources().getColor(R.color.red);
+                    }
+
+                    if (pkgCountTotal > 0) {
+                        mDataResolution.setText(content);
+                        mDataResolution.setTextColor(color);
+                    }
+                    pkgCountSrm = pkgCountTotal;
+                    lostPkgCountSrm = lostPkgCountTotal;
+                });
+            }
+
+        };
+    }
+
+    private void showPkgLossWarning(){
+        String pkgLossPercentFormatted = String.format("%.02f", pkgLossPercent*100);
+        AlertDialog.Builder PkgLossWarningBuilder = new AlertDialog.Builder(this)
+                .setTitle("Data Loss")
+                .setMessage(pkgLossPercentFormatted + "% of samples are being lost. Change to less demanding" +
+                        "settings?" )
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    toggleNotifying();
+                    showTraumConfigDialog();
+                    highlightRelevantOptions();
+                    unhighlightRelevantOptions();
+                } )
+                .setNegativeButton("Ignore from now on", (dialog, which) -> {ignorePkgLoss = true;})
+                .setCancelable(true);
+        AlertDialog pkgLossWarning = PkgLossWarningBuilder.create();
+        pkgLossWarning.show();
+    }
+
+    private void highlightRelevantOptions(){
+        View bitsPerChRow =  traumConfigDialog.findViewById(R.id.config_row_bits_per_ch);
+        bitsPerChRow.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+        bitsPerChRow.setAlpha(0.8f);
+
+        View transmissionRow =  traumConfigDialog.findViewById(R.id.config_row_transmission_rate);
+        transmissionRow.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+        transmissionRow.setAlpha(0.8f);
+    }
+
+    private void unhighlightRelevantOptions() {
+        new java.util.Timer().schedule(
+                new TimerTask() {
+                    @Override
+                    public void run(){
+                        View bitsPerChRow =  traumConfigDialog.findViewById(R.id.config_row_bits_per_ch);
+                        bitsPerChRow.setBackgroundColor(getResources().getColor(R.color.design_default_color_background));
+                        bitsPerChRow.setAlpha(1f);
+
+                        View transmissionRow =  traumConfigDialog.findViewById(R.id.config_row_transmission_rate);
+                        transmissionRow.setBackgroundColor(getResources().getColor(R.color.design_default_color_background));
+                        transmissionRow.setAlpha(1f);
+                    }
+                },
+                8000);
     }
 
     private void endTimer(){
         // End the Timer Task
         mDataResolution.setTextColor((int) R.color.defaultTextView);
         mDataResolution.setText(R.string.default_resolution_text);
-        if (timerRunning) {
-            timerTask.cancel();
-            timerRunning = false;
+        if (samplingRateMonitorRunning) {
+            srmTimerTask.cancel();
+            samplingRateMonitorRunning = false;
         }
-        pkgCount = 0;
+        pkgCountTotal = 0;
     }
-    private void initializeTimerTask() {
-
-        timerTask = new TimerTask() {
-            public void run() {
-                handler.post(() -> {
-
-                    if (!notifying) {
-                        return;
-                    }
-
-                    if (pkgCount > 0) {
-                        resolutionTime = (float) 5000/pkgCount;    // ms per package
-                        resolutionFrequency = pkgCount / 5f;  // packages per second
-                    }
-                    String hertz = (int) resolutionFrequency + "Hz";
-
-
-                    @SuppressLint("DefaultLocale") String resolution = String.format("%.2f", resolutionTime) + "ms - ";
-                    String content = resolution + hertz;
-
-                    // Just here for stability in case I change the code for the transmissionRate selector
-                    //if(transmissionRateB == (byte) 1) samplingRate = 500/2;
-                    //else samplingRate = 500/3;
-
-                    int color;
-                    if (resolutionFrequency >= samplingRate) color = getResources().getColor(R.color.green);
-                    else if (resolutionFrequency >= samplingRate - 2) color = getResources().getColor(R.color.orange);
-                    else {
-                        content += "  Bad Signal";
-                        color = getResources().getColor(R.color.red);
-                    }
-
-                    if (pkgCount != 0) {
-                        mDataResolution.setText(content);
-                        mDataResolution.setTextColor(color);
-                    }
-
-                    pkgCount = 0;
-                });
-            }
-        };
-    }
-
 
 
     @SuppressLint("SetTextI18n")
@@ -1197,7 +1247,7 @@ public class Record extends AppCompatActivity {
     private void clearUI() {
         for (TextView view : channelValueViews) view.setText("0μV");
         mDataResolution.setText(R.string.default_resolution_text);
-        pkgCount = 0;
+        pkgCountTotal = 0;
     }
 
     private void disableCheckboxes() {
@@ -1416,7 +1466,7 @@ public class Record extends AppCompatActivity {
         // Reset Variables used for recording
         plottedPkgCount = 0;
         storedPkgCount = 0;
-        lostPkgCount = 0;
+        lostPkgCountTotal = 0;
         mainData = new ArrayList<>();
         start_time = new SimpleDateFormat("HH:mm:ss.SSS").format(new Date());
         start_timestamp = new Timestamp(startTime).getTime();
@@ -1499,9 +1549,9 @@ public class Record extends AppCompatActivity {
         statistics.append("Sampling Rate: \t" + samplingRate + "\n");
         statistics.append("Bit resolution: \t" + TraumschreiberService.bitsPerCh + "\n");
         statistics.append("Total Number of PKGs: \t" + storedPkgCount + "\n");
-        statistics.append("Total Number of Lost PKGs: \t" + lostPkgCount + "\n");
+        statistics.append("Total Number of Lost PKGs: \t" + lostPkgCountTotal + "\n");
         if(storedPkgCount>0) {
-            statistics.append("Package Loss (%): " + (float) (lostPkgCount * 100) / (float) storedPkgCount);
+            statistics.append("Package Loss (%): " + (float) (lostPkgCountTotal * 100) / (float) storedPkgCount);
         }
         AlertDialog.Builder statsDialogBuilder = new AlertDialog.Builder(Record.this)
                 .setTitle("Recording statistics for debugging:")
@@ -1614,7 +1664,7 @@ public class Record extends AppCompatActivity {
             fileWriter.append(delimiter + resolutionFrequency);
             fileWriter.append("\n");
             storedPkgCount++;
-            lostPkgCount += (currentBtPkgLoss + currentPkgLoss);
+
 
         } catch (Exception e){
             Log.e(TAG, e.getMessage());
