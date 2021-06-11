@@ -221,6 +221,8 @@ public class Record extends AppCompatActivity {
     private final ArrayList<Integer> signalBitShifts =  new ArrayList<>();
     private int pkgCount;
     private int  storedPkgCount;
+    private int lostPkgCount;
+    private float lastTimeStamp;
     private String start_time;
     private String end_time;
     private long startTime;
@@ -1085,11 +1087,11 @@ public class Record extends AppCompatActivity {
         encodingSafetyPos = (configData[5]&0xff) >> 4;
 
 
-        float batteryValueF = ((configData[6]&0xff) << 8) + configData[7] & 0xf0;
-        float batteryValueuV = (float) (1/0.4 * batteryValueF*0.298);
+        float batteryValueF = ((configData[7]&0xff) << 4) + ((configData[6] & 0xf0)>>4);
+        float batteryValueuV = (float) (2 * batteryValueF*0.298);
         float batteryValueV = (float) (batteryValueuV / Math.pow(10,6));
-        Log.d(TAG, "Battery Value in V " + batteryValueF);
-        batteryValue = (int) ((3.9f - batteryValueV)/ 0.7 ) * 100;
+        Log.d(TAG, "Battery Value in V " + batteryValueV);
+        batteryValue = (int) ((3.7f - batteryValueV)/ 0.7 ) * 100;
         mBatteryValue.setText(batteryValue + "%");
     }
 
@@ -1414,6 +1416,7 @@ public class Record extends AppCompatActivity {
         // Reset Variables used for recording
         plottedPkgCount = 0;
         storedPkgCount = 0;
+        lostPkgCount = 0;
         mainData = new ArrayList<>();
         start_time = new SimpleDateFormat("HH:mm:ss.SSS").format(new Date());
         start_timestamp = new Timestamp(startTime).getTime();
@@ -1485,8 +1488,29 @@ public class Record extends AppCompatActivity {
         //Prevent Screen from turning off
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        showStats();
+
     }
 
+    private void showStats(){
+        StringBuilder statistics = new StringBuilder();
+        statistics.append("Device: \t" + mDeviceAddress + "\n\n");
+        statistics.append("Last Timestamp: \t" + lastTimeStamp + "\n");
+        statistics.append("Sampling Rate: \t" + samplingRate + "\n");
+        statistics.append("Bit resolution: \t" + TraumschreiberService.bitsPerCh + "\n");
+        statistics.append("Total Number of PKGs: \t" + storedPkgCount + "\n");
+        statistics.append("Total Number of Lost PKGs: \t" + lostPkgCount + "\n");
+        if(storedPkgCount>0) {
+            statistics.append("Package Loss (%): " + (float) (lostPkgCount * 100) / (float) storedPkgCount);
+        }
+        AlertDialog.Builder statsDialogBuilder = new AlertDialog.Builder(Record.this)
+                .setTitle("Recording statistics for debugging:")
+                .setMessage(statistics.toString())
+                .setCancelable(true)
+                .setPositiveButton("OK", (dialogInterface, i) -> {});
+        AlertDialog statsDialog = statsDialogBuilder.create();
+        statsDialog.show();
+    }
     private void showSaveDialog(){
         LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getApplicationContext());
         View mView = layoutInflaterAndroid.inflate(R.layout.input_dialog_string, null);
@@ -1545,13 +1569,13 @@ public class Record extends AppCompatActivity {
         float[] f_microV = new float[nChannels];
         Arrays.fill(f_microV, Float.NaN);
         //NaN rows on top (uninitialized)
-        for (int i=0;i<currentPkgLoss; i++) appendSampleToCsv(f_microV);
-        for (int i=0;i<currentBtPkgLoss; i++) appendSampleToCsv(f_microV);
+        for (int i=0;i<currentPkgLoss; i++) writeSampleToCsv(f_microV);
+        for (int i=0;i<currentBtPkgLoss; i++) writeSampleToCsv(f_microV);
         // Channel Values
         int i = 0;
         for (Float f : data_microV)
             f_microV[i++] = (f != null ? f : Float.NaN); // Or whatever default you want
-        appendSampleToCsv(f_microV);
+        writeSampleToCsv(f_microV);
         adaptiveEncodingFlag = 0;
 
     }
@@ -1561,17 +1585,17 @@ public class Record extends AppCompatActivity {
      * timestamp, samplingtime,channelvalues,pkgid,pkgsloss
      * @param sample float array with channel values
      */
-    private void appendSampleToCsv(float[] sample){
+    private void writeSampleToCsv(float[] sample){
 
         // Real Time Stamps
         if (storedPkgCount == 0) startTime = System.currentTimeMillis();
-        float time = System.currentTimeMillis() - startTime;
+        lastTimeStamp = System.currentTimeMillis() - startTime;
 
         // Expected Time Stamps
         float samplingInterval = 1000/samplingRate;
         float samplingTime = samplingInterval*storedPkgCount;
 
-        // Correct Pkg loss counts to have "pkg loss" at 0 for NaN rows
+        // Correct Pkg loss counts: NaN rows should have a pkg loss of 0.
         int NaNCorrectionBtLoss = 0;
         int NaNCorrectionInternalLoss = 0;
         if (Float.isNaN(sample[0])){
@@ -1579,7 +1603,7 @@ public class Record extends AppCompatActivity {
             NaNCorrectionInternalLoss = currentPkgLoss;
         }
         try {
-            fileWriter.append(String.valueOf(time));
+            fileWriter.append(String.valueOf(lastTimeStamp));
             fileWriter.append(delimiter + samplingTime);
             for (int j = 0; j < nChannels; j++) {
                 fileWriter.append(delimiter + sample[j]);
@@ -1590,6 +1614,7 @@ public class Record extends AppCompatActivity {
             fileWriter.append(delimiter + resolutionFrequency);
             fileWriter.append("\n");
             storedPkgCount++;
+            lostPkgCount += (currentBtPkgLoss + currentPkgLoss);
 
         } catch (Exception e){
             Log.e(TAG, e.getMessage());
