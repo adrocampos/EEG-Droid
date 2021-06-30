@@ -263,7 +263,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="Desired Transmission Rate"
+                    android:text="Transmission Rate"
 
                     tools:ignore="HardcodedText" />
 
@@ -407,7 +407,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="50 Hz Filter"
+                    android:text="Band Stop Filter"
 
 
                     tools:ignore="HardcodedText" />

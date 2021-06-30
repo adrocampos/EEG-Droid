@@ -30,6 +30,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -412,15 +413,118 @@ public class Record extends AppCompatActivity {
         configCharacteristic.setValue(configBytes);
 
         boolean togglingRequired = notifying;
-
-
         if (togglingRequired) toggleNotifying();
         mBluetoothLeService.writeCharacteristic(configCharacteristic);
         if (togglingRequired) toggleNotifying();
 
         Log.d(TAG, "New Value of Config: " + Arrays.toString(configCharacteristic.getValue()));
-
         Toast.makeText(getApplicationContext(), "Succesfully applied configuration.", Toast.LENGTH_SHORT).show();
+    }
+
+
+    /**
+     * Calling this method opens up an alertdialog that displays the current
+     * traumschreiber configuration. This method is used for debugging! It is called by
+     * the onClickListener of the "apply_config_button" defined in showTraumConfigDialog()
+     * The values of Byte 0 to Byte 5 of the configCharacteristic are shown as binary strings.
+     * The settings encoded within 1 byte are listed right below it.
+     * "x"'s indicate which bits of the byte are reserved for the corresponding setting.
+     */
+    private void showConfigValues(){
+
+        // Byte Values of Config
+        byte[] configValuesB = configCharacteristic.getValue();
+
+        // Message Builder
+        StringBuilder configValuesString = new StringBuilder();
+        configValuesString.append("These settings are currently selected in the app interface: \n\n");
+
+        configValuesString.append("Byte 0: \n");
+        String configByteS = String.format("%8s", Integer.toBinaryString(configValuesB[0] & 0xFF))
+                .replace(' ', '0');
+        configValuesString.append(configByteS + "\n\n");
+
+        Spinner gainSpinner = traumConfigDialog.findViewById(R.id.gain_spinner);
+        configValuesString.append("Gain: " + gainSpinner.getSelectedItem().toString());
+        configValuesString.append("\nxx00 0000 (00: 1, 01: 2, 10: 4, 11:8)\n\n");
+
+        Spinner bitsPerChSpinner = traumConfigDialog.findViewById(R.id.bits_per_ch_spinner);
+        configValuesString.append("Bits/Ch: " + bitsPerChSpinner.getSelectedItem().toString());
+        configValuesString.append("\n00xx 0000 (00: 10, 01: 14, 10: 16, 11:10)\n\n");
+
+        SwitchCompat runningAvgSwitch = traumConfigDialog.findViewById(R.id.average_filter_switch);
+        int isChecked = runningAvgSwitch.isChecked() ? 1 : 0;
+        configValuesString.append("Running Average Filter: " + isChecked);
+        configValuesString.append("\n0000 x000 (0: off, 1: on)\n\n");
+
+        SwitchCompat genData = traumConfigDialog.findViewById(R.id.generate_data_switch);
+        isChecked = genData.isChecked() ? 1 : 0;
+        configValuesString.append("DummyData: " + isChecked);
+        configValuesString.append("\n0000 00x0 (0: off, 1: on)\n\n");
+
+        Spinner tr = traumConfigDialog.findViewById(R.id.transmission_rate_spinner);
+        configValuesString.append("Transmission: " + tr.getSelectedItem().toString());
+        configValuesString.append("\n0000 000x (0: 167, 1: 250)\n\n");
+
+        configValuesString.append("Byte 1: \n");
+        configByteS = String.format("%8s", Integer.toBinaryString(configValuesB[1] & 0xFF))
+                .replace(' ', '0');
+        configValuesString.append(configByteS + "\n\n");
+
+
+        configValuesString.append("Byte 2: \n");
+        configByteS = String.format("%8s", Integer.toBinaryString(configValuesB[2] & 0xFF))
+                .replace(' ', '0');
+        configValuesString.append(configByteS + "\n\n");
+
+        Spinner hp = traumConfigDialog.findViewById(R.id.o1_highpass_spinner);
+        configValuesString.append("High Pass O1: " + hp.getSelectedItem().toString());
+        configValuesString.append("\nxxxx 0000\n\n");
+
+        Spinner iirhp = traumConfigDialog.findViewById(R.id.iir_highpass_spinner);
+        configValuesString.append("High Pass IIR: " + iirhp.getSelectedItem().toString());
+        configValuesString.append("\n0000 xxxx\n\n");
+
+        configValuesString.append("Byte 3: \n");
+        configByteS = String.format("%8s", Integer.toBinaryString(configValuesB[3] & 0xFF))
+                .replace(' ', '0');
+        configValuesString.append(configByteS + "\n\n");
+
+        Spinner lp = traumConfigDialog.findViewById(R.id.lowpass_spinner);
+        configValuesString.append("Low Pass: " + lp.getSelectedItem().toString());
+        configValuesString.append("\nxxxx 0000\n\n");
+
+        Spinner f50 = traumConfigDialog.findViewById(R.id.filter50hz_spinner);
+        configValuesString.append("Filter 50hz: " + f50.getSelectedItem().toString());
+        configValuesString.append("\n0000 xxxx\n\n");
+
+        configValuesString.append("Byte 4: \n");
+        configByteS = String.format("%8s", Integer.toBinaryString(configValuesB[4] & 0xFF))
+                .replace(' ', '0');
+        configValuesString.append(configByteS + "\n\n");
+
+        Spinner bsMin = traumConfigDialog.findViewById(R.id.bitshift_min_spinner);
+        configValuesString.append("Bitshift Min: " + bsMin.getSelectedItem().toString());
+        configValuesString.append("\nxxxx 0000\n\n");
+
+        Spinner bsMax = traumConfigDialog.findViewById(R.id.bitshift_max_spinner);
+        configValuesString.append("Bitshift Min: " + bsMax.getSelectedItem().toString());
+        configValuesString.append("\n0000 xxxx\n\n");
+
+        configValuesString.append("Byte 5: \n");
+        configByteS = String.format("%8s", Integer.toBinaryString(configValuesB[5] & 0xFF))
+                .replace(' ', '0');
+        configValuesString.append(configByteS + "\n\n");
+
+        Spinner enc = traumConfigDialog.findViewById(R.id.encoding_safety_spinner);
+        configValuesString.append("Encoding Safety: " + enc.getSelectedItem().toString());
+        configValuesString.append("\nxxxx 0000\n\n");
+
+        AlertDialog.Builder configInfoBuilder = new AlertDialog.Builder(this)
+                .setTitle("Config Data")
+                .setMessage(configValuesString.toString());
+        AlertDialog configInfoDialog = configInfoBuilder.create();
+        configInfoDialog.show();
     }
 
     private int srmUpdateInterval = 5000; // ms
@@ -1101,6 +1205,7 @@ public class Record extends AppCompatActivity {
         updateConfigButton.setOnClickListener(v -> {
             if(deviceConnected) updateConfiguration();
             else Toast.makeText(getApplicationContext(), "No Device Connected", Toast.LENGTH_SHORT).show();
+            // showConfigValues();  ONLY USED FOR DEBUGGING THE CONFIG MENU
         });
 
         // Link readConfigButton
@@ -1128,13 +1233,13 @@ public class Record extends AppCompatActivity {
         sendOnOneCharCheck = (configData[0] & 0x4) > 1; // 0b0000 0x00
         generateDataCheck = (configData[0] & 0x2) > 1; // 0b0000 00x0
         selectedTransmissionRatePos = (configData[0] & 0x03); // 0b0000 000x
-        o1HighpassPos = (configData[2]&0xff) >> 4;
-        iirHighpassPos = (configData[2]&0x0f);
-        lowpassPos = (configData[3]&0xff) >> 4;
-        filter50hzPos = (configData[3]&0x0f);
-        bitshiftMinPos = (configData[4]&0xff) >> 4;
-        bitshiftMaxPos= (configData[4]&0x0f);
-        encodingSafetyPos = (configData[5]&0xff) >> 4;
+        o1HighpassPos = (configData[2]&0xff) >> 4; // 0bxxxx 0000
+        iirHighpassPos = (configData[2]&0x0f); // 0b 0000 xxxx
+        lowpassPos = (configData[3]&0xff) >> 4; // 0bxxxx 0000
+        filter50hzPos = (configData[3]&0x0f); // 0b0000 xxx
+        bitshiftMinPos = (configData[4]&0xff) >> 4; // 0bxxxx 000
+        bitshiftMaxPos= (configData[4]&0x0f); // 0b0000 xxxx
+        encodingSafetyPos = (configData[5]&0xff) >> 4; // 0bxxxx 0000
 
 
         float batteryValueF = ((configData[7]&0xff) << 4) + ((configData[6] & 0xf0)>>4);
