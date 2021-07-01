@@ -18,8 +18,10 @@ import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -34,6 +36,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -171,9 +174,24 @@ public class DeviceScanActivity extends ListActivity {
         return true;
     }
 
+    // TODO : FIX THIS METHOD, ITS PRETTY BROKEN, MAKES THE APP CRASH!
     @Override
     protected void onResume() {
         super.onResume();
+
+        checkBluetoothEnabled();
+        Log.d(TAG, "Bluetooth Checked");
+        checkPermissions();
+        Log.d(TAG, "Permissions Checked");
+        checkBuildVersion();
+        Log.d(TAG, "BuildVersion Checked");
+        checkLocationEnabled();
+        Log.d(TAG, "Location Services Checked");
+
+
+    }
+
+    private void checkBluetoothEnabled(){
         // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
         // fire an intent to display a dialog asking the user to grant permission to enable it.
         if (!mBluetoothAdapter.isEnabled()) {
@@ -190,6 +208,45 @@ public class DeviceScanActivity extends ListActivity {
             setListAdapter(mLeDeviceListAdapter);
             scanLeDevice(true);
         }
+    }
+
+
+    // TODO: Implement LocationEnabledCheck
+    private void checkLocationEnabled(){
+
+        Context context = getApplicationContext();
+        LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+        boolean gps_enabled = false;
+        boolean network_enabled = false;
+
+        try {
+            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            Log.d(TAG, "Gps enabled checked!: " + gps_enabled);
+        } catch(Exception ex) {}
+
+        try {
+            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch(Exception ex) {}
+
+        if(!gps_enabled || !network_enabled) {
+            // notify user
+            Log.d(TAG, "Actually Got into the path where user is notified about location services.");
+            new AlertDialog.Builder(context)
+                    .setMessage("Location Services Disabled")
+                    .setPositiveButton("Bluetooth Low Energy Requires enabled location services.", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                            context.startActivity(new Intent(Settings.LOCATION_SERVICE));
+                        }
+                    })
+                            .setNegativeButton("Cancel",null)
+                            .show();
+        }
+
+
+    }
+
+    private void checkPermissions(){
         if (ContextCompat.checkSelfPermission(DeviceScanActivity.this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -223,6 +280,21 @@ public class DeviceScanActivity extends ListActivity {
                         REQUEST_ACCESS_FINE_LOCATION);
             }
         }
+
+        if (ContextCompat.checkSelfPermission(DeviceScanActivity.this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(DeviceScanActivity.this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            } else {
+                ActivityCompat.requestPermissions(DeviceScanActivity.this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        REQUEST_READ_EXTERNAL_STORAGE);
+            }
+        }
+    }
+
+    private void checkBuildVersion(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (ContextCompat.checkSelfPermission(DeviceScanActivity.this,
                     Manifest.permission.ACCESS_BACKGROUND_LOCATION)
@@ -234,17 +306,6 @@ public class DeviceScanActivity extends ListActivity {
                             new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},
                             REQUEST_ACCESS_BACKGROUND_LOCATION);
                 }
-            }
-        }
-        if (ContextCompat.checkSelfPermission(DeviceScanActivity.this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(DeviceScanActivity.this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            } else {
-                ActivityCompat.requestPermissions(DeviceScanActivity.this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                        REQUEST_READ_EXTERNAL_STORAGE);
             }
         }
     }
