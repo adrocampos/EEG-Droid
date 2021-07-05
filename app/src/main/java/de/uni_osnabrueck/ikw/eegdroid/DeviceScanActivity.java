@@ -243,7 +243,8 @@ public class DeviceScanActivity extends ListActivity {
             Log.d(TAG, "Actually Got into the path where user is notified about location services.");
             new AlertDialog.Builder(context)
                     .setTitle("Location Services Disabled")
-                    .setMessage("Bluetooth Low Energy Requires enabled location services.")
+                    .setMessage("Bluetooth Low Energy requires enabled location services. " +
+                            "(Battery saving mode is sufficient.)")
                     .setPositiveButton("Enable Location Service", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface paramDialogInterface, int paramInt) {
