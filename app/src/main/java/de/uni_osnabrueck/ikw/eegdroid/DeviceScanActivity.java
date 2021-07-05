@@ -214,7 +214,7 @@ public class DeviceScanActivity extends ListActivity {
     // TODO: Implement LocationEnabledCheck
     private void checkLocationEnabled(){
 
-        Context context = getApplicationContext();
+        Context context = this;
         LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
         boolean gps_enabled = false;
         boolean network_enabled = false;
