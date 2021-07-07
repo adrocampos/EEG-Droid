@@ -330,7 +330,7 @@
         <item>[46,54]Hz Order 6</item>
         <item>[48,52]Hz Order 6</item>
         <item>[46,54]Hz Order 4</item>
-        <item>[46,52]Hz Order 4</item>
+        <item>[48,52]Hz Order 4</item>
     </string-array>
 
     <string-array name="bitshift_min_entries">
