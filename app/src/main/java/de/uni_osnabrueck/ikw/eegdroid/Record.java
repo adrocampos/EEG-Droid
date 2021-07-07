@@ -198,7 +198,9 @@ public class Record extends AppCompatActivity {
         if (tapZoomExponent>4) tapZoomExponent = 0;
         int yRange = (int) ((leftAxisUpperLimit*2) / Math.pow(10, tapZoomExponent));
         Log.d(TAG, "Visible yRange + " + yRange);
+        /* First constrain the yRange to the desired limits (e.g. 2000muV,-2000muV) */
         mChart.setVisibleYRangeMaximum(yRange, YAxis.AxisDependency.LEFT);
+        /* Now that our view is limited to the desired range, we can relax it again, but it wont zoom out by itself.*/
         mChart.setVisibleYRangeMaximum(leftAxisUpperLimit*2, YAxis.AxisDependency.LEFT);
         if(tapZoomExponent==0) mChart.fitScreen();
         mChart.moveViewTo(plottedPkgCount*1000/samplingRate, 0, YAxis.AxisDependency.LEFT);

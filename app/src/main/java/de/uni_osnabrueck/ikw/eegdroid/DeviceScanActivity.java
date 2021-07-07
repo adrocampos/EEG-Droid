@@ -199,6 +199,7 @@ public class DeviceScanActivity extends ListActivity {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         } else {
+            Log.d(TAG, "Thinks BluetoothAdapter is enabled!");
             mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
             settings = new ScanSettings.Builder()
                     .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
@@ -335,8 +336,8 @@ public class DeviceScanActivity extends ListActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        scanLeDevice(false);
-        mLeDeviceListAdapter.clear();
+        //scanLeDevice(false);
+        //mLeDeviceListAdapter.clear();
     }
 
     @Override
