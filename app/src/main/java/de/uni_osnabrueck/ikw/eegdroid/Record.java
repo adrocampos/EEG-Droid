@@ -590,22 +590,31 @@ public class Record extends AppCompatActivity {
         };
     }
 
+    private boolean showingPkgLossWarning = false;
     private void showPkgLossWarning(){
+        // Avoids stacking Warnings on top of each other
+        if (showingPkgLossWarning) return;
+
         String pkgLossPercentFormatted = String.format("%.02f", pkgLossPercent*100);
         AlertDialog.Builder PkgLossWarningBuilder = new AlertDialog.Builder(this)
                 .setTitle("Data Loss")
                 .setMessage(pkgLossPercentFormatted + "% of samples are being lost. Change to less demanding" +
-                        "settings?" )
+                        " settings?" )
                 .setPositiveButton("Yes", (dialog, which) -> {
+                    showingPkgLossWarning=false;
                     toggleNotifying();
                     showTraumConfigDialog();
                     highlightRelevantOptions();
                     unhighlightRelevantOptions();
                 } )
-                .setNegativeButton("Ignore from now on", (dialog, which) -> {ignorePkgLoss = true;})
-                .setCancelable(true);
+                .setNegativeButton("No", (dialog, which) -> {showingPkgLossWarning=false;})
+                .setNeutralButton("Ignore from now on", (dialog, which) -> {
+                    showingPkgLossWarning = false;
+                    ignorePkgLoss = true;})
+                .setCancelable(false);
         AlertDialog pkgLossWarning = PkgLossWarningBuilder.create();
         pkgLossWarning.show();
+        showingPkgLossWarning = true;
     }
 
     private void highlightRelevantOptions(){
@@ -902,6 +911,8 @@ public class Record extends AppCompatActivity {
             mDataResolution.setText("warming up");
             mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, true);
             menuItemNotify.setIcon(R.drawable.ic_notifications_active_blue_24dp);
+            //Prevent Screen from turning off
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         } else {
             Log.d(TAG, "Notifications Button pressed: DISABLED");
@@ -909,6 +920,8 @@ public class Record extends AppCompatActivity {
             mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, false);
             endTimer();
             menuItemNotify.setIcon(R.drawable.ic_notifications_off_white_24dp);
+            //Stop screen from staying on
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         }
         if(codeCharacteristic!=null) logDescriptorValue(codeCharacteristic);
