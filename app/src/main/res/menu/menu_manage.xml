@@ -20,4 +20,7 @@
         android:title="@string/menu_manage_send"
         bwq:actionProviderClass="androidx.appcompat.widget.ShareActionProvider" />
 
+    <item
+        android:id="@+id/launch_file_manager"
+        android:title="@string/menu_manage_filemanager" />
 </menu>

@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity
         String userID = sharedPreferences.getString("userID", getResources().getString(R.string.default_userID));
 
         // File object to save the directory to save the EEG recordings
-        dirSessions = new File(Objects.requireNonNull(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)).getAbsolutePath() + saveDir);
+        dirSessions = new File(Objects.requireNonNull(this.getFilesDir()).getAbsolutePath() + saveDir);
         ManageSessions.createDirectory(dirSessions);
         Uri dirUri = Uri.parse(Environment.getExternalStorageDirectory() + saveDir + "/"); //Uri to open the folder with sessions
         Log.d("Main Directory", dirUri.getPath());
@@ -77,11 +77,11 @@ public class MainActivity extends AppCompatActivity
         TextView textViewUserID = findViewById(R.id.textViewUserID);
         textViewUserID.setText(userID);
         TextView textViewSaveDir = findViewById(R.id.textViewSaveDir);
-        textViewSaveDir.setText("Downloads" + saveDir + "/");
+        textViewSaveDir.setText("" + saveDir + "/");
 
         ApplicationInfo applicationInfo = getApplicationInfo();
         appName.setText(applicationInfo.loadLabel(getPackageManager()));
-        appName.setTextColor(getColor(R.color.colorPrimary));
+        appName.setTextColor(getResources().getColor(R.color.colorPrimary));
         appVersion.setText(BuildConfig.VERSION_NAME);
 
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
