@@ -306,6 +306,10 @@ public class Record extends AppCompatActivity {
                 configCharacteristic = bleService.getCharacteristic(TraumschreiberService.configUUID);
                 mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
                 waitForBluetoothCallback(mBluetoothLeService);
+                /*Apply default configuration once we have the config characteristic;
+                  A bit inelegant, but it is more tedious to change default values on the TS */
+                resetTraumConfig();
+                applyConfiguration();
               
             // HANDLE INCOMING STREAM
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
@@ -397,7 +401,7 @@ public class Record extends AppCompatActivity {
         return btloss;
     }
 
-    private void updateConfiguration() {
+    private void applyConfiguration() {
         // Declare bytearray
         byte[] configBytes = new byte[8];
 
@@ -422,7 +426,6 @@ public class Record extends AppCompatActivity {
         Log.d(TAG, "New Value of Config: " + Arrays.toString(configCharacteristic.getValue()));
         Toast.makeText(getApplicationContext(), "Succesfully applied configuration.", Toast.LENGTH_SHORT).show();
     }
-
 
     /**
      * Calling this method opens up an alertdialog that displays the current
@@ -1218,7 +1221,7 @@ public class Record extends AppCompatActivity {
         // Link UpdateConfigButton
         Button updateConfigButton = traumConfigDialog.findViewById(R.id.apply_config_button);
         updateConfigButton.setOnClickListener(v -> {
-            if(deviceConnected) updateConfiguration();
+            if(deviceConnected) applyConfiguration();
             else Toast.makeText(getApplicationContext(), "No Device Connected", Toast.LENGTH_SHORT).show();
             // showConfigValues();  ONLY USED FOR DEBUGGING THE CONFIG MENU
         });
@@ -1294,48 +1297,61 @@ public class Record extends AppCompatActivity {
         encodingSafetySpinner.setSelection(encodingSafetyPos);
     }
 
+    /**
+     *  Defines and sets all options of the traumschreiber config menu
+     *  Method defines the positions of the selected values in the drop down
+     *  menus of the config window. Values to corresponding positions are
+     *  defined in strings.xml
+     */
     private void resetTraumConfig(){
-        selectedGainPos = 0;
+        selectedGainPos = 0; // 1
         selectedBitsPerChPos = 2; //16 bit
         runningAverageFilterCheck = true;
-        sendOnOneCharCheck = false;
-        generateDataCheck = false;
+        sendOnOneCharCheck = false;  // off
+        generateDataCheck = false;  // off
         selectedTransmissionRatePos = 1; //250Hz
-        o1HighpassPos = 0;
-        iirHighpassPos = 1;
-        lowpassPos = 1;
-        filter50hzPos = 1;
+        o1HighpassPos = 0;  // off
+        iirHighpassPos = 0; //off
+        lowpassPos = 2;    // 60Hz 6th Order
+        filter50hzPos = 3;  // [46,54] 4th Order
         bitshiftMinPos = 0;
         bitshiftMaxPos = 15;
         encodingSafetyPos = 8;
 
-        Spinner gainSpinner = traumConfigDialog.findViewById(R.id.gain_spinner);
-        gainSpinner.setSelection(selectedGainPos);
-        Spinner bitsPerChSpinner = traumConfigDialog.findViewById(R.id.bits_per_ch_spinner);
-        bitsPerChSpinner.setSelection(selectedBitsPerChPos);
-        SwitchCompat rafSwitch = traumConfigDialog.findViewById(R.id.average_filter_switch);
-        rafSwitch.setChecked(runningAverageFilterCheck);
-        SwitchCompat oneCharSwitch = traumConfigDialog.findViewById(R.id.one_char_switch);
-        oneCharSwitch.setChecked(sendOnOneCharCheck);
-        SwitchCompat genDataSwitch = traumConfigDialog.findViewById(R.id.generate_data_switch);
-        genDataSwitch.setChecked(generateDataCheck);
-        Spinner transmissionRateSpinner = traumConfigDialog.findViewById(R.id.transmission_rate_spinner);
-        transmissionRateSpinner.setSelection(selectedTransmissionRatePos);
-        Spinner o1HighpassSpinner = traumConfigDialog.findViewById(R.id.o1_highpass_spinner);
-        o1HighpassSpinner.setSelection(o1HighpassPos);
-        Spinner IIRSpinner = traumConfigDialog.findViewById(R.id.iir_highpass_spinner);
-        IIRSpinner.setSelection(iirHighpassPos);
-        Spinner lowPassSpinner = traumConfigDialog.findViewById(R.id.lowpass_spinner);
-        lowPassSpinner.setSelection(lowpassPos);
-        Spinner filter50hzSpinner = traumConfigDialog.findViewById(R.id.filter50hz_spinner);
-        filter50hzSpinner.setSelection(filter50hzPos);
-        Spinner bitshiftMinSpinner = traumConfigDialog.findViewById(R.id.bitshift_min_spinner);
-        bitshiftMinSpinner.setSelection(bitshiftMinPos);
-        Spinner bitshiftMaxSpinner = traumConfigDialog.findViewById(R.id.bitshift_max_spinner);
-        bitshiftMaxSpinner.setSelection(bitshiftMaxPos);
-        Spinner encodingSafetySpinner = traumConfigDialog.findViewById(R.id.encoding_safety_spinner);
-        encodingSafetySpinner.setSelection(encodingSafetyPos);
+        // Would otherwise crash if config window is currently not opened
+        try {
+            Spinner gainSpinner = traumConfigDialog.findViewById(R.id.gain_spinner);
+            gainSpinner.setSelection(selectedGainPos);
+            Spinner bitsPerChSpinner = traumConfigDialog.findViewById(R.id.bits_per_ch_spinner);
+            bitsPerChSpinner.setSelection(selectedBitsPerChPos);
+            SwitchCompat rafSwitch = traumConfigDialog.findViewById(R.id.average_filter_switch);
+            rafSwitch.setChecked(runningAverageFilterCheck);
+            SwitchCompat oneCharSwitch = traumConfigDialog.findViewById(R.id.one_char_switch);
+            oneCharSwitch.setChecked(sendOnOneCharCheck);
+            SwitchCompat genDataSwitch = traumConfigDialog.findViewById(R.id.generate_data_switch);
+            genDataSwitch.setChecked(generateDataCheck);
+            Spinner transmissionRateSpinner = traumConfigDialog.findViewById(R.id.transmission_rate_spinner);
+            transmissionRateSpinner.setSelection(selectedTransmissionRatePos);
+            Spinner o1HighpassSpinner = traumConfigDialog.findViewById(R.id.o1_highpass_spinner);
+            o1HighpassSpinner.setSelection(o1HighpassPos);
+            Spinner IIRSpinner = traumConfigDialog.findViewById(R.id.iir_highpass_spinner);
+            IIRSpinner.setSelection(iirHighpassPos);
+            Spinner lowPassSpinner = traumConfigDialog.findViewById(R.id.lowpass_spinner);
+            lowPassSpinner.setSelection(lowpassPos);
+            Spinner filter50hzSpinner = traumConfigDialog.findViewById(R.id.filter50hz_spinner);
+            filter50hzSpinner.setSelection(filter50hzPos);
+            Spinner bitshiftMinSpinner = traumConfigDialog.findViewById(R.id.bitshift_min_spinner);
+            bitshiftMinSpinner.setSelection(bitshiftMinPos);
+            Spinner bitshiftMaxSpinner = traumConfigDialog.findViewById(R.id.bitshift_max_spinner);
+            bitshiftMaxSpinner.setSelection(bitshiftMaxPos);
+            Spinner encodingSafetySpinner = traumConfigDialog.findViewById(R.id.encoding_safety_spinner);
+            encodingSafetySpinner.setSelection(encodingSafetyPos);
+        } catch (Exception e){
+            Log.w(TAG,e);
+        };
     }
+    
+    
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -1858,6 +1874,7 @@ public class Record extends AppCompatActivity {
         MenuItem menuItemCentering = menu.findItem(R.id.centering);
 
         if (connected) {
+            // Visual feedback
             menuItem.setIcon(R.drawable.ic_bluetooth_connected_blue_24dp);
             mConnectionState.setText(R.string.device_connected);
             mConnectionState.setTextColor(Color.GREEN);
@@ -1867,6 +1884,7 @@ public class Record extends AppCompatActivity {
             menuItemNotify.setVisible(true);
             menuItemCast.setVisible(true);
             menuItemCentering.setVisible(true);
+            
         } else {
             menuItem.setIcon(R.drawable.ic_bluetooth_searching_white_24dp);
             mConnectionState.setText(R.string.no_device);
