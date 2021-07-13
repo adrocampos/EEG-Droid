@@ -76,10 +76,14 @@ public class ManageSessions extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
-        final int position = adapter.getSelectedPos();
+        boolean[] positions = adapter.getSelectedPositions();
+        ArrayList<Integer> selectedPositions = new ArrayList<Integer>();
+        for (int i = 0; i<positions.length ;i++){
+            if (positions[i]) selectedPositions.add(i);
+        }
 
         //Handles if no session has been selected
-        if (position == -1) {
+        if (selectedPositions.size() == 0) {
 
             if (item.getItemId() == R.id.launch_file_manager){
                 launchFileManager();
@@ -103,8 +107,10 @@ public class ManageSessions extends AppCompatActivity {
 
                 case R.id.send_session:
 
-                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    /*
+                    Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
                     intent.setType("text/plain");
+
                     intent.putExtra(Intent.EXTRA_SUBJECT, TextUtils.concat("EEG Session:", " ", arrayListOfFiles.get(position).getName()));
                     Log.d("Auth", getApplicationContext().getPackageName());
                     Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".fileprovider", arrayListOfFiles.get(position));
@@ -112,13 +118,30 @@ public class ManageSessions extends AppCompatActivity {
 
                     if (shareActionProvider != null) {
                         shareActionProvider.setShareIntent(intent);
+                    }*/
+
+                    Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+                    intent.putExtra(Intent.EXTRA_SUBJECT, "EEG Sessions");
+                    intent.setType("text/csv");
+
+
+                    ArrayList<Uri> files = new ArrayList<Uri>();
+                    for(int position : selectedPositions){
+                        Uri uri = FileProvider.getUriForFile(
+                                this,
+                                "de.uni_osnabrueck.ikw.eegdroid.provider",
+                                arrayListOfFiles.get(position));
+                        files.add(uri);
                     }
+
+                    intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
+                    startActivity(intent);
 
                     adapter.resetSelectedPos();
                     return true;
 
                 case R.id.rename_session:
-
+                    /*
                     LayoutInflater layoutInflaterAndroid = LayoutInflater.from(this);
                     View mView = layoutInflaterAndroid.inflate(R.layout.input_dialog_string, null);
                     AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(this);
@@ -154,6 +177,7 @@ public class ManageSessions extends AppCompatActivity {
 
                     AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
                     alertDialogAndroid.show();
+                    */
                     return true;
 
                 case R.id.delete_session:
@@ -161,13 +185,15 @@ public class ManageSessions extends AppCompatActivity {
                     //Handles the Dialog to confirm the file delete
                     AlertDialog.Builder alert = new AlertDialog.Builder(this)
                             .setTitle(R.string.dialog_title)
-                            .setMessage(getResources().getString(R.string.confirmation_delete) + " " + arrayListOfFiles.get(position).getName() + "?");
+                            .setMessage(getResources().getString(R.string.confirmation_delete) + " " + "selection" + "?");
                     alert.setPositiveButton(android.R.string.yes, (dialog, which) -> {
 
-                        arrayListOfFiles.get(position).delete();
-                        arrayListOfFiles.remove(position);
-                        adapter.notifyItemRemoved(position);
-                        //adapter.resetSelectedPos();
+                        for(int position:selectedPositions) {
+                            arrayListOfFiles.get(position).delete();
+                            arrayListOfFiles.remove(position);
+                            adapter.notifyItemRemoved(position);
+                            //adapter.resetSelectedPos();
+                        }
                     });
                     alert.setNegativeButton(android.R.string.cancel, (dialog, which) -> {
                         // close dialog
@@ -177,7 +203,8 @@ public class ManageSessions extends AppCompatActivity {
                     alert.show();
                     adapter.resetSelectedPos();
                     return true;
-
+                case R.id.launch_file_manager:
+                    launchFileManager();
 
                 default:
                     return super.onOptionsItemSelected(item);

@@ -27,9 +27,12 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.PlanetVi
 
     ArrayList<File> arrayListFiles;
     private int selectedPos = RecyclerView.NO_POSITION;
+    private boolean[] isSelectedPosition;
 
     public SessionAdapter(ArrayList<File> arrayListFiles, Context context) {
         this.arrayListFiles = arrayListFiles;
+        int nItems = arrayListFiles.size();
+        isSelectedPosition = new boolean[nItems]; 
     }
 
     @NonNull
@@ -61,13 +64,17 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.PlanetVi
         holder.hour.setText(creationTime.toLocalTime().toString());
 
         //This handles the selection of an item in the list
-        holder.itemView.setSelected(selectedPos == position);
+        //holder.itemView.setSelected(selectedPos == position);
+        boolean isSelected = isSelectedPosition[position];
+        holder.itemView.setSelected(isSelected);
 
         holder.linearLayout.setOnClickListener(view -> {
-            Log.d("Adapter.getSelectedPos() ", Integer.toString(position));
-            notifyItemChanged(selectedPos);
-            selectedPos = position;
-            notifyItemChanged(selectedPos);
+            Log.d("Adapter.getSelectedPos", Integer.toString(position));
+            //notifyItemChanged(selectedPos);
+            //selectedPos = position;
+            //notifyItemChanged(selectedPos);
+            isSelectedPosition[position] = isSelected ? false : true;
+            notifyItemChanged(position);
         });
 
     }
@@ -79,6 +86,10 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.PlanetVi
 
     public int getSelectedPos() {
         return selectedPos;
+    }
+
+    public boolean[] getSelectedPositions(){
+        return isSelectedPosition;
     }
 
     public void resetSelectedPos() {
