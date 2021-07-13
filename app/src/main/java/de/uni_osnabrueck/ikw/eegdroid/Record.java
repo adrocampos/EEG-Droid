@@ -92,7 +92,7 @@ public class Record extends AppCompatActivity {
     private final int leftAxisLowerLimit = (int) (-2*Math.pow(10,6));
     private final ArrayList<Integer> pkgIDs = new ArrayList<>();
     private final int nChannels = 24;
-    private float samplingRate = 500/3f;  // alternative: 500, 500/2, 500/3, 500/4, etc.
+    private float samplingRate = 500/2f;  // alternative: 500, 500/2, 500/3, 500/4, etc.
 
     private final ArrayList<ArrayList<Entry>> plottingBuffer = new ArrayList<ArrayList<Entry>>() {
         {
@@ -668,8 +668,10 @@ public class Record extends AppCompatActivity {
 
         // LSL stuff
         final UUID uid = UUID.randomUUID();
+        String[] locations = {"FP1", "FPZ", "FP2", "F7", "F3", "Fz", "F4", "F8", "M1", "T7", "C3", "CZ", "C4", "T8", "M2", "P7", "P3", "Pz", "P4", "P8", "POZ", "O1", "OZ", "O2"};
         try {
             streamInfo = new LSL.StreamInfo("Traumschreiber-EEG", "Markers", 24, LSL.IRREGULAR_RATE, LSL.ChannelFormat.float32, uid.toString());
+            for (String location : locations) streamInfo.desc().append_child(location);
         } catch (Error ex){
             Log.e(TAG, " LSL issue: " + ex.getMessage());
         }
@@ -1884,7 +1886,7 @@ public class Record extends AppCompatActivity {
             menuItemNotify.setVisible(true);
             menuItemCast.setVisible(true);
             menuItemCentering.setVisible(true);
-            
+
         } else {
             menuItem.setIcon(R.drawable.ic_bluetooth_searching_white_24dp);
             mConnectionState.setText(R.string.no_device);

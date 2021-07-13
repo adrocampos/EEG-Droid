@@ -29,7 +29,7 @@ public class TraumschreiberService {
     private static final int[] decodedSignal = new int[24];
     public static int[] signalBitShift = new int[24];
     private static int[] signalOffset = new int[24];
-    public static int bitsPerCh = 10;
+    public static int bitsPerCh = 16;
     private static int pkgCount;
     private static boolean header = true;
     public static int currentPkgID=0;

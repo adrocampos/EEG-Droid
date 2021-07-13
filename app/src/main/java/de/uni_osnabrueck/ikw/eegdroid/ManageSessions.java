@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -66,6 +67,7 @@ public class ManageSessions extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_manage, menu);
         MenuItem item = menu.findItem(R.id.send_session);
+        MenuItem launchFileManager = menu.findItem(R.id.launch_file_manager);
         shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
         return true;
     }
@@ -78,6 +80,12 @@ public class ManageSessions extends AppCompatActivity {
 
         //Handles if no session has been selected
         if (position == -1) {
+
+            if (item.getItemId() == R.id.launch_file_manager){
+                launchFileManager();
+                return true;
+            }
+
             if (item.getItemId() == android.R.id.home) {
                 onBackPressed();
                 return true;
@@ -174,6 +182,24 @@ public class ManageSessions extends AppCompatActivity {
                 default:
                     return super.onOptionsItemSelected(item);
             }
+        }
+    }
+
+    private void launchFileManager(){
+        // Construct an intent for opening a folder
+        Uri selectedUri = Uri.parse(MainActivity.getDirSessions().toString());
+        Log.d("ManageSessions: ", MainActivity.getDirSessions().toString());
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setDataAndType(selectedUri, "resource/folder");
+
+        if (intent.resolveActivityInfo(getPackageManager(), 0) != null)
+        {
+            startActivity(intent);
+        }
+        else
+        {
+            // if you reach this place, it means there is no any file
+            // explorer app installed on your device
         }
     }
 

@@ -175,6 +175,7 @@
     <string name="menu_manage_send">Share</string>
     <string name="menu_manage_rename">Rename</string>
     <string name="menu_manage_delete">Delete</string>
+    <string name="menu_manage_filemanager">Open Directory</string>
 
     <string name="confirmation_delete">Do you want to delete</string>
     <string name="yes">Yes</string>
