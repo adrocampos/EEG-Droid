@@ -141,7 +141,7 @@ public class ManageSessions extends AppCompatActivity {
                     return true;
 
                 case R.id.rename_session:
-                    /*
+
                     LayoutInflater layoutInflaterAndroid = LayoutInflater.from(this);
                     View mView = layoutInflaterAndroid.inflate(R.layout.input_dialog_string, null);
                     AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(this);
@@ -151,22 +151,30 @@ public class ManageSessions extends AppCompatActivity {
                     alertDialogBuilderUserInput
                             .setCancelable(false)
                             .setTitle(R.string.rename_title)
-                            .setMessage(getResources().getString(R.string.ask_new_name) + " " + arrayListOfFiles.get(position).getName() + ":")
+                            .setMessage(getResources().getString(R.string.ask_new_name) + " " + "selection" + ":")
                             .setPositiveButton(R.string.rename, (dialogBox, id) -> {
-                                String oldName = arrayListOfFiles.get(position).getName().substring(0, 20);
-                                File newName = new File(saveDir, oldName + userInputDialogEditText.getText().toString() + ".csv");
-                                //Check if exist another file with this name
-                                if (arrayListOfFiles.contains(newName)) {
-                                    Toast.makeText(getApplicationContext(), R.string.warning_rename, Toast.LENGTH_LONG).show();
-                                    dialogBox.cancel();
-                                    adapter.resetSelectedPos();
-                                } else {
-                                    arrayListOfFiles.get(position).renameTo(newName);
-                                    arrayListOfFiles.set(position, newName);
-                                    Collections.sort(arrayListOfFiles, Collections.reverseOrder());
-                                    //adapter.notifyItemChanged(position);
-                                    adapter.notifyDataSetChanged();
-                                    adapter.resetSelectedPos();
+                                int renameCount = 0;
+                                for (int i = selectedPositions.size()-1; i > -1 ; i--) {
+                                    int position = selectedPositions.get(i);
+                                    String oldName = arrayListOfFiles.get(position).getName().substring(0, 15);
+                                    String numbering = (renameCount==0) ? "" : "_"+Integer.toString(renameCount);
+                                    File newName = new File(saveDir, oldName +
+                                            userInputDialogEditText.getText().toString() +
+                                            numbering + ".csv");
+                                    renameCount++;
+                                    //Check if exist another file with this name
+                                    if (arrayListOfFiles.contains(newName)) {
+                                        Toast.makeText(getApplicationContext(), R.string.warning_rename, Toast.LENGTH_LONG).show();
+                                        dialogBox.cancel();
+                                        adapter.resetSelectedPos();
+                                    } else {
+                                        arrayListOfFiles.get(position).renameTo(newName);
+                                        arrayListOfFiles.set(position, newName);
+                                        Collections.sort(arrayListOfFiles, Collections.reverseOrder());
+                                        //adapter.notifyItemChanged(position);
+                                        adapter.notifyDataSetChanged();
+                                        adapter.resetSelectedPos();
+                                    }
                                 }
                             })
                             .setNegativeButton(R.string.cancel,
@@ -177,7 +185,6 @@ public class ManageSessions extends AppCompatActivity {
 
                     AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
                     alertDialogAndroid.show();
-                    */
                     return true;
 
                 case R.id.delete_session:
