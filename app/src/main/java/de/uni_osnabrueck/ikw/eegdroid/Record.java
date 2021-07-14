@@ -307,10 +307,10 @@ public class Record extends AppCompatActivity {
                 mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
                 waitForBluetoothCallback(mBluetoothLeService);
                 /*Apply default configuration once we have the config characteristic;
-                  A bit inelegant, but it is more tedious to change default values on the TS */
-                resetTraumConfig();
-                applyConfiguration();
-              
+                  A bit inelegant, but it is more tedious to change default values on by repgroamming
+                   the traumschreiber*/
+                applyDefaultConfiguration();
+
             // HANDLE INCOMING STREAM
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 
@@ -353,6 +353,9 @@ public class Record extends AppCompatActivity {
                 if (!samplingRateMonitorRunning) startSamplingRateMonitoring();
 
                 microV = convertToMicroV(data);
+                if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("inAppFilter",true)) {
+                    microV = highPassFilter(microV);
+                }
                 //streamData(microV);
                 if (channelViewsEnabled && pkgCountTotal % 100 == 0) displayNumerical(microV);
                 if (plotting) storeForPlotting(microV);
@@ -424,7 +427,19 @@ public class Record extends AppCompatActivity {
         if (togglingRequired) toggleNotifying();
 
         Log.d(TAG, "New Value of Config: " + Arrays.toString(configCharacteristic.getValue()));
-        Toast.makeText(getApplicationContext(), "Succesfully applied configuration.", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "Succesfully applied configuration.", Toast.LENGTH_SHORT).show();
+    }
+
+    private void applyDefaultConfiguration(){
+        resetTraumConfig();
+        // Declare bytearray
+        byte[] configBytes = new byte[8];
+        mTraumService.setNotifyingUUID(2);
+        configBytes = new byte[]{33, 0, 0, 35, 15, -127, 0, 0};
+        configCharacteristic.setValue(configBytes);
+        mBluetoothLeService.writeCharacteristic(configCharacteristic);
+        BluetoothGattService bleService = mBluetoothLeService.getService(TraumschreiberService.serviceUUID);
+        mNotifyCharacteristic = bleService.getCharacteristic(TraumschreiberService.notifyingUUID);
     }
 
     /**
@@ -961,6 +976,7 @@ public class Record extends AppCompatActivity {
         View closeConfig = traumConfigDialog.findViewById(R.id.traum_config_close_button);
         closeConfig.setOnClickListener(v -> {traumConfigDialog.cancel();});
 
+
         // Link gainSpinner
         Spinner gainSpinner = traumConfigDialog.findViewById(R.id.gain_spinner);
         gainSpinner.setSelection(selectedGainPos);
@@ -1057,6 +1073,7 @@ public class Record extends AppCompatActivity {
             }
         });
 
+
         // Link GenerateDataSwitch
         SwitchCompat genDataSwitch = traumConfigDialog.findViewById(R.id.generate_data_switch);
         genDataSwitch.setChecked(generateDataCheck);
@@ -1092,6 +1109,8 @@ public class Record extends AppCompatActivity {
                 // nothing
             }
         });
+
+
 
         // Link o1HighpassSpinner
         Spinner o1HighpassSpinner = traumConfigDialog.findViewById(R.id.o1_highpass_spinner);
@@ -1395,12 +1414,35 @@ public class Record extends AppCompatActivity {
     /* This is the last processing step before the data is displayed and saved
      Note that gain is 1 by default */
     private List<Float> convertToMicroV(int[] data) {
-        // Conversion formula (old): V_in = X * 1.65V / (1000 * GAIN * PRECISION)
         // Conversion formula (new): V_in = X * (298 / (1000 * gain))
+        List<Float> dataMicroV = new ArrayList<>();
+        for (float datapoint : data) dataMicroV.add(datapoint * 5/4 * 298/(1000*selectedGain));
+        return dataMicroV;
+    }
 
-        List<Float> data_trans = new ArrayList<>();
-        for (float datapoint : data) data_trans.add(datapoint * 5/4 * 298/(1000*selectedGain));
-        return data_trans;
+
+    private float[] hpFilteredNow = new float[nChannels];
+    private float[] hpFilteredPrevious = new float[nChannels];;
+    private float[] samplePrevious = new float[nChannels];;
+    private List<Float> highPassFilter(List<Float> data) {
+        Log.v(TAG, "HIGHPASSFILTERING");
+        // Convert sample to float array
+        float[] sampleNow = new float[data.size()];
+        for (int i=0; i<data.size()-1;i++){
+            sampleNow[i] = data.get(i);
+        }
+        
+        for(int i=0; i<nChannels; i++){
+            hpFilteredNow[i] = (float) (0.999 * (hpFilteredPrevious[i]
+                    + sampleNow[i] - samplePrevious[i]));
+        }
+        hpFilteredPrevious = hpFilteredNow;
+        samplePrevious = sampleNow;
+
+        // Convert hpFilteredNow to List<Float> and return
+        List<Float> hpFiltered = new ArrayList<>();
+        for (float f : hpFilteredNow) hpFiltered.add(f);
+        return hpFiltered;
     }
 
     @SuppressLint("DefaultLocale")

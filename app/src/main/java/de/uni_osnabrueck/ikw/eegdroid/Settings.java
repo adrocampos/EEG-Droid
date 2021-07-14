@@ -3,14 +3,17 @@ package de.uni_osnabrueck.ikw.eegdroid;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import java.util.Objects;
 
@@ -21,6 +24,7 @@ public class Settings extends AppCompatActivity {
     private EditText editText_userID;
     private EditText editText_IP;
     private EditText editText_port;
+    private SwitchCompat switch_inAppFilter;
     private SharedPreferences sharedPreferences;
 
     @Override
@@ -38,12 +42,14 @@ public class Settings extends AppCompatActivity {
         String userID = sharedPreferences.getString("userID", getResources().getString(R.string.default_userID));
         String IP = sharedPreferences.getString("IP", "192.168.1.125");
         String port = sharedPreferences.getString("port", "65432");
+        boolean inAppFilter = sharedPreferences.getBoolean("inAppFilter", (getText(R.string.default_filtering)=="on"));
 
         editText_saveDir = findViewById(R.id.editText_saveDir);
         editText_username = findViewById(R.id.editText_username);
         editText_userID = findViewById(R.id.editText_userID);
         editText_IP = findViewById(R.id.editText_IP);
         editText_port = findViewById(R.id.editText_port);
+        switch_inAppFilter = findViewById(R.id.switch_inAppFilter);
         Button applyChangesButton = findViewById(R.id.settings_apply_changes);
 
         editText_saveDir.setText(saveDir);
@@ -51,6 +57,7 @@ public class Settings extends AppCompatActivity {
         editText_userID.setText(userID);
         editText_IP.setText(IP);
         editText_port.setText(port);
+        switch_inAppFilter.setChecked(inAppFilter);
 
         //Button to apply changes introduced in EditText
         applyChangesButton.setOnClickListener(v -> {
@@ -62,7 +69,11 @@ public class Settings extends AppCompatActivity {
             editor.putString("userID", editText_userID.getText().toString());
             editor.putString("IP", editText_IP.getText().toString());
             editor.putString("port", editText_port.getText().toString());
+            editor.putBoolean("inAppFilter", switch_inAppFilter.isChecked());
+            sharedPreferences.edit().putBoolean("inAppFilter", switch_inAppFilter.isChecked()).commit();
+
             editor.apply();
+            Log.v("SETTINGS: ", String.valueOf(sharedPreferences.getBoolean("inAppFilter", true)) );
 
             //Notifies the user
             Toast.makeText(getApplicationContext(), R.string.settings_saved, Toast.LENGTH_LONG).show();
