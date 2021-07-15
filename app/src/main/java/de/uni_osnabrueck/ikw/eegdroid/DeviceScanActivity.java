@@ -148,6 +148,7 @@ public class DeviceScanActivity extends ListActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+
         if (!mScanning) {
             menu.findItem(R.id.stop_button).setVisible(false);
             menu.findItem(R.id.scan_button).setVisible(true);
@@ -198,6 +199,7 @@ public class DeviceScanActivity extends ListActivity {
         if (!mBluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+
         } else {
             Log.d(TAG, "Thinks BluetoothAdapter is enabled!");
             mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
@@ -205,11 +207,14 @@ public class DeviceScanActivity extends ListActivity {
                     .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
                     .build();
             filters = new ArrayList<>();
-            // Initializes list view adapter.
-            mLeDeviceListAdapter = new LeDeviceListAdapter();
-            setListAdapter(mLeDeviceListAdapter);
-            scanLeDevice(true);
         }
+
+        // Initialize the Device List
+        mLeDeviceListAdapter = new LeDeviceListAdapter();
+        setListAdapter(mLeDeviceListAdapter);
+        // Start Scanning
+        scanLeDevice(true);
+
     }
 
 
@@ -336,8 +341,8 @@ public class DeviceScanActivity extends ListActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        //scanLeDevice(false);
-        //mLeDeviceListAdapter.clear();
+        scanLeDevice(false);
+        mLeDeviceListAdapter.clear();
     }
 
     @Override
@@ -358,14 +363,15 @@ public class DeviceScanActivity extends ListActivity {
     }
 
     private void scanLeDevice(final boolean enable) {
+        if (!mBluetoothAdapter.isEnabled()) return;
         if (enable) {
+            mLEScanner.startScan(filters, settings, mScanCallback);
             // Stops scanning after a pre-defined scan period.
             mHandler.postDelayed(() -> {
                 mScanning = false;
                 mLEScanner.stopScan(mScanCallback);
                 invalidateOptionsMenu();
             }, SCAN_PERIOD);
-            mLEScanner.startScan(filters, settings, mScanCallback);
         } else {
             mScanning = false;
             mLEScanner.stopScan(mScanCallback);

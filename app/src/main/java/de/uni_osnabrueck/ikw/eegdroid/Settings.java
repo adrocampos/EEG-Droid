@@ -3,14 +3,17 @@ package de.uni_osnabrueck.ikw.eegdroid;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import java.util.Objects;
 
@@ -21,6 +24,8 @@ public class Settings extends AppCompatActivity {
     private EditText editText_userID;
     private EditText editText_IP;
     private EditText editText_port;
+    private SwitchCompat switch_inAppFilter;
+    private SwitchCompat switch_eegLabels;
     private SharedPreferences sharedPreferences;
 
     @Override
@@ -38,19 +43,31 @@ public class Settings extends AppCompatActivity {
         String userID = sharedPreferences.getString("userID", getResources().getString(R.string.default_userID));
         String IP = sharedPreferences.getString("IP", "192.168.1.125");
         String port = sharedPreferences.getString("port", "65432");
+        boolean inAppFilterEnabled = sharedPreferences.getBoolean("inAppFilter", true);
+        boolean eegLabelsEnabled = sharedPreferences.getBoolean("eegLabels", true);
 
         editText_saveDir = findViewById(R.id.editText_saveDir);
         editText_username = findViewById(R.id.editText_username);
         editText_userID = findViewById(R.id.editText_userID);
         editText_IP = findViewById(R.id.editText_IP);
         editText_port = findViewById(R.id.editText_port);
+        switch_inAppFilter = findViewById(R.id.switch_inAppFilter);
+        switch_eegLabels = findViewById(R.id.switch_eegLabels);
         Button applyChangesButton = findViewById(R.id.settings_apply_changes);
+        Runnable updateUI = new Runnable() {
+            @Override
+            public void run() {
+                editText_saveDir.setText(saveDir);
+                editText_username.setText(username);
+                editText_userID.setText(userID);
+                editText_IP.setText(IP);
+                editText_port.setText(port);
+                switch_inAppFilter.setChecked(inAppFilterEnabled);
+                switch_eegLabels.setChecked(eegLabelsEnabled);
+            }
+        };
+        runOnUiThread(updateUI);
 
-        editText_saveDir.setText(saveDir);
-        editText_username.setText(username);
-        editText_userID.setText(userID);
-        editText_IP.setText(IP);
-        editText_port.setText(port);
 
         //Button to apply changes introduced in EditText
         applyChangesButton.setOnClickListener(v -> {
@@ -62,6 +79,11 @@ public class Settings extends AppCompatActivity {
             editor.putString("userID", editText_userID.getText().toString());
             editor.putString("IP", editText_IP.getText().toString());
             editor.putString("port", editText_port.getText().toString());
+            editor.putBoolean("inAppFilter", switch_inAppFilter.isChecked());
+            sharedPreferences.edit().putBoolean("inAppFilter", switch_inAppFilter.isChecked()).commit();
+            editor.putBoolean("eegLabels", switch_eegLabels.isChecked());
+            sharedPreferences.edit().putBoolean("eegLabels", switch_eegLabels.isChecked()).commit();
+
             editor.apply();
 
             //Notifies the user
@@ -74,6 +96,7 @@ public class Settings extends AppCompatActivity {
             startActivity(restartIntent);
         });
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

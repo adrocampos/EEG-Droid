@@ -92,6 +92,7 @@ public class Record extends AppCompatActivity {
     private final int leftAxisLowerLimit = (int) (-2*Math.pow(10,6));
     private final ArrayList<Integer> pkgIDs = new ArrayList<>();
     private final int nChannels = 24;
+    private String[] channelLabels = new String[] {"FP1", "FPZ", "FP2", "F7", "F3", "Fz", "F4", "F8", "M1", "T7", "C3", "CZ", "C4", "T8", "M2", "P7", "P3", "Pz", "P4", "P8", "POZ", "O1", "OZ", "O2"};
     private float samplingRate = 500/2f;  // alternative: 500, 500/2, 500/3, 500/4, etc.
 
     private final ArrayList<ArrayList<Entry>> plottingBuffer = new ArrayList<ArrayList<Entry>>() {
@@ -307,10 +308,10 @@ public class Record extends AppCompatActivity {
                 mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
                 waitForBluetoothCallback(mBluetoothLeService);
                 /*Apply default configuration once we have the config characteristic;
-                  A bit inelegant, but it is more tedious to change default values on the TS */
-                resetTraumConfig();
-                applyConfiguration();
-              
+                  A bit inelegant, but it is more tedious to change default values on by repgroamming
+                   the traumschreiber*/
+                applyDefaultConfiguration();
+
             // HANDLE INCOMING STREAM
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 
@@ -353,6 +354,9 @@ public class Record extends AppCompatActivity {
                 if (!samplingRateMonitorRunning) startSamplingRateMonitoring();
 
                 microV = convertToMicroV(data);
+                if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("inAppFilter",true)) {
+                    microV = highPassFilter(microV);
+                }
                 //streamData(microV);
                 if (channelViewsEnabled && pkgCountTotal % 100 == 0) displayNumerical(microV);
                 if (plotting) storeForPlotting(microV);
@@ -424,7 +428,19 @@ public class Record extends AppCompatActivity {
         if (togglingRequired) toggleNotifying();
 
         Log.d(TAG, "New Value of Config: " + Arrays.toString(configCharacteristic.getValue()));
-        Toast.makeText(getApplicationContext(), "Succesfully applied configuration.", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "Succesfully applied configuration.", Toast.LENGTH_SHORT).show();
+    }
+
+    private void applyDefaultConfiguration(){
+        resetTraumConfig();
+        // Declare bytearray
+        byte[] configBytes = new byte[8];
+        mTraumService.setNotifyingUUID(2);
+        configBytes = new byte[]{33, 0, 0, 35, 15, -127, 0, 0};
+        configCharacteristic.setValue(configBytes);
+        mBluetoothLeService.writeCharacteristic(configCharacteristic);
+        BluetoothGattService bleService = mBluetoothLeService.getService(TraumschreiberService.serviceUUID);
+        mNotifyCharacteristic = bleService.getCharacteristic(TraumschreiberService.notifyingUUID);
     }
 
     /**
@@ -667,20 +683,7 @@ public class Record extends AppCompatActivity {
         setContentView(R.layout.activity_record);
 
         // LSL stuff
-        final UUID uid = UUID.randomUUID();
-        String[] locations = {"FP1", "FPZ", "FP2", "F7", "F3", "Fz", "F4", "F8", "M1", "T7", "C3", "CZ", "C4", "T8", "M2", "P7", "P3", "Pz", "P4", "P8", "POZ", "O1", "OZ", "O2"};
-        try {
-            streamInfo = new LSL.StreamInfo("Traumschreiber-EEG", "Markers", 24, LSL.IRREGULAR_RATE, LSL.ChannelFormat.float32, uid.toString());
-            for (String location : locations) streamInfo.desc().append_child(location);
-        } catch (Error ex){
-            Log.e(TAG, " LSL issue: " + ex.getMessage());
-        }
-        try {
-            streamOutlet = new LSL.StreamOutlet(streamInfo);
-        } catch (IOException ex) {
-            Log.d("LSL issue:", Objects.requireNonNull(ex.getMessage()));
-            return;
-        }
+        prepareLslStream();
 
         // UI References
         mConnectionState = findViewById(R.id.connection_state);
@@ -737,6 +740,27 @@ public class Record extends AppCompatActivity {
         deleteTempFiles();
     }
 
+    private void prepareLslStream(){
+        final UUID uid = UUID.randomUUID();
+
+        try {
+            streamInfo = new LSL.StreamInfo("Traumschreiber-EEG", "Markers", 24, LSL.IRREGULAR_RATE, LSL.ChannelFormat.float32, uid.toString());
+            if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("eegLabels", true)){
+                for (String label : channelLabels) streamInfo.desc().append_child(label);
+            } else {
+                for (int i=1;i<=24;i++) streamInfo.desc().append_child(String.format("Ch-%d",i));
+            }
+        } catch (Error ex){
+            Log.e(TAG, " LSL issue: " + ex.getMessage());
+        }
+        try {
+            streamOutlet = new LSL.StreamOutlet(streamInfo);
+        } catch (IOException ex) {
+            Log.d("LSL issue:", Objects.requireNonNull(ex.getMessage()));
+            return;
+        }
+    }
+
     private TextView createChannelValueView (int i){
         // Create View for Channel Value
         TextView channelValueView = new TextView(getApplicationContext());
@@ -754,6 +778,7 @@ public class Record extends AppCompatActivity {
         return channelValueView;
     }
     private CheckBox createPlottingCheckbox (int i) {
+        int BoxIdRef = 94843913; //Just some pseudo random number to avoid confusion in onCheckedListener
         // Create Checkbox for displaying channel
         CheckBox box = new CheckBox(getApplicationContext());
         LinearLayout.LayoutParams boxLayout = new LinearLayout.LayoutParams(15, -2, 1f);
@@ -761,11 +786,16 @@ public class Record extends AppCompatActivity {
         //boxLayout.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         //boxLayout.weight = 1;
         box.setLayoutParams(boxLayout);
+        box.setId(BoxIdRef+i);
         box.setText(Integer.toString(i + 1));
+        box.setTextSize(6);
+        if(getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("eegLabels", true)){
+            box.setText(channelLabels[i]);
+        }
         box.setTextSize(8);
         box.setTextColor(channelColors[i]);
         box.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            int channelId = Integer.parseInt(buttonView.getText().toString()) - 1;
+            int channelId = buttonView.getId() - BoxIdRef;
             if (isChecked) {
                 enabledCheckboxes++;
                 if (enabledCheckboxes <= 8) {
@@ -961,6 +991,7 @@ public class Record extends AppCompatActivity {
         View closeConfig = traumConfigDialog.findViewById(R.id.traum_config_close_button);
         closeConfig.setOnClickListener(v -> {traumConfigDialog.cancel();});
 
+
         // Link gainSpinner
         Spinner gainSpinner = traumConfigDialog.findViewById(R.id.gain_spinner);
         gainSpinner.setSelection(selectedGainPos);
@@ -1057,6 +1088,7 @@ public class Record extends AppCompatActivity {
             }
         });
 
+
         // Link GenerateDataSwitch
         SwitchCompat genDataSwitch = traumConfigDialog.findViewById(R.id.generate_data_switch);
         genDataSwitch.setChecked(generateDataCheck);
@@ -1092,6 +1124,8 @@ public class Record extends AppCompatActivity {
                 // nothing
             }
         });
+
+
 
         // Link o1HighpassSpinner
         Spinner o1HighpassSpinner = traumConfigDialog.findViewById(R.id.o1_highpass_spinner);
@@ -1395,12 +1429,35 @@ public class Record extends AppCompatActivity {
     /* This is the last processing step before the data is displayed and saved
      Note that gain is 1 by default */
     private List<Float> convertToMicroV(int[] data) {
-        // Conversion formula (old): V_in = X * 1.65V / (1000 * GAIN * PRECISION)
         // Conversion formula (new): V_in = X * (298 / (1000 * gain))
+        List<Float> dataMicroV = new ArrayList<>();
+        for (float datapoint : data) dataMicroV.add(datapoint * 5/4 * 298/(1000*selectedGain));
+        return dataMicroV;
+    }
 
-        List<Float> data_trans = new ArrayList<>();
-        for (float datapoint : data) data_trans.add(datapoint * 5/4 * 298/(1000*selectedGain));
-        return data_trans;
+
+    private float[] hpFilteredNow = new float[nChannels];
+    private float[] hpFilteredPrevious = new float[nChannels];;
+    private float[] samplePrevious = new float[nChannels];;
+    private List<Float> highPassFilter(List<Float> data) {
+        Log.v(TAG, "HIGHPASSFILTERING");
+        // Convert sample to float array
+        float[] sampleNow = new float[data.size()];
+        for (int i=0; i<=data.size()-1;i++){
+            sampleNow[i] = data.get(i);
+        }
+        
+        for(int i=0; i<nChannels; i++){
+            hpFilteredNow[i] = (float) (0.999 * (hpFilteredPrevious[i]
+                    + sampleNow[i] - samplePrevious[i]));
+        }
+        hpFilteredPrevious = hpFilteredNow;
+        samplePrevious = sampleNow;
+
+        // Convert hpFilteredNow to List<Float> and return
+        List<Float> hpFiltered = new ArrayList<>();
+        for (float f : hpFilteredNow) hpFiltered.add(f);
+        return hpFiltered;
     }
 
     @SuppressLint("DefaultLocale")
@@ -1635,11 +1692,18 @@ public class Record extends AppCompatActivity {
             Log.e(TAG, e.getMessage());
         }
 
+
+
         final StringBuilder header = new StringBuilder();
         header.append("time");
         header.append(delimiter + "sampling_time");
-        for (int i = 1; i <= nChannels; i++) header.append(delimiter + String.format("ch%d", i));
-        //for (int i = 1; i <= 1; i++) header.append(String.format("enc_ch%d,",i));
+        //for (int i = 1; i <= nChannels; i++) header.append(delimiter + String.format("ch%d", i));
+        if(getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("eegLabels", true)){
+            for (int i = 0; i < nChannels; i++) header.append(delimiter + channelLabels[i]);
+        } else{
+            for (int i = 1; i <= 1; i++) header.append(String.format("enc_ch%d,",i));
+        }
+
         header.append(delimiter+"pkgid");
         header.append(delimiter+"pkgloss_bluetooth");
         header.append(delimiter+"pkgloss_internal");
