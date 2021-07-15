@@ -92,6 +92,7 @@ public class Record extends AppCompatActivity {
     private final int leftAxisLowerLimit = (int) (-2*Math.pow(10,6));
     private final ArrayList<Integer> pkgIDs = new ArrayList<>();
     private final int nChannels = 24;
+    private String[] channelLabels = new String[] {"FP1", "FPZ", "FP2", "F7", "F3", "Fz", "F4", "F8", "M1", "T7", "C3", "CZ", "C4", "T8", "M2", "P7", "P3", "Pz", "P4", "P8", "POZ", "O1", "OZ", "O2"};
     private float samplingRate = 500/2f;  // alternative: 500, 500/2, 500/3, 500/4, etc.
 
     private final ArrayList<ArrayList<Entry>> plottingBuffer = new ArrayList<ArrayList<Entry>>() {
@@ -682,20 +683,7 @@ public class Record extends AppCompatActivity {
         setContentView(R.layout.activity_record);
 
         // LSL stuff
-        final UUID uid = UUID.randomUUID();
-        String[] locations = {"FP1", "FPZ", "FP2", "F7", "F3", "Fz", "F4", "F8", "M1", "T7", "C3", "CZ", "C4", "T8", "M2", "P7", "P3", "Pz", "P4", "P8", "POZ", "O1", "OZ", "O2"};
-        try {
-            streamInfo = new LSL.StreamInfo("Traumschreiber-EEG", "Markers", 24, LSL.IRREGULAR_RATE, LSL.ChannelFormat.float32, uid.toString());
-            for (String location : locations) streamInfo.desc().append_child(location);
-        } catch (Error ex){
-            Log.e(TAG, " LSL issue: " + ex.getMessage());
-        }
-        try {
-            streamOutlet = new LSL.StreamOutlet(streamInfo);
-        } catch (IOException ex) {
-            Log.d("LSL issue:", Objects.requireNonNull(ex.getMessage()));
-            return;
-        }
+        prepareLslStream();
 
         // UI References
         mConnectionState = findViewById(R.id.connection_state);
@@ -752,6 +740,27 @@ public class Record extends AppCompatActivity {
         deleteTempFiles();
     }
 
+    private void prepareLslStream(){
+        final UUID uid = UUID.randomUUID();
+
+        try {
+            streamInfo = new LSL.StreamInfo("Traumschreiber-EEG", "Markers", 24, LSL.IRREGULAR_RATE, LSL.ChannelFormat.float32, uid.toString());
+            if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("eegLabels", true)){
+                for (String label : channelLabels) streamInfo.desc().append_child(label);
+            } else {
+                for (int i=1;i<=24;i++) streamInfo.desc().append_child(String.format("Ch-%d",i));
+            }
+        } catch (Error ex){
+            Log.e(TAG, " LSL issue: " + ex.getMessage());
+        }
+        try {
+            streamOutlet = new LSL.StreamOutlet(streamInfo);
+        } catch (IOException ex) {
+            Log.d("LSL issue:", Objects.requireNonNull(ex.getMessage()));
+            return;
+        }
+    }
+
     private TextView createChannelValueView (int i){
         // Create View for Channel Value
         TextView channelValueView = new TextView(getApplicationContext());
@@ -769,6 +778,7 @@ public class Record extends AppCompatActivity {
         return channelValueView;
     }
     private CheckBox createPlottingCheckbox (int i) {
+        int BoxIdRef = 94843913; //Just some pseudo random number to avoid confusion in onCheckedListener
         // Create Checkbox for displaying channel
         CheckBox box = new CheckBox(getApplicationContext());
         LinearLayout.LayoutParams boxLayout = new LinearLayout.LayoutParams(15, -2, 1f);
@@ -776,11 +786,16 @@ public class Record extends AppCompatActivity {
         //boxLayout.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         //boxLayout.weight = 1;
         box.setLayoutParams(boxLayout);
+        box.setId(BoxIdRef+i);
         box.setText(Integer.toString(i + 1));
+        box.setTextSize(6);
+        if(getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("eegLabels", true)){
+            box.setText(channelLabels[i]);
+        }
         box.setTextSize(8);
         box.setTextColor(channelColors[i]);
         box.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            int channelId = Integer.parseInt(buttonView.getText().toString()) - 1;
+            int channelId = buttonView.getId() - BoxIdRef;
             if (isChecked) {
                 enabledCheckboxes++;
                 if (enabledCheckboxes <= 8) {
@@ -1428,7 +1443,7 @@ public class Record extends AppCompatActivity {
         Log.v(TAG, "HIGHPASSFILTERING");
         // Convert sample to float array
         float[] sampleNow = new float[data.size()];
-        for (int i=0; i<data.size()-1;i++){
+        for (int i=0; i<=data.size()-1;i++){
             sampleNow[i] = data.get(i);
         }
         
@@ -1677,11 +1692,18 @@ public class Record extends AppCompatActivity {
             Log.e(TAG, e.getMessage());
         }
 
+
+
         final StringBuilder header = new StringBuilder();
         header.append("time");
         header.append(delimiter + "sampling_time");
-        for (int i = 1; i <= nChannels; i++) header.append(delimiter + String.format("ch%d", i));
-        //for (int i = 1; i <= 1; i++) header.append(String.format("enc_ch%d,",i));
+        //for (int i = 1; i <= nChannels; i++) header.append(delimiter + String.format("ch%d", i));
+        if(getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("eegLabels", true)){
+            for (int i = 0; i < nChannels; i++) header.append(delimiter + channelLabels[i]);
+        } else{
+            for (int i = 1; i <= 1; i++) header.append(String.format("enc_ch%d,",i));
+        }
+
         header.append(delimiter+"pkgid");
         header.append(delimiter+"pkgloss_bluetooth");
         header.append(delimiter+"pkgloss_internal");

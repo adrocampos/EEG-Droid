@@ -261,6 +261,7 @@
     <string name="default_IP">192.168.1.125</string>
     <string name="default_port">65432</string>
     <string name="default_filtering">on</string>
+    <string name="default_eegLabels">on</string>
     <string name="settings_saved">Settings saved</string>
 
     <string name="settings_username">Username to identify user:</string>
@@ -269,6 +270,7 @@
     <string name="settings_IP">IP address to cast:</string>
     <string name="settings_port">Port to cast:</string>
     <string name="inAppFilter">In-App Highpass Filter</string>
+    <string name="eegLabels">EEG Positional Labels (e.g. "Ch1" -> "FP1")</string>
 
     <string name="manage_list">List of EEG sessions found in the folder:</string>
 

@@ -189,11 +189,6 @@ public class DeviceScanActivity extends ListActivity {
         Log.d(TAG, "BuildVersion Checked");
         checkLocationEnabled();
         Log.d(TAG, "Location Services Checked");
-        // Initialize the Device List
-        mLeDeviceListAdapter = new LeDeviceListAdapter();
-        setListAdapter(mLeDeviceListAdapter);
-        // Start Scanning
-        scanLeDevice(true);
 
 
     }
@@ -204,6 +199,7 @@ public class DeviceScanActivity extends ListActivity {
         if (!mBluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+
         } else {
             Log.d(TAG, "Thinks BluetoothAdapter is enabled!");
             mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
@@ -212,6 +208,13 @@ public class DeviceScanActivity extends ListActivity {
                     .build();
             filters = new ArrayList<>();
         }
+
+        // Initialize the Device List
+        mLeDeviceListAdapter = new LeDeviceListAdapter();
+        setListAdapter(mLeDeviceListAdapter);
+        // Start Scanning
+        scanLeDevice(true);
+
     }
 
 
@@ -360,6 +363,7 @@ public class DeviceScanActivity extends ListActivity {
     }
 
     private void scanLeDevice(final boolean enable) {
+        if (!mBluetoothAdapter.isEnabled()) return;
         if (enable) {
             mLEScanner.startScan(filters, settings, mScanCallback);
             // Stops scanning after a pre-defined scan period.
