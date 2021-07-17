@@ -24,4 +24,8 @@
         android:id="@+id/launch_file_manager"
         android:title="@string/menu_manage_filemanager"
         android:visible="false"/>
+    <item
+        android:id="@+id/open_with_app"
+        android:title="@string/menu_manage_open"
+        android:visible="true"/>
 </menu>

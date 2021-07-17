@@ -357,7 +357,7 @@ public class Record extends AppCompatActivity {
                 if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("inAppFilter",true)) {
                     microV = highPassFilter(microV);
                 }
-                //streamData(microV);
+                streamData(microV);
                 if (channelViewsEnabled && pkgCountTotal % 100 == 0) displayNumerical(microV);
                 if (plotting) storeForPlotting(microV);
                 if (recording) storeData(microV);
@@ -1351,7 +1351,7 @@ public class Record extends AppCompatActivity {
         lowpassPos = 2;    // 60Hz 6th Order
         filter50hzPos = 3;  // [46,54] 4th Order
         bitshiftMinPos = 0;
-        bitshiftMaxPos = 15;
+        bitshiftMaxPos = 0;
         encodingSafetyPos = 8;
 
         // Would otherwise crash if config window is currently not opened

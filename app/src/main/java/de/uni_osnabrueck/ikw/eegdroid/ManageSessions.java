@@ -69,6 +69,7 @@ public class ManageSessions extends AppCompatActivity {
         MenuItem item = menu.findItem(R.id.send_session);
         MenuItem launchFileManager = menu.findItem(R.id.launch_file_manager);
         shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        MenuItem openFile = menu.findItem(R.id.open_with_app);
         return true;
     }
 
@@ -212,6 +213,8 @@ public class ManageSessions extends AppCompatActivity {
                     return true;
                 case R.id.launch_file_manager:
                     launchFileManager();
+                case R.id.open_with_app:
+                    openWithApp();
 
                 default:
                     return super.onOptionsItemSelected(item);
@@ -235,6 +238,27 @@ public class ManageSessions extends AppCompatActivity {
             // if you reach this place, it means there is no any file
             // explorer app installed on your device
         }
+    }
+
+    private void openWithApp(){
+        if (arrayListOfFiles.size() != 1) {
+            Toast.makeText(getApplicationContext(), "Can only open one file", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        File file = arrayListOfFiles.get(0);
+
+        // Get URI and MIME type of file
+        Uri uri = FileProvider.getUriForFile(this,
+                "de.uni_osnabrueck.ikw.eegdroid.provider",
+                file);
+        String mime = getContentResolver().getType(uri);
+
+        // Open file with user selected app
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setDataAndType(uri, mime);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(intent);
     }
 
     public void createDirectory(File dir) {
