@@ -83,7 +83,7 @@
         </provider>
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="de.uni_osnabrueck.ikw.eegdroid.provider"
+            android:authorities="${applicationId}.provider"
             android:grantUriPermissions="true"
             android:exported="false">
             <meta-data

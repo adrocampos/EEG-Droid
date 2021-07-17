@@ -1740,7 +1740,11 @@ public class Record extends AppCompatActivity {
         //Prevent Screen from turning off
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        showStats();
+        // Show Debug Statistics
+        if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("showStats", false)){
+            showStats();
+        };
+
 
     }
 

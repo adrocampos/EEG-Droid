@@ -1,18 +1,5 @@
-de/uni_osnabrueck/ikw/eegdroid/LSL.java
- de.uni_osnabrueck.ikw.eegdroid.LSL
- de.uni_osnabrueck.ikw.eegdroid.LSL$ArgumentException
- de.uni_osnabrueck.ikw.eegdroid.LSL$ChannelFormat
- de.uni_osnabrueck.ikw.eegdroid.LSL$ContinuousResolver
- de.uni_osnabrueck.ikw.eegdroid.LSL$ErrorCode
- de.uni_osnabrueck.ikw.eegdroid.LSL$InternalException
- de.uni_osnabrueck.ikw.eegdroid.LSL$LostException
- de.uni_osnabrueck.ikw.eegdroid.LSL$ProcessingOptions
- de.uni_osnabrueck.ikw.eegdroid.LSL$StreamInfo
- de.uni_osnabrueck.ikw.eegdroid.LSL$StreamInlet
- de.uni_osnabrueck.ikw.eegdroid.LSL$StreamOutlet
- de.uni_osnabrueck.ikw.eegdroid.LSL$TimeoutException
- de.uni_osnabrueck.ikw.eegdroid.LSL$XMLElement
- de.uni_osnabrueck.ikw.eegdroid.LSL$dll
+de/uni_osnabrueck/ikw/eegdroid/ManageSessions.java
+ de.uni_osnabrueck.ikw.eegdroid.ManageSessions
 de/uni_osnabrueck/ikw/eegdroid/SettingsActivity.java
  de.uni_osnabrueck.ikw.eegdroid.SettingsActivity
  de.uni_osnabrueck.ikw.eegdroid.SettingsActivity$DataSyncPreferenceFragment
@@ -79,8 +66,13 @@ de/uni_osnabrueck/ikw/eegdroid/utilities/MyXAxisValueFormatterTime.java
 de/uni_osnabrueck/ikw/eegdroid/utilities/SessionAdapter.java
  de.uni_osnabrueck.ikw.eegdroid.utilities.SessionAdapter
  de.uni_osnabrueck.ikw.eegdroid.utilities.SessionAdapter$PlanetViewHolder
-de/uni_osnabrueck/ikw/eegdroid/utilities/CustomFFT.java
- de.uni_osnabrueck.ikw.eegdroid.utilities.CustomFFT
+de/uni_osnabrueck/ikw/eegdroid/TFAnalysis.java
+ de.uni_osnabrueck.ikw.eegdroid.TFAnalysis
+ de.uni_osnabrueck.ikw.eegdroid.TFAnalysis$1
+ de.uni_osnabrueck.ikw.eegdroid.TFAnalysis$1$1
+ de.uni_osnabrueck.ikw.eegdroid.TFAnalysis$2
+ de.uni_osnabrueck.ikw.eegdroid.TFAnalysis$3
+ de.uni_osnabrueck.ikw.eegdroid.TFAnalysis$4
 de/uni_osnabrueck/ikw/eegdroid/DownloadImageTask.java
  de.uni_osnabrueck.ikw.eegdroid.DownloadImageTask
 de/uni_osnabrueck/ikw/eegdroid/TraumschreiberService.java
@@ -92,18 +84,26 @@ de/uni_osnabrueck/ikw/eegdroid/utilities/ZoomableImageView.java
  de.uni_osnabrueck.ikw.eegdroid.utilities.ZoomableImageView
  de.uni_osnabrueck.ikw.eegdroid.utilities.ZoomableImageView$1
  de.uni_osnabrueck.ikw.eegdroid.utilities.ZoomableImageView$ScaleListener
-de/uni_osnabrueck/ikw/eegdroid/ManageSessions.java
- de.uni_osnabrueck.ikw.eegdroid.ManageSessions
+de/uni_osnabrueck/ikw/eegdroid/LSL.java
+ de.uni_osnabrueck.ikw.eegdroid.LSL
+ de.uni_osnabrueck.ikw.eegdroid.LSL$ArgumentException
+ de.uni_osnabrueck.ikw.eegdroid.LSL$ChannelFormat
+ de.uni_osnabrueck.ikw.eegdroid.LSL$ContinuousResolver
+ de.uni_osnabrueck.ikw.eegdroid.LSL$ErrorCode
+ de.uni_osnabrueck.ikw.eegdroid.LSL$InternalException
+ de.uni_osnabrueck.ikw.eegdroid.LSL$LostException
+ de.uni_osnabrueck.ikw.eegdroid.LSL$ProcessingOptions
+ de.uni_osnabrueck.ikw.eegdroid.LSL$StreamInfo
+ de.uni_osnabrueck.ikw.eegdroid.LSL$StreamInlet
+ de.uni_osnabrueck.ikw.eegdroid.LSL$StreamOutlet
+ de.uni_osnabrueck.ikw.eegdroid.LSL$TimeoutException
+ de.uni_osnabrueck.ikw.eegdroid.LSL$XMLElement
+ de.uni_osnabrueck.ikw.eegdroid.LSL$dll
+de/uni_osnabrueck/ikw/eegdroid/utilities/CustomFFT.java
+ de.uni_osnabrueck.ikw.eegdroid.utilities.CustomFFT
 de/uni_osnabrueck/ikw/eegdroid/Display.java
  de.uni_osnabrueck.ikw.eegdroid.Display
  de.uni_osnabrueck.ikw.eegdroid.Display$1
  de.uni_osnabrueck.ikw.eegdroid.Display$UpdateChart
-de/uni_osnabrueck/ikw/eegdroid/TFAnalysis.java
- de.uni_osnabrueck.ikw.eegdroid.TFAnalysis
- de.uni_osnabrueck.ikw.eegdroid.TFAnalysis$1
- de.uni_osnabrueck.ikw.eegdroid.TFAnalysis$1$1
- de.uni_osnabrueck.ikw.eegdroid.TFAnalysis$2
- de.uni_osnabrueck.ikw.eegdroid.TFAnalysis$3
- de.uni_osnabrueck.ikw.eegdroid.TFAnalysis$4
 de/uni_osnabrueck/ikw/eegdroid/MainActivity.java
  de.uni_osnabrueck.ikw.eegdroid.MainActivity

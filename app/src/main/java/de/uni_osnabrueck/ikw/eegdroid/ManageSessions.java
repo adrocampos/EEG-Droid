@@ -101,125 +101,115 @@ public class ManageSessions extends AppCompatActivity {
         } else {
 
             switch (item.getItemId()) {
-
                 case android.R.id.home:
                     onBackPressed();
                     return true;
-
                 case R.id.send_session:
-
-                    /*
-                    Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-                    intent.setType("text/plain");
-
-                    intent.putExtra(Intent.EXTRA_SUBJECT, TextUtils.concat("EEG Session:", " ", arrayListOfFiles.get(position).getName()));
-                    Log.d("Auth", getApplicationContext().getPackageName());
-                    Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".fileprovider", arrayListOfFiles.get(position));
-                    intent.putExtra(Intent.EXTRA_STREAM, uri);
-
-                    if (shareActionProvider != null) {
-                        shareActionProvider.setShareIntent(intent);
-                    }*/
-
-                    Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-                    intent.putExtra(Intent.EXTRA_SUBJECT, "EEG Sessions");
-                    intent.setType("text/csv");
-
-
-                    ArrayList<Uri> files = new ArrayList<Uri>();
-                    for(int position : selectedPositions){
-                        Uri uri = FileProvider.getUriForFile(
-                                this,
-                                "de.uni_osnabrueck.ikw.eegdroid.provider",
-                                arrayListOfFiles.get(position));
-                        files.add(uri);
-                    }
-
-                    intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
-                    startActivity(intent);
-
-                    adapter.resetSelectedPos();
+                    sendSessions(selectedPositions);
                     return true;
-
                 case R.id.rename_session:
-
-                    LayoutInflater layoutInflaterAndroid = LayoutInflater.from(this);
-                    View mView = layoutInflaterAndroid.inflate(R.layout.input_dialog_string, null);
-                    AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(this);
-                    alertDialogBuilderUserInput.setView(mView);
-                    final EditText userInputDialogEditText = mView.findViewById(R.id.input_dialog_string_Input);
-
-                    alertDialogBuilderUserInput
-                            .setCancelable(false)
-                            .setTitle(R.string.rename_title)
-                            .setMessage(getResources().getString(R.string.ask_new_name) + " " + "selection" + ":")
-                            .setPositiveButton(R.string.rename, (dialogBox, id) -> {
-                                int renameCount = 0;
-                                for (int i = selectedPositions.size()-1; i > -1 ; i--) {
-                                    int position = selectedPositions.get(i);
-                                    String oldName = arrayListOfFiles.get(position).getName().substring(0, 15);
-                                    String numbering = (renameCount==0) ? "" : "_"+Integer.toString(renameCount);
-                                    File newName = new File(saveDir, oldName +
-                                            userInputDialogEditText.getText().toString() +
-                                            numbering + ".csv");
-                                    renameCount++;
-                                    //Check if exist another file with this name
-                                    if (arrayListOfFiles.contains(newName)) {
-                                        Toast.makeText(getApplicationContext(), R.string.warning_rename, Toast.LENGTH_LONG).show();
-                                        dialogBox.cancel();
-                                        adapter.resetSelectedPos();
-                                    } else {
-                                        arrayListOfFiles.get(position).renameTo(newName);
-                                        arrayListOfFiles.set(position, newName);
-                                        Collections.sort(arrayListOfFiles, Collections.reverseOrder());
-                                        //adapter.notifyItemChanged(position);
-                                        adapter.notifyDataSetChanged();
-                                        adapter.resetSelectedPos();
-                                    }
-                                }
-                            })
-                            .setNegativeButton(R.string.cancel,
-                                    (dialogBox, id) -> {
-                                        dialogBox.cancel();
-                                        adapter.resetSelectedPos();
-                                    });
-
-                    AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
-                    alertDialogAndroid.show();
+                    renameSessions(selectedPositions);
                     return true;
-
                 case R.id.delete_session:
-
-                    //Handles the Dialog to confirm the file delete
-                    AlertDialog.Builder alert = new AlertDialog.Builder(this)
-                            .setTitle(R.string.dialog_title)
-                            .setMessage(getResources().getString(R.string.confirmation_delete) + " " + "selection" + "?");
-                    alert.setPositiveButton(android.R.string.yes, (dialog, which) -> {
-
-                        for(int position:selectedPositions) {
-                            arrayListOfFiles.get(position).delete();
-                            arrayListOfFiles.remove(position);
-                            adapter.notifyItemRemoved(position);
-                            //adapter.resetSelectedPos();
-                        }
-                    });
-                    alert.setNegativeButton(android.R.string.cancel, (dialog, which) -> {
-                        // close dialog
-                        dialog.cancel();
-                        adapter.resetSelectedPos();
-                    });
-                    alert.show();
-                    adapter.resetSelectedPos();
+                    deleteSessions(selectedPositions);
                     return true;
                 case R.id.launch_file_manager:
                     launchFileManager();
+                    return true;
                 case R.id.open_with_app:
-                    openWithApp();
-
+                    openWithApp(selectedPositions);
+                    return true;
                 default:
                     return super.onOptionsItemSelected(item);
             }
         }
+    }
+
+    private void sendSessions(ArrayList<Integer> selectedPositions){
+        Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "EEG Sessions");
+        intent.setType("text/csv");
+
+        ArrayList<Uri> files = new ArrayList<Uri>();
+        for(int position : selectedPositions){
+            Uri uri = FileProvider.getUriForFile(
+                    this,
+                    "de.uni_osnabrueck.ikw.eegdroid.provider",
+                    arrayListOfFiles.get(position));
+            files.add(uri);
+        }
+        intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
+        startActivity(intent);
+        adapter.resetSelectedPos();
+    }
+
+    private void renameSessions(ArrayList<Integer> selectedPositions){
+        LayoutInflater layoutInflaterAndroid = LayoutInflater.from(this);
+        View mView = layoutInflaterAndroid.inflate(R.layout.input_dialog_string, null);
+        AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(this);
+        alertDialogBuilderUserInput.setView(mView);
+        final EditText userInputDialogEditText = mView.findViewById(R.id.input_dialog_string_Input);
+
+        alertDialogBuilderUserInput
+                .setCancelable(false)
+                .setTitle(R.string.rename_title)
+                .setMessage(getResources().getString(R.string.ask_new_name) + " " + "selection" + ":")
+                .setPositiveButton(R.string.rename, (dialogBox, id) -> {
+                    int renameCount = 0;
+                    for (int i = selectedPositions.size()-1; i > -1 ; i--) {
+                        int position = selectedPositions.get(i);
+                        String oldName = arrayListOfFiles.get(position).getName().substring(0, 15);
+                        String numbering = (renameCount==0) ? "" : "_"+Integer.toString(renameCount);
+                        File newName = new File(saveDir, oldName +
+                                userInputDialogEditText.getText().toString() +
+                                numbering + ".csv");
+                        renameCount++;
+                        //Check if exist another file with this name
+                        if (arrayListOfFiles.contains(newName)) {
+                            Toast.makeText(getApplicationContext(), R.string.warning_rename, Toast.LENGTH_LONG).show();
+                            dialogBox.cancel();
+                            adapter.resetSelectedPos();
+                        } else {
+                            arrayListOfFiles.get(position).renameTo(newName);
+                            arrayListOfFiles.set(position, newName);
+                            Collections.sort(arrayListOfFiles, Collections.reverseOrder());
+                            //adapter.notifyItemChanged(position);
+                            adapter.notifyDataSetChanged();
+                            adapter.resetSelectedPos();
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.cancel,
+                        (dialogBox, id) -> {
+                            dialogBox.cancel();
+                            adapter.resetSelectedPos();
+                        });
+
+        AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
+        alertDialogAndroid.show();
+    }
+
+    private void deleteSessions(ArrayList<Integer> selectedPositions){
+        //Handles the Dialog to confirm the file delete
+        AlertDialog.Builder alert = new AlertDialog.Builder(this)
+                .setTitle(R.string.dialog_title)
+                .setMessage(getResources().getString(R.string.confirmation_delete) + " " + "selection" + "?");
+        alert.setPositiveButton(android.R.string.yes, (dialog, which) -> {
+
+            for(int position:selectedPositions) {
+                arrayListOfFiles.get(position).delete();
+                arrayListOfFiles.remove(position);
+                adapter.notifyItemRemoved(position);
+                adapter.resetSelectedPos();
+            }
+        });
+        alert.setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+            // close dialog
+            dialog.cancel();
+            adapter.resetSelectedPos();
+        });
+        alert.show();
+        adapter.resetSelectedPos();
     }
 
     private void launchFileManager(){
@@ -235,17 +225,17 @@ public class ManageSessions extends AppCompatActivity {
         }
         else
         {
-            // if you reach this place, it means there is no any file
-            // explorer app installed on your device
+            Toast.makeText(getApplicationContext(), "No file explorer installed", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void openWithApp(){
-        if (arrayListOfFiles.size() != 1) {
+    private void openWithApp(ArrayList<Integer> selectedPositions){
+        if (selectedPositions.size() != 1) {
             Toast.makeText(getApplicationContext(), "Can only open one file", Toast.LENGTH_SHORT).show();
             return;
         }
-        File file = arrayListOfFiles.get(0);
+        int position = selectedPositions.get(0);
+        File file = arrayListOfFiles.get(position);
 
         // Get URI and MIME type of file
         Uri uri = FileProvider.getUriForFile(this,
@@ -277,6 +267,7 @@ public class ManageSessions extends AppCompatActivity {
     //Returns a ListArray of the files in the directory
     public ArrayList<File> getArrayListOfFiles() {
         readDirectory(MainActivity.getDirSessions());
+        Log.d("MANAGE: ", "Directory: " + MainActivity.getDirSessions());
         return arrayListOfFiles;
     }
 
