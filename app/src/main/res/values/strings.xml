@@ -273,6 +273,7 @@
     <string name="settings_port">Port to cast:</string>
     <string name="inAppFilter">In-App Highpass Filter</string>
     <string name="eegLabels">EEG Positional Labels (e.g. "Ch1" -> "FP1")</string>
+    <string name="showStats">Show debug statistics after Recording</string>
 
     <string name="manage_list">List of EEG sessions found in the folder:</string>
 
