@@ -612,7 +612,7 @@ public class Record extends AppCompatActivity {
     private boolean showingPkgLossWarning = false;
     private void showPkgLossWarning(){
         // Avoids stacking Warnings on top of each other
-        if (showingPkgLossWarning) return;
+        if (showingPkgLossWarning || ignorePkgLoss) return;
 
         String pkgLossPercentFormatted = String.format("%.02f", pkgLossPercent*100);
         AlertDialog.Builder PkgLossWarningBuilder = new AlertDialog.Builder(this)
