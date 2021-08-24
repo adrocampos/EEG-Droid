@@ -282,13 +282,13 @@ public class Record extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             // CONNECTION EVENT
-            if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
+            if (action.equals(BluetoothLeService.ACTION_GATT_CONNECTED)) {
                 deviceConnected = true;
                 buttons_prerecording();
                 setConnectionStatus(true);
                 storedPkgCount = 0;
             // DISCONNECTION EVENT
-            } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
+            } else if (action.equals(BluetoothLeService.ACTION_GATT_DISCONNECTED)) {
                 deviceConnected = false;
                 setConnectionStatus(false);
                 clearUI();
@@ -300,7 +300,7 @@ public class Record extends AppCompatActivity {
                 samplingRateMonitorRunning = false;
 
             // BLUETOOTH SERVICE REGISTRATION
-            } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
+            } else if (action.equals(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED)) {
                 BluetoothGattService bleService = mBluetoothLeService.getService(TraumschreiberService.serviceUUID);
                 mNotifyCharacteristic = bleService.getCharacteristic(TraumschreiberService.notifyingUUID);
                 codeCharacteristic = bleService.getCharacteristic(TraumschreiberService.codeUUID);
@@ -313,7 +313,7 @@ public class Record extends AppCompatActivity {
                 applyDefaultConfiguration();
 
             // HANDLE INCOMING STREAM
-            } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
+            } else if (action.equals(BluetoothLeService.ACTION_DATA_AVAILABLE)) {
                 
                 int[] data = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
 
@@ -744,7 +744,7 @@ public class Record extends AppCompatActivity {
         final UUID uid = UUID.randomUUID();
 
         try {
-            streamInfo = new LSL.StreamInfo("Traumschreiber-EEG", "Markers", 24, LSL.IRREGULAR_RATE, LSL.ChannelFormat.float32, uid.toString());
+            streamInfo = new LSL.StreamInfo("Traumschreiber-EEG", "EEG", 24, LSL.IRREGULAR_RATE, LSL.ChannelFormat.float32, uid.toString());
             if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("eegLabels", true)){
                 for (String label : channelLabels) streamInfo.desc().append_child(label);
             } else {
@@ -1881,7 +1881,7 @@ public class Record extends AppCompatActivity {
         saveSession("default");
     }
 
-    //Saves the data at the end of session
+    /**Writes a footer with meta data to the end of the file and saves it acc. to user preferences**/
     @SuppressLint("DefaultLocale")
     private void saveSession(final String tag) throws IOException {
         // Column Names of Footer
