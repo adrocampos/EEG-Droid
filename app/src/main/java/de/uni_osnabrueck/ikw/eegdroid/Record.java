@@ -1346,7 +1346,7 @@ public class Record extends AppCompatActivity {
      *  defined in strings.xml
      */
     private void resetTraumConfig(){
-        selectedGainPos = 0; // 1
+        selectedGainPos = 3; // = 8
         selectedBitsPerChPos = 2; //16 bit
         runningAverageFilterCheck = true;
         sendOnOneCharCheck = false;  // off
