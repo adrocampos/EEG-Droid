@@ -428,7 +428,7 @@ public class Record extends AppCompatActivity {
         if (togglingRequired) toggleNotifying();
 
         Log.d(TAG, "New Value of Config: " + Arrays.toString(configCharacteristic.getValue()));
-        //Toast.makeText(getApplicationContext(), "Succesfully applied configuration.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Applied configuration.", Toast.LENGTH_SHORT).show();
     }
 
     private void applyDefaultConfiguration(){
@@ -436,7 +436,7 @@ public class Record extends AppCompatActivity {
         // Declare bytearray
         byte[] configBytes = new byte[8];
         mTraumService.setNotifyingUUID(2);
-        configBytes = new byte[]{33, 0, 0, 35, 15, -127, 0, 0};
+        configBytes = new byte[]{-23, 0, 0, 35, 0, -128, 0, 0};
         configCharacteristic.setValue(configBytes);
         mBluetoothLeService.writeCharacteristic(configCharacteristic);
         BluetoothGattService bleService = mBluetoothLeService.getService(TraumschreiberService.serviceUUID);
