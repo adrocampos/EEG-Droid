@@ -1,0 +1,638 @@
+[
+  {
+    "level": "INFO",
+    "message": "Start JSON generation. Platform version: 24 min SDK version: x86_64",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Trying to locate CMake in local SDK repository.",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "CMake \u00273.10.2\u0027 found in SDK could not satisfy requested version \u00273.12.0\u0027 because it was lower.",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "- CMake found in SDK at \u0027/home/mvidaldepalo/Android/Sdk/cmake/3.18.1\u0027 had version \u00273.18.1\u0027",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "rebuilding JSON /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/release/x86_64/android_gradle_build.json due to:",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "- expected json /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/release/x86_64/android_gradle_build.json file is not present, will remove stale json folder",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "- missing previous command file /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/release/x86_64/build_command.txt, will remove stale json folder",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "- command changed from previous, will remove stale json folder",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "removing stale contents from \u0027/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/release/x86_64\u0027",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "created folder \u0027/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/release/x86_64\u0027",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "executing cmake Executable : /home/mvidaldepalo/Android/Sdk/cmake/3.18.1/bin/cmake\narguments : \n-H/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl\n-DCMAKE_FIND_ROOT_PATH\u003d/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/release/prefab/x86_64/prefab\n-DCMAKE_BUILD_TYPE\u003dRelease\n-DCMAKE_TOOLCHAIN_FILE\u003d/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake\n-DANDROID_ABI\u003dx86_64\n-DANDROID_NDK\u003d/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462\n-DCMAKE_ANDROID_ARCH_ABI\u003dx86_64\n-DCMAKE_ANDROID_NDK\u003d/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462\n-DCMAKE_EXPORT_COMPILE_COMMANDS\u003dON\n-DCMAKE_LIBRARY_OUTPUT_DIRECTORY\u003d/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/build/intermediates/cmake/release/obj/x86_64\n-DCMAKE_MAKE_PROGRAM\u003d/home/mvidaldepalo/Android/Sdk/cmake/3.18.1/bin/ninja\n-DCMAKE_SYSTEM_NAME\u003dAndroid\n-DCMAKE_SYSTEM_VERSION\u003d24\n-DANDROID_CPP_FEATURES\u003drtti exceptions\n-DLSL_NO_FANCY_LIBNAME\u003d1\n-DANDROID_PLATFORM\u003d24\n-B/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/release/x86_64\n-GNinja\njvmArgs : \n\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "[\u003d\u003d \"CMake Server\" \u003d\u003d[\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"supportedProtocolVersions\":[{\"isExperimental\":true,\"major\":1,\"minor\":2}],\"type\":\"hello\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "]\u003d\u003d \"CMake Server\" \u003d\u003d]\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\n  \"type\": \"handshake\",\n  \"cookie\": \"gradle-cmake-cookie\",\n  \"protocolVersion\": {\n    \"isExperimental\": true,\n    \"major\": 1,\n    \"minor\": 2\n  },\n  \"sourceDirectory\": \"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl\",\n  \"buildDirectory\": \"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/release/x86_64\",\n  \"generator\": \"Ninja\"\n}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"gradle-cmake-cookie\",\"inReplyTo\":\"handshake\",\"type\":\"reply\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\n  \"type\": \"configure\",\n  \"cacheArguments\": [\n    \"\",\n    \"-DCMAKE_FIND_ROOT_PATH\\u003d/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/release/prefab/x86_64/prefab\",\n    \"-DCMAKE_BUILD_TYPE\\u003dRelease\",\n    \"-DCMAKE_TOOLCHAIN_FILE\\u003d/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake\",\n    \"-DANDROID_ABI\\u003dx86_64\",\n    \"-DANDROID_NDK\\u003d/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462\",\n    \"-DCMAKE_ANDROID_ARCH_ABI\\u003dx86_64\",\n    \"-DCMAKE_ANDROID_NDK\\u003d/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462\",\n    \"-DCMAKE_EXPORT_COMPILE_COMMANDS\\u003dON\",\n    \"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY\\u003d/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/build/intermediates/cmake/release/obj/x86_64\",\n    \"-DCMAKE_MAKE_PROGRAM\\u003d/home/mvidaldepalo/Android/Sdk/cmake/3.18.1/bin/ninja\",\n    \"-DCMAKE_SYSTEM_NAME\\u003dAndroid\",\n    \"-DCMAKE_SYSTEM_VERSION\\u003d24\",\n    \"-DANDROID_CPP_FEATURES\\u003drtti exceptions\",\n    \"-DLSL_NO_FANCY_LIBNAME\\u003d1\",\n    \"-DANDROID_PLATFORM\\u003d24\"\n  ]\n}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Detecting C compiler ABI info\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Detecting C compiler ABI info",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":33,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Detecting C compiler ABI info - done\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Detecting C compiler ABI info - done",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Check for working C compiler: /home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang - skipped\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Check for working C compiler: /home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang - skipped",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Detecting C compile features\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Detecting C compile features",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Detecting C compile features - done\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Detecting C compile features - done",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Detecting CXX compiler ABI info\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Detecting CXX compiler ABI info",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":65,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Detecting CXX compiler ABI info - done\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Detecting CXX compiler ABI info - done",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Check for working CXX compiler: /home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ - skipped\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Check for working CXX compiler: /home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ - skipped",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Detecting CXX compile features\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Detecting CXX compile features",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Detecting CXX compile features - done\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Detecting CXX compile features - done",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Using bundled pugixml\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Using bundled pugixml",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Found Git: /app/bin/git (found version \\\"2.9.5\\\") \",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Found Git: /app/bin/git (found version \"2.9.5\") ",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Git version information: dev/v2.6.1-beta-22-g59ecbc1\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Git version information: dev/v2.6.1-beta-22-g59ecbc1",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Looking for pthread.h\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Looking for pthread.h",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":96,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Looking for pthread.h - found\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Looking for pthread.h - found",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Performing Test CMAKE_HAVE_LIBC_PTHREAD\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Performing Test CMAKE_HAVE_LIBC_PTHREAD",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":126,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Looking for pthread_create in pthreads\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Looking for pthread_create in pthreads",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":155,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Looking for pthread_create in pthreads - not found\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Looking for pthread_create in pthreads - not found",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Looking for pthread_create in pthread\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Looking for pthread_create in pthread",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":184,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Looking for pthread_create in pthread - not found\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Looking for pthread_create in pthread - not found",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Check if compiler accepts -pthread\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Check if compiler accepts -pthread",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":211,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Check if compiler accepts -pthread - yes\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Check if compiler accepts -pthread - yes",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Found Threads: TRUE  \",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Found Threads: TRUE  ",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Looking for clock_gettime\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Looking for clock_gettime",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":237,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Looking for clock_gettime - found\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Looking for clock_gettime - found",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Included LSL CMake helpers, rev. 15, /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/cmake\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Included LSL CMake helpers, rev. 15, /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/cmake",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":262,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Detected architecture: amd64\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Detected architecture: amd64",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Installing Components: liblsl\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Installing Components: liblsl",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Configuring done\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Configuring done",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"CMake Deprecation Warning:\\n  The \u0027cmake-server(7)\u0027 is deprecated.  Please port clients to use the\\n  \u0027cmake-file-api(7)\u0027 instead.\\n\\n\",\"title\":\"Warning\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "WARN",
+    "message": "CMake Deprecation Warning:\n  The \u0027cmake-server(7)\u0027 is deprecated.  Please port clients to use the\n  \u0027cmake-file-api(7)\u0027 instead.\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"type\":\"reply\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"type\":\"compute\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"compute\",\"progressCurrent\":100,\"progressMaximum\":1000,\"progressMessage\":\"Generating\",\"progressMinimum\":0,\"type\":\"progress\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"compute\",\"progressCurrent\":1000,\"progressMaximum\":1000,\"progressMessage\":\"Generating\",\"progressMinimum\":0,\"type\":\"progress\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"compute\",\"message\":\"Generating done\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "Generating done",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"compute\",\"message\":\"CMake Warning:\\n  Manually-specified variables were not used by the project:\\n\\n    LSL_NO_FANCY_LIBNAME\\n\\n\",\"title\":\"Warning\",\"type\":\"message\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "WARN",
+    "message": "CMake Warning:\n  Manually-specified variables were not used by the project:\n\n    LSL_NO_FANCY_LIBNAME\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"cookie\":\"\",\"inReplyTo\":\"compute\",\"type\":\"reply\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"type\":\"cmakeInputs\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"buildFiles\":[{\"isCMake\":true,\"isTemporary\":false,\"sources\":[\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeDetermineSystem.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Platform/Android-Determine.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeSystem.cmake.in\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeSystemSpecificInitialize.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Platform/Android-Initialize.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeDetermineCCompiler.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeDetermineCompiler.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Platform/Android-Determine-C.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Platform/Android/Determine-Compiler.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeFindBinUtils.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Compiler/Clang-FindBinUtils.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeCCompiler.cmake.in\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeDetermineCXXCompiler.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeDetermineCompiler.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Platform/Android-Determine-CXX.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Platform/Android/Determine-Compiler.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeFindBinUtils.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Compiler/Clang-FindBinUtils.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeCXXCompiler.cmake.in\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeSystemSpecificInformation.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeGenericSystem.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeInitializeConfigs.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Platform/Android.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Platform/Linux.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Platform/UnixPaths.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeCInformation.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeLanguageInformation.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Compiler/Clang-C.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Compiler/Clang.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Compiler/CMakeCommonCompilerMacros.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Compiler/GNU.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Compiler/CMakeCommonCompilerMacros.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Internal/CMakeCheckCompilerFlag.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Platform/Android-Clang-C.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Platform/Android-Clang.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeCommonLanguageInclude.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeTestCCompiler.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeTestCompilerCommon.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeDetermineCompilerABI.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeParseImplicitIncludeInfo.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeParseImplicitLinkInfo.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeTestCompilerCommon.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeCCompilerABI.c\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeDetermineCompileFeatures.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Internal/FeatureTesting.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeCCompiler.cmake.in\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeCXXInformation.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeLanguageInformation.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Compiler/Clang-CXX.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Compiler/Clang.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Platform/Android-Clang-CXX.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Platform/Android-Clang.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeCommonLanguageInclude.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeTestCXXCompiler.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeTestCompilerCommon.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeDetermineCompilerABI.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeParseImplicitIncludeInfo.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeParseImplicitLinkInfo.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeTestCompilerCommon.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeCXXCompilerABI.cpp\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeDetermineCompileFeatures.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/Internal/FeatureTesting.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeCXXCompiler.cmake.in\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/FindGit.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/FindPackageHandleStandardArgs.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/FindPackageMessage.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/FindThreads.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CheckLibraryExists.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CheckIncludeFile.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CheckCSourceCompiles.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CheckIncludeFile.c.in\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CheckFunctionExists.c\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CheckFunctionExists.c\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CheckForPthreads.c\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/FindPackageHandleStandardArgs.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/FindPackageMessage.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CheckSymbolExists.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakeConfigurableFile.in\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/GNUInstallDirs.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CMakePackageConfigHelpers.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/WriteBasicConfigVersionFile.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/BasicConfigVersion-AnyNewerVersion.cmake.in\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/GNUInstallDirs.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CPack.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Modules/CPackComponent.cmake\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Templates/CPackConfig.cmake.in\",\"../../../../Android/Sdk/cmake/3.18.1/share/cmake-3.18/Templates/CPackConfig.cmake.in\"]},{\"isCMake\":false,\"isTemporary\":false,\"sources\":[\"CMakeLists.txt\",\"../../../../Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake\",\"../../../../Android/Sdk/ndk/21.1.6352462/build/cmake/platforms.cmake\",\"../../../../Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake\",\"cmake/LSLConfig.cmake\",\"cmake/LSLCMake.cmake\",\"cmake/LSLCMake.cmake\"]},{\"isCMake\":false,\"isTemporary\":true,\"sources\":[\"../app/.cxx/cmake/release/x86_64/CMakeFiles/3.18.1-g262b901/CMakeSystem.cmake\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/3.18.1-g262b901/CMakeCCompiler.cmake\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/3.18.1-g262b901/CMakeCXXCompiler.cmake\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/3.18.1-g262b901/CMakeCCompiler.cmake\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/3.18.1-g262b901/CMakeCXXCompiler.cmake\",\"../app/.cxx/cmake/release/x86_64/arch.c\"]}],\"cmakeRootDirectory\":\"/home/mvidaldepalo/Android/Sdk/cmake/3.18.1/share/cmake-3.18\",\"cookie\":\"\",\"inReplyTo\":\"cmakeInputs\",\"sourceDirectory\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl\",\"type\":\"reply\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"type\":\"codemodel\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "{\"configurations\":[{\"name\":\"Release\",\"projects\":[{\"buildDirectory\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/release/x86_64\",\"hasInstallRule\":true,\"minimumCMakeVersion\":\"3.6.0\",\"name\":\"liblsl\",\"sourceDirectory\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl\",\"targets\":[{\"artifacts\":[\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/release/x86_64/lslboost\"],\"buildDirectory\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/release/x86_64\",\"fileGroups\":[{\"compileFlags\":\"-g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE\u003d2 -Wformat -Werror\u003dformat-security -frtti -fexceptions  -O2 -DNDEBUG  -fPIC -fvisibility\u003dhidden -fvisibility-inlines-hidden -pthread\",\"defines\":[\"BOOST_ALL_NO_LIB\",\"BOOST_ASIO_STANDALONE\",\"BOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS\"],\"includePath\":[{\"isSystem\":true,\"path\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/lslboost\"}],\"isGenerated\":false,\"language\":\"CXX\",\"sources\":[\"lslboost/serialization_objects.cpp\"]}],\"fullName\":\"lslboost\",\"isGeneratorProvided\":false,\"linkerLanguage\":\"CXX\",\"name\":\"lslboost\",\"sourceDirectory\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl\",\"sysroot\":\"/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot\",\"type\":\"OBJECT_LIBRARY\"},{\"artifacts\":[\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/release/x86_64/lslver\"],\"buildDirectory\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/release/x86_64\",\"fileGroups\":[{\"compileFlags\":\"-g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE\u003d2 -Wformat -Werror\u003dformat-security  -O2 -DNDEBUG  -flto\u003dthin -fPIE\",\"defines\":[\"LIBLSL_EXPORTS\"],\"includePath\":[{\"path\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/include\"}],\"isGenerated\":false,\"language\":\"C\",\"sources\":[\"testing/lslver.c\"]}],\"fullName\":\"lslver\",\"hasInstallRule\":true,\"installPaths\":[\"/usr/local/bin\"],\"isGeneratorProvided\":false,\"linkFlags\":\"-Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libgcc_real.a -Wl,--exclude-libs,libatomic.a -static-libstdc++ -Wl,--build-id -Wl,--fatal-warnings -Wl,--no-undefined -Qunused-arguments -Wl,--gc-sections     -fuse-ld\u003dgold\",\"linkLanguageFlags\":\"-g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE\u003d2 -Wformat -Werror\u003dformat-security  -O2 -DNDEBUG  -flto\u003dthin\",\"linkLibraries\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/build/intermediates/cmake/release/obj/x86_64/liblsl.so  -latomic -lm\",\"linkerLanguage\":\"C\",\"name\":\"lslver\",\"sourceDirectory\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl\",\"sysroot\":\"/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot\",\"type\":\"EXECUTABLE\"},{\"artifacts\":[\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/build/intermediates/cmake/release/obj/x86_64/liblsl.so\"],\"buildDirectory\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/release/x86_64\",\"fileGroups\":[{\"isGenerated\":true,\"sources\":[\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/api_config.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/cancellation.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/common.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/consumer_queue.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/data_receiver.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/info_receiver.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/inlet_connection.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/lsl_resolver_c.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/lsl_inlet_c.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/lsl_outlet_c.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/lsl_streaminfo_c.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/lsl_xml_element_c.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/netinterfaces.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/resolver_impl.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/resolve_attempt_udp.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/sample.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/send_buffer.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/socket_utils.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/stream_info_impl.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/stream_outlet_impl.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/tcp_server.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/time_postprocessor.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/time_receiver.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/udp_server.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/util/cast.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/src/util/inireader.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/thirdparty/loguru/loguru.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslobj.dir/thirdparty/pugixml/pugixml.cpp.o\",\"../app/.cxx/cmake/release/x86_64/CMakeFiles/lslboost.dir/lslboost/serialization_objects.cpp.o\"]},{\"compileFlags\":\"-g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE\u003d2 -Wformat -Werror\u003dformat-security -frtti -fexceptions  -O2 -DNDEBUG  -fPIC -fvisibility\u003dhidden -fvisibility-inlines-hidden -pthread\",\"defines\":[\"BOOST_ALL_NO_LIB\",\"BOOST_ASIO_STANDALONE\",\"BOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS\",\"LIBLSL_EXPORTS\",\"LSL_LIBRARY_INFO_STR\u003d\\\"git:v2.6.1-beta-22-g59ecbc1/branch:dev/build:Release/compiler:Clang-9.0/link:SHARED\\\"\",\"lsl_EXPORTS\"],\"includePath\":[{\"path\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/include\"},{\"isSystem\":true,\"path\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/pugixml\"},{\"isSystem\":true,\"path\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/loguru\"},{\"isSystem\":true,\"path\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/lslboost\"}],\"isGenerated\":false,\"language\":\"CXX\",\"sources\":[\"src/buildinfo.cpp\"]}],\"fullName\":\"liblsl.so\",\"hasInstallRule\":true,\"installPaths\":[\"/usr/local/lib\",\"/usr/local/lib\"],\"isGeneratorProvided\":false,\"linkFlags\":\"-Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libgcc_real.a -Wl,--exclude-libs,libatomic.a -static-libstdc++ -Wl,--build-id -Wl,--fatal-warnings -Wl,--no-undefined -Qunused-arguments\",\"linkLibraries\":\"-pthread  -latomic -lm\",\"linkerLanguage\":\"CXX\",\"name\":\"lsl\",\"sourceDirectory\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl\",\"sysroot\":\"/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot\",\"type\":\"SHARED_LIBRARY\"},{\"artifacts\":[\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/release/x86_64/lslobj\"],\"buildDirectory\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/release/x86_64\",\"fileGroups\":[{\"compileFlags\":\"-g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE\u003d2 -Wformat -Werror\u003dformat-security -frtti -fexceptions  -O2 -DNDEBUG  -fPIC -fvisibility\u003dhidden -fvisibility-inlines-hidden -pthread\",\"defines\":[\"BOOST_ALL_NO_LIB\",\"BOOST_ASIO_STANDALONE\",\"BOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS\",\"LIBLSL_EXPORTS\",\"LOGURU_DEBUG_LOGGING\u003d0\",\"LOGURU_STACKTRACES\u003d0\"],\"includePath\":[{\"path\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/include\"},{\"isSystem\":true,\"path\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/pugixml\"},{\"isSystem\":true,\"path\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/loguru\"},{\"isSystem\":true,\"path\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/lslboost\"}],\"isGenerated\":false,\"language\":\"CXX\",\"sources\":[\"thirdparty/loguru/loguru.cpp\"]},{\"isGenerated\":false,\"sources\":[\"src/api_config.h\",\"src/api_types.hpp\",\"src/cancellable_streambuf.h\",\"src/cancellation.h\",\"src/common.h\",\"src/consumer_queue.h\",\"src/data_receiver.h\",\"src/forward.h\",\"src/info_receiver.h\",\"src/inlet_connection.h\",\"src/netinterfaces.h\",\"src/portable_archive/portable_archive_exception.hpp\",\"src/portable_archive/portable_archive_includes.hpp\",\"src/portable_archive/portable_iarchive.hpp\",\"src/portable_archive/portable_oarchive.hpp\",\"src/resolver_impl.h\",\"src/resolve_attempt_udp.h\",\"src/sample.h\",\"src/send_buffer.h\",\"src/socket_utils.h\",\"src/stream_info_impl.h\",\"src/stream_inlet_impl.h\",\"src/stream_outlet_impl.h\",\"src/tcp_server.h\",\"src/time_postprocessor.h\",\"src/time_receiver.h\",\"src/udp_server.h\",\"src/util/cast.hpp\",\"src/util/inireader.hpp\",\"src/util/uuid.hpp\",\"include/lsl_c.h\",\"include/lsl_cpp.h\",\"include/lsl/common.h\",\"include/lsl/inlet.h\",\"include/lsl/outlet.h\",\"include/lsl/resolver.h\",\"include/lsl/streaminfo.h\",\"include/lsl/types.h\",\"include/lsl/xml.h\"]},{\"compileFlags\":\"-g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE\u003d2 -Wformat -Werror\u003dformat-security -frtti -fexceptions  -O2 -DNDEBUG  -fPIC -fvisibility\u003dhidden -fvisibility-inlines-hidden -pthread\",\"defines\":[\"BOOST_ALL_NO_LIB\",\"BOOST_ASIO_STANDALONE\",\"BOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS\",\"LIBLSL_EXPORTS\",\"LOGURU_DEBUG_LOGGING\u003d0\"],\"includePath\":[{\"path\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/include\"},{\"isSystem\":true,\"path\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/pugixml\"},{\"isSystem\":true,\"path\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/loguru\"},{\"isSystem\":true,\"path\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/lslboost\"}],\"isGenerated\":false,\"language\":\"CXX\",\"sources\":[\"src/api_config.cpp\",\"src/cancellation.cpp\",\"src/common.cpp\",\"src/consumer_queue.cpp\",\"src/data_receiver.cpp\",\"src/info_receiver.cpp\",\"src/inlet_connection.cpp\",\"src/lsl_resolver_c.cpp\",\"src/lsl_inlet_c.cpp\",\"src/lsl_outlet_c.cpp\",\"src/lsl_streaminfo_c.cpp\",\"src/lsl_xml_element_c.cpp\",\"src/netinterfaces.cpp\",\"src/resolver_impl.cpp\",\"src/resolve_attempt_udp.cpp\",\"src/sample.cpp\",\"src/send_buffer.cpp\",\"src/socket_utils.cpp\",\"src/stream_info_impl.cpp\",\"src/stream_outlet_impl.cpp\",\"src/tcp_server.cpp\",\"src/time_postprocessor.cpp\",\"src/time_receiver.cpp\",\"src/udp_server.cpp\",\"src/util/cast.cpp\",\"src/util/inireader.cpp\",\"thirdparty/pugixml/pugixml.cpp\"]}],\"fullName\":\"lslobj\",\"isGeneratorProvided\":false,\"linkerLanguage\":\"CXX\",\"name\":\"lslobj\",\"sourceDirectory\":\"/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl\",\"sysroot\":\"/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot\",\"type\":\"OBJECT_LIBRARY\"}]}]}],\"cookie\":\"\",\"inReplyTo\":\"codemodel\",\"type\":\"reply\"}\n",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "done executing cmake",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "write build output /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/release/x86_64/build_output.txt",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "write command file /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/release/x86_64/build_command.txt",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  },
+  {
+    "level": "INFO",
+    "message": "JSON generation completed without problems",
+    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+    "tag": "release|x86_64"
+  }
+]

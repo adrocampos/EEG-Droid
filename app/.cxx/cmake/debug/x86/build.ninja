@@ -356,7 +356,7 @@ build package: phony CMakeFiles/package.util
 build cmake_object_order_depends_target_lsl: phony || cmake_object_order_depends_target_lslboost cmake_object_order_depends_target_lslobj
 
 build CMakeFiles/lsl.dir/src/buildinfo.cpp.o: CXX_COMPILER__lsl_Debug /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/buildinfo.cpp || cmake_object_order_depends_target_lsl
-  DEFINES = -DBOOST_ALL_NO_LIB -DBOOST_ASIO_STANDALONE -DBOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS -DLIBLSL_EXPORTS -Dlsl_EXPORTS -DLSL_LIBRARY_INFO_STR=\"git:v2.6.1-beta-21-g8b30012/branch:dev/build:Debug/compiler:Clang-9.0/link:SHARED\"
+  DEFINES = -DBOOST_ALL_NO_LIB -DBOOST_ASIO_STANDALONE -DBOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS -DLIBLSL_EXPORTS -Dlsl_EXPORTS -DLSL_LIBRARY_INFO_STR=\"git:v2.6.1-beta-22-g59ecbc1/branch:dev/build:Debug/compiler:Clang-9.0/link:SHARED\"
   DEP_FILE = CMakeFiles/lsl.dir/src/buildinfo.cpp.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions  -O0 -fno-limit-debug-info  -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -pthread
   INCLUDES = -I/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/include -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/pugixml -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/loguru -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/lslboost
