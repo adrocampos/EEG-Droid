@@ -73,7 +73,7 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
-
+ 
 
 public class Record extends AppCompatActivity {
 
@@ -141,8 +141,6 @@ public class Record extends AppCompatActivity {
     private final CheckBox[] checkBoxes = new CheckBox[nChannels];
     private final TextView[] channelValueViews = new TextView[nChannels];
     private AlertDialog traumConfigDialog;
-    LSL.StreamInfo streamInfo;
-    LSL.StreamOutlet streamOutlet = null;
     private TextView mConnectionState;
     private TextView viewDeviceAddress;
     private boolean mNewDevice;
@@ -740,11 +738,14 @@ public class Record extends AppCompatActivity {
         deleteTempFiles();
     }
 
+    LSL.StreamInfo streamInfo;
+    LSL.StreamOutlet streamOutlet = null;
     private void prepareLslStream(){
         final UUID uid = UUID.randomUUID();
 
         try {
-            streamInfo = new LSL.StreamInfo("Traumschreiber-EEG", "EEG", 24, LSL.IRREGULAR_RATE, LSL.ChannelFormat.float32, uid.toString());
+            streamInfo = new LSL.StreamInfo("Traumschreiber-EEG", "EEG", 24,
+                    LSL.IRREGULAR_RATE, LSL.ChannelFormat.float32, uid.toString());
             if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("eegLabels", true)){
                 LSL.XMLElement chns = streamInfo.desc().append_child("channels");
                 for (String label : channelLabels) {
@@ -850,10 +851,29 @@ public class Record extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        Log.d(TAG, "Called onBackPressed");
+
+        try {
+            if (streamOutlet != null){
+                streamOutlet.close();
+            };
+        } catch(Exception e) {
+            Log.w(TAG, e.toString());
+        }
+
+        finish();
+
+    }
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         try {
+
             unbindService(mServiceConnection);
+            Log.d(TAG, "Called onDestroy");
+            streamOutlet.close();
+
         } catch(Exception e) {
             Log.w(TAG, e.toString());
         }
