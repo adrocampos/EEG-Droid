@@ -13,22 +13,21 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_LIB_STD_RW`
+/*`
+[heading `BOOST_LIB_STD_RW`]
 
-http://stdcxx.apache.org/[Roguewave] Standard {CPP} library.
+[@http://stdcxx.apache.org/ Roguewave] Standard C++ library.
 If available version number as major, minor, and patch.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__STD_RWCOMPILER_H__+` | {predef_detection}
-| `+_RWSTD_VER+` | {predef_detection}
+    [[`__STD_RWCOMPILER_H__`] [__predef_detection__]]
+    [[`_RWSTD_VER`] [__predef_detection__]]
 
-| `+_RWSTD_VER+` | V.R.P
-|===
-*/ // end::reference[]
+    [[`_RWSTD_VER`] [V.R.P]]
+    ]
+ */
 
 #define BOOST_LIB_STD_RW BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

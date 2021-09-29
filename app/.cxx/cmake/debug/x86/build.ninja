@@ -71,6 +71,14 @@ build CMakeFiles/lslobj.dir/src/cancellation.cpp.o: CXX_COMPILER__lslobj_Debug /
   OBJECT_DIR = CMakeFiles/lslobj.dir
   OBJECT_FILE_DIR = CMakeFiles/lslobj.dir/src
 
+build CMakeFiles/lslobj.dir/src/cast.cpp.o: CXX_COMPILER__lslobj_Debug /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/cast.cpp || cmake_object_order_depends_target_lslobj
+  DEFINES = -DBOOST_ALL_NO_LIB -DBOOST_ASIO_STANDALONE -DBOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS -DLIBLSL_EXPORTS -DLOGURU_DEBUG_LOGGING=0
+  DEP_FILE = CMakeFiles/lslobj.dir/src/cast.cpp.o.d
+  FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions  -O0 -fno-limit-debug-info  -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -pthread
+  INCLUDES = -I/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/include -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/pugixml -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/loguru -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/lslboost
+  OBJECT_DIR = CMakeFiles/lslobj.dir
+  OBJECT_FILE_DIR = CMakeFiles/lslobj.dir/src
+
 build CMakeFiles/lslobj.dir/src/common.cpp.o: CXX_COMPILER__lslobj_Debug /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/common.cpp || cmake_object_order_depends_target_lslobj
   DEFINES = -DBOOST_ALL_NO_LIB -DBOOST_ASIO_STANDALONE -DBOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS -DLIBLSL_EXPORTS -DLOGURU_DEBUG_LOGGING=0
   DEP_FILE = CMakeFiles/lslobj.dir/src/common.cpp.o.d
@@ -98,6 +106,14 @@ build CMakeFiles/lslobj.dir/src/data_receiver.cpp.o: CXX_COMPILER__lslobj_Debug 
 build CMakeFiles/lslobj.dir/src/info_receiver.cpp.o: CXX_COMPILER__lslobj_Debug /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/info_receiver.cpp || cmake_object_order_depends_target_lslobj
   DEFINES = -DBOOST_ALL_NO_LIB -DBOOST_ASIO_STANDALONE -DBOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS -DLIBLSL_EXPORTS -DLOGURU_DEBUG_LOGGING=0
   DEP_FILE = CMakeFiles/lslobj.dir/src/info_receiver.cpp.o.d
+  FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions  -O0 -fno-limit-debug-info  -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -pthread
+  INCLUDES = -I/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/include -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/pugixml -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/loguru -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/lslboost
+  OBJECT_DIR = CMakeFiles/lslobj.dir
+  OBJECT_FILE_DIR = CMakeFiles/lslobj.dir/src
+
+build CMakeFiles/lslobj.dir/src/inireader.cpp.o: CXX_COMPILER__lslobj_Debug /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/inireader.cpp || cmake_object_order_depends_target_lslobj
+  DEFINES = -DBOOST_ALL_NO_LIB -DBOOST_ASIO_STANDALONE -DBOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS -DLIBLSL_EXPORTS -DLOGURU_DEBUG_LOGGING=0
+  DEP_FILE = CMakeFiles/lslobj.dir/src/inireader.cpp.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions  -O0 -fno-limit-debug-info  -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -pthread
   INCLUDES = -I/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/include -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/pugixml -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/loguru -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/lslboost
   OBJECT_DIR = CMakeFiles/lslobj.dir
@@ -247,22 +263,6 @@ build CMakeFiles/lslobj.dir/src/udp_server.cpp.o: CXX_COMPILER__lslobj_Debug /ho
   OBJECT_DIR = CMakeFiles/lslobj.dir
   OBJECT_FILE_DIR = CMakeFiles/lslobj.dir/src
 
-build CMakeFiles/lslobj.dir/src/util/cast.cpp.o: CXX_COMPILER__lslobj_Debug /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/util/cast.cpp || cmake_object_order_depends_target_lslobj
-  DEFINES = -DBOOST_ALL_NO_LIB -DBOOST_ASIO_STANDALONE -DBOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS -DLIBLSL_EXPORTS -DLOGURU_DEBUG_LOGGING=0
-  DEP_FILE = CMakeFiles/lslobj.dir/src/util/cast.cpp.o.d
-  FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions  -O0 -fno-limit-debug-info  -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -pthread
-  INCLUDES = -I/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/include -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/pugixml -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/loguru -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/lslboost
-  OBJECT_DIR = CMakeFiles/lslobj.dir
-  OBJECT_FILE_DIR = CMakeFiles/lslobj.dir/src/util
-
-build CMakeFiles/lslobj.dir/src/util/inireader.cpp.o: CXX_COMPILER__lslobj_Debug /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/util/inireader.cpp || cmake_object_order_depends_target_lslobj
-  DEFINES = -DBOOST_ALL_NO_LIB -DBOOST_ASIO_STANDALONE -DBOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS -DLIBLSL_EXPORTS -DLOGURU_DEBUG_LOGGING=0
-  DEP_FILE = CMakeFiles/lslobj.dir/src/util/inireader.cpp.o.d
-  FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions  -O0 -fno-limit-debug-info  -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -pthread
-  INCLUDES = -I/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/include -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/pugixml -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/loguru -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/lslboost
-  OBJECT_DIR = CMakeFiles/lslobj.dir
-  OBJECT_FILE_DIR = CMakeFiles/lslobj.dir/src/util
-
 build CMakeFiles/lslobj.dir/thirdparty/loguru/loguru.cpp.o: CXX_COMPILER__lslobj_Debug /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/loguru/loguru.cpp || cmake_object_order_depends_target_lslobj
   DEFINES = -DBOOST_ALL_NO_LIB -DBOOST_ASIO_STANDALONE -DBOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS -DLIBLSL_EXPORTS -DLOGURU_DEBUG_LOGGING=0 -DLOGURU_STACKTRACES=0
   DEP_FILE = CMakeFiles/lslobj.dir/thirdparty/loguru/loguru.cpp.o.d
@@ -284,7 +284,7 @@ build CMakeFiles/lslobj.dir/thirdparty/pugixml/pugixml.cpp.o: CXX_COMPILER__lslo
 #############################################
 # Object library lslobj
 
-build lslobj: phony CMakeFiles/lslobj.dir/src/api_config.cpp.o CMakeFiles/lslobj.dir/src/cancellation.cpp.o CMakeFiles/lslobj.dir/src/common.cpp.o CMakeFiles/lslobj.dir/src/consumer_queue.cpp.o CMakeFiles/lslobj.dir/src/data_receiver.cpp.o CMakeFiles/lslobj.dir/src/info_receiver.cpp.o CMakeFiles/lslobj.dir/src/inlet_connection.cpp.o CMakeFiles/lslobj.dir/src/lsl_resolver_c.cpp.o CMakeFiles/lslobj.dir/src/lsl_inlet_c.cpp.o CMakeFiles/lslobj.dir/src/lsl_outlet_c.cpp.o CMakeFiles/lslobj.dir/src/lsl_streaminfo_c.cpp.o CMakeFiles/lslobj.dir/src/lsl_xml_element_c.cpp.o CMakeFiles/lslobj.dir/src/netinterfaces.cpp.o CMakeFiles/lslobj.dir/src/resolver_impl.cpp.o CMakeFiles/lslobj.dir/src/resolve_attempt_udp.cpp.o CMakeFiles/lslobj.dir/src/sample.cpp.o CMakeFiles/lslobj.dir/src/send_buffer.cpp.o CMakeFiles/lslobj.dir/src/socket_utils.cpp.o CMakeFiles/lslobj.dir/src/stream_info_impl.cpp.o CMakeFiles/lslobj.dir/src/stream_outlet_impl.cpp.o CMakeFiles/lslobj.dir/src/tcp_server.cpp.o CMakeFiles/lslobj.dir/src/time_postprocessor.cpp.o CMakeFiles/lslobj.dir/src/time_receiver.cpp.o CMakeFiles/lslobj.dir/src/udp_server.cpp.o CMakeFiles/lslobj.dir/src/util/cast.cpp.o CMakeFiles/lslobj.dir/src/util/inireader.cpp.o CMakeFiles/lslobj.dir/thirdparty/loguru/loguru.cpp.o CMakeFiles/lslobj.dir/thirdparty/pugixml/pugixml.cpp.o
+build lslobj: phony CMakeFiles/lslobj.dir/src/api_config.cpp.o CMakeFiles/lslobj.dir/src/cancellation.cpp.o CMakeFiles/lslobj.dir/src/cast.cpp.o CMakeFiles/lslobj.dir/src/common.cpp.o CMakeFiles/lslobj.dir/src/consumer_queue.cpp.o CMakeFiles/lslobj.dir/src/data_receiver.cpp.o CMakeFiles/lslobj.dir/src/info_receiver.cpp.o CMakeFiles/lslobj.dir/src/inireader.cpp.o CMakeFiles/lslobj.dir/src/inlet_connection.cpp.o CMakeFiles/lslobj.dir/src/lsl_resolver_c.cpp.o CMakeFiles/lslobj.dir/src/lsl_inlet_c.cpp.o CMakeFiles/lslobj.dir/src/lsl_outlet_c.cpp.o CMakeFiles/lslobj.dir/src/lsl_streaminfo_c.cpp.o CMakeFiles/lslobj.dir/src/lsl_xml_element_c.cpp.o CMakeFiles/lslobj.dir/src/netinterfaces.cpp.o CMakeFiles/lslobj.dir/src/resolver_impl.cpp.o CMakeFiles/lslobj.dir/src/resolve_attempt_udp.cpp.o CMakeFiles/lslobj.dir/src/sample.cpp.o CMakeFiles/lslobj.dir/src/send_buffer.cpp.o CMakeFiles/lslobj.dir/src/socket_utils.cpp.o CMakeFiles/lslobj.dir/src/stream_info_impl.cpp.o CMakeFiles/lslobj.dir/src/stream_outlet_impl.cpp.o CMakeFiles/lslobj.dir/src/tcp_server.cpp.o CMakeFiles/lslobj.dir/src/time_postprocessor.cpp.o CMakeFiles/lslobj.dir/src/time_receiver.cpp.o CMakeFiles/lslobj.dir/src/udp_server.cpp.o CMakeFiles/lslobj.dir/thirdparty/loguru/loguru.cpp.o CMakeFiles/lslobj.dir/thirdparty/pugixml/pugixml.cpp.o
 
 # =============================================================================
 # Object build statements for OBJECT_LIBRARY target lslboost
@@ -356,7 +356,7 @@ build package: phony CMakeFiles/package.util
 build cmake_object_order_depends_target_lsl: phony || cmake_object_order_depends_target_lslboost cmake_object_order_depends_target_lslobj
 
 build CMakeFiles/lsl.dir/src/buildinfo.cpp.o: CXX_COMPILER__lsl_Debug /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/buildinfo.cpp || cmake_object_order_depends_target_lsl
-  DEFINES = -DBOOST_ALL_NO_LIB -DBOOST_ASIO_STANDALONE -DBOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS -DLIBLSL_EXPORTS -Dlsl_EXPORTS -DLSL_LIBRARY_INFO_STR=\"git:v2.6.1-beta-22-g59ecbc1/branch:dev/build:Debug/compiler:Clang-9.0/link:SHARED\"
+  DEFINES = -DBOOST_ALL_NO_LIB -DBOOST_ASIO_STANDALONE -DBOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS -DLIBLSL_EXPORTS -Dlsl_EXPORTS -DLSL_LIBRARY_INFO_STR=\"git:v2.6.1-beta-23-g63e5f31/branch:dev/build:Debug/compiler:Clang-9.0/link:SHARED\"
   DEP_FILE = CMakeFiles/lsl.dir/src/buildinfo.cpp.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions  -O0 -fno-limit-debug-info  -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -pthread
   INCLUDES = -I/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/include -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/pugixml -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/loguru -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/lslboost
@@ -371,7 +371,7 @@ build CMakeFiles/lsl.dir/src/buildinfo.cpp.o: CXX_COMPILER__lsl_Debug /home/mvid
 #############################################
 # Link the shared library /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/build/intermediates/cmake/debug/obj/x86/liblsl.so
 
-build /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/build/intermediates/cmake/debug/obj/x86/liblsl.so: CXX_SHARED_LIBRARY_LINKER__lsl_Debug CMakeFiles/lslobj.dir/src/api_config.cpp.o CMakeFiles/lslobj.dir/src/cancellation.cpp.o CMakeFiles/lslobj.dir/src/common.cpp.o CMakeFiles/lslobj.dir/src/consumer_queue.cpp.o CMakeFiles/lslobj.dir/src/data_receiver.cpp.o CMakeFiles/lslobj.dir/src/info_receiver.cpp.o CMakeFiles/lslobj.dir/src/inlet_connection.cpp.o CMakeFiles/lslobj.dir/src/lsl_resolver_c.cpp.o CMakeFiles/lslobj.dir/src/lsl_inlet_c.cpp.o CMakeFiles/lslobj.dir/src/lsl_outlet_c.cpp.o CMakeFiles/lslobj.dir/src/lsl_streaminfo_c.cpp.o CMakeFiles/lslobj.dir/src/lsl_xml_element_c.cpp.o CMakeFiles/lslobj.dir/src/netinterfaces.cpp.o CMakeFiles/lslobj.dir/src/resolver_impl.cpp.o CMakeFiles/lslobj.dir/src/resolve_attempt_udp.cpp.o CMakeFiles/lslobj.dir/src/sample.cpp.o CMakeFiles/lslobj.dir/src/send_buffer.cpp.o CMakeFiles/lslobj.dir/src/socket_utils.cpp.o CMakeFiles/lslobj.dir/src/stream_info_impl.cpp.o CMakeFiles/lslobj.dir/src/stream_outlet_impl.cpp.o CMakeFiles/lslobj.dir/src/tcp_server.cpp.o CMakeFiles/lslobj.dir/src/time_postprocessor.cpp.o CMakeFiles/lslobj.dir/src/time_receiver.cpp.o CMakeFiles/lslobj.dir/src/udp_server.cpp.o CMakeFiles/lslobj.dir/src/util/cast.cpp.o CMakeFiles/lslobj.dir/src/util/inireader.cpp.o CMakeFiles/lslobj.dir/thirdparty/loguru/loguru.cpp.o CMakeFiles/lslobj.dir/thirdparty/pugixml/pugixml.cpp.o CMakeFiles/lslboost.dir/lslboost/serialization_objects.cpp.o CMakeFiles/lsl.dir/src/buildinfo.cpp.o || lslboost lslobj
+build /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/build/intermediates/cmake/debug/obj/x86/liblsl.so: CXX_SHARED_LIBRARY_LINKER__lsl_Debug CMakeFiles/lslobj.dir/src/api_config.cpp.o CMakeFiles/lslobj.dir/src/cancellation.cpp.o CMakeFiles/lslobj.dir/src/cast.cpp.o CMakeFiles/lslobj.dir/src/common.cpp.o CMakeFiles/lslobj.dir/src/consumer_queue.cpp.o CMakeFiles/lslobj.dir/src/data_receiver.cpp.o CMakeFiles/lslobj.dir/src/info_receiver.cpp.o CMakeFiles/lslobj.dir/src/inireader.cpp.o CMakeFiles/lslobj.dir/src/inlet_connection.cpp.o CMakeFiles/lslobj.dir/src/lsl_resolver_c.cpp.o CMakeFiles/lslobj.dir/src/lsl_inlet_c.cpp.o CMakeFiles/lslobj.dir/src/lsl_outlet_c.cpp.o CMakeFiles/lslobj.dir/src/lsl_streaminfo_c.cpp.o CMakeFiles/lslobj.dir/src/lsl_xml_element_c.cpp.o CMakeFiles/lslobj.dir/src/netinterfaces.cpp.o CMakeFiles/lslobj.dir/src/resolver_impl.cpp.o CMakeFiles/lslobj.dir/src/resolve_attempt_udp.cpp.o CMakeFiles/lslobj.dir/src/sample.cpp.o CMakeFiles/lslobj.dir/src/send_buffer.cpp.o CMakeFiles/lslobj.dir/src/socket_utils.cpp.o CMakeFiles/lslobj.dir/src/stream_info_impl.cpp.o CMakeFiles/lslobj.dir/src/stream_outlet_impl.cpp.o CMakeFiles/lslobj.dir/src/tcp_server.cpp.o CMakeFiles/lslobj.dir/src/time_postprocessor.cpp.o CMakeFiles/lslobj.dir/src/time_receiver.cpp.o CMakeFiles/lslobj.dir/src/udp_server.cpp.o CMakeFiles/lslobj.dir/thirdparty/loguru/loguru.cpp.o CMakeFiles/lslobj.dir/thirdparty/pugixml/pugixml.cpp.o CMakeFiles/lslboost.dir/lslboost/serialization_objects.cpp.o CMakeFiles/lsl.dir/src/buildinfo.cpp.o || lslboost lslobj
   LANGUAGE_COMPILE_FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions  -O0 -fno-limit-debug-info
   LINK_FLAGS = -Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libgcc_real.a -Wl,--exclude-libs,libatomic.a -static-libstdc++ -Wl,--build-id -Wl,--fatal-warnings -Wl,--no-undefined -Qunused-arguments
   LINK_LIBRARIES = -pthread  -latomic -lm

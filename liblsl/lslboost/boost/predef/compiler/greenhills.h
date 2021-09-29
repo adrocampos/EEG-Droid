@@ -11,23 +11,22 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_COMP_GHS`
+/*`
+[heading `BOOST_COMP_GHS`]
 
-http://en.wikipedia.org/wiki/Green_Hills_Software[Green Hills C/{CPP}] compiler.
+[@http://en.wikipedia.org/wiki/Green_Hills_Software Green Hills C/C++] compiler.
 Version number available as major, minor, and patch.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__ghs+` | {predef_detection}
-| `+__ghs__+` | {predef_detection}
+    [[`__ghs`] [__predef_detection__]]
+    [[`__ghs__`] [__predef_detection__]]
 
-| `+__GHS_VERSION_NUMBER__+` | V.R.P
-| `+__ghs+` | V.R.P
-|===
-*/ // end::reference[]
+    [[`__GHS_VERSION_NUMBER__`] [V.R.P]]
+    [[`__ghs`] [V.R.P]]
+    ]
+ */
 
 #define BOOST_COMP_GHS BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

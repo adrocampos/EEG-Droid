@@ -2,7 +2,7 @@
 // executor.hpp
 // ~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -16,12 +16,8 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include <boost/asio/detail/config.hpp>
-
-#if !defined(BOOST_ASIO_NO_TS_EXECUTORS)
-
 #include <typeinfo>
 #include <boost/asio/detail/cstddef.hpp>
-#include <boost/asio/detail/executor_function.hpp>
 #include <boost/asio/detail/memory.hpp>
 #include <boost/asio/detail/throw_exception.hpp>
 #include <boost/asio/execution_context.hpp>
@@ -258,7 +254,7 @@ public:
 
 private:
 #if !defined(GENERATING_DOCUMENTATION)
-  typedef detail::executor_function function;
+  class function;
   template <typename, typename> class impl;
 
 #if !defined(BOOST_ASIO_NO_TYPEID)
@@ -343,7 +339,5 @@ BOOST_ASIO_USES_ALLOCATOR(lslboost::asio::executor)
 #if defined(BOOST_ASIO_HEADER_ONLY)
 # include <boost/asio/impl/executor.ipp>
 #endif // defined(BOOST_ASIO_HEADER_ONLY)
-
-#endif // !defined(BOOST_ASIO_NO_TS_EXECUTORS)
 
 #endif // BOOST_ASIO_EXECUTOR_HPP

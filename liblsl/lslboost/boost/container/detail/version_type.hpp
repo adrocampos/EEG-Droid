@@ -39,14 +39,23 @@ struct version_type
     : public dtl::integral_constant<unsigned, V>
 {
     typedef T type;
+
+    version_type(const version_type<T, 0>&);
 };
 
 namespace impl{
 
-template <class T>
+template <class T,
+          bool = dtl::is_convertible<version_type<T, 0>, typename T::version>::value>
 struct extract_version
 {
-   typedef typename T::version type;
+   static const unsigned value = 1;
+};
+
+template <class T>
+struct extract_version<T, true>
+{
+   static const unsigned value = T::version::value;
 };
 
 template <class T>
@@ -70,7 +79,7 @@ struct version
 template <class T>
 struct version<T, true>
 {
-   static const unsigned value = extract_version<T>::type::value;
+   static const unsigned value = extract_version<T>::value;
 };
 
 }  //namespace impl

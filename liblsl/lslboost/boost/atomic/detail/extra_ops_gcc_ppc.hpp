@@ -17,12 +17,11 @@
 #include <cstddef>
 #include <boost/memory_order.hpp>
 #include <boost/atomic/detail/config.hpp>
-#include <boost/atomic/detail/storage_traits.hpp>
+#include <boost/atomic/detail/storage_type.hpp>
 #include <boost/atomic/detail/extra_operations_fwd.hpp>
 #include <boost/atomic/detail/extra_ops_generic.hpp>
 #include <boost/atomic/detail/ops_gcc_ppc_common.hpp>
-#include <boost/atomic/detail/capabilities.hpp>
-#include <boost/atomic/detail/header.hpp>
+#include <boost/atomic/capabilities.hpp>
 
 #ifdef BOOST_HAS_PRAGMA_ONCE
 #pragma once
@@ -33,7 +32,7 @@ namespace atomics {
 namespace detail {
 
 template< typename Base >
-struct extra_operations_gcc_ppc_common :
+struct gcc_ppc_extra_operations_common :
     public Base
 {
     typedef Base base_type;
@@ -86,20 +85,20 @@ struct extra_operations_gcc_ppc_common :
 };
 
 template< typename Base, std::size_t Size, bool Signed >
-struct extra_operations_gcc_ppc;
+struct gcc_ppc_extra_operations;
 
 #if defined(BOOST_ATOMIC_DETAIL_PPC_HAS_LBARX_STBCX)
 
 template< typename Base, bool Signed >
-struct extra_operations_gcc_ppc< Base, 1u, Signed > :
-    public extra_operations_generic< Base, 1u, Signed >
+struct gcc_ppc_extra_operations< Base, 1u, Signed > :
+    public generic_extra_operations< Base, 1u, Signed >
 {
-    typedef extra_operations_generic< Base, 1u, Signed > base_type;
+    typedef generic_extra_operations< Base, 1u, Signed > base_type;
     typedef typename base_type::storage_type storage_type;
 
     static BOOST_FORCEINLINE storage_type fetch_negate(storage_type volatile& storage, memory_order order) BOOST_NOEXCEPT
     {
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         storage_type original, result;
         __asm__ __volatile__
         (
@@ -112,13 +111,13 @@ struct extra_operations_gcc_ppc< Base, 1u, Signed > :
             :
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return original;
     }
 
     static BOOST_FORCEINLINE storage_type negate(storage_type volatile& storage, memory_order order) BOOST_NOEXCEPT
     {
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         storage_type original, result;
         __asm__ __volatile__
         (
@@ -131,14 +130,14 @@ struct extra_operations_gcc_ppc< Base, 1u, Signed > :
             :
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type add(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         storage_type original, result;
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         __asm__ __volatile__
         (
             "1:\n\t"
@@ -150,14 +149,14 @@ struct extra_operations_gcc_ppc< Base, 1u, Signed > :
             : "b" (v)
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type sub(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         storage_type original, result;
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         __asm__ __volatile__
         (
             "1:\n\t"
@@ -169,14 +168,14 @@ struct extra_operations_gcc_ppc< Base, 1u, Signed > :
             : "b" (v)
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type bitwise_and(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         storage_type original, result;
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         __asm__ __volatile__
         (
             "1:\n\t"
@@ -188,14 +187,14 @@ struct extra_operations_gcc_ppc< Base, 1u, Signed > :
             : "b" (v)
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type bitwise_or(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         storage_type original, result;
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         __asm__ __volatile__
         (
             "1:\n\t"
@@ -207,14 +206,14 @@ struct extra_operations_gcc_ppc< Base, 1u, Signed > :
             : "b" (v)
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type bitwise_xor(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         storage_type original, result;
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         __asm__ __volatile__
         (
             "1:\n\t"
@@ -226,13 +225,13 @@ struct extra_operations_gcc_ppc< Base, 1u, Signed > :
             : "b" (v)
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type fetch_complement(storage_type volatile& storage, memory_order order) BOOST_NOEXCEPT
     {
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         storage_type original, result;
         __asm__ __volatile__
         (
@@ -245,13 +244,13 @@ struct extra_operations_gcc_ppc< Base, 1u, Signed > :
             :
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return original;
     }
 
     static BOOST_FORCEINLINE storage_type bitwise_complement(storage_type volatile& storage, memory_order order) BOOST_NOEXCEPT
     {
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         storage_type original, result;
         __asm__ __volatile__
         (
@@ -264,14 +263,14 @@ struct extra_operations_gcc_ppc< Base, 1u, Signed > :
             :
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 };
 
 template< typename Base, bool Signed >
 struct extra_operations< Base, 1u, Signed, true > :
-    public extra_operations_gcc_ppc_common< extra_operations_gcc_ppc< Base, 1u, Signed > >
+    public gcc_ppc_extra_operations_common< gcc_ppc_extra_operations< Base, 1u, Signed > >
 {
 };
 
@@ -280,15 +279,15 @@ struct extra_operations< Base, 1u, Signed, true > :
 #if defined(BOOST_ATOMIC_DETAIL_PPC_HAS_LHARX_STHCX)
 
 template< typename Base, bool Signed >
-struct extra_operations_gcc_ppc< Base, 2u, Signed > :
-    public extra_operations_generic< Base, 2u, Signed >
+struct gcc_ppc_extra_operations< Base, 2u, Signed > :
+    public generic_extra_operations< Base, 2u, Signed >
 {
-    typedef extra_operations_generic< Base, 2u, Signed > base_type;
+    typedef generic_extra_operations< Base, 2u, Signed > base_type;
     typedef typename base_type::storage_type storage_type;
 
     static BOOST_FORCEINLINE storage_type fetch_negate(storage_type volatile& storage, memory_order order) BOOST_NOEXCEPT
     {
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         storage_type original, result;
         __asm__ __volatile__
         (
@@ -301,13 +300,13 @@ struct extra_operations_gcc_ppc< Base, 2u, Signed > :
             :
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return original;
     }
 
     static BOOST_FORCEINLINE storage_type negate(storage_type volatile& storage, memory_order order) BOOST_NOEXCEPT
     {
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         storage_type original, result;
         __asm__ __volatile__
         (
@@ -320,14 +319,14 @@ struct extra_operations_gcc_ppc< Base, 2u, Signed > :
             :
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type add(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         storage_type original, result;
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         __asm__ __volatile__
         (
             "1:\n\t"
@@ -339,14 +338,14 @@ struct extra_operations_gcc_ppc< Base, 2u, Signed > :
             : "b" (v)
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type sub(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         storage_type original, result;
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         __asm__ __volatile__
         (
             "1:\n\t"
@@ -358,14 +357,14 @@ struct extra_operations_gcc_ppc< Base, 2u, Signed > :
             : "b" (v)
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type bitwise_and(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         storage_type original, result;
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         __asm__ __volatile__
         (
             "1:\n\t"
@@ -377,14 +376,14 @@ struct extra_operations_gcc_ppc< Base, 2u, Signed > :
             : "b" (v)
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type bitwise_or(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         storage_type original, result;
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         __asm__ __volatile__
         (
             "1:\n\t"
@@ -396,14 +395,14 @@ struct extra_operations_gcc_ppc< Base, 2u, Signed > :
             : "b" (v)
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type bitwise_xor(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         storage_type original, result;
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         __asm__ __volatile__
         (
             "1:\n\t"
@@ -415,13 +414,13 @@ struct extra_operations_gcc_ppc< Base, 2u, Signed > :
             : "b" (v)
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type fetch_complement(storage_type volatile& storage, memory_order order) BOOST_NOEXCEPT
     {
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         storage_type original, result;
         __asm__ __volatile__
         (
@@ -434,13 +433,13 @@ struct extra_operations_gcc_ppc< Base, 2u, Signed > :
             :
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return original;
     }
 
     static BOOST_FORCEINLINE storage_type bitwise_complement(storage_type volatile& storage, memory_order order) BOOST_NOEXCEPT
     {
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         storage_type original, result;
         __asm__ __volatile__
         (
@@ -453,7 +452,7 @@ struct extra_operations_gcc_ppc< Base, 2u, Signed > :
             :
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 };
@@ -461,15 +460,15 @@ struct extra_operations_gcc_ppc< Base, 2u, Signed > :
 #endif // defined(BOOST_ATOMIC_DETAIL_PPC_HAS_LHARX_STHCX)
 
 template< typename Base, bool Signed >
-struct extra_operations_gcc_ppc< Base, 4u, Signed > :
-    public extra_operations_generic< Base, 4u, Signed >
+struct gcc_ppc_extra_operations< Base, 4u, Signed > :
+    public generic_extra_operations< Base, 4u, Signed >
 {
-    typedef extra_operations_generic< Base, 4u, Signed > base_type;
+    typedef generic_extra_operations< Base, 4u, Signed > base_type;
     typedef typename base_type::storage_type storage_type;
 
     static BOOST_FORCEINLINE storage_type fetch_negate(storage_type volatile& storage, memory_order order) BOOST_NOEXCEPT
     {
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         storage_type original, result;
         __asm__ __volatile__
         (
@@ -482,13 +481,13 @@ struct extra_operations_gcc_ppc< Base, 4u, Signed > :
             :
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return original;
     }
 
     static BOOST_FORCEINLINE storage_type negate(storage_type volatile& storage, memory_order order) BOOST_NOEXCEPT
     {
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         storage_type original, result;
         __asm__ __volatile__
         (
@@ -501,14 +500,14 @@ struct extra_operations_gcc_ppc< Base, 4u, Signed > :
             :
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type add(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         storage_type original, result;
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         __asm__ __volatile__
         (
             "1:\n\t"
@@ -520,14 +519,14 @@ struct extra_operations_gcc_ppc< Base, 4u, Signed > :
             : "b" (v)
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type sub(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         storage_type original, result;
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         __asm__ __volatile__
         (
             "1:\n\t"
@@ -539,14 +538,14 @@ struct extra_operations_gcc_ppc< Base, 4u, Signed > :
             : "b" (v)
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type bitwise_and(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         storage_type original, result;
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         __asm__ __volatile__
         (
             "1:\n\t"
@@ -558,14 +557,14 @@ struct extra_operations_gcc_ppc< Base, 4u, Signed > :
             : "b" (v)
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type bitwise_or(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         storage_type original, result;
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         __asm__ __volatile__
         (
             "1:\n\t"
@@ -577,14 +576,14 @@ struct extra_operations_gcc_ppc< Base, 4u, Signed > :
             : "b" (v)
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type bitwise_xor(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         storage_type original, result;
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         __asm__ __volatile__
         (
             "1:\n\t"
@@ -596,13 +595,13 @@ struct extra_operations_gcc_ppc< Base, 4u, Signed > :
             : "b" (v)
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type fetch_complement(storage_type volatile& storage, memory_order order) BOOST_NOEXCEPT
     {
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         storage_type original, result;
         __asm__ __volatile__
         (
@@ -615,13 +614,13 @@ struct extra_operations_gcc_ppc< Base, 4u, Signed > :
             :
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return original;
     }
 
     static BOOST_FORCEINLINE storage_type bitwise_complement(storage_type volatile& storage, memory_order order) BOOST_NOEXCEPT
     {
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         storage_type original, result;
         __asm__ __volatile__
         (
@@ -634,29 +633,29 @@ struct extra_operations_gcc_ppc< Base, 4u, Signed > :
             :
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 };
 
 template< typename Base, bool Signed >
 struct extra_operations< Base, 4u, Signed, true > :
-    public extra_operations_gcc_ppc_common< extra_operations_gcc_ppc< Base, 4u, Signed > >
+    public gcc_ppc_extra_operations_common< gcc_ppc_extra_operations< Base, 4u, Signed > >
 {
 };
 
 #if defined(BOOST_ATOMIC_DETAIL_PPC_HAS_LDARX_STDCX)
 
 template< typename Base, bool Signed >
-struct extra_operations_gcc_ppc< Base, 8u, Signed > :
-    public extra_operations_generic< Base, 8u, Signed >
+struct gcc_ppc_extra_operations< Base, 8u, Signed > :
+    public generic_extra_operations< Base, 8u, Signed >
 {
-    typedef extra_operations_generic< Base, 8u, Signed > base_type;
+    typedef generic_extra_operations< Base, 8u, Signed > base_type;
     typedef typename base_type::storage_type storage_type;
 
     static BOOST_FORCEINLINE storage_type fetch_negate(storage_type volatile& storage, memory_order order) BOOST_NOEXCEPT
     {
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         storage_type original, result;
         __asm__ __volatile__
         (
@@ -669,13 +668,13 @@ struct extra_operations_gcc_ppc< Base, 8u, Signed > :
             :
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return original;
     }
 
     static BOOST_FORCEINLINE storage_type negate(storage_type volatile& storage, memory_order order) BOOST_NOEXCEPT
     {
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         storage_type original, result;
         __asm__ __volatile__
         (
@@ -688,14 +687,14 @@ struct extra_operations_gcc_ppc< Base, 8u, Signed > :
             :
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type add(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         storage_type original, result;
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         __asm__ __volatile__
         (
             "1:\n\t"
@@ -707,14 +706,14 @@ struct extra_operations_gcc_ppc< Base, 8u, Signed > :
             : "b" (v)
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type sub(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         storage_type original, result;
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         __asm__ __volatile__
         (
             "1:\n\t"
@@ -726,14 +725,14 @@ struct extra_operations_gcc_ppc< Base, 8u, Signed > :
             : "b" (v)
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type bitwise_and(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         storage_type original, result;
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         __asm__ __volatile__
         (
             "1:\n\t"
@@ -745,14 +744,14 @@ struct extra_operations_gcc_ppc< Base, 8u, Signed > :
             : "b" (v)
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type bitwise_or(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         storage_type original, result;
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         __asm__ __volatile__
         (
             "1:\n\t"
@@ -764,14 +763,14 @@ struct extra_operations_gcc_ppc< Base, 8u, Signed > :
             : "b" (v)
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type bitwise_xor(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         storage_type original, result;
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         __asm__ __volatile__
         (
             "1:\n\t"
@@ -783,13 +782,13 @@ struct extra_operations_gcc_ppc< Base, 8u, Signed > :
             : "b" (v)
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 
     static BOOST_FORCEINLINE storage_type fetch_complement(storage_type volatile& storage, memory_order order) BOOST_NOEXCEPT
     {
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         storage_type original, result;
         __asm__ __volatile__
         (
@@ -802,13 +801,13 @@ struct extra_operations_gcc_ppc< Base, 8u, Signed > :
             :
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return original;
     }
 
     static BOOST_FORCEINLINE storage_type bitwise_complement(storage_type volatile& storage, memory_order order) BOOST_NOEXCEPT
     {
-        core_arch_operations_gcc_ppc_base::fence_before(order);
+        gcc_ppc_operations_base::fence_before(order);
         storage_type original, result;
         __asm__ __volatile__
         (
@@ -821,14 +820,14 @@ struct extra_operations_gcc_ppc< Base, 8u, Signed > :
             :
             : BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC
         );
-        core_arch_operations_gcc_ppc_base::fence_after(order);
+        gcc_ppc_operations_base::fence_after(order);
         return result;
     }
 };
 
 template< typename Base, bool Signed >
 struct extra_operations< Base, 8u, Signed, true > :
-    public extra_operations_gcc_ppc_common< extra_operations_gcc_ppc< Base, 8u, Signed > >
+    public gcc_ppc_extra_operations_common< gcc_ppc_extra_operations< Base, 8u, Signed > >
 {
 };
 
@@ -837,7 +836,5 @@ struct extra_operations< Base, 8u, Signed, true > :
 } // namespace detail
 } // namespace atomics
 } // namespace lslboost
-
-#include <boost/atomic/detail/footer.hpp>
 
 #endif // BOOST_ATOMIC_DETAIL_EXTRA_OPS_GCC_ARM_PPC_INCLUDED_

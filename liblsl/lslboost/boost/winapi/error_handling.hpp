@@ -13,7 +13,6 @@
 #include <stdarg.h>
 #include <boost/winapi/basic_types.hpp>
 #include <boost/winapi/get_last_error.hpp>
-#include <boost/winapi/detail/header.hpp>
 
 #ifdef BOOST_HAS_PRAGMA_ONCE
 #pragma once
@@ -22,7 +21,7 @@
 #if !defined( BOOST_USE_WINDOWS_H )
 extern "C" {
 #if !defined( BOOST_NO_ANSI_APIS )
-BOOST_WINAPI_IMPORT lslboost::winapi::DWORD_ BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT lslboost::winapi::DWORD_ BOOST_WINAPI_WINAPI_CC
 FormatMessageA(
     lslboost::winapi::DWORD_ dwFlags,
     lslboost::winapi::LPCVOID_ lpSource,
@@ -33,7 +32,7 @@ FormatMessageA(
     va_list *Arguments);
 #endif
 
-BOOST_WINAPI_IMPORT_EXCEPT_WM lslboost::winapi::DWORD_ BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT lslboost::winapi::DWORD_ BOOST_WINAPI_WINAPI_CC
 FormatMessageW(
     lslboost::winapi::DWORD_ dwFlags,
     lslboost::winapi::LPCVOID_ lpSource,
@@ -44,7 +43,7 @@ FormatMessageW(
     va_list *Arguments);
 
 #if BOOST_WINAPI_PARTITION_DESKTOP || BOOST_WINAPI_PARTITION_SYSTEM
-BOOST_WINAPI_IMPORT lslboost::winapi::UINT_ BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT lslboost::winapi::UINT_ BOOST_WINAPI_WINAPI_CC
 SetErrorMode(lslboost::winapi::UINT_ uMode);
 #endif
 } // extern "C"
@@ -150,7 +149,5 @@ BOOST_FORCEINLINE DWORD_ format_message(
 
 }
 }
-
-#include <boost/winapi/detail/footer.hpp>
 
 #endif // BOOST_WINAPI_ERROR_HANDLING_HPP_INCLUDED_

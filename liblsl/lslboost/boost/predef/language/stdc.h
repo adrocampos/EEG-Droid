@@ -11,21 +11,20 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_LANG_STDC`
+/*`
+[heading `BOOST_LANG_STDC`]
 
-http://en.wikipedia.org/wiki/C_(programming_language)[Standard C] language.
+[@http://en.wikipedia.org/wiki/C_(programming_language) Standard C] language.
 If available, the year of the standard is detected as YYYY.MM.1 from the Epoc date.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__STDC__+` | {predef_detection}
+    [[`__STDC__`] [__predef_detection__]]
 
-| `+__STDC_VERSION__+` | V.R.P
-|===
-*/ // end::reference[]
+    [[`__STDC_VERSION__`] [V.R.P]]
+    ]
+ */
 
 #define BOOST_LANG_STDC BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

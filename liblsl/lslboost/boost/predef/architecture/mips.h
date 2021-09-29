@@ -11,31 +11,30 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_ARCH_MIPS`
+/*`
+[heading `BOOST_ARCH_MIPS`]
 
-http://en.wikipedia.org/wiki/MIPS_architecture[MIPS] architecture.
+[@http://en.wikipedia.org/wiki/MIPS_architecture MIPS] architecture.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__mips__+` | {predef_detection}
-| `+__mips+` | {predef_detection}
-| `+__MIPS__+` | {predef_detection}
+    [[`__mips__`] [__predef_detection__]]
+    [[`__mips`] [__predef_detection__]]
+    [[`__MIPS__`] [__predef_detection__]]
 
-| `+__mips+` | V.0.0
-| `+_MIPS_ISA_MIPS1+` | 1.0.0
-| `+_R3000+` | 1.0.0
-| `+_MIPS_ISA_MIPS2+` | 2.0.0
-| `+__MIPS_ISA2__+` | 2.0.0
-| `+_R4000+` | 2.0.0
-| `+_MIPS_ISA_MIPS3+` | 3.0.0
-| `+__MIPS_ISA3__+` | 3.0.0
-| `+_MIPS_ISA_MIPS4+` | 4.0.0
-| `+__MIPS_ISA4__+` | 4.0.0
-|===
-*/ // end::reference[]
+    [[`__mips`] [V.0.0]]
+    [[`_MIPS_ISA_MIPS1`] [1.0.0]]
+    [[`_R3000`] [1.0.0]]
+    [[`_MIPS_ISA_MIPS2`] [2.0.0]]
+    [[`__MIPS_ISA2__`] [2.0.0]]
+    [[`_R4000`] [2.0.0]]
+    [[`_MIPS_ISA_MIPS3`] [3.0.0]]
+    [[`__MIPS_ISA3__`] [3.0.0]]
+    [[`_MIPS_ISA_MIPS4`] [4.0.0]]
+    [[`__MIPS_ISA4__`] [4.0.0]]
+    ]
+ */
 
 #define BOOST_ARCH_MIPS BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

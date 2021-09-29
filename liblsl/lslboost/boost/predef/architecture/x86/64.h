@@ -11,22 +11,21 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_ARCH_X86_64`
+/*`
+[heading `BOOST_ARCH_X86_64`]
 
-http://en.wikipedia.org/wiki/Ia64[Intel IA-64] architecture.
+[@http://en.wikipedia.org/wiki/Ia64 Intel IA-64] architecture.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__x86_64+` | {predef_detection}
-| `+__x86_64__+` | {predef_detection}
-| `+__amd64__+` | {predef_detection}
-| `+__amd64+` | {predef_detection}
-| `+_M_X64+` | {predef_detection}
-|===
-*/ // end::reference[]
+    [[`__x86_64`] [__predef_detection__]]
+    [[`__x86_64__`] [__predef_detection__]]
+    [[`__amd64__`] [__predef_detection__]]
+    [[`__amd64`] [__predef_detection__]]
+    [[`_M_X64`] [__predef_detection__]]
+    ]
+ */
 
 #define BOOST_ARCH_X86_64 BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

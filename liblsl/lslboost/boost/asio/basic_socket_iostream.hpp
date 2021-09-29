@@ -2,7 +2,7 @@
 // basic_socket_iostream.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -23,6 +23,10 @@
 #include <ostream>
 #include <boost/asio/basic_socket_streambuf.hpp>
 
+#if defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
+# include <boost/asio/stream_socket_service.hpp>
+#endif // defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
+
 #if !defined(BOOST_ASIO_HAS_VARIADIC_TEMPLATES)
 
 # include <boost/asio/detail/variadic_templates.hpp>
@@ -32,7 +36,8 @@
 //   explicit basic_socket_iostream(T1 x1, ..., Tn xn)
 //     : std::basic_iostream<char>(
 //         &this->detail::socket_iostream_base<
-//           Protocol, Clock, WaitTraits>::streambuf_)
+//           Protocol BOOST_ASIO_SVC_TARG, Clock,
+//           WaitTraits BOOST_ASIO_SVC_TARG1>::streambuf_)
 //   {
 //     if (rdbuf()->connect(x1, ..., xn) == 0)
 //       this->setstate(std::ios_base::failbit);
@@ -44,7 +49,8 @@
   explicit basic_socket_iostream(BOOST_ASIO_VARIADIC_BYVAL_PARAMS(n)) \
     : std::basic_iostream<char>( \
         &this->detail::socket_iostream_base< \
-          Protocol, Clock, WaitTraits>::streambuf_) \
+          Protocol BOOST_ASIO_SVC_TARG, Clock, \
+          WaitTraits BOOST_ASIO_SVC_TARG1>::streambuf_) \
   { \
     this->setf(std::ios_base::unitbuf); \
     if (rdbuf()->connect(BOOST_ASIO_VARIADIC_BYVAL_ARGS(n)) == 0) \
@@ -80,7 +86,8 @@ namespace detail {
 
 // A separate base class is used to ensure that the streambuf is initialised
 // prior to the basic_socket_iostream's basic_iostream base class.
-template <typename Protocol, typename Clock, typename WaitTraits>
+template <typename Protocol BOOST_ASIO_SVC_TPARAM,
+    typename Clock, typename WaitTraits BOOST_ASIO_SVC_TPARAM1>
 class socket_iostream_base
 {
 protected:
@@ -106,7 +113,8 @@ protected:
   }
 #endif // defined(BOOST_ASIO_HAS_MOVE)
 
-  basic_socket_streambuf<Protocol, Clock, WaitTraits> streambuf_;
+  basic_socket_streambuf<Protocol BOOST_ASIO_SVC_TARG,
+    Clock, WaitTraits BOOST_ASIO_SVC_TARG1> streambuf_;
 };
 
 } // namespace detail
@@ -115,15 +123,18 @@ protected:
 #define BOOST_ASIO_BASIC_SOCKET_IOSTREAM_FWD_DECL
 
 // Forward declaration with defaulted arguments.
-template <typename Protocol,
+template <typename Protocol
+    BOOST_ASIO_SVC_TPARAM_DEF1(= stream_socket_service<Protocol>),
 #if defined(BOOST_ASIO_HAS_BOOST_DATE_TIME) \
   && defined(BOOST_ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
     typename Clock = lslboost::posix_time::ptime,
-    typename WaitTraits = time_traits<Clock> >
+    typename WaitTraits = time_traits<Clock>
+    BOOST_ASIO_SVC_TPARAM1_DEF2(= deadline_timer_service<Clock, WaitTraits>)>
 #else // defined(BOOST_ASIO_HAS_BOOST_DATE_TIME)
       // && defined(BOOST_ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
     typename Clock = chrono::steady_clock,
-    typename WaitTraits = wait_traits<Clock> >
+    typename WaitTraits = wait_traits<Clock>
+    BOOST_ASIO_SVC_TPARAM1_DEF1(= steady_timer::service_type)>
 #endif // defined(BOOST_ASIO_HAS_BOOST_DATE_TIME)
        // && defined(BOOST_ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
 class basic_socket_iostream;
@@ -136,10 +147,12 @@ template <typename Protocol,
     typename Clock = chrono::steady_clock,
     typename WaitTraits = wait_traits<Clock> >
 #else // defined(GENERATING_DOCUMENTATION)
-template <typename Protocol, typename Clock, typename WaitTraits>
+template <typename Protocol BOOST_ASIO_SVC_TPARAM,
+    typename Clock, typename WaitTraits BOOST_ASIO_SVC_TPARAM1>
 #endif // defined(GENERATING_DOCUMENTATION)
 class basic_socket_iostream
-  : private detail::socket_iostream_base<Protocol, Clock, WaitTraits>,
+  : private detail::socket_iostream_base<Protocol
+        BOOST_ASIO_SVC_TARG, Clock, WaitTraits BOOST_ASIO_SVC_TARG1>,
     public std::basic_iostream<char>
 {
 private:
@@ -189,7 +202,8 @@ public:
   basic_socket_iostream()
     : std::basic_iostream<char>(
         &this->detail::socket_iostream_base<
-          Protocol, Clock, WaitTraits>::streambuf_)
+          Protocol BOOST_ASIO_SVC_TARG, Clock,
+          WaitTraits BOOST_ASIO_SVC_TARG1>::streambuf_)
   {
     this->setf(std::ios_base::unitbuf);
   }
@@ -198,10 +212,12 @@ public:
   /// Construct a basic_socket_iostream from the supplied socket.
   explicit basic_socket_iostream(basic_stream_socket<protocol_type> s)
     : detail::socket_iostream_base<
-        Protocol, Clock, WaitTraits>(std::move(s)),
+        Protocol BOOST_ASIO_SVC_TARG, Clock,
+        WaitTraits BOOST_ASIO_SVC_TARG1>(std::move(s)),
       std::basic_iostream<char>(
         &this->detail::socket_iostream_base<
-          Protocol, Clock, WaitTraits>::streambuf_)
+          Protocol BOOST_ASIO_SVC_TARG, Clock,
+          WaitTraits BOOST_ASIO_SVC_TARG1>::streambuf_)
   {
     this->setf(std::ios_base::unitbuf);
   }
@@ -211,11 +227,13 @@ public:
   /// Move-construct a basic_socket_iostream from another.
   basic_socket_iostream(basic_socket_iostream&& other)
     : detail::socket_iostream_base<
-        Protocol, Clock, WaitTraits>(std::move(other)),
+        Protocol BOOST_ASIO_SVC_TARG, Clock,
+        WaitTraits BOOST_ASIO_SVC_TARG1>(std::move(other)),
       std::basic_iostream<char>(std::move(other))
   {
     this->set_rdbuf(&this->detail::socket_iostream_base<
-          Protocol, Clock, WaitTraits>::streambuf_);
+          Protocol BOOST_ASIO_SVC_TARG, Clock,
+          WaitTraits BOOST_ASIO_SVC_TARG1>::streambuf_);
   }
 
   /// Move-assign a basic_socket_iostream from another.
@@ -223,7 +241,8 @@ public:
   {
     std::basic_iostream<char>::operator=(std::move(other));
     detail::socket_iostream_base<
-        Protocol, Clock, WaitTraits>::operator=(std::move(other));
+        Protocol BOOST_ASIO_SVC_TARG, Clock,
+        WaitTraits BOOST_ASIO_SVC_TARG1>::operator=(std::move(other));
     return *this;
   }
 #endif // defined(BOOST_ASIO_HAS_STD_IOSTREAM_MOVE)
@@ -244,7 +263,8 @@ public:
   explicit basic_socket_iostream(T... x)
     : std::basic_iostream<char>(
         &this->detail::socket_iostream_base<
-          Protocol, Clock, WaitTraits>::streambuf_)
+          Protocol BOOST_ASIO_SVC_TARG, Clock,
+          WaitTraits BOOST_ASIO_SVC_TARG1>::streambuf_)
   {
     this->setf(std::ios_base::unitbuf);
     if (rdbuf()->connect(x...) == 0)
@@ -282,15 +302,18 @@ public:
   }
 
   /// Return a pointer to the underlying streambuf.
-  basic_socket_streambuf<Protocol, Clock, WaitTraits>* rdbuf() const
+  basic_socket_streambuf<Protocol BOOST_ASIO_SVC_TARG,
+    Clock, WaitTraits BOOST_ASIO_SVC_TARG1>* rdbuf() const
   {
-    return const_cast<basic_socket_streambuf<Protocol, Clock, WaitTraits>*>(
+    return const_cast<basic_socket_streambuf<Protocol BOOST_ASIO_SVC_TARG,
+      Clock, WaitTraits BOOST_ASIO_SVC_TARG1>*>(
         &this->detail::socket_iostream_base<
-          Protocol, Clock, WaitTraits>::streambuf_);
+          Protocol BOOST_ASIO_SVC_TARG, Clock,
+          WaitTraits BOOST_ASIO_SVC_TARG1>::streambuf_);
   }
 
   /// Get a reference to the underlying socket.
-  basic_socket<Protocol>& socket()
+  basic_socket<Protocol BOOST_ASIO_SVC_TARG>& socket()
   {
     return rdbuf()->socket();
   }

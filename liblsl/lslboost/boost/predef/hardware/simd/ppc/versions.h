@@ -11,47 +11,41 @@ http://www.boost.org/LICENSE_1_0.txt)
 
 #include <boost/predef/version_number.h>
 
-/* tag::reference[]
-= `BOOST_HW_SIMD_PPC_*_VERSION`
+/*`
+ Those defines represent Power PC SIMD extensions versions.
 
-Those defines represent Power PC SIMD extensions versions.
-
-NOTE: You *MUST* compare them with the predef `BOOST_HW_SIMD_PPC`.
-*/ // end::reference[]
+ [note You *MUST* compare them with the predef `BOOST_HW_SIMD_PPC`.]
+ */
 
 // ---------------------------------
 
-/* tag::reference[]
-= `BOOST_HW_SIMD_PPC_VMX_VERSION`
+/*`
+ [heading `BOOST_HW_SIMD_PPC_VMX_VERSION`]
 
-The https://en.wikipedia.org/wiki/AltiVec#VMX128[VMX] powerpc extension
-version number.
+ The [@https://en.wikipedia.org/wiki/AltiVec#VMX128 VMX] powerpc extension
+ version number.
 
-Version number is: *1.0.0*.
-*/ // end::reference[]
+ Version number is: *1.0.0*.
+ */
 #define BOOST_HW_SIMD_PPC_VMX_VERSION BOOST_VERSION_NUMBER(1, 0, 0)
 
-/* tag::reference[]
-= `BOOST_HW_SIMD_PPC_VSX_VERSION`
+/*`
+ [heading `BOOST_HW_SIMD_PPC_VSX_VERSION`]
 
-The https://en.wikipedia.org/wiki/AltiVec#VSX[VSX] powerpc extension version
-number.
+ The [@https://en.wikipedia.org/wiki/AltiVec#VSX VSX] powerpc extension version
+ number.
 
-Version number is: *1.1.0*.
-*/ // end::reference[]
+ Version number is: *1.1.0*.
+ */
 #define BOOST_HW_SIMD_PPC_VSX_VERSION BOOST_VERSION_NUMBER(1, 1, 0)
 
-/* tag::reference[]
-= `BOOST_HW_SIMD_PPC_QPX_VERSION`
+/*`
+ [heading `BOOST_HW_SIMD_PPC_QPX_VERSION`]
 
-The QPX powerpc extension version number.
+ The QPX powerpc extension version number.
 
-Version number is: *2.0.0*.
-*/ // end::reference[]
+ Version number is: *2.0.0*.
+ */
 #define BOOST_HW_SIMD_PPC_QPX_VERSION BOOST_VERSION_NUMBER(2, 0, 0)
-
-/* tag::reference[]
-
-*/ // end::reference[]
 
 #endif

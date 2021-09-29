@@ -11,21 +11,20 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_COMP_PALM`
+/*`
+[heading `BOOST_COMP_PALM`]
 
-Palm C/{CPP} compiler.
+Palm C/C++ compiler.
 Version number available as major, minor, and patch.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+_PACC_VER+` | {predef_detection}
+    [[`_PACC_VER`] [__predef_detection__]]
 
-| `+_PACC_VER+` | V.R.P
-|===
-*/ // end::reference[]
+    [[`_PACC_VER`] [V.R.P]]
+    ]
+ */
 
 #define BOOST_COMP_PALM BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

@@ -13,24 +13,23 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_LIB_STD_STLPORT`
+/*`
+[heading `BOOST_LIB_STD_STLPORT`]
 
-http://sourceforge.net/projects/stlport/[STLport Standard {CPP}] library.
+[@http://sourceforge.net/projects/stlport/ STLport Standard C++] library.
 Version number available as major, minor, and patch.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__SGI_STL_PORT+` | {predef_detection}
-| `+_STLPORT_VERSION+` | {predef_detection}
+    [[`__SGI_STL_PORT`] [__predef_detection__]]
+    [[`_STLPORT_VERSION`] [__predef_detection__]]
 
-| `+_STLPORT_MAJOR+`, `+_STLPORT_MINOR+`, `+_STLPORT_PATCHLEVEL+` | V.R.P
-| `+_STLPORT_VERSION+` | V.R.P
-| `+__SGI_STL_PORT+` | V.R.P
-|===
-*/ // end::reference[]
+    [[`_STLPORT_MAJOR`, `_STLPORT_MINOR`, `_STLPORT_PATCHLEVEL`] [V.R.P]]
+    [[`_STLPORT_VERSION`] [V.R.P]]
+    [[`__SGI_STL_PORT`] [V.R.P]]
+    ]
+ */
 
 #define BOOST_LIB_STD_STLPORT BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

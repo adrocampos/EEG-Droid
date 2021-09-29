@@ -13,23 +13,22 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_LIB_STD_GNU`
+/*`
+[heading `BOOST_LIB_STD_GNU`]
 
-http://gcc.gnu.org/libstdc++/[GNU libstdc++] Standard {CPP} library.
+[@http://gcc.gnu.org/libstdc++/ GNU libstdc++] Standard C++ library.
 Version number available as year (from 1970), month, and day.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__GLIBCXX__+` | {predef_detection}
-| `+__GLIBCPP__+` | {predef_detection}
+    [[`__GLIBCXX__`] [__predef_detection__]]
+    [[`__GLIBCPP__`] [__predef_detection__]]
 
-| `+__GLIBCXX__+` | V.R.P
-| `+__GLIBCPP__+` | V.R.P
-|===
-*/ // end::reference[]
+    [[`__GLIBCXX__`] [V.R.P]]
+    [[`__GLIBCPP__`] [V.R.P]]
+    ]
+ */
 
 #define BOOST_LIB_STD_GNU BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

@@ -2,7 +2,7 @@
 // detail/thread.hpp
 // ~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -19,8 +19,6 @@
 
 #if !defined(BOOST_ASIO_HAS_THREADS)
 # include <boost/asio/detail/null_thread.hpp>
-#elif defined(BOOST_ASIO_HAS_PTHREADS)
-# include <boost/asio/detail/posix_thread.hpp>
 #elif defined(BOOST_ASIO_WINDOWS)
 # if defined(UNDER_CE)
 #  include <boost/asio/detail/wince_thread.hpp>
@@ -29,6 +27,8 @@
 # else
 #  include <boost/asio/detail/win_thread.hpp>
 # endif
+#elif defined(BOOST_ASIO_HAS_PTHREADS)
+# include <boost/asio/detail/posix_thread.hpp>
 #elif defined(BOOST_ASIO_HAS_STD_THREAD)
 # include <boost/asio/detail/std_thread.hpp>
 #else
@@ -41,8 +41,6 @@ namespace detail {
 
 #if !defined(BOOST_ASIO_HAS_THREADS)
 typedef null_thread thread;
-#elif defined(BOOST_ASIO_HAS_PTHREADS)
-typedef posix_thread thread;
 #elif defined(BOOST_ASIO_WINDOWS)
 # if defined(UNDER_CE)
 typedef wince_thread thread;
@@ -51,6 +49,8 @@ typedef winapp_thread thread;
 # else
 typedef win_thread thread;
 # endif
+#elif defined(BOOST_ASIO_HAS_PTHREADS)
+typedef posix_thread thread;
 #elif defined(BOOST_ASIO_HAS_STD_THREAD)
 typedef std_thread thread;
 #endif

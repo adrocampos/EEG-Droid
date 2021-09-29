@@ -15,18 +15,17 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_COMP_LLVM`
+/*`
+[heading `BOOST_COMP_LLVM`]
 
-http://en.wikipedia.org/wiki/LLVM[LLVM] compiler.
+[@http://en.wikipedia.org/wiki/LLVM LLVM] compiler.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__llvm__+` | {predef_detection}
-|===
-*/ // end::reference[]
+    [[`__llvm__`] [__predef_detection__]]
+    ]
+ */
 
 #define BOOST_COMP_LLVM BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

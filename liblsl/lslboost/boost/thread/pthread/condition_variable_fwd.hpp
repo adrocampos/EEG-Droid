@@ -58,29 +58,36 @@ namespace lslboost
             // above) and must be initialized (etc) in case some
             // compilation units provide interruptions and others
             // don't.
-            res=posix::pthread_mutex_init(&internal_mutex);
+            res=pthread_mutex_init(&internal_mutex,NULL);
             if(res)
             {
                 lslboost::throw_exception(thread_resource_error(res, "lslboost::condition_variable::condition_variable() constructor failed in pthread_mutex_init"));
             }
 //#endif
-            res = posix::pthread_cond_init(&cond);
+            res = pthread::cond_init(cond);
             if (res)
             {
 //#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
                 // ditto
-                BOOST_VERIFY(!posix::pthread_mutex_destroy(&internal_mutex));
+                BOOST_VERIFY(!pthread_mutex_destroy(&internal_mutex));
 //#endif
-                lslboost::throw_exception(thread_resource_error(res, "lslboost::condition_variable::condition_variable() constructor failed in pthread_cond_init"));
+                lslboost::throw_exception(thread_resource_error(res, "lslboost::condition_variable::condition_variable() constructor failed in pthread::cond_init"));
             }
         }
         ~condition_variable()
         {
+            int ret;
 //#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
             // ditto
-            BOOST_VERIFY(!posix::pthread_mutex_destroy(&internal_mutex));
+            do {
+              ret = pthread_mutex_destroy(&internal_mutex);
+            } while (ret == EINTR);
+            BOOST_ASSERT(!ret);
 //#endif
-            BOOST_VERIFY(!posix::pthread_cond_destroy(&cond));
+            do {
+              ret = pthread_cond_destroy(&cond);
+            } while (ret == EINTR);
+            BOOST_ASSERT(!ret);
         }
 
         void wait(unique_lock<mutex>& m);

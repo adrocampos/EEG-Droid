@@ -11,23 +11,22 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_COMP_BORLAND`
+/*`
+[heading `BOOST_COMP_BORLAND`]
 
-http://en.wikipedia.org/wiki/C_plus_plus_builder[Borland {CPP}] compiler.
+[@http://en.wikipedia.org/wiki/C_plus_plus_builder Borland C++] compiler.
 Version number available as major, minor, and patch.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__BORLANDC__+` | {predef_detection}
-| `+__CODEGEARC__+` | {predef_detection}
+    [[`__BORLANDC__`] [__predef_detection__]]
+    [[`__CODEGEARC__`] [__predef_detection__]]
 
-| `+__BORLANDC__+` | V.R.P
-| `+__CODEGEARC__+` | V.R.P
-|===
-*/ // end::reference[]
+    [[`__BORLANDC__`] [V.R.P]]
+    [[`__CODEGEARC__`] [V.R.P]]
+    ]
+ */
 
 #define BOOST_COMP_BORLAND BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

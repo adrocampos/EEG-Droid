@@ -11,25 +11,24 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_COMP_MWERKS`
+/*`
+[heading `BOOST_COMP_MWERKS`]
 
-http://en.wikipedia.org/wiki/CodeWarrior[Metrowerks CodeWarrior] compiler.
+[@http://en.wikipedia.org/wiki/CodeWarrior Metrowerks CodeWarrior] compiler.
 Version number available as major, minor, and patch.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__MWERKS__+` | {predef_detection}
-| `+__CWCC__+` | {predef_detection}
+    [[`__MWERKS__`] [__predef_detection__]]
+    [[`__CWCC__`] [__predef_detection__]]
 
-| `+__CWCC__+` | V.R.P
-| `+__MWERKS__+` | V.R.P >= 4.2.0
-| `+__MWERKS__+` | 9.R.0
-| `+__MWERKS__+` | 8.R.0
-|===
-*/ // end::reference[]
+    [[`__CWCC__`] [V.R.P]]
+    [[`__MWERKS__`] [V.R.P >= 4.2.0]]
+    [[`__MWERKS__`] [9.R.0]]
+    [[`__MWERKS__`] [8.R.0]]
+    ]
+ */
 
 #define BOOST_COMP_MWERKS BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

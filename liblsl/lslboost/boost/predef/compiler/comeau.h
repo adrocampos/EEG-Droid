@@ -13,21 +13,20 @@ http://www.boost.org/LICENSE_1_0.txt)
 
 #define BOOST_COMP_COMO BOOST_VERSION_NUMBER_NOT_AVAILABLE
 
-/* tag::reference[]
-= `BOOST_COMP_COMO`
+/*`
+[heading `BOOST_COMP_COMO`]
 
-http://en.wikipedia.org/wiki/Comeau_C/C%2B%2B[Comeau {CPP}] compiler.
+[@http://en.wikipedia.org/wiki/Comeau_C/C%2B%2B Comeau C++] compiler.
 Version number available as major, minor, and patch.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__COMO__+` | {predef_detection}
+    [[`__COMO__`] [__predef_detection__]]
 
-| `+__COMO_VERSION__+` | V.R.P
-|===
-*/ // end::reference[]
+    [[`__COMO_VERSION__`] [V.R.P]]
+    ]
+ */
 
 #if defined(__COMO__)
 #   if !defined(BOOST_COMP_COMO_DETECTION) && defined(__COMO_VERSION__)

@@ -2,7 +2,7 @@
 // ip/tcp.hpp
 // ~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -50,31 +50,31 @@ public:
   typedef basic_endpoint<tcp> endpoint;
 
   /// Construct to represent the IPv4 TCP protocol.
-  static tcp v4() BOOST_ASIO_NOEXCEPT
+  static tcp v4()
   {
     return tcp(BOOST_ASIO_OS_DEF(AF_INET));
   }
 
   /// Construct to represent the IPv6 TCP protocol.
-  static tcp v6() BOOST_ASIO_NOEXCEPT
+  static tcp v6()
   {
     return tcp(BOOST_ASIO_OS_DEF(AF_INET6));
   }
 
   /// Obtain an identifier for the type of the protocol.
-  int type() const BOOST_ASIO_NOEXCEPT
+  int type() const
   {
     return BOOST_ASIO_OS_DEF(SOCK_STREAM);
   }
 
   /// Obtain an identifier for the protocol.
-  int protocol() const BOOST_ASIO_NOEXCEPT
+  int protocol() const
   {
     return BOOST_ASIO_OS_DEF(IPPROTO_TCP);
   }
 
   /// Obtain an identifier for the protocol family.
-  int family() const BOOST_ASIO_NOEXCEPT
+  int family() const
   {
     return family_;
   }
@@ -100,7 +100,7 @@ public:
    * @par Examples
    * Setting the option:
    * @code
-   * lslboost::asio::ip::tcp::socket socket(my_context);
+   * lslboost::asio::ip::tcp::socket socket(io_context); 
    * ...
    * lslboost::asio::ip::tcp::no_delay option(true);
    * socket.set_option(option);
@@ -109,7 +109,7 @@ public:
    * @par
    * Getting the current option value:
    * @code
-   * lslboost::asio::ip::tcp::socket socket(my_context);
+   * lslboost::asio::ip::tcp::socket socket(io_context); 
    * ...
    * lslboost::asio::ip::tcp::no_delay option;
    * socket.get_option(option);
@@ -140,7 +140,7 @@ public:
 
 private:
   // Construct with a specific family.
-  explicit tcp(int protocol_family) BOOST_ASIO_NOEXCEPT
+  explicit tcp(int protocol_family)
     : family_(protocol_family)
   {
   }

@@ -11,34 +11,33 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_COMP_INTEL`
+/*`
+[heading `BOOST_COMP_INTEL`]
 
-http://en.wikipedia.org/wiki/Intel_C%2B%2B[Intel C/{CPP}] compiler.
+[@http://en.wikipedia.org/wiki/Intel_C%2B%2B Intel C/C++] compiler.
 Version number available as major, minor, and patch.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__INTEL_COMPILER+` | {predef_detection}
-| `+__ICL+` | {predef_detection}
-| `+__ICC+` | {predef_detection}
-| `+__ECC+` | {predef_detection}
+    [[`__INTEL_COMPILER`] [__predef_detection__]]
+    [[`__ICL`] [__predef_detection__]]
+    [[`__ICC`] [__predef_detection__]]
+    [[`__ECC`] [__predef_detection__]]
 
-| `+__INTEL_COMPILER+` | V.R
-| `+__INTEL_COMPILER+` and `+__INTEL_COMPILER_UPDATE+` | V.R.P
-|===
-*/ // end::reference[]
+    [[`__INTEL_COMPILER`] [V.R]]
+    [[`__INTEL_COMPILER` and `__INTEL_COMPILER_UPDATE`] [V.R.P]]
+    ]
+ */
 
 #define BOOST_COMP_INTEL BOOST_VERSION_NUMBER_NOT_AVAILABLE
 
 #if defined(__INTEL_COMPILER) || defined(__ICL) || defined(__ICC) || \
     defined(__ECC)
-/* tag::reference[]
-NOTE: Because of an Intel mistake in the release version numbering when
-`__INTEL_COMPILER` is `9999` it is detected as version 12.1.0.
-*/ // end::reference[]
+/*`
+[note Because of an Intel mistake in the release version numbering when
+`__INTEL_COMPILER` is `9999` it is detected as version 12.1.0.]
+ */
 #   if !defined(BOOST_COMP_INTEL_DETECTION) && defined(__INTEL_COMPILER) && (__INTEL_COMPILER == 9999)
 #       define BOOST_COMP_INTEL_DETECTION BOOST_VERSION_NUMBER(12,1,0)
 #   endif

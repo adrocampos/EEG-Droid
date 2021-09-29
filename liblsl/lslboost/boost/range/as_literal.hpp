@@ -15,6 +15,10 @@
 # pragma once
 #endif
 
+#ifdef BOOST_NO_FUNCTION_TEMPLATE_ORDERING
+#include <boost/range/detail/as_literal.hpp>
+#else
+
 #include <boost/range/iterator_range.hpp>
 #include <boost/range/detail/str_types.hpp>
 
@@ -160,5 +164,7 @@ namespace lslboost
         return range_detail::make_range( arr, range_detail::is_char_ptr(arr) );
     }
 }
+
+#endif // BOOST_NO_FUNCTION_TEMPLATE_ORDERING
 
 #endif

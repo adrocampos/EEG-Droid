@@ -91,11 +91,11 @@
 #     define __fastcall __attribute__((__fastcall__))
 #   endif
 
-#elif defined(BOOST_BORLANDC)
+#elif defined(__BORLANDC__)
 
-#   if BOOST_BORLANDC < 0x550
+#   if __BORLANDC__ < 0x550
 #     error "unsupported compiler version"
-#   elif BOOST_BORLANDC > 0x565
+#   elif __BORLANDC__ > 0x565
 #     pragma message("WARNING: library untested with this compiler version")
 #   endif
 

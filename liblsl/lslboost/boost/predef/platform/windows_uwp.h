@@ -12,28 +12,27 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/os/windows.h>
 #include <boost/predef/version_number.h>
 
-/* tag::reference[]
-= `BOOST_PLAT_WINDOWS_UWP`
+/*`
+[heading `BOOST_PLAT_WINDOWS_UWP`]
 
-http://docs.microsoft.com/windows/uwp/[Universal Windows Platform]
+[@http://docs.microsoft.com/windows/uwp/ Universal Windows Platform]
 is available if the current development environment is capable of targeting 
 UWP development.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__MINGW64_VERSION_MAJOR+` from `+_mingw.h+` | `>= 3`
-| `VER_PRODUCTBUILD` from `ntverp.h` | `>= 9200`
-|===
-*/ // end::reference[]
+    [[`__MINGW64_VERSION_MAJOR` from `_mingw.h`] [`>= 3`]]
+    [[`VER_PRODUCTBUILD` from `ntverp.h`] [`>= 9200`]]
+]
+*/
 
 #define BOOST_PLAT_WINDOWS_UWP BOOST_VERSION_NUMBER_NOT_AVAILABLE
 #define BOOST_PLAT_WINDOWS_SDK_VERSION BOOST_VERSION_NUMBER_NOT_AVAILABLE
 
 #if BOOST_OS_WINDOWS
-//  MinGW (32-bit), WinCE, and wineg++ don't have a ntverp.h header
-#if !defined(__MINGW32__) && !defined(_WIN32_WCE) && !defined(__WINE__)
+//  MinGW (32-bit) has no ntverp.h header
+#if !defined(__MINGW32__)
 #   include <ntverp.h>
 #   undef BOOST_PLAT_WINDOWS_SDK_VERSION
 #   define BOOST_PLAT_WINDOWS_SDK_VERSION BOOST_VERSION_NUMBER(0, 0, VER_PRODUCTBUILD)

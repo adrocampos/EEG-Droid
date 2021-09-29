@@ -2,7 +2,7 @@
 // detail/impl/reactive_serial_port_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2008 Rep Invariant Systems, Inc. (info@repinvariant.com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -31,9 +31,9 @@ namespace asio {
 namespace detail {
 
 reactive_serial_port_service::reactive_serial_port_service(
-    execution_context& context)
-  : execution_context_service_base<reactive_serial_port_service>(context),
-    descriptor_service_(context)
+    lslboost::asio::io_context& io_context)
+  : service_base<reactive_serial_port_service>(io_context),
+    descriptor_service_(io_context)
 {
 }
 
@@ -70,8 +70,8 @@ lslboost::system::error_code reactive_serial_port_service::open(
 
   // Set up default serial port options.
   termios ios;
-  s = ::tcgetattr(fd, &ios);
-  descriptor_ops::get_last_error(ec, s < 0);
+  errno = 0;
+  s = descriptor_ops::error_wrapper(::tcgetattr(fd, &ios), ec);
   if (s >= 0)
   {
 #if defined(_BSD_SOURCE) || defined(_DEFAULT_SOURCE)
@@ -86,8 +86,8 @@ lslboost::system::error_code reactive_serial_port_service::open(
 #endif
     ios.c_iflag |= IGNPAR;
     ios.c_cflag |= CREAD | CLOCAL;
-    s = ::tcsetattr(fd, TCSANOW, &ios);
-    descriptor_ops::get_last_error(ec, s < 0);
+    errno = 0;
+    s = descriptor_ops::error_wrapper(::tcsetattr(fd, TCSANOW, &ios), ec);
   }
   if (s < 0)
   {
@@ -112,16 +112,18 @@ lslboost::system::error_code reactive_serial_port_service::do_set_option(
     const void* option, lslboost::system::error_code& ec)
 {
   termios ios;
-  int s = ::tcgetattr(descriptor_service_.native_handle(impl), &ios);
-  descriptor_ops::get_last_error(ec, s < 0);
-  if (s < 0)
+  errno = 0;
+  descriptor_ops::error_wrapper(::tcgetattr(
+        descriptor_service_.native_handle(impl), &ios), ec);
+  if (ec)
     return ec;
 
   if (store(option, ios, ec))
     return ec;
 
-  s = ::tcsetattr(descriptor_service_.native_handle(impl), TCSANOW, &ios);
-  descriptor_ops::get_last_error(ec, s < 0);
+  errno = 0;
+  descriptor_ops::error_wrapper(::tcsetattr(
+        descriptor_service_.native_handle(impl), TCSANOW, &ios), ec);
   return ec;
 }
 
@@ -131,9 +133,10 @@ lslboost::system::error_code reactive_serial_port_service::do_get_option(
     void* option, lslboost::system::error_code& ec) const
 {
   termios ios;
-  int s = ::tcgetattr(descriptor_service_.native_handle(impl), &ios);
-  descriptor_ops::get_last_error(ec, s < 0);
-  if (s < 0)
+  errno = 0;
+  descriptor_ops::error_wrapper(::tcgetattr(
+        descriptor_service_.native_handle(impl), &ios), ec);
+  if (ec)
     return ec;
 
   return load(option, ios, ec);

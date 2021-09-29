@@ -232,6 +232,7 @@
 // C++0x features in 4.6.n and later
 //
 #if (BOOST_GCC_VERSION < 40600) || !defined(BOOST_GCC_CXX11)
+#define BOOST_NO_CXX11_CONSTEXPR
 #define BOOST_NO_CXX11_DEFAULTED_MOVES
 #define BOOST_NO_CXX11_NOEXCEPT
 #define BOOST_NO_CXX11_NULLPTR
@@ -242,19 +243,16 @@
 // C++0x features in 4.7.n and later
 //
 #if (BOOST_GCC_VERSION < 40700) || !defined(BOOST_GCC_CXX11)
-// Note that while constexpr is partly supported in gcc-4.6 it's a 
-// pre-std version with several bugs:
-#  define BOOST_NO_CXX11_CONSTEXPR
 #  define BOOST_NO_CXX11_FINAL
 #  define BOOST_NO_CXX11_TEMPLATE_ALIASES
 #  define BOOST_NO_CXX11_USER_DEFINED_LITERALS
 #  define BOOST_NO_CXX11_FIXED_LENGTH_VARIADIC_TEMPLATE_EXPANSION_PACKS
-#  define BOOST_NO_CXX11_OVERRIDE
 #endif
 
 // C++0x features in 4.8.n and later
 //
 #if (BOOST_GCC_VERSION < 40800) || !defined(BOOST_GCC_CXX11)
+#  define BOOST_NO_CXX11_ALIGNAS
 #  define BOOST_NO_CXX11_THREAD_LOCAL
 #  define BOOST_NO_CXX11_SFINAE_EXPR
 #endif
@@ -265,20 +263,6 @@
 #  define BOOST_NO_CXX11_DECLTYPE_N3276
 #  define BOOST_NO_CXX11_REF_QUALIFIERS
 #  define BOOST_NO_CXX14_BINARY_LITERALS
-#endif
-
-// C++0x features in 4.9.n and later
-//
-#if (BOOST_GCC_VERSION < 40900) || !defined(BOOST_GCC_CXX11)
-// Although alignas support is added in gcc 4.8, it does not accept
-// constant expressions as an argument until gcc 4.9.
-#  define BOOST_NO_CXX11_ALIGNAS
-#endif
-
-// C++0x features in 5.1 and later
-//
-#if (BOOST_GCC_VERSION < 50100) || !defined(BOOST_GCC_CXX11)
-#  define BOOST_NO_CXX11_UNRESTRICTED_UNION
 #endif
 
 // C++14 features in 4.9.0 and later
@@ -323,8 +307,8 @@
 #  define BOOST_FALLTHROUGH __attribute__((fallthrough))
 #endif
 
-#if defined(__MINGW32__) && !defined(__MINGW64__)
-// Currently (March 2019) thread_local is broken on mingw for all current 32bit compiler releases, see
+#ifdef __MINGW32__
+// Currently (June 2017) thread_local is broken on mingw for all current compiler releases, see
 // https://sourceforge.net/p/mingw-w64/bugs/527/
 // Not setting this causes program termination on thread exit.
 #define BOOST_NO_CXX11_THREAD_LOCAL
@@ -341,7 +325,7 @@
 
 //
 // __builtin_unreachable:
-#if BOOST_GCC_VERSION >= 40500
+#if BOOST_GCC_VERSION >= 40800
 #define BOOST_UNREACHABLE_RETURN(x) __builtin_unreachable();
 #endif
 

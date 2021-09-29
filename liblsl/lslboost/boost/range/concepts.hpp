@@ -84,7 +84,7 @@ namespace lslboost {
     #endif
 #endif
 
-    #ifdef BOOST_BORLANDC
+    #ifdef __BORLANDC__
         #define BOOST_RANGE_ENABLE_CONCEPT_ASSERT 0
     #endif
 

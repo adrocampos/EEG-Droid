@@ -11,34 +11,29 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_LANG_STDCPP`
+/*`
+[heading `BOOST_LANG_STDCPP`]
 
-http://en.wikipedia.org/wiki/C%2B%2B[Standard {CPP}] language.
+[@http://en.wikipedia.org/wiki/C%2B%2B Standard C++] language.
 If available, the year of the standard is detected as YYYY.MM.1 from the Epoc date.
-Because of the way the {CPP} standardization process works the
+Because of the way the C++ standardization process works the
 defined version year will not be the commonly known year of the standard.
 Specifically the defined versions are:
 
-.Detected Version Number vs. {CPP} Standard Year
-[options="header"]
-|===
-| Detected Version Number | Standard Year | {CPP} Standard
-| 27.11.1 | 1998 | ISO/IEC 14882:1998
-| 41.3.1 | 2011 | ISO/IEC 14882:2011
-| 44.2.1 | 2014 | ISO/IEC 14882:2014
-| 47.3.1 | 2017 | ISO/IEC 14882:2017
-|===
+[table Detected Version Number vs. C++ Standard Year
+  [[Detected Version Number] [Standard Year] [C++ Standard]]
+  [[27.11.1] [1998] [ISO/IEC 14882:1998]]
+  [[41.12.1] [2011] [ISO/IEC 14882:2011]]
+]
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__cplusplus+` | {predef_detection}
+    [[`__cplusplus`] [__predef_detection__]]
 
-| `+__cplusplus+` | YYYY.MM.1
-|===
-*/ // end::reference[]
+    [[`__cplusplus`] [YYYY.MM.1]]
+    ]
+ */
 
 #define BOOST_LANG_STDCPP BOOST_VERSION_NUMBER_NOT_AVAILABLE
 
@@ -57,21 +52,20 @@ Specifically the defined versions are:
 
 #define BOOST_LANG_STDCPP_NAME "Standard C++"
 
-/* tag::reference[]
-= `BOOST_LANG_STDCPPCLI`
+/*`
+[heading `BOOST_LANG_STDCPPCLI`]
 
-http://en.wikipedia.org/wiki/C%2B%2B/CLI[Standard {CPP}/CLI] language.
+[@http://en.wikipedia.org/wiki/C%2B%2B/CLI Standard C++/CLI] language.
 If available, the year of the standard is detected as YYYY.MM.1 from the Epoc date.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__cplusplus_cli+` | {predef_detection}
+    [[`__cplusplus_cli`] [__predef_detection__]]
 
-| `+__cplusplus_cli+` | YYYY.MM.1
-|===
-*/ // end::reference[]
+    [[`__cplusplus_cli`] [YYYY.MM.1]]
+    ]
+ */
 
 #define BOOST_LANG_STDCPPCLI BOOST_VERSION_NUMBER_NOT_AVAILABLE
 
@@ -90,18 +84,17 @@ If available, the year of the standard is detected as YYYY.MM.1 from the Epoc da
 
 #define BOOST_LANG_STDCPPCLI_NAME "Standard C++/CLI"
 
-/* tag::reference[]
-= `BOOST_LANG_STDECPP`
+/*`
+[heading `BOOST_LANG_STDECPP`]
 
-http://en.wikipedia.org/wiki/Embedded_C%2B%2B[Standard Embedded {CPP}] language.
+[@http://en.wikipedia.org/wiki/Embedded_C%2B%2B Standard Embedded C++] language.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__embedded_cplusplus+` | {predef_detection}
-|===
-*/ // end::reference[]
+    [[`__embedded_cplusplus`] [__predef_detection__]]
+    ]
+ */
 
 #define BOOST_LANG_STDECPP BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

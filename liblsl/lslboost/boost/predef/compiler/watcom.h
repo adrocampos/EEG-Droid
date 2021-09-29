@@ -11,21 +11,20 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_COMP_WATCOM`
+/*`
+[heading `BOOST_COMP_WATCOM`]
 
-http://en.wikipedia.org/wiki/Watcom[Watcom {CPP}] compiler.
+[@http://en.wikipedia.org/wiki/Watcom Watcom C++] compiler.
 Version number available as major, and minor.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__WATCOMC__+` | {predef_detection}
+    [[`__WATCOMC__`] [__predef_detection__]]
 
-| `+__WATCOMC__+` | V.R.P
-|===
-*/ // end::reference[]
+    [[`__WATCOMC__`] [V.R.P]]
+    ]
+ */
 
 #define BOOST_COMP_WATCOM BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

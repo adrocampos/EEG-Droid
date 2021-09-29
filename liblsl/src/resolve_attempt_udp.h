@@ -2,14 +2,19 @@
 #define RESOLVE_ATTEMPT_UDP_H
 
 #include "cancellation.h"
-#include "forward.h"
 #include "stream_info_impl.h"
 #include <boost/asio/ip/udp.hpp>
 #include <boost/asio/steady_timer.hpp>
 #include <map>
 
-using asio::ip::udp;
-using err_t = const lslboost::system::error_code &;
+namespace lslboost {
+namespace system {
+class error_code;
+}
+} // namespace lslboost
+
+using lslboost::asio::ip::udp;
+using lslboost::system::error_code;
 
 namespace lsl {
 
@@ -48,7 +53,7 @@ public:
 	 * @param registry A registry where the attempt can register itself as active so it can be
 	 * cancelled during shutdown.
 	 */
-	resolve_attempt_udp(asio::io_context &io, const udp &protocol,
+	resolve_attempt_udp(lslboost::asio::io_context &io, const udp &protocol,
 		const std::vector<udp::endpoint> &targets, const std::string &query,
 		result_container &results, std::mutex &results_mut, double cancel_after = 5.0,
 		cancellable_registry *registry = nullptr);
@@ -73,10 +78,10 @@ private:
 	void receive_next_result();
 
 	/// Thos function starts an async send operation for the given current endpoint.
-	void send_next_query(endpoint_list::const_iterator next);
+	void send_next_query(endpoint_list::const_iterator i);
 
 	/// Handler that gets called when a receive has completed.
-	void handle_receive_outcome(err_t err, std::size_t len);
+	void handle_receive_outcome(error_code err, std::size_t len);
 
 	// === cancellation ===
 
@@ -86,7 +91,7 @@ private:
 
 	// data shared with the resolver_impl
 	/// reference to the IO service that executes our actions
-	asio::io_context &io_;
+	lslboost::asio::io_context &io_;
 	/// shared result container
 	result_container &results_;
 	/// shared mutex that protects the results
@@ -122,7 +127,7 @@ private:
 	/// socket to receive replies (always unicast)
 	udp::socket recv_socket_;
 	/// timer to schedule the cancel action
-	asio::steady_timer cancel_timer_;
+	lslboost::asio::steady_timer cancel_timer_;
 };
 } // namespace lsl
 

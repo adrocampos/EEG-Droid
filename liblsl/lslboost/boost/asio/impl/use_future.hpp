@@ -2,7 +2,7 @@
 // impl/use_future.hpp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -19,9 +19,7 @@
 #include <tuple>
 #include <boost/asio/async_result.hpp>
 #include <boost/asio/detail/memory.hpp>
-#include <boost/asio/dispatch.hpp>
 #include <boost/system/error_code.hpp>
-#include <boost/asio/execution.hpp>
 #include <boost/asio/packaged_task.hpp>
 #include <boost/system/system_error.hpp>
 #include <boost/asio/system_executor.hpp>
@@ -203,7 +201,7 @@ private:
 
 // An executor that adapts the system_executor to capture any exeption thrown
 // by a submitted function object and save it into a promise.
-template <typename T, typename Blocking = execution::blocking_t::possibly_t>
+template <typename T>
 class promise_executor
 {
 public:
@@ -212,32 +210,6 @@ public:
   {
   }
 
-  static BOOST_ASIO_CONSTEXPR Blocking query(execution::blocking_t)
-  {
-    return Blocking();
-  }
-
-  promise_executor<T, execution::blocking_t::possibly_t>
-  require(execution::blocking_t::possibly_t) const
-  {
-    return promise_executor<T, execution::blocking_t::possibly_t>(p_);
-  }
-
-  promise_executor<T, execution::blocking_t::never_t>
-  require(execution::blocking_t::never_t) const
-  {
-    return promise_executor<T, execution::blocking_t::never_t>(p_);
-  }
-
-  template <typename F>
-  void execute(BOOST_ASIO_MOVE_ARG(F) f) const
-  {
-    execution::execute(
-        lslboost::asio::require(system_executor(), Blocking()),
-        promise_invoker<T, F>(p_, BOOST_ASIO_MOVE_CAST(F)(f)));
-  }
-
-#if !defined(BOOST_ASIO_NO_TS_EXECUTORS)
   execution_context& context() const BOOST_ASIO_NOEXCEPT
   {
     return system_executor().context();
@@ -265,7 +237,6 @@ public:
     system_executor().defer(
         promise_invoker<T, F>(p_, BOOST_ASIO_MOVE_CAST(F)(f)), a);
   }
-#endif // !defined(BOOST_ASIO_NO_TS_EXECUTORS)
 
   friend bool operator==(const promise_executor& a,
       const promise_executor& b) BOOST_ASIO_NOEXCEPT
@@ -607,7 +578,7 @@ class promise_handler_selector<void(std::exception_ptr, Arg...)>
       : public promise_handler_ex_n< \
         std::tuple<Arg, BOOST_ASIO_VARIADIC_TARGS(n)> > {}; \
   /**/
-  BOOST_ASIO_VARIADIC_GENERATE_5(BOOST_ASIO_PRIVATE_PROMISE_SELECTOR_DEF)
+  BOOST_ASIO_VARIADIC_GENERATE(BOOST_ASIO_PRIVATE_PROMISE_SELECTOR_DEF)
 #undef BOOST_ASIO_PRIVATE_PROMISE_SELECTOR_DEF
 
 #endif // defined(BOOST_ASIO_HAS_VARIADIC_TEMPLATES)
@@ -637,36 +608,13 @@ private:
   Allocator allocator_;
 };
 
-template <typename Function>
-struct promise_function_wrapper
-{
-  explicit promise_function_wrapper(Function& f)
-    : function_(BOOST_ASIO_MOVE_CAST(Function)(f))
-  {
-  }
-
-  explicit promise_function_wrapper(const Function& f)
-    : function_(f)
-  {
-  }
-
-  void operator()()
-  {
-    function_();
-  }
-
-  Function function_;
-};
-
-#if !defined(BOOST_ASIO_NO_DEPRECATED)
-
 template <typename Function, typename Signature, typename Allocator>
 inline void asio_handler_invoke(Function& f,
     promise_handler<Signature, Allocator>* h)
 {
   typename promise_handler<Signature, Allocator>::executor_type
     ex(h->get_executor());
-  lslboost::asio::dispatch(ex, promise_function_wrapper<Function>(f));
+  ex.dispatch(BOOST_ASIO_MOVE_CAST(Function)(f), std::allocator<void>());
 }
 
 template <typename Function, typename Signature, typename Allocator>
@@ -675,10 +623,8 @@ inline void asio_handler_invoke(const Function& f,
 {
   typename promise_handler<Signature, Allocator>::executor_type
     ex(h->get_executor());
-  lslboost::asio::dispatch(ex, promise_function_wrapper<Function>(f));
+  ex.dispatch(f, std::allocator<void>());
 }
-
-#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
 // Helper base class for async_result specialisation.
 template <typename Signature, typename Allocator>
@@ -774,8 +720,6 @@ private:
   Allocator allocator_;
 };
 
-#if !defined(BOOST_ASIO_NO_DEPRECATED)
-
 template <typename Function,
     typename Function1, typename Allocator, typename Result>
 inline void asio_handler_invoke(Function& f,
@@ -783,7 +727,7 @@ inline void asio_handler_invoke(Function& f,
 {
   typename packaged_handler<Function1, Allocator, Result>::executor_type
     ex(h->get_executor());
-  lslboost::asio::dispatch(ex, promise_function_wrapper<Function>(f));
+  ex.dispatch(BOOST_ASIO_MOVE_CAST(Function)(f), std::allocator<void>());
 }
 
 template <typename Function,
@@ -793,10 +737,8 @@ inline void asio_handler_invoke(const Function& f,
 {
   typename packaged_handler<Function1, Allocator, Result>::executor_type
     ex(h->get_executor());
-  lslboost::asio::dispatch(ex, promise_function_wrapper<Function>(f));
+  ex.dispatch(f, std::allocator<void>());
 }
-
-#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
 // Helper base class for async_result specialisation.
 template <typename Function, typename Allocator, typename Result>
@@ -937,88 +879,55 @@ public:
 
 #endif // defined(BOOST_ASIO_HAS_VARIADIC_TEMPLATES)
 
-namespace traits {
+#if !defined(BOOST_ASIO_NO_DEPRECATED)
 
-#if !defined(BOOST_ASIO_HAS_DEDUCED_EQUALITY_COMPARABLE_TRAIT)
-
-template <typename T, typename Blocking>
-struct equality_comparable<
-    lslboost::asio::detail::promise_executor<T, Blocking> >
+template <typename Allocator, typename Signature>
+struct handler_type<use_future_t<Allocator>, Signature>
 {
-  BOOST_ASIO_STATIC_CONSTEXPR(bool, is_valid = true);
-  BOOST_ASIO_STATIC_CONSTEXPR(bool, is_noexcept = true);
+  typedef typename async_result<use_future_t<Allocator>,
+    Signature>::completion_handler_type type;
 };
 
-#endif // !defined(BOOST_ASIO_HAS_DEDUCED_EQUALITY_COMPARABLE_TRAIT)
-
-#if !defined(BOOST_ASIO_HAS_DEDUCED_EXECUTE_MEMBER_TRAIT)
-
-template <typename T, typename Blocking, typename Function>
-struct execute_member<
-    lslboost::asio::detail::promise_executor<T, Blocking>, Function>
+template <typename Signature, typename Allocator>
+class async_result<detail::promise_handler<Signature, Allocator> >
+  : public detail::promise_async_result<Signature, Allocator>
 {
-  BOOST_ASIO_STATIC_CONSTEXPR(bool, is_valid = true);
-  BOOST_ASIO_STATIC_CONSTEXPR(bool, is_noexcept = false);
-  typedef void result_type;
-};
+public:
+  typedef typename detail::promise_async_result<
+    Signature, Allocator>::return_type type;
 
-#endif // !defined(BOOST_ASIO_HAS_DEDUCED_EXECUTE_MEMBER_TRAIT)
-
-#if !defined(BOOST_ASIO_HAS_DEDUCED_QUERY_STATIC_CONSTEXPR_TRAIT)
-
-template <typename T, typename Blocking, typename Property>
-struct query_static_constexpr_member<
-    lslboost::asio::detail::promise_executor<T, Blocking>,
-    Property,
-    typename lslboost::asio::enable_if<
-      lslboost::asio::is_convertible<
-        Property,
-        lslboost::asio::execution::blocking_t
-      >::value
-    >::type
-  >
-{
-  BOOST_ASIO_STATIC_CONSTEXPR(bool, is_valid = true);
-  BOOST_ASIO_STATIC_CONSTEXPR(bool, is_noexcept = true);
-  typedef Blocking result_type;
-
-  static BOOST_ASIO_CONSTEXPR result_type value() BOOST_ASIO_NOEXCEPT
+  explicit async_result(
+    typename detail::promise_async_result<
+      Signature, Allocator>::completion_handler_type& h)
+    : detail::promise_async_result<Signature, Allocator>(h)
   {
-    return Blocking();
   }
 };
 
-#endif // !defined(BOOST_ASIO_HAS_DEDUCED_QUERY_STATIC_CONSTEXPR_TRAIT)
-
-#if !defined(BOOST_ASIO_HAS_DEDUCED_REQUIRE_MEMBER_TRAIT)
-
-template <typename T, typename Blocking>
-struct require_member<
-    lslboost::asio::detail::promise_executor<T, Blocking>,
-    execution::blocking_t::possibly_t
-  >
+template <typename Function, typename Allocator, typename Signature>
+struct handler_type<detail::packaged_token<Function, Allocator>, Signature>
 {
-  BOOST_ASIO_STATIC_CONSTEXPR(bool, is_valid = true);
-  BOOST_ASIO_STATIC_CONSTEXPR(bool, is_noexcept = true);
-  typedef lslboost::asio::detail::promise_executor<T,
-      execution::blocking_t::possibly_t> result_type;
+  typedef typename async_result<detail::packaged_token<Function, Allocator>,
+    Signature>::completion_handler_type type;
 };
 
-template <typename T, typename Blocking>
-struct require_member<
-    lslboost::asio::detail::promise_executor<T, Blocking>,
-    execution::blocking_t::never_t
-  >
+template <typename Function, typename Allocator, typename Result>
+class async_result<detail::packaged_handler<Function, Allocator, Result> >
+  : public detail::packaged_async_result<Function, Allocator, Result>
 {
-  BOOST_ASIO_STATIC_CONSTEXPR(bool, is_valid = true);
-  BOOST_ASIO_STATIC_CONSTEXPR(bool, is_noexcept = true);
-  typedef lslboost::asio::detail::promise_executor<T,
-      execution::blocking_t::never_t> result_type;
+public:
+  typedef typename detail::packaged_async_result<
+    Function, Allocator, Result>::return_type type;
+
+  explicit async_result(
+    typename detail::packaged_async_result<
+      Function, Allocator, Result>::completion_handler_type& h)
+    : detail::packaged_async_result<Function, Allocator, Result>(h)
+  {
+  }
 };
 
-#endif // !defined(BOOST_ASIO_HAS_DEDUCED_REQUIRE_MEMBER_TRAIT)
-
-} // namespace traits
+#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
 #endif // !defined(GENERATING_DOCUMENTATION)
 

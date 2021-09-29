@@ -2,7 +2,7 @@
 // buffered_read_stream.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -26,6 +26,7 @@
 #include <boost/asio/detail/noncopyable.hpp>
 #include <boost/asio/detail/type_traits.hpp>
 #include <boost/asio/error.hpp>
+#include <boost/asio/io_context.hpp>
 
 #include <boost/asio/detail/push_options.hpp>
 
@@ -105,6 +106,22 @@ public:
     return next_layer_.lowest_layer().get_executor();
   }
 
+#if !defined(BOOST_ASIO_NO_DEPRECATED)
+  /// (Deprecated: Use get_executor().) Get the io_context associated with the
+  /// object.
+  lslboost::asio::io_context& get_io_context()
+  {
+    return next_layer_.get_io_context();
+  }
+
+  /// (Deprecated: Use get_executor().) Get the io_context associated with the
+  /// object.
+  lslboost::asio::io_context& get_io_service()
+  {
+    return next_layer_.get_io_service();
+  }
+#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
+
   /// Close the stream.
   void close()
   {
@@ -137,15 +154,11 @@ public:
 
   /// Start an asynchronous write. The data being written must be valid for the
   /// lifetime of the asynchronous operation.
-  template <typename ConstBufferSequence,
-      BOOST_ASIO_COMPLETION_TOKEN_FOR(void (lslboost::system::error_code,
-        std::size_t)) WriteHandler
-          BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
+  template <typename ConstBufferSequence, typename WriteHandler>
+  BOOST_ASIO_INITFN_RESULT_TYPE(WriteHandler,
       void (lslboost::system::error_code, std::size_t))
   async_write_some(const ConstBufferSequence& buffers,
-      BOOST_ASIO_MOVE_ARG(WriteHandler) handler
-        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+      BOOST_ASIO_MOVE_ARG(WriteHandler) handler)
   {
     return next_layer_.async_write_some(buffers,
         BOOST_ASIO_MOVE_CAST(WriteHandler)(handler));
@@ -160,15 +173,10 @@ public:
   std::size_t fill(lslboost::system::error_code& ec);
 
   /// Start an asynchronous fill.
-  template <
-      BOOST_ASIO_COMPLETION_TOKEN_FOR(void (lslboost::system::error_code,
-        std::size_t)) ReadHandler
-          BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
+  template <typename ReadHandler>
+  BOOST_ASIO_INITFN_RESULT_TYPE(ReadHandler,
       void (lslboost::system::error_code, std::size_t))
-  async_fill(
-      BOOST_ASIO_MOVE_ARG(ReadHandler) handler
-        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(executor_type));
+  async_fill(BOOST_ASIO_MOVE_ARG(ReadHandler) handler);
 
   /// Read some data from the stream. Returns the number of bytes read. Throws
   /// an exception on failure.
@@ -183,15 +191,11 @@ public:
 
   /// Start an asynchronous read. The buffer into which the data will be read
   /// must be valid for the lifetime of the asynchronous operation.
-  template <typename MutableBufferSequence,
-      BOOST_ASIO_COMPLETION_TOKEN_FOR(void (lslboost::system::error_code,
-        std::size_t)) ReadHandler
-          BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
+  template <typename MutableBufferSequence, typename ReadHandler>
+  BOOST_ASIO_INITFN_RESULT_TYPE(ReadHandler,
       void (lslboost::system::error_code, std::size_t))
   async_read_some(const MutableBufferSequence& buffers,
-      BOOST_ASIO_MOVE_ARG(ReadHandler) handler
-        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(executor_type));
+      BOOST_ASIO_MOVE_ARG(ReadHandler) handler);
 
   /// Peek at the incoming data on the stream. Returns the number of bytes read.
   /// Throws an exception on failure.

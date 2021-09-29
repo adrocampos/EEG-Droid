@@ -49,106 +49,106 @@ class constant_iterator
    typedef  constant_iterator<T, Difference> this_type;
 
    public:
-   BOOST_CONTAINER_FORCEINLINE explicit constant_iterator(const T &ref, Difference range_size)
+   explicit constant_iterator(const T &ref, Difference range_size)
       :  m_ptr(&ref), m_num(range_size){}
 
    //Constructors
-   BOOST_CONTAINER_FORCEINLINE constant_iterator()
+   constant_iterator()
       :  m_ptr(0), m_num(0){}
 
-   BOOST_CONTAINER_FORCEINLINE constant_iterator& operator++()
+   constant_iterator& operator++()
    { increment();   return *this;   }
 
-   BOOST_CONTAINER_FORCEINLINE constant_iterator operator++(int)
+   constant_iterator operator++(int)
    {
       constant_iterator result (*this);
       increment();
       return result;
    }
 
-   BOOST_CONTAINER_FORCEINLINE constant_iterator& operator--()
+   constant_iterator& operator--()
    { decrement();   return *this;   }
 
-   BOOST_CONTAINER_FORCEINLINE constant_iterator operator--(int)
+   constant_iterator operator--(int)
    {
       constant_iterator result (*this);
       decrement();
       return result;
    }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator== (const constant_iterator& i, const constant_iterator& i2)
+   friend bool operator== (const constant_iterator& i, const constant_iterator& i2)
    { return i.equal(i2); }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator!= (const constant_iterator& i, const constant_iterator& i2)
+   friend bool operator!= (const constant_iterator& i, const constant_iterator& i2)
    { return !(i == i2); }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator< (const constant_iterator& i, const constant_iterator& i2)
+   friend bool operator< (const constant_iterator& i, const constant_iterator& i2)
    { return i.less(i2); }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator> (const constant_iterator& i, const constant_iterator& i2)
+   friend bool operator> (const constant_iterator& i, const constant_iterator& i2)
    { return i2 < i; }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator<= (const constant_iterator& i, const constant_iterator& i2)
+   friend bool operator<= (const constant_iterator& i, const constant_iterator& i2)
    { return !(i > i2); }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator>= (const constant_iterator& i, const constant_iterator& i2)
+   friend bool operator>= (const constant_iterator& i, const constant_iterator& i2)
    { return !(i < i2); }
 
-   BOOST_CONTAINER_FORCEINLINE friend Difference operator- (const constant_iterator& i, const constant_iterator& i2)
+   friend Difference operator- (const constant_iterator& i, const constant_iterator& i2)
    { return i2.distance_to(i); }
 
    //Arithmetic
-   BOOST_CONTAINER_FORCEINLINE constant_iterator& operator+=(Difference off)
+   constant_iterator& operator+=(Difference off)
    {  this->advance(off); return *this;   }
 
-   BOOST_CONTAINER_FORCEINLINE constant_iterator operator+(Difference off) const
+   constant_iterator operator+(Difference off) const
    {
       constant_iterator other(*this);
       other.advance(off);
       return other;
    }
 
-   BOOST_CONTAINER_FORCEINLINE friend constant_iterator operator+(Difference off, const constant_iterator& right)
+   friend constant_iterator operator+(Difference off, const constant_iterator& right)
    {  return right + off; }
 
-   BOOST_CONTAINER_FORCEINLINE constant_iterator& operator-=(Difference off)
+   constant_iterator& operator-=(Difference off)
    {  this->advance(-off); return *this;   }
 
-   BOOST_CONTAINER_FORCEINLINE constant_iterator operator-(Difference off) const
+   constant_iterator operator-(Difference off) const
    {  return *this + (-off);  }
 
-   BOOST_CONTAINER_FORCEINLINE const T& operator*() const
+   const T& operator*() const
    { return dereference(); }
 
-   BOOST_CONTAINER_FORCEINLINE const T& operator[] (Difference ) const
+   const T& operator[] (Difference ) const
    { return dereference(); }
 
-   BOOST_CONTAINER_FORCEINLINE const T* operator->() const
+   const T* operator->() const
    { return &(dereference()); }
 
    private:
    const T *   m_ptr;
    Difference  m_num;
 
-   BOOST_CONTAINER_FORCEINLINE void increment()
+   void increment()
    { --m_num; }
 
-   BOOST_CONTAINER_FORCEINLINE void decrement()
+   void decrement()
    { ++m_num; }
 
-   BOOST_CONTAINER_FORCEINLINE bool equal(const this_type &other) const
+   bool equal(const this_type &other) const
    {  return m_num == other.m_num;   }
 
-   BOOST_CONTAINER_FORCEINLINE bool less(const this_type &other) const
+   bool less(const this_type &other) const
    {  return other.m_num < m_num;   }
 
-   BOOST_CONTAINER_FORCEINLINE const T & dereference() const
+   const T & dereference() const
    { return *m_ptr; }
 
-   BOOST_CONTAINER_FORCEINLINE void advance(Difference n)
+   void advance(Difference n)
    {  m_num -= n; }
 
-   BOOST_CONTAINER_FORCEINLINE Difference distance_to(const this_type &other)const
+   Difference distance_to(const this_type &other)const
    {  return m_num - other.m_num;   }
 };
 
@@ -160,72 +160,72 @@ class value_init_construct_iterator
    typedef  value_init_construct_iterator<T, Difference> this_type;
 
    public:
-   BOOST_CONTAINER_FORCEINLINE explicit value_init_construct_iterator(Difference range_size)
+   explicit value_init_construct_iterator(Difference range_size)
       :  m_num(range_size){}
 
    //Constructors
-   BOOST_CONTAINER_FORCEINLINE value_init_construct_iterator()
+   value_init_construct_iterator()
       :  m_num(0){}
 
-   BOOST_CONTAINER_FORCEINLINE value_init_construct_iterator& operator++()
+   value_init_construct_iterator& operator++()
    { increment();   return *this;   }
 
-   BOOST_CONTAINER_FORCEINLINE value_init_construct_iterator operator++(int)
+   value_init_construct_iterator operator++(int)
    {
       value_init_construct_iterator result (*this);
       increment();
       return result;
    }
 
-   BOOST_CONTAINER_FORCEINLINE value_init_construct_iterator& operator--()
+   value_init_construct_iterator& operator--()
    { decrement();   return *this;   }
 
-   BOOST_CONTAINER_FORCEINLINE value_init_construct_iterator operator--(int)
+   value_init_construct_iterator operator--(int)
    {
       value_init_construct_iterator result (*this);
       decrement();
       return result;
    }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator== (const value_init_construct_iterator& i, const value_init_construct_iterator& i2)
+   friend bool operator== (const value_init_construct_iterator& i, const value_init_construct_iterator& i2)
    { return i.equal(i2); }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator!= (const value_init_construct_iterator& i, const value_init_construct_iterator& i2)
+   friend bool operator!= (const value_init_construct_iterator& i, const value_init_construct_iterator& i2)
    { return !(i == i2); }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator< (const value_init_construct_iterator& i, const value_init_construct_iterator& i2)
+   friend bool operator< (const value_init_construct_iterator& i, const value_init_construct_iterator& i2)
    { return i.less(i2); }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator> (const value_init_construct_iterator& i, const value_init_construct_iterator& i2)
+   friend bool operator> (const value_init_construct_iterator& i, const value_init_construct_iterator& i2)
    { return i2 < i; }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator<= (const value_init_construct_iterator& i, const value_init_construct_iterator& i2)
+   friend bool operator<= (const value_init_construct_iterator& i, const value_init_construct_iterator& i2)
    { return !(i > i2); }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator>= (const value_init_construct_iterator& i, const value_init_construct_iterator& i2)
+   friend bool operator>= (const value_init_construct_iterator& i, const value_init_construct_iterator& i2)
    { return !(i < i2); }
 
-   BOOST_CONTAINER_FORCEINLINE friend Difference operator- (const value_init_construct_iterator& i, const value_init_construct_iterator& i2)
+   friend Difference operator- (const value_init_construct_iterator& i, const value_init_construct_iterator& i2)
    { return i2.distance_to(i); }
 
    //Arithmetic
-   BOOST_CONTAINER_FORCEINLINE value_init_construct_iterator& operator+=(Difference off)
+   value_init_construct_iterator& operator+=(Difference off)
    {  this->advance(off); return *this;   }
 
-   BOOST_CONTAINER_FORCEINLINE value_init_construct_iterator operator+(Difference off) const
+   value_init_construct_iterator operator+(Difference off) const
    {
       value_init_construct_iterator other(*this);
       other.advance(off);
       return other;
    }
 
-   BOOST_CONTAINER_FORCEINLINE friend value_init_construct_iterator operator+(Difference off, const value_init_construct_iterator& right)
+   friend value_init_construct_iterator operator+(Difference off, const value_init_construct_iterator& right)
    {  return right + off; }
 
-   BOOST_CONTAINER_FORCEINLINE value_init_construct_iterator& operator-=(Difference off)
+   value_init_construct_iterator& operator-=(Difference off)
    {  this->advance(-off); return *this;   }
 
-   BOOST_CONTAINER_FORCEINLINE value_init_construct_iterator operator-(Difference off) const
+   value_init_construct_iterator operator-(Difference off) const
    {  return *this + (-off);  }
 
    //This pseudo-iterator's dereference operations have no sense since value is not
@@ -238,28 +238,28 @@ class value_init_construct_iterator
    private:
    Difference  m_num;
 
-   BOOST_CONTAINER_FORCEINLINE void increment()
+   void increment()
    { --m_num; }
 
-   BOOST_CONTAINER_FORCEINLINE void decrement()
+   void decrement()
    { ++m_num; }
 
-   BOOST_CONTAINER_FORCEINLINE bool equal(const this_type &other) const
+   bool equal(const this_type &other) const
    {  return m_num == other.m_num;   }
 
-   BOOST_CONTAINER_FORCEINLINE bool less(const this_type &other) const
+   bool less(const this_type &other) const
    {  return other.m_num < m_num;   }
 
-   BOOST_CONTAINER_FORCEINLINE const T & dereference() const
+   const T & dereference() const
    {
       static T dummy;
       return dummy;
    }
 
-   BOOST_CONTAINER_FORCEINLINE void advance(Difference n)
+   void advance(Difference n)
    {  m_num -= n; }
 
-   BOOST_CONTAINER_FORCEINLINE Difference distance_to(const this_type &other)const
+   Difference distance_to(const this_type &other)const
    {  return m_num - other.m_num;   }
 };
 
@@ -271,72 +271,72 @@ class default_init_construct_iterator
    typedef  default_init_construct_iterator<T, Difference> this_type;
 
    public:
-   BOOST_CONTAINER_FORCEINLINE explicit default_init_construct_iterator(Difference range_size)
+   explicit default_init_construct_iterator(Difference range_size)
       :  m_num(range_size){}
 
    //Constructors
-   BOOST_CONTAINER_FORCEINLINE default_init_construct_iterator()
+   default_init_construct_iterator()
       :  m_num(0){}
 
-   BOOST_CONTAINER_FORCEINLINE default_init_construct_iterator& operator++()
+   default_init_construct_iterator& operator++()
    { increment();   return *this;   }
 
-   BOOST_CONTAINER_FORCEINLINE default_init_construct_iterator operator++(int)
+   default_init_construct_iterator operator++(int)
    {
       default_init_construct_iterator result (*this);
       increment();
       return result;
    }
 
-   BOOST_CONTAINER_FORCEINLINE default_init_construct_iterator& operator--()
+   default_init_construct_iterator& operator--()
    { decrement();   return *this;   }
 
-   BOOST_CONTAINER_FORCEINLINE default_init_construct_iterator operator--(int)
+   default_init_construct_iterator operator--(int)
    {
       default_init_construct_iterator result (*this);
       decrement();
       return result;
    }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator== (const default_init_construct_iterator& i, const default_init_construct_iterator& i2)
+   friend bool operator== (const default_init_construct_iterator& i, const default_init_construct_iterator& i2)
    { return i.equal(i2); }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator!= (const default_init_construct_iterator& i, const default_init_construct_iterator& i2)
+   friend bool operator!= (const default_init_construct_iterator& i, const default_init_construct_iterator& i2)
    { return !(i == i2); }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator< (const default_init_construct_iterator& i, const default_init_construct_iterator& i2)
+   friend bool operator< (const default_init_construct_iterator& i, const default_init_construct_iterator& i2)
    { return i.less(i2); }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator> (const default_init_construct_iterator& i, const default_init_construct_iterator& i2)
+   friend bool operator> (const default_init_construct_iterator& i, const default_init_construct_iterator& i2)
    { return i2 < i; }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator<= (const default_init_construct_iterator& i, const default_init_construct_iterator& i2)
+   friend bool operator<= (const default_init_construct_iterator& i, const default_init_construct_iterator& i2)
    { return !(i > i2); }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator>= (const default_init_construct_iterator& i, const default_init_construct_iterator& i2)
+   friend bool operator>= (const default_init_construct_iterator& i, const default_init_construct_iterator& i2)
    { return !(i < i2); }
 
-   BOOST_CONTAINER_FORCEINLINE friend Difference operator- (const default_init_construct_iterator& i, const default_init_construct_iterator& i2)
+   friend Difference operator- (const default_init_construct_iterator& i, const default_init_construct_iterator& i2)
    { return i2.distance_to(i); }
 
    //Arithmetic
-   BOOST_CONTAINER_FORCEINLINE default_init_construct_iterator& operator+=(Difference off)
+   default_init_construct_iterator& operator+=(Difference off)
    {  this->advance(off); return *this;   }
 
-   BOOST_CONTAINER_FORCEINLINE default_init_construct_iterator operator+(Difference off) const
+   default_init_construct_iterator operator+(Difference off) const
    {
       default_init_construct_iterator other(*this);
       other.advance(off);
       return other;
    }
 
-   BOOST_CONTAINER_FORCEINLINE friend default_init_construct_iterator operator+(Difference off, const default_init_construct_iterator& right)
+   friend default_init_construct_iterator operator+(Difference off, const default_init_construct_iterator& right)
    {  return right + off; }
 
-   BOOST_CONTAINER_FORCEINLINE default_init_construct_iterator& operator-=(Difference off)
+   default_init_construct_iterator& operator-=(Difference off)
    {  this->advance(-off); return *this;   }
 
-   BOOST_CONTAINER_FORCEINLINE default_init_construct_iterator operator-(Difference off) const
+   default_init_construct_iterator operator-(Difference off) const
    {  return *this + (-off);  }
 
    //This pseudo-iterator's dereference operations have no sense since value is not
@@ -349,28 +349,28 @@ class default_init_construct_iterator
    private:
    Difference  m_num;
 
-   BOOST_CONTAINER_FORCEINLINE void increment()
+   void increment()
    { --m_num; }
 
-   BOOST_CONTAINER_FORCEINLINE void decrement()
+   void decrement()
    { ++m_num; }
 
-   BOOST_CONTAINER_FORCEINLINE bool equal(const this_type &other) const
+   bool equal(const this_type &other) const
    {  return m_num == other.m_num;   }
 
-   BOOST_CONTAINER_FORCEINLINE bool less(const this_type &other) const
+   bool less(const this_type &other) const
    {  return other.m_num < m_num;   }
 
-   BOOST_CONTAINER_FORCEINLINE const T & dereference() const
+   const T & dereference() const
    {
       static T dummy;
       return dummy;
    }
 
-   BOOST_CONTAINER_FORCEINLINE void advance(Difference n)
+   void advance(Difference n)
    {  m_num -= n; }
 
-   BOOST_CONTAINER_FORCEINLINE Difference distance_to(const this_type &other) const
+   Difference distance_to(const this_type &other)const
    {  return m_num - other.m_num;   }
 };
 
@@ -382,106 +382,106 @@ class repeat_iterator
 {
    typedef repeat_iterator<T, Difference> this_type;
    public:
-   BOOST_CONTAINER_FORCEINLINE explicit repeat_iterator(T &ref, Difference range_size)
+   explicit repeat_iterator(T &ref, Difference range_size)
       :  m_ptr(&ref), m_num(range_size){}
 
    //Constructors
-   BOOST_CONTAINER_FORCEINLINE repeat_iterator()
+   repeat_iterator()
       :  m_ptr(0), m_num(0){}
 
-   BOOST_CONTAINER_FORCEINLINE this_type& operator++()
+   this_type& operator++()
    { increment();   return *this;   }
 
-   BOOST_CONTAINER_FORCEINLINE this_type operator++(int)
+   this_type operator++(int)
    {
       this_type result (*this);
       increment();
       return result;
    }
 
-   BOOST_CONTAINER_FORCEINLINE this_type& operator--()
+   this_type& operator--()
    { increment();   return *this;   }
 
-   BOOST_CONTAINER_FORCEINLINE this_type operator--(int)
+   this_type operator--(int)
    {
       this_type result (*this);
       increment();
       return result;
    }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator== (const this_type& i, const this_type& i2)
+   friend bool operator== (const this_type& i, const this_type& i2)
    { return i.equal(i2); }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator!= (const this_type& i, const this_type& i2)
+   friend bool operator!= (const this_type& i, const this_type& i2)
    { return !(i == i2); }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator< (const this_type& i, const this_type& i2)
+   friend bool operator< (const this_type& i, const this_type& i2)
    { return i.less(i2); }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator> (const this_type& i, const this_type& i2)
+   friend bool operator> (const this_type& i, const this_type& i2)
    { return i2 < i; }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator<= (const this_type& i, const this_type& i2)
+   friend bool operator<= (const this_type& i, const this_type& i2)
    { return !(i > i2); }
 
-   BOOST_CONTAINER_FORCEINLINE friend bool operator>= (const this_type& i, const this_type& i2)
+   friend bool operator>= (const this_type& i, const this_type& i2)
    { return !(i < i2); }
 
-   BOOST_CONTAINER_FORCEINLINE friend Difference operator- (const this_type& i, const this_type& i2)
+   friend Difference operator- (const this_type& i, const this_type& i2)
    { return i2.distance_to(i); }
 
    //Arithmetic
-   BOOST_CONTAINER_FORCEINLINE this_type& operator+=(Difference off)
+   this_type& operator+=(Difference off)
    {  this->advance(off); return *this;   }
 
-   BOOST_CONTAINER_FORCEINLINE this_type operator+(Difference off) const
+   this_type operator+(Difference off) const
    {
       this_type other(*this);
       other.advance(off);
       return other;
    }
 
-   BOOST_CONTAINER_FORCEINLINE friend this_type operator+(Difference off, const this_type& right)
+   friend this_type operator+(Difference off, const this_type& right)
    {  return right + off; }
 
-   BOOST_CONTAINER_FORCEINLINE this_type& operator-=(Difference off)
+   this_type& operator-=(Difference off)
    {  this->advance(-off); return *this;   }
 
-   BOOST_CONTAINER_FORCEINLINE this_type operator-(Difference off) const
+   this_type operator-(Difference off) const
    {  return *this + (-off);  }
 
-   BOOST_CONTAINER_FORCEINLINE T& operator*() const
+   T& operator*() const
    { return dereference(); }
 
-   BOOST_CONTAINER_FORCEINLINE T& operator[] (Difference ) const
+   T& operator[] (Difference ) const
    { return dereference(); }
 
-   BOOST_CONTAINER_FORCEINLINE T *operator->() const
+   T *operator->() const
    { return &(dereference()); }
 
    private:
    T *         m_ptr;
    Difference  m_num;
 
-   BOOST_CONTAINER_FORCEINLINE void increment()
+   void increment()
    { --m_num; }
 
-   BOOST_CONTAINER_FORCEINLINE void decrement()
+   void decrement()
    { ++m_num; }
 
-   BOOST_CONTAINER_FORCEINLINE bool equal(const this_type &other) const
+   bool equal(const this_type &other) const
    {  return m_num == other.m_num;   }
 
-   BOOST_CONTAINER_FORCEINLINE bool less(const this_type &other) const
+   bool less(const this_type &other) const
    {  return other.m_num < m_num;   }
 
-   BOOST_CONTAINER_FORCEINLINE T & dereference() const
+   T & dereference() const
    { return *m_ptr; }
 
-   BOOST_CONTAINER_FORCEINLINE void advance(Difference n)
+   void advance(Difference n)
    {  m_num -= n; }
 
-   BOOST_CONTAINER_FORCEINLINE Difference distance_to(const this_type &other)const
+   Difference distance_to(const this_type &other)const
    {  return m_num - other.m_num;   }
 };
 
@@ -503,7 +503,7 @@ class emplace_iterator
    BOOST_CONTAINER_FORCEINLINE this_type& operator++()
    { increment();   return *this;   }
 
-   BOOST_CONTAINER_FORCEINLINE this_type operator++(int)
+   this_type operator++(int)
    {
       this_type result (*this);
       increment();
@@ -513,7 +513,7 @@ class emplace_iterator
    BOOST_CONTAINER_FORCEINLINE this_type& operator--()
    { decrement();   return *this;   }
 
-   BOOST_CONTAINER_FORCEINLINE this_type operator--(int)
+   this_type operator--(int)
    {
       this_type result (*this);
       decrement();
@@ -545,7 +545,7 @@ class emplace_iterator
    BOOST_CONTAINER_FORCEINLINE this_type& operator+=(difference_type off)
    {  this->advance(off); return *this;   }
 
-   BOOST_CONTAINER_FORCEINLINE this_type operator+(difference_type off) const
+   this_type operator+(difference_type off) const
    {
       this_type other(*this);
       other.advance(off);
@@ -571,11 +571,11 @@ class emplace_iterator
 
    public:
    template<class Allocator>
-   BOOST_CONTAINER_FORCEINLINE void construct_in_place(Allocator &a, T* ptr)
+   void construct_in_place(Allocator &a, T* ptr)
    {  (*m_pe)(a, ptr);  }
 
    template<class DestIt>
-   BOOST_CONTAINER_FORCEINLINE void assign_in_place(DestIt dest)
+   void assign_in_place(DestIt dest)
    {  (*m_pe)(dest);  }
 
    private:
@@ -614,7 +614,7 @@ struct emplace_functor
 {
    typedef typename dtl::build_number_seq<sizeof...(Args)>::type index_tuple_t;
 
-   BOOST_CONTAINER_FORCEINLINE emplace_functor(BOOST_FWD_REF(Args)... args)
+   emplace_functor(BOOST_FWD_REF(Args)... args)
       : args_(args...)
    {}
 
@@ -661,15 +661,15 @@ struct emplace_functor_type;
 BOOST_MOVE_TMPL_LT##N BOOST_MOVE_CLASS##N BOOST_MOVE_GT##N \
 struct emplace_functor##N\
 {\
-   BOOST_CONTAINER_FORCEINLINE explicit emplace_functor##N( BOOST_MOVE_UREF##N )\
+   explicit emplace_functor##N( BOOST_MOVE_UREF##N )\
       BOOST_MOVE_COLON##N BOOST_MOVE_FWD_INIT##N{}\
    \
    template<class Allocator, class T>\
-   BOOST_CONTAINER_FORCEINLINE void operator()(Allocator &a, T *ptr)\
+   void operator()(Allocator &a, T *ptr)\
    {  allocator_traits<Allocator>::construct(a, ptr BOOST_MOVE_I##N BOOST_MOVE_MFWD##N);  }\
    \
    template<class DestIt>\
-   BOOST_CONTAINER_FORCEINLINE void operator()(DestIt dest)\
+   void operator()(DestIt dest)\
    {\
       typedef typename lslboost::container::iterator_traits<DestIt>::value_type value_type;\
       BOOST_MOVE_IF(N, value_type tmp(BOOST_MOVE_MFWD##N), dtl::value_init<value_type> tmp) ;\
@@ -799,16 +799,7 @@ struct iterator_types<IIterator, false>
 template<class IIterator, bool IsConst>
 class iterator_from_iiterator
 {
-   typedef typename iterator_types<IIterator, IsConst>::type   types_t;
-   class nat
-   {
-      public:
-      IIterator get() const
-      {  return IIterator(); }
-   };
-   typedef typename dtl::if_c< IsConst
-                             , iterator_from_iiterator<IIterator, false>
-                             , nat>::type                      nonconst_iterator;
+   typedef typename iterator_types<IIterator, IsConst>::type types_t;
 
    public:
    typedef typename types_t::pointer             pointer;
@@ -825,16 +816,9 @@ class iterator_from_iiterator
       : m_iit(iit)
    {}
 
-   BOOST_CONTAINER_FORCEINLINE iterator_from_iiterator(const iterator_from_iiterator& other) BOOST_NOEXCEPT_OR_NOTHROW
+   BOOST_CONTAINER_FORCEINLINE iterator_from_iiterator(iterator_from_iiterator<IIterator, false> const& other) BOOST_NOEXCEPT_OR_NOTHROW
       :  m_iit(other.get())
    {}
-
-   BOOST_CONTAINER_FORCEINLINE iterator_from_iiterator(const nonconst_iterator& other) BOOST_NOEXCEPT_OR_NOTHROW
-      :  m_iit(other.get())
-   {}
-
-   BOOST_CONTAINER_FORCEINLINE iterator_from_iiterator& operator=(const iterator_from_iiterator& other) BOOST_NOEXCEPT_OR_NOTHROW
-   {  m_iit = other.get(); return *this;  }
 
    BOOST_CONTAINER_FORCEINLINE iterator_from_iiterator& operator++() BOOST_NOEXCEPT_OR_NOTHROW
    {  ++this->m_iit;   return *this;  }

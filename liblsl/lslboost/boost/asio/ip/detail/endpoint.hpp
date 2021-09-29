@@ -2,7 +2,7 @@
 // ip/detail/endpoint.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -34,43 +34,42 @@ class endpoint
 {
 public:
   // Default constructor.
-  BOOST_ASIO_DECL endpoint() BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL endpoint();
 
   // Construct an endpoint using a family and port number.
-  BOOST_ASIO_DECL endpoint(int family,
-      unsigned short port_num) BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL endpoint(int family, unsigned short port_num);
 
   // Construct an endpoint using an address and port number.
   BOOST_ASIO_DECL endpoint(const lslboost::asio::ip::address& addr,
-      unsigned short port_num) BOOST_ASIO_NOEXCEPT;
+      unsigned short port_num);
 
   // Copy constructor.
-  endpoint(const endpoint& other) BOOST_ASIO_NOEXCEPT
+  endpoint(const endpoint& other)
     : data_(other.data_)
   {
   }
 
   // Assign from another endpoint.
-  endpoint& operator=(const endpoint& other) BOOST_ASIO_NOEXCEPT
+  endpoint& operator=(const endpoint& other)
   {
     data_ = other.data_;
     return *this;
   }
 
   // Get the underlying endpoint in the native type.
-  lslboost::asio::detail::socket_addr_type* data() BOOST_ASIO_NOEXCEPT
+  lslboost::asio::detail::socket_addr_type* data()
   {
     return &data_.base;
   }
 
   // Get the underlying endpoint in the native type.
-  const lslboost::asio::detail::socket_addr_type* data() const BOOST_ASIO_NOEXCEPT
+  const lslboost::asio::detail::socket_addr_type* data() const
   {
     return &data_.base;
   }
 
   // Get the underlying size of the endpoint in the native type.
-  std::size_t size() const BOOST_ASIO_NOEXCEPT
+  std::size_t size() const
   {
     if (is_v4())
       return sizeof(lslboost::asio::detail::sockaddr_in4_type);
@@ -82,34 +81,33 @@ public:
   BOOST_ASIO_DECL void resize(std::size_t new_size);
 
   // Get the capacity of the endpoint in the native type.
-  std::size_t capacity() const BOOST_ASIO_NOEXCEPT
+  std::size_t capacity() const
   {
     return sizeof(data_);
   }
 
   // Get the port associated with the endpoint.
-  BOOST_ASIO_DECL unsigned short port() const BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL unsigned short port() const;
 
   // Set the port associated with the endpoint.
-  BOOST_ASIO_DECL void port(unsigned short port_num) BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL void port(unsigned short port_num);
 
   // Get the IP address associated with the endpoint.
-  BOOST_ASIO_DECL lslboost::asio::ip::address address() const BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL lslboost::asio::ip::address address() const;
 
   // Set the IP address associated with the endpoint.
-  BOOST_ASIO_DECL void address(
-      const lslboost::asio::ip::address& addr) BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL void address(const lslboost::asio::ip::address& addr);
 
   // Compare two endpoints for equality.
-  BOOST_ASIO_DECL friend bool operator==(const endpoint& e1,
-      const endpoint& e2) BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL friend bool operator==(
+      const endpoint& e1, const endpoint& e2);
 
   // Compare endpoints for ordering.
-  BOOST_ASIO_DECL friend bool operator<(const endpoint& e1,
-      const endpoint& e2) BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL friend bool operator<(
+      const endpoint& e1, const endpoint& e2);
 
   // Determine whether the endpoint is IPv4.
-  bool is_v4() const BOOST_ASIO_NOEXCEPT
+  bool is_v4() const
   {
     return data_.base.sa_family == BOOST_ASIO_OS_DEF(AF_INET);
   }

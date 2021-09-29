@@ -13,12 +13,6 @@
   },
   {
     "level": "INFO",
-    "message": "CMake \u00273.10.2\u0027 found in SDK could not satisfy requested version \u00273.12.0\u0027 because it was lower.",
-    "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
-    "tag": "debug|x86"
-  },
-  {
-    "level": "INFO",
     "message": "- CMake found in SDK at \u0027/home/mvidaldepalo/Android/Sdk/cmake/3.18.1\u0027 had version \u00273.18.1\u0027",
     "file": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
     "tag": "debug|x86"

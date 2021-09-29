@@ -25,9 +25,8 @@ using shared_lock_t = lslboost::shared_lock<lslboost::shared_mutex>;
 using unique_lock_t = lslboost::unique_lock<lslboost::shared_mutex>;
 #endif
 
-namespace asio = lslboost::asio;
-using asio::ip::tcp;
-using asio::ip::udp;
+using lslboost::asio::ip::tcp;
+using lslboost::asio::ip::udp;
 
 namespace lsl {
 

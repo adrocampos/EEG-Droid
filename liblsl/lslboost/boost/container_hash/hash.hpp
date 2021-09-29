@@ -18,7 +18,6 @@
 
 #include <boost/container_hash/hash_fwd.hpp>
 #include <functional>
-#include <iterator>
 #include <boost/container_hash/detail/hash_float.hpp>
 #include <string>
 #include <boost/limits.hpp>
@@ -119,7 +118,7 @@ namespace lslboost
 {
     namespace hash_detail
     {
-#if defined(BOOST_NO_CXX98_FUNCTION_BASE)
+#if defined(_HAS_AUTO_PTR_ETC) && !_HAS_AUTO_PTR_ETC
         template <typename T>
         struct hash_base
         {
@@ -427,7 +426,7 @@ namespace lslboost
 
         for(; first != last; ++first)
         {
-            hash_combine<typename std::iterator_traits<It>::value_type>(seed, *first);
+            hash_combine(seed, *first);
         }
 
         return seed;
@@ -438,11 +437,11 @@ namespace lslboost
     {
         for(; first != last; ++first)
         {
-            hash_combine<typename std::iterator_traits<It>::value_type>(seed, *first);
+            hash_combine(seed, *first);
         }
     }
 
-#if BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x551))
+#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x551))
     template <class T>
     inline std::size_t hash_range(T* first, T* last)
     {

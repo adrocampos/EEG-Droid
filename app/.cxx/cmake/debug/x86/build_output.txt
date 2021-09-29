@@ -10,7 +10,7 @@ Detecting CXX compile features
 Detecting CXX compile features - done
 Using bundled pugixml
 Found Git: /app/bin/git (found version "2.9.5") 
-Git version information: dev/v2.6.1-beta-22-g59ecbc1
+Git version information: dev/v2.6.1-beta-23-g63e5f31
 Looking for pthread.h
 Looking for pthread.h - found
 Performing Test CMAKE_HAVE_LIBC_PTHREAD

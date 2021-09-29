@@ -2,7 +2,7 @@
 // detail/impl/winrt_ssocket_service_base.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -31,9 +31,9 @@ namespace asio {
 namespace detail {
 
 winrt_ssocket_service_base::winrt_ssocket_service_base(
-    execution_context& context)
-  : scheduler_(use_service<scheduler_impl>(context)),
-    async_manager_(use_service<winrt_async_manager>(context)),
+    lslboost::asio::io_context& io_context)
+  : io_context_(use_service<io_context_impl>(io_context)),
+    async_manager_(use_service<winrt_async_manager>(io_context)),
     mutex_(),
     impl_list_(0)
 {
@@ -67,7 +67,6 @@ void winrt_ssocket_service_base::construct(
 void winrt_ssocket_service_base::base_move_construct(
     winrt_ssocket_service_base::base_implementation_type& impl,
     winrt_ssocket_service_base::base_implementation_type& other_impl)
-  BOOST_ASIO_NOEXCEPT
 {
   impl.socket_ = other_impl.socket_;
   other_impl.socket_ = nullptr;
@@ -140,8 +139,12 @@ lslboost::system::error_code winrt_ssocket_service_base::close(
     winrt_ssocket_service_base::base_implementation_type& impl,
     lslboost::system::error_code& ec)
 {
-  delete impl.socket_;
-  impl.socket_ = nullptr;
+  if (impl.socket_)
+  {
+    delete impl.socket_;
+    impl.socket_ = nullptr;
+  }
+
   ec = lslboost::system::error_code();
   return ec;
 }
@@ -396,7 +399,7 @@ void winrt_ssocket_service_base::start_connect_op(
   if (!is_open(impl))
   {
     op->ec_ = lslboost::asio::error::bad_descriptor;
-    scheduler_.post_immediate_completion(op, is_continuation);
+    io_context_.post_immediate_completion(op, is_continuation);
     return;
   }
 
@@ -425,7 +428,7 @@ void winrt_ssocket_service_base::start_connect_op(
 
   if (op->ec_)
   {
-    scheduler_.post_immediate_completion(op, is_continuation);
+    io_context_.post_immediate_completion(op, is_continuation);
     return;
   }
 
@@ -440,7 +443,7 @@ void winrt_ssocket_service_base::start_connect_op(
   {
     op->ec_ = lslboost::system::error_code(
         e->HResult, lslboost::system::system_category());
-    scheduler_.post_immediate_completion(op, is_continuation);
+    io_context_.post_immediate_completion(op, is_continuation);
   }
 }
 
@@ -491,14 +494,14 @@ void winrt_ssocket_service_base::start_send_op(
   if (flags)
   {
     op->ec_ = lslboost::asio::error::operation_not_supported;
-    scheduler_.post_immediate_completion(op, is_continuation);
+    io_context_.post_immediate_completion(op, is_continuation);
     return;
   }
 
   if (!is_open(impl))
   {
     op->ec_ = lslboost::asio::error::bad_descriptor;
-    scheduler_.post_immediate_completion(op, is_continuation);
+    io_context_.post_immediate_completion(op, is_continuation);
     return;
   }
 
@@ -509,7 +512,7 @@ void winrt_ssocket_service_base::start_send_op(
 
     if (bufs.all_empty())
     {
-      scheduler_.post_immediate_completion(op, is_continuation);
+      io_context_.post_immediate_completion(op, is_continuation);
       return;
     }
 
@@ -520,7 +523,7 @@ void winrt_ssocket_service_base::start_send_op(
   {
     op->ec_ = lslboost::system::error_code(e->HResult,
         lslboost::system::system_category());
-    scheduler_.post_immediate_completion(op, is_continuation);
+    io_context_.post_immediate_completion(op, is_continuation);
   }
 }
 
@@ -582,14 +585,14 @@ void winrt_ssocket_service_base::start_receive_op(
   if (flags)
   {
     op->ec_ = lslboost::asio::error::operation_not_supported;
-    scheduler_.post_immediate_completion(op, is_continuation);
+    io_context_.post_immediate_completion(op, is_continuation);
     return;
   }
 
   if (!is_open(impl))
   {
     op->ec_ = lslboost::asio::error::bad_descriptor;
-    scheduler_.post_immediate_completion(op, is_continuation);
+    io_context_.post_immediate_completion(op, is_continuation);
     return;
   }
 
@@ -600,7 +603,7 @@ void winrt_ssocket_service_base::start_receive_op(
 
     if (bufs.all_empty())
     {
-      scheduler_.post_immediate_completion(op, is_continuation);
+      io_context_.post_immediate_completion(op, is_continuation);
       return;
     }
 
@@ -613,7 +616,7 @@ void winrt_ssocket_service_base::start_receive_op(
   {
     op->ec_ = lslboost::system::error_code(e->HResult,
         lslboost::system::system_category());
-    scheduler_.post_immediate_completion(op, is_continuation);
+    io_context_.post_immediate_completion(op, is_continuation);
   }
 }
 

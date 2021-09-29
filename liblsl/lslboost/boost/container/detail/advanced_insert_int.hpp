@@ -49,17 +49,17 @@ struct move_insert_range_proxy
    typedef typename allocator_traits<Allocator>::size_type size_type;
    typedef typename allocator_traits<Allocator>::value_type value_type;
 
-   BOOST_CONTAINER_FORCEINLINE explicit move_insert_range_proxy(FwdIt first)
+   explicit move_insert_range_proxy(FwdIt first)
       :  first_(first)
    {}
 
-   BOOST_CONTAINER_FORCEINLINE void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n)
+   void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n)
    {
       this->first_ = ::lslboost::container::uninitialized_move_alloc_n_source
          (a, this->first_, n, p);
    }
 
-   BOOST_CONTAINER_FORCEINLINE void copy_n_and_update(Allocator &, Iterator p, size_type n)
+   void copy_n_and_update(Allocator &, Iterator p, size_type n)
    {
       this->first_ = ::lslboost::container::move_n_source(this->first_, n, p);
    }
@@ -74,16 +74,16 @@ struct insert_range_proxy
    typedef typename allocator_traits<Allocator>::size_type size_type;
    typedef typename allocator_traits<Allocator>::value_type value_type;
 
-   BOOST_CONTAINER_FORCEINLINE explicit insert_range_proxy(FwdIt first)
+   explicit insert_range_proxy(FwdIt first)
       :  first_(first)
    {}
 
-   BOOST_CONTAINER_FORCEINLINE void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n)
+   void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n)
    {
       this->first_ = ::lslboost::container::uninitialized_copy_alloc_n_source(a, this->first_, n, p);
    }
 
-   BOOST_CONTAINER_FORCEINLINE void copy_n_and_update(Allocator &, Iterator p, size_type n)
+   void copy_n_and_update(Allocator &, Iterator p, size_type n)
    {
       this->first_ = ::lslboost::container::copy_n_source(this->first_, n, p);
    }
@@ -98,19 +98,17 @@ struct insert_n_copies_proxy
    typedef typename allocator_traits<Allocator>::size_type size_type;
    typedef typename allocator_traits<Allocator>::value_type value_type;
 
-   BOOST_CONTAINER_FORCEINLINE explicit insert_n_copies_proxy(const value_type &v)
+   explicit insert_n_copies_proxy(const value_type &v)
       :  v_(v)
    {}
 
-   BOOST_CONTAINER_FORCEINLINE void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n) const
+   void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n) const
    {  lslboost::container::uninitialized_fill_alloc_n(a, v_, n, p);  }
 
-   BOOST_CONTAINER_FORCEINLINE void copy_n_and_update(Allocator &, Iterator p, size_type n) const
+   void copy_n_and_update(Allocator &, Iterator p, size_type n) const
    {
-      while (n){
-         --n;
+      for (; 0 < n; --n, ++p){
          *p = v_;
-         ++p;
       }
    }
 
@@ -123,21 +121,18 @@ struct insert_value_initialized_n_proxy
    typedef ::lslboost::container::allocator_traits<Allocator> alloc_traits;
    typedef typename allocator_traits<Allocator>::size_type size_type;
    typedef typename allocator_traits<Allocator>::value_type value_type;
-   typedef typename dtl::aligned_storage<sizeof(value_type), dtl::alignment_of<value_type>::value>::type storage_t;
 
-   BOOST_CONTAINER_FORCEINLINE void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n) const
+   void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n) const
    {  lslboost::container::uninitialized_value_init_alloc_n(a, n, p);  }
 
    void copy_n_and_update(Allocator &a, Iterator p, size_type n) const
    {
-      while (n){
-         --n;
-         storage_t v;
+      for (; 0 < n; --n, ++p){
+         typename aligned_storage<sizeof(value_type), alignment_of<value_type>::value>::type v;
          value_type *vp = reinterpret_cast<value_type *>(v.data);
          alloc_traits::construct(a, vp);
          value_destructor<Allocator> on_exit(a, *vp); (void)on_exit;
          *p = ::lslboost::move(*vp);
-         ++p;
       }
    }
 };
@@ -148,22 +143,19 @@ struct insert_default_initialized_n_proxy
    typedef ::lslboost::container::allocator_traits<Allocator> alloc_traits;
    typedef typename allocator_traits<Allocator>::size_type size_type;
    typedef typename allocator_traits<Allocator>::value_type value_type;
-   typedef typename dtl::aligned_storage<sizeof(value_type), dtl::alignment_of<value_type>::value>::type storage_t;
 
-   BOOST_CONTAINER_FORCEINLINE void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n) const
+   void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n) const
    {  lslboost::container::uninitialized_default_init_alloc_n(a, n, p);  }
 
    void copy_n_and_update(Allocator &a, Iterator p, size_type n) const
    {
       if(!is_pod<value_type>::value){
-         while (n){
-            --n;
-            typename dtl::aligned_storage<sizeof(value_type), dtl::alignment_of<value_type>::value>::type v;
+         for (; 0 < n; --n, ++p){
+            typename aligned_storage<sizeof(value_type), alignment_of<value_type>::value>::type v;
             value_type *vp = reinterpret_cast<value_type *>(v.data);
             alloc_traits::construct(a, vp, default_init);
             value_destructor<Allocator> on_exit(a, *vp); (void)on_exit;
             *p = ::lslboost::move(*vp);
-            ++p;
          }
       }
    }
@@ -176,19 +168,17 @@ struct insert_copy_proxy
    typedef typename alloc_traits::size_type size_type;
    typedef typename alloc_traits::value_type value_type;
 
-   static const bool single_value = true;
-
-   BOOST_CONTAINER_FORCEINLINE explicit insert_copy_proxy(const value_type &v)
+   explicit insert_copy_proxy(const value_type &v)
       :  v_(v)
    {}
 
-   BOOST_CONTAINER_FORCEINLINE void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n) const
+   void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n) const
    {
       BOOST_ASSERT(n == 1);  (void)n;
       alloc_traits::construct( a, lslboost::movelib::iterator_to_raw_pointer(p), v_);
    }
 
-   BOOST_CONTAINER_FORCEINLINE void copy_n_and_update(Allocator &, Iterator p, size_type n) const
+   void copy_n_and_update(Allocator &, Iterator p, size_type n) const
    {
       BOOST_ASSERT(n == 1);  (void)n;
       *p = v_;
@@ -205,19 +195,17 @@ struct insert_move_proxy
    typedef typename alloc_traits::size_type size_type;
    typedef typename alloc_traits::value_type value_type;
 
-   static const bool single_value = true;
-
-   BOOST_CONTAINER_FORCEINLINE explicit insert_move_proxy(value_type &v)
+   explicit insert_move_proxy(value_type &v)
       :  v_(v)
    {}
 
-   BOOST_CONTAINER_FORCEINLINE void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n) const
+   void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n) const
    {
       BOOST_ASSERT(n == 1);  (void)n;
       alloc_traits::construct( a, lslboost::movelib::iterator_to_raw_pointer(p), ::lslboost::move(v_) );
    }
 
-   BOOST_CONTAINER_FORCEINLINE void copy_n_and_update(Allocator &, Iterator p, size_type n) const
+   void copy_n_and_update(Allocator &, Iterator p, size_type n) const
    {
       BOOST_ASSERT(n == 1);  (void)n;
       *p = ::lslboost::move(v_);
@@ -227,13 +215,13 @@ struct insert_move_proxy
 };
 
 template<class It, class Allocator>
-BOOST_CONTAINER_FORCEINLINE insert_move_proxy<Allocator, It> get_insert_value_proxy(BOOST_RV_REF(typename lslboost::container::iterator_traits<It>::value_type) v)
+insert_move_proxy<Allocator, It> get_insert_value_proxy(BOOST_RV_REF(typename lslboost::container::iterator_traits<It>::value_type) v)
 {
    return insert_move_proxy<Allocator, It>(v);
 }
 
 template<class It, class Allocator>
-BOOST_CONTAINER_FORCEINLINE insert_copy_proxy<Allocator, It> get_insert_value_proxy(const typename lslboost::container::iterator_traits<It>::value_type &v)
+insert_copy_proxy<Allocator, It> get_insert_value_proxy(const typename lslboost::container::iterator_traits<It>::value_type &v)
 {
    return insert_copy_proxy<Allocator, It>(v);
 }
@@ -255,20 +243,19 @@ struct insert_nonmovable_emplace_proxy
    typedef lslboost::container::allocator_traits<Allocator>   alloc_traits;
    typedef typename alloc_traits::size_type        size_type;
    typedef typename alloc_traits::value_type       value_type;
+
    typedef typename build_number_seq<sizeof...(Args)>::type index_tuple_t;
 
-   static const bool single_value = true;
-
-   BOOST_CONTAINER_FORCEINLINE explicit insert_nonmovable_emplace_proxy(BOOST_FWD_REF(Args)... args)
+   explicit insert_nonmovable_emplace_proxy(BOOST_FWD_REF(Args)... args)
       : args_(args...)
    {}
 
-   BOOST_CONTAINER_FORCEINLINE void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n)
+   void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n)
    {  this->priv_uninitialized_copy_some_and_update(a, index_tuple_t(), p, n);  }
 
    private:
    template<std::size_t ...IdxPack>
-   BOOST_CONTAINER_FORCEINLINE void priv_uninitialized_copy_some_and_update(Allocator &a, const index_tuple<IdxPack...>&, Iterator p, size_type n)
+   void priv_uninitialized_copy_some_and_update(Allocator &a, const index_tuple<IdxPack...>&, Iterator p, size_type n)
    {
       BOOST_ASSERT(n == 1); (void)n;
       alloc_traits::construct( a, lslboost::movelib::iterator_to_raw_pointer(p), ::lslboost::forward<Args>(get<IdxPack>(this->args_))... );
@@ -288,24 +275,23 @@ struct insert_emplace_proxy
    typedef typename base_t::size_type              size_type;
    typedef typename base_t::index_tuple_t          index_tuple_t;
 
-   static const bool single_value = true;
-
-   BOOST_CONTAINER_FORCEINLINE explicit insert_emplace_proxy(BOOST_FWD_REF(Args)... args)
+   explicit insert_emplace_proxy(BOOST_FWD_REF(Args)... args)
       : base_t(::lslboost::forward<Args>(args)...)
    {}
 
-   BOOST_CONTAINER_FORCEINLINE void copy_n_and_update(Allocator &a, Iterator p, size_type n)
+   void copy_n_and_update(Allocator &a, Iterator p, size_type n)
    {  this->priv_copy_some_and_update(a, index_tuple_t(), p, n);  }
 
    private:
 
    template<std::size_t ...IdxPack>
-   BOOST_CONTAINER_FORCEINLINE void priv_copy_some_and_update(Allocator &a, const index_tuple<IdxPack...>&, Iterator p, size_type n)
+   void priv_copy_some_and_update(Allocator &a, const index_tuple<IdxPack...>&, Iterator p, size_type n)
    {
       BOOST_ASSERT(n ==1); (void)n;
-      typename dtl::aligned_storage<sizeof(value_type), dtl::alignment_of<value_type>::value>::type v;
+      typename aligned_storage<sizeof(value_type), alignment_of<value_type>::value>::type v;
       value_type *vp = reinterpret_cast<value_type *>(v.data);
-      alloc_traits::construct(a, vp, ::lslboost::forward<Args>(get<IdxPack>(this->args_))...);
+      alloc_traits::construct(a, vp,
+         ::lslboost::forward<Args>(get<IdxPack>(this->args_))...);
       BOOST_TRY{
          *p = ::lslboost::move(*vp);
       }
@@ -323,9 +309,7 @@ template<class Allocator, class Iterator>
 struct insert_emplace_proxy<Allocator, Iterator, typename lslboost::container::allocator_traits<Allocator>::value_type>
    : public insert_move_proxy<Allocator, Iterator>
 {
-   static const bool single_value = true;
-
-   BOOST_CONTAINER_FORCEINLINE explicit insert_emplace_proxy(typename lslboost::container::allocator_traits<Allocator>::value_type &&v)
+   explicit insert_emplace_proxy(typename lslboost::container::allocator_traits<Allocator>::value_type &&v)
    : insert_move_proxy<Allocator, Iterator>(v)
    {}
 };
@@ -339,10 +323,7 @@ struct insert_emplace_proxy<Allocator, Iterator
    >
    : public insert_copy_proxy<Allocator, Iterator>
 {
-
-   static const bool single_value = true;
-
-   BOOST_CONTAINER_FORCEINLINE explicit insert_emplace_proxy(const typename lslboost::container::allocator_traits<Allocator>::value_type &v)
+   explicit insert_emplace_proxy(const typename lslboost::container::allocator_traits<Allocator>::value_type &v)
    : insert_copy_proxy<Allocator, Iterator>(v)
    {}
 };
@@ -351,9 +332,7 @@ template<class Allocator, class Iterator>
 struct insert_emplace_proxy<Allocator, Iterator, typename lslboost::container::allocator_traits<Allocator>::value_type &>
    : public insert_copy_proxy<Allocator, Iterator>
 {
-   static const bool single_value = true;
-
-   BOOST_CONTAINER_FORCEINLINE explicit insert_emplace_proxy(const typename lslboost::container::allocator_traits<Allocator>::value_type &v)
+   explicit insert_emplace_proxy(const typename lslboost::container::allocator_traits<Allocator>::value_type &v)
    : insert_copy_proxy<Allocator, Iterator>(v)
    {}
 };
@@ -364,9 +343,7 @@ struct insert_emplace_proxy<Allocator, Iterator
    >
    : public insert_copy_proxy<Allocator, Iterator>
 {
-   static const bool single_value = true;
-
-   BOOST_CONTAINER_FORCEINLINE explicit insert_emplace_proxy(const typename lslboost::container::allocator_traits<Allocator>::value_type &v)
+   explicit insert_emplace_proxy(const typename lslboost::container::allocator_traits<Allocator>::value_type &v)
    : insert_copy_proxy<Allocator, Iterator>(v)
    {}
 };
@@ -389,18 +366,16 @@ struct insert_nonmovable_emplace_proxy##N\
    typedef typename alloc_traits::size_type size_type;\
    typedef typename alloc_traits::value_type value_type;\
    \
-   static const bool single_value = true;\
-   \
-   BOOST_CONTAINER_FORCEINLINE explicit insert_nonmovable_emplace_proxy##N(BOOST_MOVE_UREF##N)\
+   explicit insert_nonmovable_emplace_proxy##N(BOOST_MOVE_UREF##N)\
       BOOST_MOVE_COLON##N BOOST_MOVE_FWD_INIT##N {}\
    \
-   BOOST_CONTAINER_FORCEINLINE void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n)\
+   void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n)\
    {\
       BOOST_ASSERT(n == 1); (void)n;\
       alloc_traits::construct(a, lslboost::movelib::iterator_to_raw_pointer(p) BOOST_MOVE_I##N BOOST_MOVE_MFWD##N);\
    }\
    \
-   BOOST_CONTAINER_FORCEINLINE void copy_n_and_update(Allocator &, Iterator, size_type)\
+   void copy_n_and_update(Allocator &, Iterator, size_type)\
    {  BOOST_ASSERT(false);   }\
    \
    protected:\
@@ -417,15 +392,14 @@ struct insert_emplace_proxy_arg##N\
    typedef typename base_t::size_type size_type;\
    typedef lslboost::container::allocator_traits<Allocator> alloc_traits;\
    \
-   static const bool single_value = true;\
-   \
-   BOOST_CONTAINER_FORCEINLINE explicit insert_emplace_proxy_arg##N(BOOST_MOVE_UREF##N)\
+   explicit insert_emplace_proxy_arg##N(BOOST_MOVE_UREF##N)\
       : base_t(BOOST_MOVE_FWD##N){}\
    \
-   BOOST_CONTAINER_FORCEINLINE void copy_n_and_update(Allocator &a, Iterator p, size_type n)\
+   void copy_n_and_update(Allocator &a, Iterator p, size_type n)\
    {\
       BOOST_ASSERT(n == 1); (void)n;\
-      typename dtl::aligned_storage<sizeof(value_type), dtl::alignment_of<value_type>::value>::type v;\
+      typename aligned_storage<sizeof(value_type), alignment_of<value_type>::value>::type v;\
+      BOOST_ASSERT((((size_type)(&v)) % alignment_of<value_type>::value) == 0);\
       value_type *vp = reinterpret_cast<value_type *>(v.data);\
       alloc_traits::construct(a, vp BOOST_MOVE_I##N BOOST_MOVE_MFWD##N);\
       BOOST_TRY{\
@@ -450,9 +424,7 @@ template<class Allocator, class Iterator>
 struct insert_emplace_proxy_arg1<Allocator, Iterator, ::lslboost::rv<typename lslboost::container::allocator_traits<Allocator>::value_type> >
    : public insert_move_proxy<Allocator, Iterator>
 {
-   static const bool single_value = true;
-
-   BOOST_CONTAINER_FORCEINLINE explicit insert_emplace_proxy_arg1(typename lslboost::container::allocator_traits<Allocator>::value_type &v)
+   explicit insert_emplace_proxy_arg1(typename lslboost::container::allocator_traits<Allocator>::value_type &v)
    : insert_move_proxy<Allocator, Iterator>(v)
    {}
 };
@@ -461,9 +433,7 @@ template<class Allocator, class Iterator>
 struct insert_emplace_proxy_arg1<Allocator, Iterator, typename lslboost::container::allocator_traits<Allocator>::value_type>
    : public insert_copy_proxy<Allocator, Iterator>
 {
-   static const bool single_value = true;
-
-   BOOST_CONTAINER_FORCEINLINE explicit insert_emplace_proxy_arg1(const typename lslboost::container::allocator_traits<Allocator>::value_type &v)
+   explicit insert_emplace_proxy_arg1(const typename lslboost::container::allocator_traits<Allocator>::value_type &v)
    : insert_copy_proxy<Allocator, Iterator>(v)
    {}
 };
@@ -475,9 +445,7 @@ template<class Allocator, class Iterator>
 struct insert_emplace_proxy_arg1<Allocator, Iterator, typename lslboost::container::allocator_traits<Allocator>::value_type>
    : public insert_move_proxy<Allocator, Iterator>
 {
-   static const bool single_value = true;
-
-   BOOST_CONTAINER_FORCEINLINE explicit insert_emplace_proxy_arg1(typename lslboost::container::allocator_traits<Allocator>::value_type &&v)
+   explicit insert_emplace_proxy_arg1(typename lslboost::container::allocator_traits<Allocator>::value_type &&v)
    : insert_move_proxy<Allocator, Iterator>(v)
    {}
 };
@@ -491,9 +459,7 @@ struct insert_emplace_proxy_arg1<Allocator, Iterator
    >
    : public insert_copy_proxy<Allocator, Iterator>
 {
-   static const bool single_value = true;
-
-   BOOST_CONTAINER_FORCEINLINE explicit insert_emplace_proxy_arg1(const typename lslboost::container::allocator_traits<Allocator>::value_type &v)
+   explicit insert_emplace_proxy_arg1(const typename lslboost::container::allocator_traits<Allocator>::value_type &v)
    : insert_copy_proxy<Allocator, Iterator>(v)
    {}
 };
@@ -502,9 +468,7 @@ template<class Allocator, class Iterator>
 struct insert_emplace_proxy_arg1<Allocator, Iterator, typename lslboost::container::allocator_traits<Allocator>::value_type &>
    : public insert_copy_proxy<Allocator, Iterator>
 {
-   static const bool single_value = true;
-
-   BOOST_CONTAINER_FORCEINLINE explicit insert_emplace_proxy_arg1(const typename lslboost::container::allocator_traits<Allocator>::value_type &v)
+   explicit insert_emplace_proxy_arg1(const typename lslboost::container::allocator_traits<Allocator>::value_type &v)
    : insert_copy_proxy<Allocator, Iterator>(v)
    {}
 };
@@ -515,9 +479,7 @@ struct insert_emplace_proxy_arg1<Allocator, Iterator
    >
    : public insert_copy_proxy<Allocator, Iterator>
 {
-   static const bool single_value = true;
-
-   BOOST_CONTAINER_FORCEINLINE explicit insert_emplace_proxy_arg1(const typename lslboost::container::allocator_traits<Allocator>::value_type &v)
+   explicit insert_emplace_proxy_arg1(const typename lslboost::container::allocator_traits<Allocator>::value_type &v)
    : insert_copy_proxy<Allocator, Iterator>(v)
    {}
 };
@@ -527,40 +489,6 @@ struct insert_emplace_proxy_arg1<Allocator, Iterator
 }}}   //namespace lslboost { namespace container { namespace dtl {
 
 #endif   // !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
-
-namespace lslboost { namespace container { namespace dtl {
-
-template <class T>
-struct has_single_value
-{
-   private:
-   struct two {char array_[2];};
-   template<bool Arg> struct wrapper;
-   template <class U> static two test(int, ...);
-   template <class U> static char test(int, const wrapper<U::single_value>*);
-   public:
-   static const bool value = sizeof(test<T>(0, 0)) == 1;
-   void dummy(){}
-};
-
-template<class InsertionProxy, bool = has_single_value<InsertionProxy>::value>
-struct is_single_value_proxy_impl
-{
-   static const bool value = InsertionProxy::single_value;
-};
-
-template<class InsertionProxy>
-struct is_single_value_proxy_impl<InsertionProxy, false>
-{
-   static const bool value = false;
-};
-
-template<class InsertionProxy>
-struct is_single_value_proxy
-   : is_single_value_proxy_impl<InsertionProxy>
-{};
-
-}}}   //namespace lslboost { namespace container { namespace dtl {
 
 #include <boost/container/detail/config_end.hpp>
 

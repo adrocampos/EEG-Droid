@@ -11,20 +11,19 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_OS_HPUX`
+/*`
+[heading `BOOST_OS_HPUX`]
 
-http://en.wikipedia.org/wiki/HP-UX[HP-UX] operating system.
+[@http://en.wikipedia.org/wiki/HP-UX HP-UX] operating system.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `hpux` | {predef_detection}
-| `+_hpux+` | {predef_detection}
-| `+__hpux+` | {predef_detection}
-|===
-*/ // end::reference[]
+    [[`hpux`] [__predef_detection__]]
+    [[`_hpux`] [__predef_detection__]]
+    [[`__hpux`] [__predef_detection__]]
+    ]
+ */
 
 #define BOOST_OS_HPUX BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

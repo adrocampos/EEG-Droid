@@ -13,7 +13,7 @@
 #include <stdexcept>
 #include <boost/config.hpp>
 #include <boost/throw_exception.hpp>
-#include <boost/type_traits/conditional.hpp>
+#include <boost/mpl/if.hpp>
 #include <boost/type_traits/is_base_of.hpp>
 
 namespace lslboost {
@@ -43,29 +43,25 @@ namespace CV {
   public:
     typedef typename value_policies::value_type value_type;
     //    typedef except_type exception_type;
-    BOOST_CXX14_CONSTEXPR constrained_value(value_type value) : value_((min)())
+    constrained_value(value_type value) : value_((min)())
     {
       assign(value);
     }
-    BOOST_CXX14_CONSTEXPR constrained_value& operator=(value_type v)
+    constrained_value& operator=(value_type v)
     {
       assign(v); 
       return *this;
     }
     //! Return the max allowed value (traits method)
-    static BOOST_CONSTEXPR value_type
-    max BOOST_PREVENT_MACRO_SUBSTITUTION () {return (value_policies::max)();}
-
+    static value_type max BOOST_PREVENT_MACRO_SUBSTITUTION () {return (value_policies::max)();}
     //! Return the min allowed value (traits method)
-    static BOOST_CONSTEXPR value_type
-    min BOOST_PREVENT_MACRO_SUBSTITUTION () {return (value_policies::min)();}
-
+    static value_type min BOOST_PREVENT_MACRO_SUBSTITUTION () {return (value_policies::min)();}
     //! Coerce into the representation type
-    BOOST_CXX14_CONSTEXPR operator value_type() const {return value_;}
+    operator value_type() const {return value_;}
   protected:
     value_type value_;
   private:
-    BOOST_CXX14_CONSTEXPR void assign(value_type value)
+    void assign(value_type value)
     {
       //adding 1 below gets rid of a compiler warning which occurs when the 
       //min_value is 0 and the type is unsigned....
@@ -99,20 +95,16 @@ namespace CV {
       }
     };
 
-    typedef typename conditional<
-      is_base_of< std::exception, exception_type >::value,
+    typedef typename mpl::if_<
+      is_base_of< std::exception, exception_type >,
       exception_type,
       exception_wrapper
     >::type actual_exception_type;
 
   public:
     typedef rep_type value_type;
-    static BOOST_CONSTEXPR rep_type
-    min BOOST_PREVENT_MACRO_SUBSTITUTION () { return min_value; }
-
-    static BOOST_CONSTEXPR rep_type
-    max BOOST_PREVENT_MACRO_SUBSTITUTION () { return max_value; }
-
+    static rep_type min BOOST_PREVENT_MACRO_SUBSTITUTION () { return min_value; }
+    static rep_type max BOOST_PREVENT_MACRO_SUBSTITUTION () { return max_value; }
     static void on_error(rep_type, rep_type, violation_enum)
     {
       lslboost::throw_exception(actual_exception_type());

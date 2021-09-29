@@ -11,33 +11,32 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_ARCH_PPC`
+/*`
+[heading `BOOST_ARCH_PPC`]
 
-http://en.wikipedia.org/wiki/PowerPC[PowerPC] architecture.
+[@http://en.wikipedia.org/wiki/PowerPC PowerPC] architecture.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__powerpc+` | {predef_detection}
-| `+__powerpc__+` | {predef_detection}
-| `+__POWERPC__+` | {predef_detection}
-| `+__ppc__+` | {predef_detection}
-| `+_M_PPC+` | {predef_detection}
-| `+_ARCH_PPC+` | {predef_detection}
-| `+__PPCGECKO__+` | {predef_detection}
-| `+__PPCBROADWAY__+` | {predef_detection}
-| `+_XENON+` | {predef_detection}
+    [[`__powerpc`] [__predef_detection__]]
+    [[`__powerpc__`] [__predef_detection__]]
+    [[`__POWERPC__`] [__predef_detection__]]
+    [[`__ppc__`] [__predef_detection__]]
+    [[`_M_PPC`] [__predef_detection__]]
+    [[`_ARCH_PPC`] [__predef_detection__]]
+    [[`__PPCGECKO__`] [__predef_detection__]]
+    [[`__PPCBROADWAY__`] [__predef_detection__]]
+    [[`_XENON`] [__predef_detection__]]
 
-| `+__ppc601__+` | 6.1.0
-| `+_ARCH_601+` | 6.1.0
-| `+__ppc603__+` | 6.3.0
-| `+_ARCH_603+` | 6.3.0
-| `+__ppc604__+` | 6.4.0
-| `+__ppc604__+` | 6.4.0
-|===
-*/ // end::reference[]
+    [[`__ppc601__`] [6.1.0]]
+    [[`_ARCH_601`] [6.1.0]]
+    [[`__ppc603__`] [6.3.0]]
+    [[`_ARCH_603`] [6.3.0]]
+    [[`__ppc604__`] [6.4.0]]
+    [[`__ppc604__`] [6.4.0]]
+    ]
+ */
 
 #define BOOST_ARCH_PPC BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

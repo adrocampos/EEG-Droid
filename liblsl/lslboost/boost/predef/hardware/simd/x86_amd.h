@@ -12,44 +12,42 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/hardware/simd/x86_amd/versions.h>
 
-/* tag::reference[]
-= `BOOST_HW_SIMD_X86_AMD`
+/*`
+ [heading `BOOST_HW_SIMD_X86_AMD`]
 
-The SIMD extension for x86 (AMD) (*if detected*).
-Version number depends on the most recent detected extension.
+ The SIMD extension for x86 (AMD) (*if detected*).
+ Version number depends on the most recent detected extension.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+ [table
+     [[__predef_symbol__] [__predef_version__]]
 
-| `+__SSE4A__+` | {predef_detection}
+     [[`__SSE4A__`] [__predef_detection__]]
 
-| `+__FMA4__+` | {predef_detection}
+     [[`__FMA4__`] [__predef_detection__]]
 
-| `+__XOP__+` | {predef_detection}
+     [[`__XOP__`] [__predef_detection__]]
 
-| `BOOST_HW_SIMD_X86` | {predef_detection}
-|===
+     [[`BOOST_HW_SIMD_X86`] [__predef_detection__]]
+     ]
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+ [table
+     [[__predef_symbol__] [__predef_version__]]
 
-| `+__SSE4A__+` | BOOST_HW_SIMD_X86_SSE4A_VERSION
+     [[`__SSE4A__`] [BOOST_HW_SIMD_X86_SSE4A_VERSION]]
 
-| `+__FMA4__+` | BOOST_HW_SIMD_X86_FMA4_VERSION
+     [[`__FMA4__`] [BOOST_HW_SIMD_X86_FMA4_VERSION]]
 
-| `+__XOP__+` | BOOST_HW_SIMD_X86_XOP_VERSION
+     [[`__XOP__`] [BOOST_HW_SIMD_X86_XOP_VERSION]]
 
-| `BOOST_HW_SIMD_X86` | BOOST_HW_SIMD_X86
-|===
+     [[`BOOST_HW_SIMD_X86`] [BOOST_HW_SIMD_X86]]
+     ]
 
-NOTE: This predef includes every other x86 SIMD extensions and also has other
-more specific extensions (FMA4, XOP, SSE4a). You should use this predef
-instead of `BOOST_HW_SIMD_X86` to test if those specific extensions have
-been detected.
+ [note This predef includes every other x86 SIMD extensions and also has other
+ more specific extensions (FMA4, XOP, SSE4a). You should use this predef
+ instead of `BOOST_HW_SIMD_X86` to test if those specific extensions have
+ been detected.]
 
-*/ // end::reference[]
+ */
 
 #define BOOST_HW_SIMD_X86_AMD BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

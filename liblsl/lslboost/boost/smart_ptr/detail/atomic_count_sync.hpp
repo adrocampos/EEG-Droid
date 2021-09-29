@@ -15,17 +15,8 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include <boost/cstdint.hpp>
-
 #if defined( __ia64__ ) && defined( __INTEL_COMPILER )
 # include <ia64intrin.h>
-#endif
-
-#if defined(BOOST_SP_REPORT_IMPLEMENTATION)
-
-#include <boost/config/pragma_message.hpp>
-BOOST_PRAGMA_MESSAGE("Using __sync atomic_count")
-
 #endif
 
 namespace lslboost
@@ -38,9 +29,7 @@ class atomic_count
 {
 public:
 
-    explicit atomic_count( long v ): value_( static_cast< lslboost::int_least32_t >( v ) )
-    {
-    }
+    explicit atomic_count( long v ) : value_( v ) {}
 
     long operator++()
     {
@@ -62,7 +51,7 @@ private:
     atomic_count(atomic_count const &);
     atomic_count & operator=(atomic_count const &);
 
-    mutable lslboost::int_least32_t value_;
+    mutable long value_;
 };
 
 } // namespace detail

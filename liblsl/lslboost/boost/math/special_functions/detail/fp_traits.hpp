@@ -21,7 +21,6 @@ With these techniques, the code could be simplified.
 #endif
 
 #include <cstring>
-#include <limits>
 
 #include <boost/assert.hpp>
 #include <boost/cstdint.hpp>
@@ -192,7 +191,7 @@ template<> struct fp_traits_non_native<float, single_precision>
 // ieee_tag version, double (64 bits) ----------------------------------------------
 
 #if defined(BOOST_NO_INT64_T) || defined(BOOST_NO_INCLASS_MEMBER_INITIALIZATION) \
-   || defined(BOOST_BORLANDC) || defined(__CODEGEAR__)
+   || defined(__BORLANDC__) || defined(__CODEGEAR__)
 
 template<> struct fp_traits_non_native<double, double_precision>
 {
@@ -252,7 +251,7 @@ template<> struct fp_traits_non_native<double, double_precision>
 // long double (64 bits) -------------------------------------------------------
 
 #if defined(BOOST_NO_INT64_T) || defined(BOOST_NO_INCLASS_MEMBER_INITIALIZATION)\
-   || defined(BOOST_BORLANDC) || defined(__CODEGEAR__)
+   || defined(__BORLANDC__) || defined(__CODEGEAR__)
 
 template<> struct fp_traits_non_native<long double, double_precision>
 {

@@ -9,7 +9,6 @@
 #define BOOST_WINAPI_CHARACTER_CODE_CONVERSION_HPP_INCLUDED_
 
 #include <boost/winapi/basic_types.hpp>
-#include <boost/winapi/detail/header.hpp>
 
 #ifdef BOOST_HAS_PRAGMA_ONCE
 #pragma once
@@ -18,7 +17,7 @@
 #if !defined( BOOST_USE_WINDOWS_H )
 extern "C" {
 
-BOOST_WINAPI_IMPORT_EXCEPT_WM int BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT int BOOST_WINAPI_WINAPI_CC
 MultiByteToWideChar(
     lslboost::winapi::UINT_ CodePage,
     lslboost::winapi::DWORD_ dwFlags,
@@ -27,7 +26,7 @@ MultiByteToWideChar(
     lslboost::winapi::LPWSTR_ lpWideCharStr,
     int cchWideChar);
 
-BOOST_WINAPI_IMPORT_EXCEPT_WM int BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT int BOOST_WINAPI_WINAPI_CC
 WideCharToMultiByte(
     lslboost::winapi::UINT_ CodePage,
     lslboost::winapi::DWORD_ dwFlags,
@@ -102,7 +101,5 @@ using ::WideCharToMultiByte;
 
 } // namespace winapi
 } // namespace lslboost
-
-#include <boost/winapi/detail/footer.hpp>
 
 #endif // BOOST_WINAPI_CHARACTER_CODE_CONVERSION_HPP_INCLUDED_

@@ -27,13 +27,6 @@
 
 #ifdef BOOST_MSVC
 #  pragma warning(push)
-#pragma warning(disable : 4251)
-#if BOOST_MSVC < 1700
-#     pragma warning(disable : 4231)
-#endif
-#  if BOOST_MSVC < 1600
-#     pragma warning(disable : 4660)
-#  endif
 #if BOOST_MSVC < 1910
 #pragma warning(disable:4800)
 #endif
@@ -348,12 +341,6 @@ enum saved_state_type
    saved_state_count = 14
 };
 
-#ifdef BOOST_MSVC
-#  pragma warning(push)
-#if BOOST_MSVC >= 1800
-#pragma warning(disable:26495)
-#endif
-#endif
 template <class Results>
 struct recursion_info
 {
@@ -365,8 +352,16 @@ struct recursion_info
    repeater_count<iterator>* repeater_stack;
    iterator location_of_start;
 };
+
 #ifdef BOOST_MSVC
-#  pragma warning(pop)
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#if BOOST_MSVC < 1700
+#     pragma warning(disable : 4231)
+#endif
+#  if BOOST_MSVC < 1600
+#     pragma warning(disable : 4660)
+#  endif
 #endif
 
 template <class BidiIterator, class Allocator, class traits>
@@ -583,12 +578,6 @@ private:
    unsigned m_recursions;
 #endif
 
-#ifdef BOOST_MSVC
-#  pragma warning(push)
-#if BOOST_MSVC >= 1800
-#pragma warning(disable:26495)
-#endif
-#endif
    // these operations aren't allowed, so are declared private,
    // bodies are provided to keep explicit-instantiation requests happy:
    perl_matcher& operator=(const perl_matcher&)
@@ -597,16 +586,13 @@ private:
    }
    perl_matcher(const perl_matcher& that)
       : m_result(that.m_result), re(that.re), traits_inst(that.traits_inst), rep_obj(0) {}
-#ifdef BOOST_MSVC
-#  pragma warning(pop)
-#endif
 };
 
-} // namespace BOOST_REGEX_DETAIL_NS
-
 #ifdef BOOST_MSVC
-#  pragma warning(pop)
+#pragma warning(pop)
 #endif
+
+} // namespace BOOST_REGEX_DETAIL_NS
 
 #ifdef BOOST_MSVC
 #pragma warning(push)
@@ -620,6 +606,10 @@ private:
 #endif
 
 } // namespace lslboost
+
+#ifdef BOOST_MSVC
+#  pragma warning(pop)
+#endif
 
 //
 // include the implementation of perl_matcher:

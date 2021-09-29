@@ -13,7 +13,6 @@ android {
     defaultConfig {
         applicationId "de.uni_osnabrueck.ikw.eegdroid"
         minSdkVersion 24
-        targetSdkVersion 30
         versionCode 1
         versionName 'beta-2.6.7'
         vectorDrawables.useSupportLibrary = true
@@ -21,7 +20,7 @@ android {
         // specify cmake.dir=path-to-cmake on local.properties
 //        externalNativeBuild {
 //            cmake {
-//                arguments "-DANDROID_CPP_FEATURES=rtti exceptions","-DLSL_NO_FANCY_LIBNAME=1","-DANDROID_PLATFORM=24"
+//                arguments "-DANDROID_CPP_FEATURES=rtti exceptions", "-DLSL_NO_FANCY_LIBNAME=1", "-DANDROID_PLATFORM=24"
 //                targets "lsl"
 //            }
 //        }
@@ -37,6 +36,7 @@ android {
 //        version "3.12.0+"
 //        path "../liblsl/CMakeLists.txt"
 //    }
+    buildToolsVersion '30.0.3'
     buildTypes {
         release {
             minifyEnabled true

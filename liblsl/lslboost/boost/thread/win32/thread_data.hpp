@@ -80,15 +80,12 @@ namespace lslboost
         struct thread_exit_callback_node;
         struct tss_data_node
         {
-            typedef void(*cleanup_func_t)(void*);
-            typedef void(*cleanup_caller_t)(cleanup_func_t, void*);
-
-            cleanup_caller_t caller;
-            cleanup_func_t func;
+            lslboost::shared_ptr<lslboost::detail::tss_cleanup_function> func;
             void* value;
 
-            tss_data_node(cleanup_caller_t caller_,cleanup_func_t func_,void* value_):
-                caller(caller_),func(func_),value(value_)
+            tss_data_node(lslboost::shared_ptr<lslboost::detail::tss_cleanup_function> func_,
+                          void* value_):
+                func(func_),value(value_)
             {}
         };
 
@@ -145,8 +142,6 @@ namespace lslboost
             {}
             virtual ~thread_data_base();
 
-            #if !defined(BOOST_EMBTC)
-              
             friend void intrusive_ptr_add_ref(thread_data_base * p)
             {
                 BOOST_INTERLOCKED_INCREMENT(&p->count);
@@ -160,13 +155,6 @@ namespace lslboost
                 }
             }
 
-            #else
-              
-            friend void intrusive_ptr_add_ref(thread_data_base * p);
-            friend void intrusive_ptr_release(thread_data_base * p);
-
-            #endif
-      
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
             void interrupt()
             {
@@ -189,24 +177,6 @@ namespace lslboost
             }
 //#endif
         };
-        
-#if defined(BOOST_EMBTC)
-
-        inline void intrusive_ptr_add_ref(thread_data_base * p)
-        {
-            BOOST_INTERLOCKED_INCREMENT(&p->count);
-        }
-
-        inline void intrusive_ptr_release(thread_data_base * p)
-        {
-            if(!BOOST_INTERLOCKED_DECREMENT(&p->count))
-            {
-                detail::heap_delete(p);
-            }
-        }
-
-#endif
-        
         BOOST_THREAD_DECL thread_data_base* get_current_thread_data();
 
         typedef lslboost::intrusive_ptr<detail::thread_data_base> thread_data_ptr;

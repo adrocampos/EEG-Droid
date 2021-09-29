@@ -11,21 +11,20 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_COMP_KCC`
+/*`
+[heading `BOOST_COMP_KCC`]
 
-Kai {CPP} compiler.
+Kai C++ compiler.
 Version number available as major, minor, and patch.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__KCC+` | {predef_detection}
+    [[`__KCC`] [__predef_detection__]]
 
-| `+__KCC_VERSION+` | V.R.P
-|===
-*/ // end::reference[]
+    [[`__KCC_VERSION`] [V.R.P]]
+    ]
+ */
 
 #define BOOST_COMP_KCC BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

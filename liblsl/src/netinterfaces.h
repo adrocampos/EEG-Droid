@@ -4,13 +4,11 @@
 #include <vector>
 #include <boost/asio/ip/address.hpp>
 
-namespace asio = lslboost::asio;
-
 namespace lsl {
 
 class netif {
 public:
-	asio::ip::address addr;
+	lslboost::asio::ip::address addr;
 	uint32_t ifindex;
 	std::string name;
 };

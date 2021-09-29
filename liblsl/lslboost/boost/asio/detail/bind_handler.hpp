@@ -2,7 +2,7 @@
 // detail/bind_handler.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -76,29 +76,19 @@ public:
 };
 
 template <typename Handler, typename Arg1>
-inline asio_handler_allocate_is_deprecated
-asio_handler_allocate(std::size_t size,
+inline void* asio_handler_allocate(std::size_t size,
     binder1<Handler, Arg1>* this_handler)
 {
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  lslboost_asio_handler_alloc_helpers::allocate(size, this_handler->handler_);
-  return asio_handler_allocate_is_no_longer_used();
-#else // defined(BOOST_ASIO_NO_DEPRECATED)
   return lslboost_asio_handler_alloc_helpers::allocate(
       size, this_handler->handler_);
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Handler, typename Arg1>
-inline asio_handler_deallocate_is_deprecated
-asio_handler_deallocate(void* pointer, std::size_t size,
+inline void asio_handler_deallocate(void* pointer, std::size_t size,
     binder1<Handler, Arg1>* this_handler)
 {
   lslboost_asio_handler_alloc_helpers::deallocate(
       pointer, size, this_handler->handler_);
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  return asio_handler_deallocate_is_no_longer_used();
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Handler, typename Arg1>
@@ -110,27 +100,19 @@ inline bool asio_handler_is_continuation(
 }
 
 template <typename Function, typename Handler, typename Arg1>
-inline asio_handler_invoke_is_deprecated
-asio_handler_invoke(Function& function,
+inline void asio_handler_invoke(Function& function,
     binder1<Handler, Arg1>* this_handler)
 {
   lslboost_asio_handler_invoke_helpers::invoke(
       function, this_handler->handler_);
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  return asio_handler_invoke_is_no_longer_used();
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Function, typename Handler, typename Arg1>
-inline asio_handler_invoke_is_deprecated
-asio_handler_invoke(const Function& function,
+inline void asio_handler_invoke(const Function& function,
     binder1<Handler, Arg1>* this_handler)
 {
   lslboost_asio_handler_invoke_helpers::invoke(
       function, this_handler->handler_);
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  return asio_handler_invoke_is_no_longer_used();
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Handler, typename Arg1>
@@ -195,29 +177,19 @@ public:
 };
 
 template <typename Handler, typename Arg1, typename Arg2>
-inline asio_handler_allocate_is_deprecated
-asio_handler_allocate(std::size_t size,
+inline void* asio_handler_allocate(std::size_t size,
     binder2<Handler, Arg1, Arg2>* this_handler)
 {
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  lslboost_asio_handler_alloc_helpers::allocate(size, this_handler->handler_);
-  return asio_handler_allocate_is_no_longer_used();
-#else // defined(BOOST_ASIO_NO_DEPRECATED)
   return lslboost_asio_handler_alloc_helpers::allocate(
       size, this_handler->handler_);
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Handler, typename Arg1, typename Arg2>
-inline asio_handler_deallocate_is_deprecated
-asio_handler_deallocate(void* pointer, std::size_t size,
+inline void asio_handler_deallocate(void* pointer, std::size_t size,
     binder2<Handler, Arg1, Arg2>* this_handler)
 {
   lslboost_asio_handler_alloc_helpers::deallocate(
       pointer, size, this_handler->handler_);
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  return asio_handler_deallocate_is_no_longer_used();
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Handler, typename Arg1, typename Arg2>
@@ -229,27 +201,19 @@ inline bool asio_handler_is_continuation(
 }
 
 template <typename Function, typename Handler, typename Arg1, typename Arg2>
-inline asio_handler_invoke_is_deprecated
-asio_handler_invoke(Function& function,
+inline void asio_handler_invoke(Function& function,
     binder2<Handler, Arg1, Arg2>* this_handler)
 {
   lslboost_asio_handler_invoke_helpers::invoke(
       function, this_handler->handler_);
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  return asio_handler_invoke_is_no_longer_used();
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Function, typename Handler, typename Arg1, typename Arg2>
-inline asio_handler_invoke_is_deprecated
-asio_handler_invoke(const Function& function,
+inline void asio_handler_invoke(const Function& function,
     binder2<Handler, Arg1, Arg2>* this_handler)
 {
   lslboost_asio_handler_invoke_helpers::invoke(
       function, this_handler->handler_);
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  return asio_handler_invoke_is_no_longer_used();
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Handler, typename Arg1, typename Arg2>
@@ -320,29 +284,19 @@ public:
 };
 
 template <typename Handler, typename Arg1, typename Arg2, typename Arg3>
-inline asio_handler_allocate_is_deprecated
-asio_handler_allocate(std::size_t size,
+inline void* asio_handler_allocate(std::size_t size,
     binder3<Handler, Arg1, Arg2, Arg3>* this_handler)
 {
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  lslboost_asio_handler_alloc_helpers::allocate(size, this_handler->handler_);
-  return asio_handler_allocate_is_no_longer_used();
-#else // defined(BOOST_ASIO_NO_DEPRECATED)
   return lslboost_asio_handler_alloc_helpers::allocate(
       size, this_handler->handler_);
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Handler, typename Arg1, typename Arg2, typename Arg3>
-inline asio_handler_deallocate_is_deprecated
-asio_handler_deallocate(void* pointer, std::size_t size,
+inline void asio_handler_deallocate(void* pointer, std::size_t size,
     binder3<Handler, Arg1, Arg2, Arg3>* this_handler)
 {
   lslboost_asio_handler_alloc_helpers::deallocate(
       pointer, size, this_handler->handler_);
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  return asio_handler_deallocate_is_no_longer_used();
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Handler, typename Arg1, typename Arg2, typename Arg3>
@@ -355,28 +309,20 @@ inline bool asio_handler_is_continuation(
 
 template <typename Function, typename Handler,
     typename Arg1, typename Arg2, typename Arg3>
-inline asio_handler_invoke_is_deprecated
-asio_handler_invoke(Function& function,
+inline void asio_handler_invoke(Function& function,
     binder3<Handler, Arg1, Arg2, Arg3>* this_handler)
 {
   lslboost_asio_handler_invoke_helpers::invoke(
       function, this_handler->handler_);
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  return asio_handler_invoke_is_no_longer_used();
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Function, typename Handler,
     typename Arg1, typename Arg2, typename Arg3>
-inline asio_handler_invoke_is_deprecated
-asio_handler_invoke(const Function& function,
+inline void asio_handler_invoke(const Function& function,
     binder3<Handler, Arg1, Arg2, Arg3>* this_handler)
 {
   lslboost_asio_handler_invoke_helpers::invoke(
       function, this_handler->handler_);
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  return asio_handler_invoke_is_no_longer_used();
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Handler, typename Arg1, typename Arg2, typename Arg3>
@@ -456,30 +402,20 @@ public:
 
 template <typename Handler, typename Arg1,
     typename Arg2, typename Arg3, typename Arg4>
-inline asio_handler_allocate_is_deprecated
-asio_handler_allocate(std::size_t size,
+inline void* asio_handler_allocate(std::size_t size,
     binder4<Handler, Arg1, Arg2, Arg3, Arg4>* this_handler)
 {
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  lslboost_asio_handler_alloc_helpers::allocate(size, this_handler->handler_);
-  return asio_handler_allocate_is_no_longer_used();
-#else // defined(BOOST_ASIO_NO_DEPRECATED)
   return lslboost_asio_handler_alloc_helpers::allocate(
       size, this_handler->handler_);
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Handler, typename Arg1,
     typename Arg2, typename Arg3, typename Arg4>
-inline asio_handler_deallocate_is_deprecated
-asio_handler_deallocate(void* pointer, std::size_t size,
+inline void asio_handler_deallocate(void* pointer, std::size_t size,
     binder4<Handler, Arg1, Arg2, Arg3, Arg4>* this_handler)
 {
   lslboost_asio_handler_alloc_helpers::deallocate(
       pointer, size, this_handler->handler_);
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  return asio_handler_deallocate_is_no_longer_used();
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Handler, typename Arg1,
@@ -493,28 +429,20 @@ inline bool asio_handler_is_continuation(
 
 template <typename Function, typename Handler, typename Arg1,
     typename Arg2, typename Arg3, typename Arg4>
-inline asio_handler_invoke_is_deprecated
-asio_handler_invoke(Function& function,
+inline void asio_handler_invoke(Function& function,
     binder4<Handler, Arg1, Arg2, Arg3, Arg4>* this_handler)
 {
   lslboost_asio_handler_invoke_helpers::invoke(
       function, this_handler->handler_);
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  return asio_handler_invoke_is_no_longer_used();
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Function, typename Handler, typename Arg1,
     typename Arg2, typename Arg3, typename Arg4>
-inline asio_handler_invoke_is_deprecated
-asio_handler_invoke(const Function& function,
+inline void asio_handler_invoke(const Function& function,
     binder4<Handler, Arg1, Arg2, Arg3, Arg4>* this_handler)
 {
   lslboost_asio_handler_invoke_helpers::invoke(
       function, this_handler->handler_);
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  return asio_handler_invoke_is_no_longer_used();
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Handler, typename Arg1,
@@ -600,30 +528,20 @@ public:
 
 template <typename Handler, typename Arg1, typename Arg2,
     typename Arg3, typename Arg4, typename Arg5>
-inline asio_handler_allocate_is_deprecated
-asio_handler_allocate(std::size_t size,
+inline void* asio_handler_allocate(std::size_t size,
     binder5<Handler, Arg1, Arg2, Arg3, Arg4, Arg5>* this_handler)
 {
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  lslboost_asio_handler_alloc_helpers::allocate(size, this_handler->handler_);
-  return asio_handler_allocate_is_no_longer_used();
-#else // defined(BOOST_ASIO_NO_DEPRECATED)
   return lslboost_asio_handler_alloc_helpers::allocate(
       size, this_handler->handler_);
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Handler, typename Arg1, typename Arg2,
     typename Arg3, typename Arg4, typename Arg5>
-inline asio_handler_deallocate_is_deprecated
-asio_handler_deallocate(void* pointer, std::size_t size,
+inline void asio_handler_deallocate(void* pointer, std::size_t size,
     binder5<Handler, Arg1, Arg2, Arg3, Arg4, Arg5>* this_handler)
 {
   lslboost_asio_handler_alloc_helpers::deallocate(
       pointer, size, this_handler->handler_);
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  return asio_handler_deallocate_is_no_longer_used();
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Handler, typename Arg1, typename Arg2,
@@ -637,28 +555,20 @@ inline bool asio_handler_is_continuation(
 
 template <typename Function, typename Handler, typename Arg1,
     typename Arg2, typename Arg3, typename Arg4, typename Arg5>
-inline asio_handler_invoke_is_deprecated
-asio_handler_invoke(Function& function,
+inline void asio_handler_invoke(Function& function,
     binder5<Handler, Arg1, Arg2, Arg3, Arg4, Arg5>* this_handler)
 {
   lslboost_asio_handler_invoke_helpers::invoke(
       function, this_handler->handler_);
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  return asio_handler_invoke_is_no_longer_used();
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Function, typename Handler, typename Arg1,
     typename Arg2, typename Arg3, typename Arg4, typename Arg5>
-inline asio_handler_invoke_is_deprecated
-asio_handler_invoke(const Function& function,
+inline void asio_handler_invoke(const Function& function,
     binder5<Handler, Arg1, Arg2, Arg3, Arg4, Arg5>* this_handler)
 {
   lslboost_asio_handler_invoke_helpers::invoke(
       function, this_handler->handler_);
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  return asio_handler_invoke_is_no_longer_used();
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Handler, typename Arg1, typename Arg2,
@@ -701,29 +611,19 @@ public:
 };
 
 template <typename Handler, typename Arg1>
-inline asio_handler_allocate_is_deprecated
-asio_handler_allocate(std::size_t size,
+inline void* asio_handler_allocate(std::size_t size,
     move_binder1<Handler, Arg1>* this_handler)
 {
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  lslboost_asio_handler_alloc_helpers::allocate(size, this_handler->handler_);
-  return asio_handler_allocate_is_no_longer_used();
-#else // defined(BOOST_ASIO_NO_DEPRECATED)
   return lslboost_asio_handler_alloc_helpers::allocate(
       size, this_handler->handler_);
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Handler, typename Arg1>
-inline asio_handler_deallocate_is_deprecated
-asio_handler_deallocate(void* pointer, std::size_t size,
+inline void asio_handler_deallocate(void* pointer, std::size_t size,
     move_binder1<Handler, Arg1>* this_handler)
 {
   lslboost_asio_handler_alloc_helpers::deallocate(
       pointer, size, this_handler->handler_);
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  return asio_handler_deallocate_is_no_longer_used();
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Handler, typename Arg1>
@@ -735,15 +635,11 @@ inline bool asio_handler_is_continuation(
 }
 
 template <typename Function, typename Handler, typename Arg1>
-inline asio_handler_invoke_is_deprecated
-asio_handler_invoke(BOOST_ASIO_MOVE_ARG(Function) function,
+inline void asio_handler_invoke(BOOST_ASIO_MOVE_ARG(Function) function,
     move_binder1<Handler, Arg1>* this_handler)
 {
   lslboost_asio_handler_invoke_helpers::invoke(
       BOOST_ASIO_MOVE_CAST(Function)(function), this_handler->handler_);
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  return asio_handler_invoke_is_no_longer_used();
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Handler, typename Arg1, typename Arg2>
@@ -778,29 +674,19 @@ public:
 };
 
 template <typename Handler, typename Arg1, typename Arg2>
-inline asio_handler_allocate_is_deprecated
-asio_handler_allocate(std::size_t size,
+inline void* asio_handler_allocate(std::size_t size,
     move_binder2<Handler, Arg1, Arg2>* this_handler)
 {
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  lslboost_asio_handler_alloc_helpers::allocate(size, this_handler->handler_);
-  return asio_handler_allocate_is_no_longer_used();
-#else // defined(BOOST_ASIO_NO_DEPRECATED)
   return lslboost_asio_handler_alloc_helpers::allocate(
       size, this_handler->handler_);
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Handler, typename Arg1, typename Arg2>
-inline asio_handler_deallocate_is_deprecated
-asio_handler_deallocate(void* pointer, std::size_t size,
+inline void asio_handler_deallocate(void* pointer, std::size_t size,
     move_binder2<Handler, Arg1, Arg2>* this_handler)
 {
   lslboost_asio_handler_alloc_helpers::deallocate(
       pointer, size, this_handler->handler_);
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  return asio_handler_deallocate_is_no_longer_used();
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 template <typename Handler, typename Arg1, typename Arg2>
@@ -812,15 +698,11 @@ inline bool asio_handler_is_continuation(
 }
 
 template <typename Function, typename Handler, typename Arg1, typename Arg2>
-inline asio_handler_invoke_is_deprecated
-asio_handler_invoke(BOOST_ASIO_MOVE_ARG(Function) function,
+inline void asio_handler_invoke(BOOST_ASIO_MOVE_ARG(Function) function,
     move_binder2<Handler, Arg1, Arg2>* this_handler)
 {
   lslboost_asio_handler_invoke_helpers::invoke(
       BOOST_ASIO_MOVE_CAST(Function)(function), this_handler->handler_);
-#if defined(BOOST_ASIO_NO_DEPRECATED)
-  return asio_handler_invoke_is_no_longer_used();
-#endif // defined(BOOST_ASIO_NO_DEPRECATED)
 }
 
 #endif // defined(BOOST_ASIO_HAS_MOVE)
@@ -853,7 +735,6 @@ struct associated_allocator<detail::binder2<Handler, Arg1, Arg2>, Allocator>
 
 template <typename Handler, typename Arg1, typename Executor>
 struct associated_executor<detail::binder1<Handler, Arg1>, Executor>
-  : detail::associated_executor_forwarding_base<Handler, Executor>
 {
   typedef typename associated_executor<Handler, Executor>::type type;
 
@@ -866,7 +747,6 @@ struct associated_executor<detail::binder1<Handler, Arg1>, Executor>
 
 template <typename Handler, typename Arg1, typename Arg2, typename Executor>
 struct associated_executor<detail::binder2<Handler, Arg1, Arg2>, Executor>
-  : detail::associated_executor_forwarding_base<Handler, Executor>
 {
   typedef typename associated_executor<Handler, Executor>::type type;
 
@@ -906,7 +786,6 @@ struct associated_allocator<
 
 template <typename Handler, typename Arg1, typename Executor>
 struct associated_executor<detail::move_binder1<Handler, Arg1>, Executor>
-  : detail::associated_executor_forwarding_base<Handler, Executor>
 {
   typedef typename associated_executor<Handler, Executor>::type type;
 
@@ -919,7 +798,6 @@ struct associated_executor<detail::move_binder1<Handler, Arg1>, Executor>
 
 template <typename Handler, typename Arg1, typename Arg2, typename Executor>
 struct associated_executor<detail::move_binder2<Handler, Arg1, Arg2>, Executor>
-  : detail::associated_executor_forwarding_base<Handler, Executor>
 {
   typedef typename associated_executor<Handler, Executor>::type type;
 

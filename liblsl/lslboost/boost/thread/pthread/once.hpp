@@ -14,12 +14,11 @@
 #include <boost/thread/detail/move.hpp>
 #include <boost/thread/detail/invoke.hpp>
 
-#include <boost/thread/pthread/pthread_helpers.hpp>
 #include <boost/thread/pthread/pthread_mutex_scoped_lock.hpp>
 #include <boost/thread/detail/delete.hpp>
 #include <boost/core/no_exceptions_support.hpp>
 
-#include <boost/bind/bind.hpp>
+#include <boost/bind.hpp>
 #include <boost/assert.hpp>
 #include <boost/config/abi_prefix.hpp>
 
@@ -150,18 +149,18 @@ namespace lslboost
                 BOOST_CATCH (...)
                 {
                     flag.epoch=uninitialized_flag;
-                    BOOST_VERIFY(!posix::pthread_cond_broadcast(&thread_detail::once_epoch_cv));
+                    BOOST_VERIFY(!pthread_cond_broadcast(&thread_detail::once_epoch_cv));
                     BOOST_RETHROW
                 }
                 BOOST_CATCH_END
                 flag.epoch=--thread_detail::once_global_epoch;
-                BOOST_VERIFY(!posix::pthread_cond_broadcast(&thread_detail::once_epoch_cv));
+                BOOST_VERIFY(!pthread_cond_broadcast(&thread_detail::once_epoch_cv));
             }
             else
             {
                 while(flag.epoch==being_initialized)
                 {
-                    BOOST_VERIFY(!posix::pthread_cond_wait(&thread_detail::once_epoch_cv,&thread_detail::once_epoch_mutex));
+                    BOOST_VERIFY(!pthread_cond_wait(&thread_detail::once_epoch_cv,&thread_detail::once_epoch_mutex));
                 }
             }
         }
@@ -195,18 +194,18 @@ namespace lslboost
                 BOOST_CATCH (...)
                 {
                     flag.epoch=uninitialized_flag;
-                    BOOST_VERIFY(!posix::pthread_cond_broadcast(&thread_detail::once_epoch_cv));
+                    BOOST_VERIFY(!pthread_cond_broadcast(&thread_detail::once_epoch_cv));
                     BOOST_RETHROW
                 }
                 BOOST_CATCH_END
                 flag.epoch=--thread_detail::once_global_epoch;
-                BOOST_VERIFY(!posix::pthread_cond_broadcast(&thread_detail::once_epoch_cv));
+                BOOST_VERIFY(!pthread_cond_broadcast(&thread_detail::once_epoch_cv));
             }
             else
             {
                 while(flag.epoch==being_initialized)
                 {
-                    BOOST_VERIFY(!posix::pthread_cond_wait(&thread_detail::once_epoch_cv,&thread_detail::once_epoch_mutex));
+                    BOOST_VERIFY(!pthread_cond_wait(&thread_detail::once_epoch_cv,&thread_detail::once_epoch_mutex));
                 }
             }
         }
@@ -239,18 +238,18 @@ namespace lslboost
                 BOOST_CATCH (...)
                 {
                     flag.epoch=uninitialized_flag;
-                    BOOST_VERIFY(!posix::pthread_cond_broadcast(&thread_detail::once_epoch_cv));
+                    BOOST_VERIFY(!pthread_cond_broadcast(&thread_detail::once_epoch_cv));
                     BOOST_RETHROW
                 }
                 BOOST_CATCH_END
                 flag.epoch=--thread_detail::once_global_epoch;
-                BOOST_VERIFY(!posix::pthread_cond_broadcast(&thread_detail::once_epoch_cv));
+                BOOST_VERIFY(!pthread_cond_broadcast(&thread_detail::once_epoch_cv));
             }
             else
             {
                 while(flag.epoch==being_initialized)
                 {
-                    BOOST_VERIFY(!posix::pthread_cond_wait(&thread_detail::once_epoch_cv,&thread_detail::once_epoch_mutex));
+                    BOOST_VERIFY(!pthread_cond_wait(&thread_detail::once_epoch_cv,&thread_detail::once_epoch_mutex));
                 }
             }
         }
@@ -282,18 +281,18 @@ namespace lslboost
                 BOOST_CATCH (...)
                 {
                     flag.epoch=uninitialized_flag;
-                    BOOST_VERIFY(!posix::pthread_cond_broadcast(&thread_detail::once_epoch_cv));
+                    BOOST_VERIFY(!pthread_cond_broadcast(&thread_detail::once_epoch_cv));
                     BOOST_RETHROW
                 }
                 BOOST_CATCH_END
                 flag.epoch=--thread_detail::once_global_epoch;
-                BOOST_VERIFY(!posix::pthread_cond_broadcast(&thread_detail::once_epoch_cv));
+                BOOST_VERIFY(!pthread_cond_broadcast(&thread_detail::once_epoch_cv));
             }
             else
             {
                 while(flag.epoch==being_initialized)
                 {
-                    BOOST_VERIFY(!posix::pthread_cond_wait(&thread_detail::once_epoch_cv,&thread_detail::once_epoch_mutex));
+                    BOOST_VERIFY(!pthread_cond_wait(&thread_detail::once_epoch_cv,&thread_detail::once_epoch_mutex));
                 }
             }
         }
@@ -326,18 +325,18 @@ namespace lslboost
                 BOOST_CATCH (...)
                 {
                     flag.epoch=uninitialized_flag;
-                    BOOST_VERIFY(!posix::pthread_cond_broadcast(&thread_detail::once_epoch_cv));
+                    BOOST_VERIFY(!pthread_cond_broadcast(&thread_detail::once_epoch_cv));
                     BOOST_RETHROW
                 }
                 BOOST_CATCH_END
                 flag.epoch=--thread_detail::once_global_epoch;
-                BOOST_VERIFY(!posix::pthread_cond_broadcast(&thread_detail::once_epoch_cv));
+                BOOST_VERIFY(!pthread_cond_broadcast(&thread_detail::once_epoch_cv));
             }
             else
             {
                 while(flag.epoch==being_initialized)
                 {
-                    BOOST_VERIFY(!posix::pthread_cond_wait(&thread_detail::once_epoch_cv,&thread_detail::once_epoch_mutex));
+                    BOOST_VERIFY(!pthread_cond_wait(&thread_detail::once_epoch_cv,&thread_detail::once_epoch_mutex));
                 }
             }
         }
@@ -370,18 +369,18 @@ namespace lslboost
                 BOOST_CATCH (...)
                 {
                     flag.epoch=uninitialized_flag;
-                    BOOST_VERIFY(!posix::pthread_cond_broadcast(&thread_detail::once_epoch_cv));
+                    BOOST_VERIFY(!pthread_cond_broadcast(&thread_detail::once_epoch_cv));
                     BOOST_RETHROW
                 }
                 BOOST_CATCH_END
                 flag.epoch=--thread_detail::once_global_epoch;
-                BOOST_VERIFY(!posix::pthread_cond_broadcast(&thread_detail::once_epoch_cv));
+                BOOST_VERIFY(!pthread_cond_broadcast(&thread_detail::once_epoch_cv));
             }
             else
             {
                 while(flag.epoch==being_initialized)
                 {
-                    BOOST_VERIFY(!posix::pthread_cond_wait(&thread_detail::once_epoch_cv,&thread_detail::once_epoch_mutex));
+                    BOOST_VERIFY(!pthread_cond_wait(&thread_detail::once_epoch_cv,&thread_detail::once_epoch_mutex));
                 }
             }
         }
@@ -417,18 +416,18 @@ namespace lslboost
                 BOOST_CATCH (...)
                 {
                     flag.epoch=uninitialized_flag;
-                    BOOST_VERIFY(!posix::pthread_cond_broadcast(&thread_detail::once_epoch_cv));
+                    BOOST_VERIFY(!pthread_cond_broadcast(&thread_detail::once_epoch_cv));
                     BOOST_RETHROW
                 }
                 BOOST_CATCH_END
                 flag.epoch=--thread_detail::once_global_epoch;
-                BOOST_VERIFY(!posix::pthread_cond_broadcast(&thread_detail::once_epoch_cv));
+                BOOST_VERIFY(!pthread_cond_broadcast(&thread_detail::once_epoch_cv));
             }
             else
             {
                 while(flag.epoch==being_initialized)
                 {
-                    BOOST_VERIFY(!posix::pthread_cond_wait(&thread_detail::once_epoch_cv,&thread_detail::once_epoch_mutex));
+                    BOOST_VERIFY(!pthread_cond_wait(&thread_detail::once_epoch_cv,&thread_detail::once_epoch_mutex));
                 }
             }
         }
@@ -464,18 +463,18 @@ namespace lslboost
                 BOOST_CATCH (...)
                 {
                     flag.epoch=uninitialized_flag;
-                    BOOST_VERIFY(!posix::pthread_cond_broadcast(&thread_detail::once_epoch_cv));
+                    BOOST_VERIFY(!pthread_cond_broadcast(&thread_detail::once_epoch_cv));
                     BOOST_RETHROW
                 }
                 BOOST_CATCH_END
                 flag.epoch=--thread_detail::once_global_epoch;
-                BOOST_VERIFY(!posix::pthread_cond_broadcast(&thread_detail::once_epoch_cv));
+                BOOST_VERIFY(!pthread_cond_broadcast(&thread_detail::once_epoch_cv));
             }
             else
             {
                 while(flag.epoch==being_initialized)
                 {
-                    BOOST_VERIFY(!posix::pthread_cond_wait(&thread_detail::once_epoch_cv,&thread_detail::once_epoch_mutex));
+                    BOOST_VERIFY(!pthread_cond_wait(&thread_detail::once_epoch_cv,&thread_detail::once_epoch_mutex));
                 }
             }
         }
@@ -513,18 +512,18 @@ namespace lslboost
                 BOOST_CATCH (...)
                 {
                     flag.epoch=uninitialized_flag;
-                    BOOST_VERIFY(!posix::pthread_cond_broadcast(&thread_detail::once_epoch_cv));
+                    BOOST_VERIFY(!pthread_cond_broadcast(&thread_detail::once_epoch_cv));
                     BOOST_RETHROW
                 }
                 BOOST_CATCH_END
                 flag.epoch=--thread_detail::once_global_epoch;
-                BOOST_VERIFY(!posix::pthread_cond_broadcast(&thread_detail::once_epoch_cv));
+                BOOST_VERIFY(!pthread_cond_broadcast(&thread_detail::once_epoch_cv));
             }
             else
             {
                 while(flag.epoch==being_initialized)
                 {
-                    BOOST_VERIFY(!posix::pthread_cond_wait(&thread_detail::once_epoch_cv,&thread_detail::once_epoch_mutex));
+                    BOOST_VERIFY(!pthread_cond_wait(&thread_detail::once_epoch_cv,&thread_detail::once_epoch_mutex));
                 }
             }
         }

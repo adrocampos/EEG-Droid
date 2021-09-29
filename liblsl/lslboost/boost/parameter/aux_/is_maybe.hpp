@@ -1,52 +1,26 @@
-// Copyright Daniel Wallin, David Abrahams 2010.
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
+// Copyright Daniel Wallin, David Abrahams 2010. Use, modification and
+// distribution is subject to the Boost Software License, Version 1.0. (See
+// accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef BOOST_PARAMETER_IS_MAYBE_050329_HPP
 #define BOOST_PARAMETER_IS_MAYBE_050329_HPP
 
-namespace lslboost { namespace parameter { namespace aux {
+#include <boost/type_traits/is_base_and_derived.hpp>
 
-    struct maybe_base
-    {
-    };
-}}} // namespace lslboost::parameter::aux
+namespace lslboost {
+namespace parameter {
+namespace aux {
 
-#if defined(BOOST_PARAMETER_CAN_USE_MP11)
-#include <type_traits>
+struct maybe_base {};
 
-namespace lslboost { namespace parameter { namespace aux {
+template <class T>
+struct is_maybe
+  : is_base_and_derived<maybe_base, T>
+{};
 
-    template <typename T>
-    using is_maybe = ::std::is_base_of<
-        ::lslboost::parameter::aux::maybe_base
-      , typename ::std::remove_const<T>::type
-    >;
-}}} // namespace lslboost::parameter::aux
+} // namespace aux
+} // namespace parameter
+} // namespace lslboost
 
-#else   // !defined(BOOST_PARAMETER_CAN_USE_MP11)
-#include <boost/mpl/bool.hpp>
-#include <boost/mpl/if.hpp>
-#include <boost/type_traits/is_base_of.hpp>
-#include <boost/type_traits/remove_const.hpp>
-
-namespace lslboost { namespace parameter { namespace aux {
-
-    template <typename T>
-    struct is_maybe
-      : ::lslboost::mpl::if_<
-            ::lslboost::is_base_of<
-                ::lslboost::parameter::aux::maybe_base
-              , typename ::lslboost::remove_const<T>::type
-            >
-          , ::lslboost::mpl::true_
-          , ::lslboost::mpl::false_
-        >::type
-    {
-    };
-}}} // namespace lslboost::parameter::aux
-
-#endif  // BOOST_PARAMETER_CAN_USE_MP11
-#endif  // include guard
-
+#endif // BOOST_PARAMETER_IS_MAYBE_050329_HPP

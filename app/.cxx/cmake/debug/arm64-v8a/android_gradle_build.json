@@ -4,7 +4,7 @@
     "1": "--target=aarch64-none-linux-android24 --gcc-toolchain=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DBOOST_ALL_NO_LIB -DBOOST_ASIO_STANDALONE -DBOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS -DLIBLSL_EXPORTS -DLOGURU_DEBUG_LOGGING=0 -I/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/include -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/pugixml -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/loguru -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/lslboost -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions -O0 -fno-limit-debug-info -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -pthread",
     "2": "--target=aarch64-none-linux-android24 --gcc-toolchain=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DBOOST_ALL_NO_LIB -DBOOST_ASIO_STANDALONE -DBOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS -DLIBLSL_EXPORTS -DLOGURU_DEBUG_LOGGING=0 -DLOGURU_STACKTRACES=0 -I/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/include -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/pugixml -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/loguru -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/lslboost -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions -O0 -fno-limit-debug-info -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -pthread",
     "3": "--target=aarch64-none-linux-android24 --gcc-toolchain=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DBOOST_ALL_NO_LIB -DBOOST_ASIO_STANDALONE -DBOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/lslboost -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions -O0 -fno-limit-debug-info -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -pthread",
-    "4": "--target=aarch64-none-linux-android24 --gcc-toolchain=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DBOOST_ALL_NO_LIB -DBOOST_ASIO_STANDALONE -DBOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS -DLIBLSL_EXPORTS -Dlsl_EXPORTS -DLSL_LIBRARY_INFO_STR=\\\"git:v2.6.1-beta-21-g8b30012/branch:dev/build:Debug/compiler:Clang-9.0/link:SHARED\\\" -I/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/include -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/pugixml -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/loguru -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/lslboost -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions -O0 -fno-limit-debug-info -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -pthread",
+    "4": "--target=aarch64-none-linux-android24 --gcc-toolchain=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DBOOST_ALL_NO_LIB -DBOOST_ASIO_STANDALONE -DBOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS -DLIBLSL_EXPORTS -Dlsl_EXPORTS -DLSL_LIBRARY_INFO_STR=\\\"git:v2.6.1-beta-23-g63e5f31/branch:dev/build:Debug/compiler:Clang-9.0/link:SHARED\\\" -I/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/include -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/pugixml -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/loguru -isystem /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/lslboost -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions -O0 -fno-limit-debug-info -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -pthread",
     "5": "--target=aarch64-none-linux-android24 --gcc-toolchain=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DLIBLSL_EXPORTS -I/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/include -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -O0 -fno-limit-debug-info -flto=thin -fPIE"
   },
   "buildFiles": [
@@ -78,6 +78,11 @@
           "workingDirectoryOrdinal": 0
         },
         {
+          "src": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/cast.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
           "src": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/common.cpp",
           "flagsOrdinal": 1,
           "workingDirectoryOrdinal": 0
@@ -94,6 +99,11 @@
         },
         {
           "src": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/info_receiver.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/inireader.cpp",
           "flagsOrdinal": 1,
           "workingDirectoryOrdinal": 0
         },
@@ -188,16 +198,6 @@
           "workingDirectoryOrdinal": 0
         },
         {
-          "src": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/util/cast.cpp",
-          "flagsOrdinal": 1,
-          "workingDirectoryOrdinal": 0
-        },
-        {
-          "src": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/util/inireader.cpp",
-          "flagsOrdinal": 1,
-          "workingDirectoryOrdinal": 0
-        },
-        {
           "src": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/thirdparty/pugixml/pugixml.cpp",
           "flagsOrdinal": 1,
           "workingDirectoryOrdinal": 0
@@ -221,6 +221,10 @@
           "workingDirectoryOrdinal": 0
         },
         {
+          "header": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/cast.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
           "header": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/common.h",
           "workingDirectoryOrdinal": 0
         },
@@ -238,6 +242,10 @@
         },
         {
           "header": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/info_receiver.h",
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "header": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/inireader.h",
           "workingDirectoryOrdinal": 0
         },
         {
@@ -310,18 +318,6 @@
         },
         {
           "header": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/udp_server.h",
-          "workingDirectoryOrdinal": 0
-        },
-        {
-          "header": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/util/cast.hpp",
-          "workingDirectoryOrdinal": 0
-        },
-        {
-          "header": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/util/inireader.hpp",
-          "workingDirectoryOrdinal": 0
-        },
-        {
-          "header": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/util/uuid.hpp",
           "workingDirectoryOrdinal": 0
         },
         {

@@ -11,22 +11,21 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_LANG_CUDA`
+/*`
+[heading `BOOST_LANG_CUDA`]
 
-https://en.wikipedia.org/wiki/CUDA[CUDA C/{CPP}] language.
+[@https://en.wikipedia.org/wiki/CUDA CUDA C/C++] language.
 If available, the version is detected as VV.RR.P.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__CUDACC__+` | {predef_detection}
-| `+__CUDA__+` | {predef_detection}
+    [[`__CUDACC__`] [__predef_detection__]]
+    [[`__CUDA__`] [__predef_detection__]]
 
-| `CUDA_VERSION` | VV.RR.P
-|===
-*/ // end::reference[]
+    [[`CUDA_VERSION`] [VV.RR.P]]
+    ]
+ */
 
 #define BOOST_LANG_CUDA BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

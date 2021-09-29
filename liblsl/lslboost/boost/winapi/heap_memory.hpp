@@ -10,7 +10,6 @@
 #define BOOST_WINAPI_HEAP_MEMORY_HPP_INCLUDED_
 
 #include <boost/winapi/basic_types.hpp>
-#include <boost/winapi/detail/header.hpp>
 
 #ifdef BOOST_HAS_PRAGMA_ONCE
 #pragma once
@@ -21,26 +20,26 @@
 extern "C" {
 
 #if BOOST_WINAPI_PARTITION_DESKTOP_SYSTEM
-BOOST_WINAPI_IMPORT lslboost::winapi::DWORD_ BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT lslboost::winapi::DWORD_ BOOST_WINAPI_WINAPI_CC
 GetProcessHeaps(lslboost::winapi::DWORD_ NumberOfHeaps, lslboost::winapi::PHANDLE_ ProcessHeaps);
 #endif // BOOST_WINAPI_PARTITION_DESKTOP_SYSTEM
 
-BOOST_WINAPI_IMPORT_EXCEPT_WM lslboost::winapi::HANDLE_ BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT lslboost::winapi::HANDLE_ BOOST_WINAPI_WINAPI_CC
 GetProcessHeap(BOOST_WINAPI_DETAIL_VOID);
 
-BOOST_WINAPI_IMPORT_EXCEPT_WM lslboost::winapi::LPVOID_ BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT lslboost::winapi::LPVOID_ BOOST_WINAPI_WINAPI_CC
 HeapAlloc(
     lslboost::winapi::HANDLE_ hHeap,
     lslboost::winapi::DWORD_ dwFlags,
     lslboost::winapi::SIZE_T_ dwBytes);
 
-BOOST_WINAPI_IMPORT_EXCEPT_WM lslboost::winapi::BOOL_ BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT lslboost::winapi::BOOL_ BOOST_WINAPI_WINAPI_CC
 HeapFree(
     lslboost::winapi::HANDLE_ hHeap,
     lslboost::winapi::DWORD_ dwFlags,
     lslboost::winapi::LPVOID_ lpMem);
 
-BOOST_WINAPI_IMPORT_EXCEPT_WM lslboost::winapi::LPVOID_ BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT lslboost::winapi::LPVOID_ BOOST_WINAPI_WINAPI_CC
 HeapReAlloc(
     lslboost::winapi::HANDLE_ hHeap,
     lslboost::winapi::DWORD_ dwFlags,
@@ -48,13 +47,13 @@ HeapReAlloc(
     lslboost::winapi::SIZE_T_ dwBytes);
 
 #if BOOST_WINAPI_PARTITION_APP_SYSTEM
-BOOST_WINAPI_IMPORT_EXCEPT_WM lslboost::winapi::HANDLE_ BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT lslboost::winapi::HANDLE_ BOOST_WINAPI_WINAPI_CC
 HeapCreate(
     lslboost::winapi::DWORD_ flOptions,
     lslboost::winapi::SIZE_T_ dwInitialSize,
     lslboost::winapi::SIZE_T_ dwMaximumSize);
 
-BOOST_WINAPI_IMPORT_EXCEPT_WM lslboost::winapi::BOOL_ BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT lslboost::winapi::BOOL_ BOOST_WINAPI_WINAPI_CC
 HeapDestroy(lslboost::winapi::HANDLE_ hHeap);
 #endif // BOOST_WINAPI_PARTITION_APP_SYSTEM
 
@@ -80,7 +79,5 @@ using ::HeapDestroy;
 
 }
 }
-
-#include <boost/winapi/detail/footer.hpp>
 
 #endif // BOOST_WINAPI_HEAP_MEMORY_HPP_INCLUDED_

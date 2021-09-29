@@ -1,31 +1,34 @@
 ninja: Entering directory `/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/debug/armeabi-v7a'
-[1/31] Building CXX object CMakeFiles/lslobj.dir/src/lsl_xml_element_c.cpp.o
-[2/31] Building CXX object CMakeFiles/lslobj.dir/src/common.cpp.o
-[3/31] Building CXX object CMakeFiles/lslobj.dir/src/lsl_streaminfo_c.cpp.o
+[1/31] Building CXX object CMakeFiles/lslobj.dir/src/lsl_streaminfo_c.cpp.o
+[2/31] Building CXX object CMakeFiles/lslobj.dir/src/lsl_xml_element_c.cpp.o
+[3/31] Building CXX object CMakeFiles/lslobj.dir/src/common.cpp.o
 [4/31] Building CXX object CMakeFiles/lslobj.dir/src/cancellation.cpp.o
-[5/31] Building CXX object CMakeFiles/lslobj.dir/src/netinterfaces.cpp.o
-[6/31] Building CXX object CMakeFiles/lslobj.dir/src/lsl_outlet_c.cpp.o
-[7/31] Building CXX object CMakeFiles/lslobj.dir/src/consumer_queue.cpp.o
-[8/31] Building CXX object CMakeFiles/lslobj.dir/src/api_config.cpp.o
-[9/31] Building CXX object CMakeFiles/lslobj.dir/src/lsl_resolver_c.cpp.o
-[10/31] Building CXX object CMakeFiles/lslobj.dir/src/time_postprocessor.cpp.o
-/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/time_postprocessor.cpp:9:34: warning: unknown warning group '-Wimplicit-int-float-conversion', ignored [-Wunknown-warning-option]
-#pragma clang diagnostic ignored "-Wimplicit-int-float-conversion"
-                                 ^
+[5/31] Building CXX object CMakeFiles/lslobj.dir/src/cast.cpp.o
+[6/31] Building CXX object CMakeFiles/lslobj.dir/src/inireader.cpp.o
+[7/31] Building CXX object CMakeFiles/lslobj.dir/src/lsl_outlet_c.cpp.o
+[8/31] Building CXX object CMakeFiles/lslobj.dir/src/consumer_queue.cpp.o
+[9/31] Building CXX object CMakeFiles/lslobj.dir/src/api_config.cpp.o
+[10/31] Building CXX object CMakeFiles/lslobj.dir/src/lsl_resolver_c.cpp.o
+[11/31] Building CXX object CMakeFiles/lslobj.dir/src/netinterfaces.cpp.o
+[12/31] Building CXX object CMakeFiles/lslobj.dir/src/time_postprocessor.cpp.o
+/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/time_postprocessor.cpp:7:32: warning: unknown warning group '-Wimplicit-int-float-conversion', ignored [-Wunknown-warning-option]
+#pragma GCC diagnostic ignored "-Wimplicit-int-float-conversion"
+                               ^
 1 warning generated.
-[11/31] Building CXX object CMakeFiles/lslobj.dir/src/stream_info_impl.cpp.o
-[12/31] Building CXX object CMakeFiles/lslobj.dir/src/send_buffer.cpp.o
-[13/31] Building CXX object CMakeFiles/lslobj.dir/src/socket_utils.cpp.o
-[14/31] Building CXX object CMakeFiles/lslobj.dir/src/sample.cpp.o
-[15/31] Building CXX object CMakeFiles/lslobj.dir/src/util/cast.cpp.o
-[16/31] Building CXX object CMakeFiles/lslobj.dir/src/util/inireader.cpp.o
+[13/31] Building CXX object CMakeFiles/lslobj.dir/src/send_buffer.cpp.o
+[14/31] Building CXX object CMakeFiles/lslobj.dir/src/stream_info_impl.cpp.o
+[15/31] Building CXX object CMakeFiles/lslobj.dir/src/socket_utils.cpp.o
+[16/31] Building CXX object CMakeFiles/lslobj.dir/src/info_receiver.cpp.o
 [17/31] Building CXX object CMakeFiles/lsl.dir/src/buildinfo.cpp.o
-[18/31] Building CXX object CMakeFiles/lslobj.dir/src/lsl_inlet_c.cpp.o
+[18/31] Building CXX object CMakeFiles/lslobj.dir/src/sample.cpp.o
 [19/31] Building CXX object CMakeFiles/lslobj.dir/src/inlet_connection.cpp.o
-[20/31] Building CXX object CMakeFiles/lslobj.dir/thirdparty/loguru/loguru.cpp.o
-[21/31] Building CXX object CMakeFiles/lslobj.dir/src/resolve_attempt_udp.cpp.o
-[22/31] Building CXX object CMakeFiles/lslobj.dir/src/stream_outlet_impl.cpp.o
-/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/stream_outlet_impl.cpp:117:76: warning: format specifies type 'unsigned long' but the argument has type 'std::size_t' (aka 'unsigned int') [-Wformat]
+[20/31] Building CXX object CMakeFiles/lslobj.dir/src/lsl_inlet_c.cpp.o
+[21/31] Building CXX object CMakeFiles/lslobj.dir/thirdparty/loguru/loguru.cpp.o
+[22/31] Building CXX object CMakeFiles/lslobj.dir/src/resolve_attempt_udp.cpp.o
+[23/31] Building CXX object CMakeFiles/lslobj.dir/src/resolver_impl.cpp.o
+[24/31] Building CXX object CMakeFiles/lslobj.dir/src/data_receiver.cpp.o
+[25/31] Building CXX object CMakeFiles/lslobj.dir/src/stream_outlet_impl.cpp.o
+/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/src/stream_outlet_impl.cpp:118:76: warning: format specifies type 'unsigned long' but the argument has type 'std::size_t' (aka 'unsigned int') [-Wformat]
                                                 LOG_F(ERROR, "Tearing down stream_outlet of %s's thread #%lu", name, k);
                                                                                                          ~~~         ^
                                                                                                          %u
@@ -36,12 +39,9 @@ ninja: Entering directory `/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/a
                                                                           : loguru::log(verbosity, __FILE__, __LINE__, __VA_ARGS__)
                                                                                                                        ^~~~~~~~~~~
 1 warning generated.
-[23/31] Building CXX object CMakeFiles/lslobj.dir/src/resolver_impl.cpp.o
-[24/31] Building CXX object CMakeFiles/lslobj.dir/src/info_receiver.cpp.o
-[25/31] Building CXX object CMakeFiles/lslobj.dir/thirdparty/pugixml/pugixml.cpp.o
-[26/31] Building CXX object CMakeFiles/lslobj.dir/src/data_receiver.cpp.o
-[27/31] Building CXX object CMakeFiles/lslboost.dir/lslboost/serialization_objects.cpp.o
-[28/31] Building CXX object CMakeFiles/lslobj.dir/src/udp_server.cpp.o
+[26/31] Building CXX object CMakeFiles/lslboost.dir/lslboost/serialization_objects.cpp.o
+[27/31] Building CXX object CMakeFiles/lslobj.dir/src/udp_server.cpp.o
+[28/31] Building CXX object CMakeFiles/lslobj.dir/thirdparty/pugixml/pugixml.cpp.o
 [29/31] Building CXX object CMakeFiles/lslobj.dir/src/time_receiver.cpp.o
 [30/31] Building CXX object CMakeFiles/lslobj.dir/src/tcp_server.cpp.o
 [31/31] Linking CXX shared library /home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/build/intermediates/cmake/debug/obj/armeabi-v7a/liblsl.so

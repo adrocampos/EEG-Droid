@@ -11,18 +11,17 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_LANG_OBJC`
+/*`
+[heading `BOOST_LANG_OBJC`]
 
-http://en.wikipedia.org/wiki/Objective-C[Objective-C] language.
+[@http://en.wikipedia.org/wiki/Objective-C Objective-C] language.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__OBJC__+` | {predef_detection}
-|===
-*/ // end::reference[]
+    [[`__OBJC__`] [__predef_detection__]]
+    ]
+ */
 
 #define BOOST_LANG_OBJC BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

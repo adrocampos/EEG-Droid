@@ -9,8 +9,8 @@
 #include <mutex>
 #include <thread>
 
-namespace asio = lslboost::asio;
-using asio::ip::udp;
+using lslboost::asio::steady_timer;
+using lslboost::asio::ip::udp;
 using lslboost::system::error_code;
 
 namespace lsl {
@@ -107,17 +107,17 @@ private:
 	/// the configuration object
 	const api_config *cfg_;
 	/// an IO service for async time operations
-	asio::io_context time_io_;
+	lslboost::asio::io_context time_io_;
 	/// a buffer to hold inbound packet contents
 	char recv_buffer_[16384]{0};
 	/// the socket through which the time thread communicates
 	udp::socket time_sock_;
 	/// schedule the next time estimate
-	asio::steady_timer next_estimate_;
+	steady_timer next_estimate_;
 	/// schedules result aggregation
-	asio::steady_timer aggregate_results_;
+	steady_timer aggregate_results_;
 	/// schedules the next packet transfer
-	asio::steady_timer next_packet_;
+	steady_timer next_packet_;
 	/// a dummy endpoint
 	udp::endpoint remote_endpoint_;
 	/// a vector of time estimates collected so far during the current exchange

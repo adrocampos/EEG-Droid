@@ -13,7 +13,6 @@
 #include <boost/operators.hpp>
 #include <boost/date_time/special_defs.hpp>
 #include <boost/date_time/compiler_config.hpp>
-#include <boost/date_time/int_adapter.hpp>
 
 namespace lslboost {
 namespace date_time {
@@ -34,44 +33,50 @@ namespace date_time {
     typedef typename duration_rep_traits::impl_type duration_rep;
 
     //! Construct from a day count
-    BOOST_CXX14_CONSTEXPR explicit date_duration(duration_rep day_count) : days_(day_count) {}
+    explicit date_duration(duration_rep day_count) : days_(day_count) {}
 
     /*! construct from special_values - only works when
      * instantiated with duration_traits_adapted */
-    BOOST_CXX14_CONSTEXPR date_duration(special_values sv) :
+    date_duration(special_values sv) :
             days_(duration_rep::from_special(sv))
     {}
 
+    // copy constructor required for addable<> & subtractable<>
+    //! Construct from another date_duration (Copy Constructor)
+    date_duration(const date_duration<duration_rep_traits>& other) :
+            days_(other.days_)
+    {}
+
     //! returns days_ as it's instantiated type - used for streaming
-    BOOST_CXX14_CONSTEXPR duration_rep get_rep()const
+    duration_rep get_rep()const
     {
         return days_;
     }
-    BOOST_CXX14_CONSTEXPR special_values as_special() const
+    special_values as_special() const
     {
         return days_.as_special();
     }
-    BOOST_CXX14_CONSTEXPR bool is_special()const
+    bool is_special()const
     {
         return days_.is_special();
     }
     //! returns days as value, not object.
-    BOOST_CXX14_CONSTEXPR duration_rep_type days() const
+    duration_rep_type days() const
     {
         return duration_rep_traits::as_number(days_);
     }
     //! Returns the smallest duration -- used by to calculate 'end'
-    static BOOST_CXX14_CONSTEXPR date_duration unit()
+    static date_duration unit()
     {
         return date_duration<duration_rep_traits>(1);
     }
     //! Equality
-    BOOST_CXX14_CONSTEXPR bool operator==(const date_duration& rhs) const
+    bool operator==(const date_duration& rhs) const
     {
         return days_ == rhs.days_;
     }
     //! Less
-    BOOST_CXX14_CONSTEXPR bool operator<(const date_duration& rhs) const
+    bool operator<(const date_duration& rhs) const
     {
         return days_ < rhs.days_;
     }
@@ -82,33 +87,33 @@ namespace date_time {
      * so this will not compile */
 
     //! Subtract another duration -- result is signed
-    BOOST_CXX14_CONSTEXPR date_duration& operator-=(const date_duration& rhs)
+    date_duration& operator-=(const date_duration& rhs)
     {
         //days_ -= rhs.days_;
         days_ = days_ - rhs.days_;
         return *this;
     }
     //! Add a duration -- result is signed
-    BOOST_CXX14_CONSTEXPR date_duration& operator+=(const date_duration& rhs)
+    date_duration& operator+=(const date_duration& rhs)
     {
         days_ = days_ + rhs.days_;
         return *this;
     }
 
     //! unary- Allows for dd = -date_duration(2); -> dd == -2
-    BOOST_CXX14_CONSTEXPR date_duration operator-() const
+    date_duration operator-() const
     {
         return date_duration<duration_rep_traits>(get_rep() * (-1));
     }
     //! Division operations on a duration with an integer.
-    BOOST_CXX14_CONSTEXPR date_duration& operator/=(int divisor)
+    date_duration& operator/=(int divisor)
     {
         days_ = days_ / divisor;
         return *this;
     }
 
     //! return sign information
-    BOOST_CXX14_CONSTEXPR bool is_negative() const
+    bool is_negative() const
     {
         return days_ < 0;
     }
@@ -125,7 +130,7 @@ namespace date_time {
   {
     typedef long int_type;
     typedef long impl_type;
-    static BOOST_CXX14_CONSTEXPR int_type as_number(impl_type i) { return i; }
+    static int_type as_number(impl_type i) { return i; }
   };
 
   /*! Struct for instantiating date_duration <b>WITH</b> special values
@@ -135,7 +140,7 @@ namespace date_time {
   {
     typedef long int_type;
     typedef lslboost::date_time::int_adapter<long> impl_type;
-    static BOOST_CXX14_CONSTEXPR int_type as_number(impl_type i) { return i.as_number(); }
+    static int_type as_number(impl_type i) { return i.as_number(); }
   };
 
 

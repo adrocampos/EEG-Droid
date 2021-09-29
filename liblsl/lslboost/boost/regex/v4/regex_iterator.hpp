@@ -50,8 +50,6 @@ class regex_iterator_implementation
 public:
    regex_iterator_implementation(const regex_type* p, BidirectionalIterator last, match_flag_type f)
       : base(), end(last), re(*p), flags(f){}
-   regex_iterator_implementation(const regex_iterator_implementation& other)
-      :what(other.what), base(other.base), end(other.end), re(other.re), flags(other.flags){}
    bool init(BidirectionalIterator first)
    {
       base = first;

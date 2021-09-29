@@ -11,21 +11,20 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_COMP_EDG`
+/*`
+[heading `BOOST_COMP_EDG`]
 
-http://en.wikipedia.org/wiki/Edison_Design_Group[EDG {CPP} Frontend] compiler.
+[@http://en.wikipedia.org/wiki/Edison_Design_Group EDG C++ Frontend] compiler.
 Version number available as major, minor, and patch.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__EDG__+` | {predef_detection}
+    [[`__EDG__`] [__predef_detection__]]
 
-| `+__EDG_VERSION__+` | V.R.0
-|===
-*/ // end::reference[]
+    [[`__EDG_VERSION__`] [V.R.0]]
+    ]
+ */
 
 #define BOOST_COMP_EDG BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

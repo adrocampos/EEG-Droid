@@ -11,21 +11,20 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_ARCH_BLACKFIN`
+/*`
+[heading `BOOST_ARCH_BLACKFIN`]
 
 Blackfin Processors from Analog Devices.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__bfin__+` | {predef_detection}
-| `+__BFIN__+` | {predef_detection}
-| `bfin` | {predef_detection}
-| `BFIN` | {predef_detection}
-|===
-*/ // end::reference[]
+    [[`__bfin__`] [__predef_detection__]]
+    [[`__BFIN__`] [__predef_detection__]]
+    [[`bfin`] [__predef_detection__]]
+    [[`BFIN`] [__predef_detection__]]
+    ]
+ */
 
 #define BOOST_ARCH_BLACKFIN BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

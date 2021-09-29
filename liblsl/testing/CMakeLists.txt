@@ -16,8 +16,7 @@ if(LSL_BENCHMARKS)
 	target_compile_definitions(catch_main PUBLIC CATCH_CONFIG_ENABLE_BENCHMARKING)
 endif()
 target_include_directories(catch_main PUBLIC
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../thirdparty>
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../src>)
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../thirdparty>)
 
 add_executable(lsl_test_exported
 	test_ext_DataType.cpp
@@ -33,7 +32,6 @@ find_package(Threads REQUIRED)
 
 add_executable(lsl_test_internal
 	test_int_inireader.cpp
-	test_int_loguruthreadnames.cpp
 	test_int_network.cpp
 	test_int_stringfuncs.cpp
 	test_int_streaminfo.cpp

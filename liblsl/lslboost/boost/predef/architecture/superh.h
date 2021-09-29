@@ -11,26 +11,25 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_ARCH_SH`
+/*`
+[heading `BOOST_ARCH_SH`]
 
-http://en.wikipedia.org/wiki/SuperH[SuperH] architecture:
-If available versions [1-5] are specifically detected.
+[@http://en.wikipedia.org/wiki/SuperH SuperH] architecture:
+If available versions \[1-5\] are specifically detected.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__sh__+` | {predef_detection}
+    [[`__sh__`] [__predef_detection__]]
 
-| `+__SH5__+` | 5.0.0
-| `+__SH4__+` | 4.0.0
-| `+__sh3__+` | 3.0.0
-| `+__SH3__+` | 3.0.0
-| `+__sh2__+` | 2.0.0
-| `+__sh1__+` | 1.0.0
-|===
-*/ // end::reference[]
+    [[`__SH5__`] [5.0.0]]
+    [[`__SH4__`] [4.0.0]]
+    [[`__sh3__`] [3.0.0]]
+    [[`__SH3__`] [3.0.0]]
+    [[`__sh2__`] [2.0.0]]
+    [[`__sh1__`] [1.0.0]]
+    ]
+ */
 
 #define BOOST_ARCH_SH BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

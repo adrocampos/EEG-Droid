@@ -10,6 +10,8 @@
 #include <mutex>
 #include <thread>
 
+using lslboost::asio::ip::tcp;
+
 namespace lsl {
 
 class inlet_connection; // Forward declaration

@@ -13,10 +13,8 @@
 
     #include <windows.h>
 
-    #if defined(BOOST_BORLANDC)
+    #if defined(__BORLANDC__)
         extern "C" BOOL WINAPI DllEntryPoint(HINSTANCE /*hInstance*/, DWORD dwReason, LPVOID /*lpReserved*/)
-    #elif defined(BOOST_EMBTC)
-        extern "C" int _libmain(DWORD dwReason)
     #elif defined(_WIN32_WCE)
         extern "C" BOOL WINAPI DllMain(HANDLE /*hInstance*/, DWORD dwReason, LPVOID /*lpReserved*/)
     #else

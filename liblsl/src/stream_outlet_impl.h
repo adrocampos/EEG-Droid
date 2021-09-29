@@ -7,8 +7,8 @@
 #include <loguru.hpp>
 #include <thread>
 
-using asio::ip::tcp;
-using asio::ip::udp;
+using lslboost::asio::ip::tcp;
+using lslboost::asio::ip::udp;
 
 namespace lsl {
 

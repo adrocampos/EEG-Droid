@@ -17,6 +17,10 @@
 
 #include <boost/range/config.hpp>
 
+#ifdef BOOST_NO_FUNCTION_TEMPLATE_ORDERING
+#include <boost/range/detail/end.hpp>
+#else
+
 #include <boost/range/detail/implementation_help.hpp>
 #include <boost/range/iterator.hpp>
 #include <boost/range/const_iterator.hpp>
@@ -26,7 +30,7 @@
 namespace lslboost
 {
 
-#if !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x564))
+#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
 namespace range_detail
 {
 #endif
@@ -78,7 +82,7 @@ namespace range_detail
             return range_detail::array_end<T,sz>( a );
         }
 
-#if !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x564))
+#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
 } // namespace 'range_detail'
 #endif
 
@@ -91,7 +95,7 @@ BOOST_CONSTEXPR
 #endif
 inline BOOST_DEDUCED_TYPENAME range_iterator<T>::type end( T& r )
 {
-#if !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x564))
+#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
     using namespace range_detail;
 #endif
     return range_end( r );
@@ -103,7 +107,7 @@ BOOST_CONSTEXPR
 #endif
 inline BOOST_DEDUCED_TYPENAME range_iterator<const T>::type end( const T& r )
 {
-#if !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x564))
+#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
     using namespace range_detail;
 #endif
     return range_end( r );
@@ -111,6 +115,8 @@ inline BOOST_DEDUCED_TYPENAME range_iterator<const T>::type end( const T& r )
 
     } // namespace range_adl_barrier
 } // namespace 'boost'
+
+#endif // BOOST_NO_FUNCTION_TEMPLATE_ORDERING
 
 namespace lslboost
 {

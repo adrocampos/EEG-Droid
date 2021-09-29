@@ -2,7 +2,7 @@
 // detail/reactive_socket_recv_op.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -19,9 +19,6 @@
 #include <boost/asio/detail/bind_handler.hpp>
 #include <boost/asio/detail/buffer_sequence_adapter.hpp>
 #include <boost/asio/detail/fenced_block.hpp>
-#include <boost/asio/detail/handler_alloc_helpers.hpp>
-#include <boost/asio/detail/handler_invoke_helpers.hpp>
-#include <boost/asio/detail/handler_work.hpp>
 #include <boost/asio/detail/memory.hpp>
 #include <boost/asio/detail/reactor_op.hpp>
 #include <boost/asio/detail/socket_ops.hpp>
@@ -36,12 +33,10 @@ template <typename MutableBufferSequence>
 class reactive_socket_recv_op_base : public reactor_op
 {
 public:
-  reactive_socket_recv_op_base(const lslboost::system::error_code& success_ec,
-      socket_type socket, socket_ops::state_type state,
-      const MutableBufferSequence& buffers,
+  reactive_socket_recv_op_base(socket_type socket,
+      socket_ops::state_type state, const MutableBufferSequence& buffers,
       socket_base::message_flags flags, func_type complete_func)
-    : reactor_op(success_ec,
-        &reactive_socket_recv_op_base::do_perform, complete_func),
+    : reactor_op(&reactive_socket_recv_op_base::do_perform, complete_func),
       socket_(socket),
       state_(state),
       buffers_(buffers),
@@ -54,26 +49,13 @@ public:
     reactive_socket_recv_op_base* o(
         static_cast<reactive_socket_recv_op_base*>(base));
 
-    typedef buffer_sequence_adapter<lslboost::asio::mutable_buffer,
-        MutableBufferSequence> bufs_type;
+    buffer_sequence_adapter<lslboost::asio::mutable_buffer,
+        MutableBufferSequence> bufs(o->buffers_);
 
-    status result;
-    if (bufs_type::is_single_buffer)
-    {
-      result = socket_ops::non_blocking_recv1(o->socket_,
-          bufs_type::first(o->buffers_).data(),
-          bufs_type::first(o->buffers_).size(), o->flags_,
-          (o->state_ & socket_ops::stream_oriented) != 0,
-          o->ec_, o->bytes_transferred_) ? done : not_done;
-    }
-    else
-    {
-      bufs_type bufs(o->buffers_);
-      result = socket_ops::non_blocking_recv(o->socket_,
-          bufs.buffers(), bufs.count(), o->flags_,
-          (o->state_ & socket_ops::stream_oriented) != 0,
-          o->ec_, o->bytes_transferred_) ? done : not_done;
-    }
+    status result = socket_ops::non_blocking_recv(o->socket_,
+        bufs.buffers(), bufs.count(), o->flags_,
+        (o->state_ & socket_ops::stream_oriented) != 0,
+        o->ec_, o->bytes_transferred_) ? done : not_done;
 
     if (result == done)
       if ((o->state_ & socket_ops::stream_oriented) != 0)
@@ -93,22 +75,21 @@ private:
   socket_base::message_flags flags_;
 };
 
-template <typename MutableBufferSequence, typename Handler, typename IoExecutor>
+template <typename MutableBufferSequence, typename Handler>
 class reactive_socket_recv_op :
   public reactive_socket_recv_op_base<MutableBufferSequence>
 {
 public:
   BOOST_ASIO_DEFINE_HANDLER_PTR(reactive_socket_recv_op);
 
-  reactive_socket_recv_op(const lslboost::system::error_code& success_ec,
-      socket_type socket, socket_ops::state_type state,
-      const MutableBufferSequence& buffers, socket_base::message_flags flags,
-      Handler& handler, const IoExecutor& io_ex)
-    : reactive_socket_recv_op_base<MutableBufferSequence>(success_ec, socket,
-        state, buffers, flags, &reactive_socket_recv_op::do_complete),
-      handler_(BOOST_ASIO_MOVE_CAST(Handler)(handler)),
-      work_(handler_, io_ex)
+  reactive_socket_recv_op(socket_type socket,
+      socket_ops::state_type state, const MutableBufferSequence& buffers,
+      socket_base::message_flags flags, Handler& handler)
+    : reactive_socket_recv_op_base<MutableBufferSequence>(socket, state,
+        buffers, flags, &reactive_socket_recv_op::do_complete),
+      handler_(BOOST_ASIO_MOVE_CAST(Handler)(handler))
   {
+    handler_work<Handler>::start(handler_);
   }
 
   static void do_complete(void* owner, operation* base,
@@ -118,13 +99,9 @@ public:
     // Take ownership of the handler object.
     reactive_socket_recv_op* o(static_cast<reactive_socket_recv_op*>(base));
     ptr p = { lslboost::asio::detail::addressof(o->handler_), o, o };
+    handler_work<Handler> w(o->handler_);
 
     BOOST_ASIO_HANDLER_COMPLETION((*o));
-
-    // Take ownership of the operation's outstanding work.
-    handler_work<Handler, IoExecutor> w(
-        BOOST_ASIO_MOVE_CAST2(handler_work<Handler, IoExecutor>)(
-          o->work_));
 
     // Make a copy of the handler so that the memory can be deallocated before
     // the upcall is made. Even if we're not about to make an upcall, a
@@ -149,7 +126,6 @@ public:
 
 private:
   Handler handler_;
-  handler_work<Handler, IoExecutor> work_;
 };
 
 } // namespace detail

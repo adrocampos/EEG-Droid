@@ -2,7 +2,7 @@
 // ip/address_v6.hpp
 // ~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -60,34 +60,33 @@ public:
 #endif
 
   /// Default constructor.
-  BOOST_ASIO_DECL address_v6() BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL address_v6();
 
   /// Construct an address from raw bytes and scope ID.
   BOOST_ASIO_DECL explicit address_v6(const bytes_type& bytes,
       unsigned long scope_id = 0);
 
   /// Copy constructor.
-  BOOST_ASIO_DECL address_v6(const address_v6& other) BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL address_v6(const address_v6& other);
 
 #if defined(BOOST_ASIO_HAS_MOVE)
   /// Move constructor.
-  BOOST_ASIO_DECL address_v6(address_v6&& other) BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL address_v6(address_v6&& other);
 #endif // defined(BOOST_ASIO_HAS_MOVE)
 
   /// Assign from another address.
-  BOOST_ASIO_DECL address_v6& operator=(
-      const address_v6& other) BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL address_v6& operator=(const address_v6& other);
 
 #if defined(BOOST_ASIO_HAS_MOVE)
   /// Move-assign from another address.
-  BOOST_ASIO_DECL address_v6& operator=(address_v6&& other) BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL address_v6& operator=(address_v6&& other);
 #endif // defined(BOOST_ASIO_HAS_MOVE)
 
   /// The scope ID of the address.
   /**
    * Returns the scope ID associated with the IPv6 address.
    */
-  unsigned long scope_id() const BOOST_ASIO_NOEXCEPT
+  unsigned long scope_id() const
   {
     return scope_id_;
   }
@@ -96,13 +95,13 @@ public:
   /**
    * Modifies the scope ID associated with the IPv6 address.
    */
-  void scope_id(unsigned long id) BOOST_ASIO_NOEXCEPT
+  void scope_id(unsigned long id)
   {
     scope_id_ = id;
   }
 
   /// Get the address in bytes, in network byte order.
-  BOOST_ASIO_DECL bytes_type to_bytes() const BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL bytes_type to_bytes() const;
 
   /// Get the address as a string.
   BOOST_ASIO_DECL std::string to_string() const;
@@ -135,19 +134,19 @@ public:
 #endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
   /// Determine whether the address is a loopback address.
-  BOOST_ASIO_DECL bool is_loopback() const BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL bool is_loopback() const;
 
   /// Determine whether the address is unspecified.
-  BOOST_ASIO_DECL bool is_unspecified() const BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL bool is_unspecified() const;
 
   /// Determine whether the address is link local.
-  BOOST_ASIO_DECL bool is_link_local() const BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL bool is_link_local() const;
 
   /// Determine whether the address is site local.
-  BOOST_ASIO_DECL bool is_site_local() const BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL bool is_site_local() const;
 
   /// Determine whether the address is a mapped IPv4 address.
-  BOOST_ASIO_DECL bool is_v4_mapped() const BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL bool is_v4_mapped() const;
 
 #if !defined(BOOST_ASIO_NO_DEPRECATED)
   /// (Deprecated: No replacement.) Determine whether the address is an
@@ -156,67 +155,63 @@ public:
 #endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
   /// Determine whether the address is a multicast address.
-  BOOST_ASIO_DECL bool is_multicast() const BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL bool is_multicast() const;
 
   /// Determine whether the address is a global multicast address.
-  BOOST_ASIO_DECL bool is_multicast_global() const BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL bool is_multicast_global() const;
 
   /// Determine whether the address is a link-local multicast address.
-  BOOST_ASIO_DECL bool is_multicast_link_local() const BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL bool is_multicast_link_local() const;
 
   /// Determine whether the address is a node-local multicast address.
-  BOOST_ASIO_DECL bool is_multicast_node_local() const BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL bool is_multicast_node_local() const;
 
   /// Determine whether the address is a org-local multicast address.
-  BOOST_ASIO_DECL bool is_multicast_org_local() const BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL bool is_multicast_org_local() const;
 
   /// Determine whether the address is a site-local multicast address.
-  BOOST_ASIO_DECL bool is_multicast_site_local() const BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL bool is_multicast_site_local() const;
 
   /// Compare two addresses for equality.
-  BOOST_ASIO_DECL friend bool operator==(const address_v6& a1,
-      const address_v6& a2) BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL friend bool operator==(
+      const address_v6& a1, const address_v6& a2);
 
   /// Compare two addresses for inequality.
-  friend bool operator!=(const address_v6& a1,
-      const address_v6& a2) BOOST_ASIO_NOEXCEPT
+  friend bool operator!=(const address_v6& a1, const address_v6& a2)
   {
     return !(a1 == a2);
   }
 
   /// Compare addresses for ordering.
-  BOOST_ASIO_DECL friend bool operator<(const address_v6& a1,
-      const address_v6& a2) BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL friend bool operator<(
+      const address_v6& a1, const address_v6& a2);
 
   /// Compare addresses for ordering.
-  friend bool operator>(const address_v6& a1,
-      const address_v6& a2) BOOST_ASIO_NOEXCEPT
+  friend bool operator>(const address_v6& a1, const address_v6& a2)
   {
     return a2 < a1;
   }
 
   /// Compare addresses for ordering.
-  friend bool operator<=(const address_v6& a1,
-      const address_v6& a2) BOOST_ASIO_NOEXCEPT
+  friend bool operator<=(const address_v6& a1, const address_v6& a2)
   {
     return !(a2 < a1);
   }
 
   /// Compare addresses for ordering.
-  friend bool operator>=(const address_v6& a1,
-      const address_v6& a2) BOOST_ASIO_NOEXCEPT
+  friend bool operator>=(const address_v6& a1, const address_v6& a2)
   {
     return !(a1 < a2);
   }
 
   /// Obtain an address object that represents any address.
-  static address_v6 any() BOOST_ASIO_NOEXCEPT
+  static address_v6 any()
   {
     return address_v6();
   }
 
   /// Obtain an address object that represents the loopback address.
-  BOOST_ASIO_DECL static address_v6 loopback() BOOST_ASIO_NOEXCEPT;
+  BOOST_ASIO_DECL static address_v6 loopback();
 
 #if !defined(BOOST_ASIO_NO_DEPRECATED)
   /// (Deprecated: Use make_address_v6().) Create an IPv4-mapped IPv6 address.
@@ -256,8 +251,8 @@ BOOST_ASIO_DECL address_v6 make_address_v6(const char* str);
 /**
  * @relates address_v6
  */
-BOOST_ASIO_DECL address_v6 make_address_v6(const char* str,
-    lslboost::system::error_code& ec) BOOST_ASIO_NOEXCEPT;
+BOOST_ASIO_DECL address_v6 make_address_v6(
+    const char* str, lslboost::system::error_code& ec);
 
 /// Createan IPv6 address from an IP address string.
 /**
@@ -269,8 +264,8 @@ BOOST_ASIO_DECL address_v6 make_address_v6(const std::string& str);
 /**
  * @relates address_v6
  */
-BOOST_ASIO_DECL address_v6 make_address_v6(const std::string& str,
-    lslboost::system::error_code& ec) BOOST_ASIO_NOEXCEPT;
+BOOST_ASIO_DECL address_v6 make_address_v6(
+    const std::string& str, lslboost::system::error_code& ec);
 
 #if defined(BOOST_ASIO_HAS_STRING_VIEW) \
   || defined(GENERATING_DOCUMENTATION)
@@ -285,8 +280,8 @@ BOOST_ASIO_DECL address_v6 make_address_v6(string_view str);
 /**
  * @relates address_v6
  */
-BOOST_ASIO_DECL address_v6 make_address_v6(string_view str,
-    lslboost::system::error_code& ec) BOOST_ASIO_NOEXCEPT;
+BOOST_ASIO_DECL address_v6 make_address_v6(
+    string_view str, lslboost::system::error_code& ec);
 
 #endif // defined(BOOST_ASIO_HAS_STRING_VIEW)
        //  || defined(GENERATING_DOCUMENTATION)

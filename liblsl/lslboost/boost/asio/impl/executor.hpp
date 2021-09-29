@@ -2,7 +2,7 @@
 // impl/executor.hpp
 // ~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -16,10 +16,8 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include <boost/asio/detail/config.hpp>
-
-#if !defined(BOOST_ASIO_NO_TS_EXECUTORS)
-
 #include <boost/asio/detail/atomic_count.hpp>
+#include <boost/asio/detail/executor_op.hpp>
 #include <boost/asio/detail/global.hpp>
 #include <boost/asio/detail/memory.hpp>
 #include <boost/asio/detail/recycling_allocator.hpp>
@@ -33,7 +31,98 @@ namespace asio {
 
 #if !defined(GENERATING_DOCUMENTATION)
 
-// Default polymorphic executor implementation.
+#if defined(BOOST_ASIO_HAS_MOVE)
+
+// Lightweight, move-only function object wrapper.
+class executor::function
+{
+public:
+  template <typename F, typename Alloc>
+  explicit function(F f, const Alloc& a)
+  {
+    // Allocate and construct an operation to wrap the function.
+    typedef detail::executor_op<F, Alloc> op;
+    typename op::ptr p = { detail::addressof(a), op::ptr::allocate(a), 0 };
+    op_ = new (p.v) op(BOOST_ASIO_MOVE_CAST(F)(f), a);
+    p.v = 0;
+  }
+
+  function(function&& other)
+    : op_(other.op_)
+  {
+    other.op_ = 0;
+  }
+
+  ~function()
+  {
+    if (op_)
+      op_->destroy();
+  }
+
+  void operator()()
+  {
+    if (op_)
+    {
+      detail::scheduler_operation* op = op_;
+      op_ = 0;
+      op->complete(this, lslboost::system::error_code(), 0);
+    }
+  }
+
+private:
+  detail::scheduler_operation* op_;
+};
+
+#else // defined(BOOST_ASIO_HAS_MOVE)
+
+// Not so lightweight, copyable function object wrapper.
+class executor::function
+{
+public:
+  template <typename F, typename Alloc>
+  explicit function(const F& f, const Alloc&)
+    : impl_(new impl<F>(f))
+  {
+  }
+
+  void operator()()
+  {
+    impl_->invoke_(impl_.get());
+  }
+
+private:
+  // Base class for polymorphic function implementations.
+  struct impl_base
+  {
+    void (*invoke_)(impl_base*);
+  };
+
+  // Polymorphic function implementation.
+  template <typename F>
+  struct impl : impl_base
+  {
+    impl(const F& f)
+      : function_(f)
+    {
+      invoke_ = &function::invoke<F>;
+    }
+
+    F function_;
+  };
+
+  // Helper to invoke a function.
+  template <typename F>
+  static void invoke(impl_base* i)
+  {
+    static_cast<impl<F>*>(i)->function_();
+  }
+
+  detail::shared_ptr<impl_base> impl_;
+};
+
+#endif // defined(BOOST_ASIO_HAS_MOVE)
+
+// Default polymorphic allocator implementation.
 template <typename Executor, typename Allocator>
 class executor::impl
   : public executor::impl_base
@@ -59,13 +148,13 @@ public:
 
   impl_base* clone() const BOOST_ASIO_NOEXCEPT
   {
-    detail::ref_count_up(ref_count_);
+    ++ref_count_;
     return const_cast<impl_base*>(static_cast<const impl_base*>(this));
   }
 
   void destroy() BOOST_ASIO_NOEXCEPT
   {
-    if (detail::ref_count_down(ref_count_))
+    if (--ref_count_ == 0)
     {
       allocator_type alloc(allocator_);
       impl* p = this;
@@ -157,7 +246,7 @@ private:
   };
 };
 
-// Polymorphic executor specialisation for system_executor.
+// Polymorphic allocator specialisation for system_executor.
 template <typename Allocator>
 class executor::impl<system_executor, Allocator>
   : public executor::impl_base
@@ -200,20 +289,17 @@ public:
 
   void dispatch(BOOST_ASIO_MOVE_ARG(function) f)
   {
-    executor_.dispatch(BOOST_ASIO_MOVE_CAST(function)(f),
-        std::allocator<void>());
+    executor_.dispatch(BOOST_ASIO_MOVE_CAST(function)(f), allocator_);
   }
 
   void post(BOOST_ASIO_MOVE_ARG(function) f)
   {
-    executor_.post(BOOST_ASIO_MOVE_CAST(function)(f),
-        std::allocator<void>());
+    executor_.post(BOOST_ASIO_MOVE_CAST(function)(f), allocator_);
   }
 
   void defer(BOOST_ASIO_MOVE_ARG(function) f)
   {
-    executor_.defer(BOOST_ASIO_MOVE_CAST(function)(f),
-        std::allocator<void>());
+    executor_.defer(BOOST_ASIO_MOVE_CAST(function)(f), allocator_);
   }
 
   type_id_result_type target_type() const BOOST_ASIO_NOEXCEPT
@@ -238,6 +324,7 @@ public:
 
 private:
   system_executor executor_;
+  Allocator allocator_;
 };
 
 template <typename Executor>
@@ -297,7 +384,5 @@ const Executor* executor::target() const BOOST_ASIO_NOEXCEPT
 } // namespace lslboost
 
 #include <boost/asio/detail/pop_options.hpp>
-
-#endif // !defined(BOOST_ASIO_NO_TS_EXECUTORS)
 
 #endif // BOOST_ASIO_IMPL_EXECUTOR_HPP

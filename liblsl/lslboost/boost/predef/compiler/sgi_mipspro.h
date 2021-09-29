@@ -11,23 +11,22 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_COMP_SGI`
+/*`
+[heading `BOOST_COMP_SGI`]
 
-http://en.wikipedia.org/wiki/MIPSpro[SGI MIPSpro] compiler.
+[@http://en.wikipedia.org/wiki/MIPSpro SGI MIPSpro] compiler.
 Version number available as major, minor, and patch.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__sgi+` | {predef_detection}
-| `sgi` | {predef_detection}
+    [[`__sgi`] [__predef_detection__]]
+    [[`sgi`] [__predef_detection__]]
 
-| `+_SGI_COMPILER_VERSION+` | V.R.P
-| `+_COMPILER_VERSION+` | V.R.P
-|===
-*/ // end::reference[]
+    [[`_SGI_COMPILER_VERSION`] [V.R.P]]
+    [[`_COMPILER_VERSION`] [V.R.P]]
+    ]
+ */
 
 #define BOOST_COMP_SGI BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

@@ -2,7 +2,7 @@
 // detail/reactive_descriptor_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -22,7 +22,7 @@
   && !defined(__CYGWIN__)
 
 #include <boost/asio/buffer.hpp>
-#include <boost/asio/execution_context.hpp>
+#include <boost/asio/io_context.hpp>
 #include <boost/asio/detail/bind_handler.hpp>
 #include <boost/asio/detail/buffer_sequence_adapter.hpp>
 #include <boost/asio/detail/descriptor_ops.hpp>
@@ -43,7 +43,7 @@ namespace asio {
 namespace detail {
 
 class reactive_descriptor_service :
-  public execution_context_service_base<reactive_descriptor_service>
+  public service_base<reactive_descriptor_service>
 {
 public:
   // The native type of a descriptor.
@@ -76,7 +76,8 @@ public:
   };
 
   // Constructor.
-  BOOST_ASIO_DECL reactive_descriptor_service(execution_context& context);
+  BOOST_ASIO_DECL reactive_descriptor_service(
+      lslboost::asio::io_context& io_context);
 
   // Destroy all user-defined handler objects owned by the service.
   BOOST_ASIO_DECL void shutdown();
@@ -86,7 +87,7 @@ public:
 
   // Move-construct a new descriptor implementation.
   BOOST_ASIO_DECL void move_construct(implementation_type& impl,
-      implementation_type& other_impl) BOOST_ASIO_NOEXCEPT;
+      implementation_type& other_impl);
 
   // Move-assign from another descriptor implementation.
   BOOST_ASIO_DECL void move_assign(implementation_type& impl,
@@ -190,19 +191,18 @@ public:
 
   // Asynchronously wait for the descriptor to become ready to read, ready to
   // write, or to have pending error conditions.
-  template <typename Handler, typename IoExecutor>
+  template <typename Handler>
   void async_wait(implementation_type& impl,
-      posix::descriptor_base::wait_type w,
-      Handler& handler, const IoExecutor& io_ex)
+      posix::descriptor_base::wait_type w, Handler& handler)
   {
     bool is_continuation =
       lslboost_asio_handler_cont_helpers::is_continuation(handler);
 
     // Allocate and construct an operation to wrap the handler.
-    typedef reactive_wait_op<Handler, IoExecutor> op;
+    typedef reactive_wait_op<Handler> op;
     typename op::ptr p = { lslboost::asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(success_ec_, handler, io_ex);
+    p.p = new (p.v) op(handler);
 
     BOOST_ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "descriptor",
           &impl, impl.descriptor_, "async_wait"));
@@ -235,22 +235,11 @@ public:
   size_t write_some(implementation_type& impl,
       const ConstBufferSequence& buffers, lslboost::system::error_code& ec)
   {
-    typedef buffer_sequence_adapter<lslboost::asio::const_buffer,
-        ConstBufferSequence> bufs_type;
+    buffer_sequence_adapter<lslboost::asio::const_buffer,
+        ConstBufferSequence> bufs(buffers);
 
-    if (bufs_type::is_single_buffer)
-    {
-      return descriptor_ops::sync_write1(impl.descriptor_,
-          impl.state_, bufs_type::first(buffers).data(),
-          bufs_type::first(buffers).size(), ec);
-    }
-    else
-    {
-      bufs_type bufs(buffers);
-
-      return descriptor_ops::sync_write(impl.descriptor_, impl.state_,
-          bufs.buffers(), bufs.count(), bufs.all_empty(), ec);
-    }
+    return descriptor_ops::sync_write(impl.descriptor_, impl.state_,
+        bufs.buffers(), bufs.count(), bufs.all_empty(), ec);
   }
 
   // Wait until data can be written without blocking.
@@ -265,19 +254,18 @@ public:
 
   // Start an asynchronous write. The data being sent must be valid for the
   // lifetime of the asynchronous operation.
-  template <typename ConstBufferSequence, typename Handler, typename IoExecutor>
+  template <typename ConstBufferSequence, typename Handler>
   void async_write_some(implementation_type& impl,
-      const ConstBufferSequence& buffers, Handler& handler,
-      const IoExecutor& io_ex)
+      const ConstBufferSequence& buffers, Handler& handler)
   {
     bool is_continuation =
       lslboost_asio_handler_cont_helpers::is_continuation(handler);
 
     // Allocate and construct an operation to wrap the handler.
-    typedef descriptor_write_op<ConstBufferSequence, Handler, IoExecutor> op;
+    typedef descriptor_write_op<ConstBufferSequence, Handler> op;
     typename op::ptr p = { lslboost::asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(success_ec_, impl.descriptor_, buffers, handler, io_ex);
+    p.p = new (p.v) op(impl.descriptor_, buffers, handler);
 
     BOOST_ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "descriptor",
           &impl, impl.descriptor_, "async_write_some"));
@@ -289,18 +277,18 @@ public:
   }
 
   // Start an asynchronous wait until data can be written without blocking.
-  template <typename Handler, typename IoExecutor>
+  template <typename Handler>
   void async_write_some(implementation_type& impl,
-      const null_buffers&, Handler& handler, const IoExecutor& io_ex)
+      const null_buffers&, Handler& handler)
   {
     bool is_continuation =
       lslboost_asio_handler_cont_helpers::is_continuation(handler);
 
     // Allocate and construct an operation to wrap the handler.
-    typedef reactive_null_buffers_op<Handler, IoExecutor> op;
+    typedef reactive_null_buffers_op<Handler> op;
     typename op::ptr p = { lslboost::asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(success_ec_, handler, io_ex);
+    p.p = new (p.v) op(handler);
 
     BOOST_ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "descriptor",
           &impl, impl.descriptor_, "async_write_some(null_buffers)"));
@@ -314,22 +302,11 @@ public:
   size_t read_some(implementation_type& impl,
       const MutableBufferSequence& buffers, lslboost::system::error_code& ec)
   {
-    typedef buffer_sequence_adapter<lslboost::asio::mutable_buffer,
-        MutableBufferSequence> bufs_type;
+    buffer_sequence_adapter<lslboost::asio::mutable_buffer,
+        MutableBufferSequence> bufs(buffers);
 
-    if (bufs_type::is_single_buffer)
-    {
-      return descriptor_ops::sync_read1(impl.descriptor_,
-          impl.state_, bufs_type::first(buffers).data(),
-          bufs_type::first(buffers).size(), ec);
-    }
-    else
-    {
-      bufs_type bufs(buffers);
-
-      return descriptor_ops::sync_read(impl.descriptor_, impl.state_,
-          bufs.buffers(), bufs.count(), bufs.all_empty(), ec);
-    }
+    return descriptor_ops::sync_read(impl.descriptor_, impl.state_,
+        bufs.buffers(), bufs.count(), bufs.all_empty(), ec);
   }
 
   // Wait until data can be read without blocking.
@@ -344,20 +321,18 @@ public:
 
   // Start an asynchronous read. The buffer for the data being read must be
   // valid for the lifetime of the asynchronous operation.
-  template <typename MutableBufferSequence,
-      typename Handler, typename IoExecutor>
+  template <typename MutableBufferSequence, typename Handler>
   void async_read_some(implementation_type& impl,
-      const MutableBufferSequence& buffers,
-      Handler& handler, const IoExecutor& io_ex)
+      const MutableBufferSequence& buffers, Handler& handler)
   {
     bool is_continuation =
       lslboost_asio_handler_cont_helpers::is_continuation(handler);
 
     // Allocate and construct an operation to wrap the handler.
-    typedef descriptor_read_op<MutableBufferSequence, Handler, IoExecutor> op;
+    typedef descriptor_read_op<MutableBufferSequence, Handler> op;
     typename op::ptr p = { lslboost::asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(success_ec_, impl.descriptor_, buffers, handler, io_ex);
+    p.p = new (p.v) op(impl.descriptor_, buffers, handler);
 
     BOOST_ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "descriptor",
           &impl, impl.descriptor_, "async_read_some"));
@@ -369,18 +344,18 @@ public:
   }
 
   // Wait until data can be read without blocking.
-  template <typename Handler, typename IoExecutor>
+  template <typename Handler>
   void async_read_some(implementation_type& impl,
-      const null_buffers&, Handler& handler, const IoExecutor& io_ex)
+      const null_buffers&, Handler& handler)
   {
     bool is_continuation =
       lslboost_asio_handler_cont_helpers::is_continuation(handler);
 
     // Allocate and construct an operation to wrap the handler.
-    typedef reactive_null_buffers_op<Handler, IoExecutor> op;
+    typedef reactive_null_buffers_op<Handler> op;
     typename op::ptr p = { lslboost::asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(success_ec_, handler, io_ex);
+    p.p = new (p.v) op(handler);
 
     BOOST_ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "descriptor",
           &impl, impl.descriptor_, "async_read_some(null_buffers)"));
@@ -396,9 +371,6 @@ private:
 
   // The selector that performs event demultiplexing for the service.
   reactor& reactor_;
-
-  // Cached success value to avoid accessing category singleton.
-  const lslboost::system::error_code success_ec_;
 };
 
 } // namespace detail

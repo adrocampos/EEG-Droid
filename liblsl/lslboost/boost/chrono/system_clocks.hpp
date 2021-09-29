@@ -96,9 +96,9 @@ namespace lslboost {
 namespace chrono {
 
   // Clocks
-  class system_clock;
+  class BOOST_CHRONO_DECL system_clock;
 #ifdef BOOST_CHRONO_HAS_CLOCK_STEADY
-  class steady_clock;
+  class BOOST_CHRONO_DECL steady_clock;
 #endif
 
 #ifdef BOOST_CHRONO_HAS_CLOCK_STEADY

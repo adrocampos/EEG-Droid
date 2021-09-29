@@ -11,7 +11,6 @@
 #include <boost/thread/pthread/pthread_helpers.hpp>
 
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
-#include <boost/thread/interruption.hpp>
 #include <boost/thread/pthread/thread_data.hpp>
 #endif
 #include <boost/thread/pthread/condition_variable_fwd.hpp>
@@ -27,6 +26,13 @@
 
 namespace lslboost
 {
+#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
+    namespace this_thread
+    {
+        void BOOST_THREAD_DECL interruption_point();
+    }
+#endif
+
     namespace thread_cv_detail
     {
         template<typename MutexType>
@@ -76,18 +82,18 @@ namespace lslboost
             detail::interruption_checker check_for_interruption(&internal_mutex,&cond);
             pthread_mutex_t* the_mutex = &internal_mutex;
             guard.activate(m);
-            res = posix::pthread_cond_wait(&cond,the_mutex);
+            res = pthread_cond_wait(&cond,the_mutex);
             check_for_interruption.unlock_if_locked();
             guard.deactivate();
 #else
             pthread_mutex_t* the_mutex = m.mutex()->native_handle();
-            res = posix::pthread_cond_wait(&cond,the_mutex);
+            res = pthread_cond_wait(&cond,the_mutex);
 #endif
         }
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
         this_thread::interruption_point();
 #endif
-        if(res)
+        if(res && res != EINTR)
         {
             lslboost::throw_exception(condition_error(res, "lslboost::condition_variable::wait failed in pthread_cond_wait"));
         }
@@ -119,12 +125,12 @@ namespace lslboost
             detail::interruption_checker check_for_interruption(&internal_mutex,&cond);
             pthread_mutex_t* the_mutex = &internal_mutex;
             guard.activate(m);
-            cond_res=posix::pthread_cond_timedwait(&cond,the_mutex,&timeout.getTs());
+            cond_res=pthread_cond_timedwait(&cond,the_mutex,&timeout.getTs());
             check_for_interruption.unlock_if_locked();
             guard.deactivate();
 #else
             pthread_mutex_t* the_mutex = m.mutex()->native_handle();
-            cond_res=posix::pthread_cond_timedwait(&cond,the_mutex,&timeout.getTs());
+            cond_res=pthread_cond_timedwait(&cond,the_mutex,&timeout.getTs());
 #endif
         }
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
@@ -146,7 +152,7 @@ namespace lslboost
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
         lslboost::pthread::pthread_mutex_scoped_lock internal_lock(&internal_mutex);
 #endif
-        BOOST_VERIFY(!posix::pthread_cond_signal(&cond));
+        BOOST_VERIFY(!pthread_cond_signal(&cond));
     }
 
     inline void condition_variable::notify_all() BOOST_NOEXCEPT
@@ -154,7 +160,7 @@ namespace lslboost
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
         lslboost::pthread::pthread_mutex_scoped_lock internal_lock(&internal_mutex);
 #endif
-        BOOST_VERIFY(!posix::pthread_cond_broadcast(&cond));
+        BOOST_VERIFY(!pthread_cond_broadcast(&cond));
     }
 
     class condition_variable_any
@@ -166,22 +172,22 @@ namespace lslboost
         BOOST_THREAD_NO_COPYABLE(condition_variable_any)
         condition_variable_any()
         {
-            int const res=posix::pthread_mutex_init(&internal_mutex);
+            int const res=pthread_mutex_init(&internal_mutex,NULL);
             if(res)
             {
                 lslboost::throw_exception(thread_resource_error(res, "lslboost::condition_variable_any::condition_variable_any() failed in pthread_mutex_init"));
             }
-            int const res2 = posix::pthread_cond_init(&cond);
+            int const res2 = pthread::cond_init(cond);
             if(res2)
             {
-                BOOST_VERIFY(!posix::pthread_mutex_destroy(&internal_mutex));
-                lslboost::throw_exception(thread_resource_error(res2, "lslboost::condition_variable_any::condition_variable_any() failed in pthread_cond_init"));
+                BOOST_VERIFY(!pthread_mutex_destroy(&internal_mutex));
+                lslboost::throw_exception(thread_resource_error(res2, "lslboost::condition_variable_any::condition_variable_any() failed in pthread::cond_init"));
             }
         }
         ~condition_variable_any()
         {
-            BOOST_VERIFY(!posix::pthread_mutex_destroy(&internal_mutex));
-            BOOST_VERIFY(!posix::pthread_cond_destroy(&cond));
+            BOOST_VERIFY(!pthread_mutex_destroy(&internal_mutex));
+            BOOST_VERIFY(!pthread_cond_destroy(&cond));
         }
 
         template<typename lock_type>
@@ -196,7 +202,7 @@ namespace lslboost
                 lslboost::pthread::pthread_mutex_scoped_lock check_for_interruption(&internal_mutex);
 #endif
                 guard.activate(m);
-                res=posix::pthread_cond_wait(&cond,&internal_mutex);
+                res=pthread_cond_wait(&cond,&internal_mutex);
                 check_for_interruption.unlock_if_locked();
                 guard.deactivate();
             }
@@ -438,13 +444,13 @@ namespace lslboost
         void notify_one() BOOST_NOEXCEPT
         {
             lslboost::pthread::pthread_mutex_scoped_lock internal_lock(&internal_mutex);
-            BOOST_VERIFY(!posix::pthread_cond_signal(&cond));
+            BOOST_VERIFY(!pthread_cond_signal(&cond));
         }
 
         void notify_all() BOOST_NOEXCEPT
         {
             lslboost::pthread::pthread_mutex_scoped_lock internal_lock(&internal_mutex);
-            BOOST_VERIFY(!posix::pthread_cond_broadcast(&cond));
+            BOOST_VERIFY(!pthread_cond_broadcast(&cond));
         }
     private:
 
@@ -471,7 +477,7 @@ namespace lslboost
               lslboost::pthread::pthread_mutex_scoped_lock check_for_interruption(&internal_mutex);
 #endif
               guard.activate(m);
-              res=posix::pthread_cond_timedwait(&cond,&internal_mutex,&timeout.getTs());
+              res=pthread_cond_timedwait(&cond,&internal_mutex,&timeout.getTs());
               check_for_interruption.unlock_if_locked();
               guard.deactivate();
           }

@@ -13,19 +13,18 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_LIB_STD_MSIPL`
+/*`
+[heading `BOOST_LIB_STD_MSIPL`]
 
-http://modena.us/[Modena Software Lib++] Standard {CPP} Library.
+[@http://modena.us/ Modena Software Lib++] Standard C++ Library.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `MSIPL_COMPILE_H` | {predef_detection}
-| `+__MSIPL_COMPILE_H+` | {predef_detection}
-|===
-*/ // end::reference[]
+    [[`MSIPL_COMPILE_H`] [__predef_detection__]]
+    [[`__MSIPL_COMPILE_H`] [__predef_detection__]]
+    ]
+ */
 
 #define BOOST_LIB_STD_MSIPL BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

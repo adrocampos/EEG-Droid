@@ -1,4 +1,4 @@
-#include "util/inireader.hpp"
+#include "../src/inireader.h"
 #include <catch2/catch.hpp>
 #include <sstream>
 

@@ -3,8 +3,8 @@
 //Distributed under the Boost Software License, Version 1.0. (See accompanying
 //file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef BOOST_EXCEPTION_1A590226753311DD9E4CCF6156D89593
-#define BOOST_EXCEPTION_1A590226753311DD9E4CCF6156D89593
+#ifndef UUID_1A590226753311DD9E4CCF6156D89593
+#define UUID_1A590226753311DD9E4CCF6156D89593
 
 #include <boost/config.hpp>
 #include <boost/exception/exception.hpp>
@@ -13,16 +13,11 @@
 #include <boost/exception/detail/shared_ptr.hpp>
 #include <boost/assert.hpp>
 
-#ifndef BOOST_EXCEPTION_ENABLE_WARNINGS
-#if __GNUC__*100+__GNUC_MINOR__>301
+#if (__GNUC__*100+__GNUC_MINOR__>301) && !defined(BOOST_EXCEPTION_ENABLE_WARNINGS)
 #pragma GCC system_header
 #endif
-#ifdef __clang__
-#pragma clang system_header
-#endif
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(BOOST_EXCEPTION_ENABLE_WARNINGS)
 #pragma warning(push,1)
-#endif
 #endif
 
 namespace

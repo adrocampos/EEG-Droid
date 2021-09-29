@@ -10,7 +10,6 @@
 #define BOOST_WINAPI_EVENT_HPP_INCLUDED_
 
 #include <boost/winapi/basic_types.hpp>
-#include <boost/winapi/detail/header.hpp>
 
 #ifdef BOOST_HAS_PRAGMA_ONCE
 #pragma once
@@ -19,7 +18,7 @@
 #if !defined( BOOST_USE_WINDOWS_H ) && BOOST_WINAPI_PARTITION_APP_SYSTEM
 extern "C" {
 #if !defined( BOOST_NO_ANSI_APIS )
-BOOST_WINAPI_IMPORT lslboost::winapi::HANDLE_ BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT lslboost::winapi::HANDLE_ BOOST_WINAPI_WINAPI_CC
 CreateEventA(
     ::_SECURITY_ATTRIBUTES* lpEventAttributes,
     lslboost::winapi::BOOL_ bManualReset,
@@ -27,7 +26,7 @@ CreateEventA(
     lslboost::winapi::LPCSTR_ lpName);
 #endif
 
-BOOST_WINAPI_IMPORT_EXCEPT_WM lslboost::winapi::HANDLE_ BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT lslboost::winapi::HANDLE_ BOOST_WINAPI_WINAPI_CC
 CreateEventW(
     ::_SECURITY_ATTRIBUTES* lpEventAttributes,
     lslboost::winapi::BOOL_ bManualReset,
@@ -40,7 +39,7 @@ CreateEventW(
 extern "C" {
 #if !defined( BOOST_NO_ANSI_APIS )
 #if BOOST_USE_WINAPI_VERSION >= BOOST_WINAPI_VERSION_WIN6
-BOOST_WINAPI_IMPORT lslboost::winapi::HANDLE_ BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT lslboost::winapi::HANDLE_ BOOST_WINAPI_WINAPI_CC
 CreateEventExA(
     ::_SECURITY_ATTRIBUTES *lpEventAttributes,
     lslboost::winapi::LPCSTR_ lpName,
@@ -48,7 +47,7 @@ CreateEventExA(
     lslboost::winapi::DWORD_ dwDesiredAccess);
 #endif
 
-BOOST_WINAPI_IMPORT lslboost::winapi::HANDLE_ BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT lslboost::winapi::HANDLE_ BOOST_WINAPI_WINAPI_CC
 OpenEventA(
     lslboost::winapi::DWORD_ dwDesiredAccess,
     lslboost::winapi::BOOL_ bInheritHandle,
@@ -56,7 +55,7 @@ OpenEventA(
 #endif // !defined( BOOST_NO_ANSI_APIS )
 
 #if BOOST_USE_WINAPI_VERSION >= BOOST_WINAPI_VERSION_WIN6
-BOOST_WINAPI_IMPORT lslboost::winapi::HANDLE_ BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT lslboost::winapi::HANDLE_ BOOST_WINAPI_WINAPI_CC
 CreateEventExW(
     ::_SECURITY_ATTRIBUTES *lpEventAttributes,
     lslboost::winapi::LPCWSTR_ lpName,
@@ -64,7 +63,7 @@ CreateEventExW(
     lslboost::winapi::DWORD_ dwDesiredAccess);
 #endif
 
-BOOST_WINAPI_IMPORT_EXCEPT_WM lslboost::winapi::HANDLE_ BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT lslboost::winapi::HANDLE_ BOOST_WINAPI_WINAPI_CC
 OpenEventW(
     lslboost::winapi::DWORD_ dwDesiredAccess,
     lslboost::winapi::BOOL_ bInheritHandle,
@@ -72,10 +71,10 @@ OpenEventW(
 
 // Windows CE define SetEvent/ResetEvent as inline functions in kfuncs.h
 #if !defined( UNDER_CE )
-BOOST_WINAPI_IMPORT lslboost::winapi::BOOL_ BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT lslboost::winapi::BOOL_ BOOST_WINAPI_WINAPI_CC
 SetEvent(lslboost::winapi::HANDLE_ hEvent);
 
-BOOST_WINAPI_IMPORT lslboost::winapi::BOOL_ BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT lslboost::winapi::BOOL_ BOOST_WINAPI_WINAPI_CC
 ResetEvent(lslboost::winapi::HANDLE_ hEvent);
 #endif
 } // extern "C"
@@ -187,7 +186,5 @@ BOOST_FORCEINLINE HANDLE_ create_anonymous_event(SECURITY_ATTRIBUTES_* lpEventAt
 
 }
 }
-
-#include <boost/winapi/detail/footer.hpp>
 
 #endif // BOOST_WINAPI_EVENT_HPP_INCLUDED_

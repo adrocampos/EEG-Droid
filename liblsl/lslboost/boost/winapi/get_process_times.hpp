@@ -21,11 +21,10 @@
 
 #include <boost/winapi/basic_types.hpp>
 #include <boost/winapi/time.hpp>
-#include <boost/winapi/detail/header.hpp>
 
 #if !defined( BOOST_USE_WINDOWS_H )
 extern "C" {
-BOOST_WINAPI_IMPORT lslboost::winapi::BOOL_ BOOST_WINAPI_WINAPI_CC
+BOOST_SYMBOL_IMPORT lslboost::winapi::BOOL_ BOOST_WINAPI_WINAPI_CC
 GetProcessTimes(
     lslboost::winapi::HANDLE_ hProcess,
     ::_FILETIME* lpCreationTime,
@@ -55,8 +54,6 @@ BOOST_FORCEINLINE BOOL_ GetProcessTimes(
 
 }
 }
-
-#include <boost/winapi/detail/footer.hpp>
 
 #endif // BOOST_WINAPI_PARTITION_APP_SYSTEM
 #endif // !defined( UNDER_CE )

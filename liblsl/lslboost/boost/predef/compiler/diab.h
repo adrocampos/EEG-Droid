@@ -11,21 +11,20 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_COMP_DIAB`
+/*`
+[heading `BOOST_COMP_DIAB`]
 
-http://www.windriver.com/products/development_suite/wind_river_compiler/[Diab C/{CPP}] compiler.
+[@http://www.windriver.com/products/development_suite/wind_river_compiler/ Diab C/C++] compiler.
 Version number available as major, minor, and patch.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__DCC__+` | {predef_detection}
+    [[`__DCC__`] [__predef_detection__]]
 
-| `+__VERSION_NUMBER__+` | V.R.P
-|===
-*/ // end::reference[]
+    [[`__VERSION_NUMBER__`] [V.R.P]]
+    ]
+ */
 
 #define BOOST_COMP_DIAB BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

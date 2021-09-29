@@ -11,18 +11,17 @@
 #include <boost/predef/version_number.h>
 #include <boost/predef/make.h>
 
-/* tag::reference[]
-= `BOOST_PLAT_CLOUDABI`
+/*`
+[heading `BOOST_PLAT_CLOUDABI`]
 
-https://github.com/NuxiNL/cloudabi[CloudABI] platform.
+[@https://github.com/NuxiNL/cloudabi CloudABI] platform.
 
-[options="header"]
-|===
-| {predef_symbol} | {predef_version}
+[table
+    [[__predef_symbol__] [__predef_version__]]
 
-| `+__CloudABI__+` | {predef_detection}
-|===
-*/ // end::reference[]
+    [[`__CloudABI__`] [__predef_detection__]]
+    ]
+ */
 
 #define BOOST_PLAT_CLOUDABI BOOST_VERSION_NUMBER_NOT_AVAILABLE
 

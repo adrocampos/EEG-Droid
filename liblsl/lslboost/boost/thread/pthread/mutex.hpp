@@ -33,6 +33,10 @@
 
 #include <boost/config/abi_prefix.hpp>
 
+#ifndef BOOST_THREAD_HAS_NO_EINTR_BUG
+#define BOOST_THREAD_HAS_EINTR_BUG
+#endif
+
 namespace lslboost
 {
 
@@ -45,7 +49,7 @@ namespace lslboost
 
         mutex()
         {
-            int const res=posix::pthread_mutex_init(&m);
+            int const res=pthread_mutex_init(&m,NULL);
             if(res)
             {
                 lslboost::throw_exception(thread_resource_error(res, "lslboost:: mutex constructor failed in pthread_mutex_init"));
@@ -53,7 +57,9 @@ namespace lslboost
         }
         ~mutex()
         {
-          BOOST_VERIFY(!posix::pthread_mutex_destroy(&m));
+          int const res = posix::pthread_mutex_destroy(&m);
+          lslboost::ignore_unused(res);
+          BOOST_ASSERT(!res);
         }
 
         void lock() BOOST_THREAD_ACQUIRE()
@@ -67,12 +73,22 @@ namespace lslboost
 
         void unlock() BOOST_THREAD_RELEASE()
         {
-            BOOST_VERIFY(!posix::pthread_mutex_unlock(&m));
+            int res = posix::pthread_mutex_unlock(&m);
+            (void)res;
+            BOOST_ASSERT(res == 0);
+//            if (res)
+//            {
+//                lslboost::throw_exception(lock_error(res,"boost: mutex unlock failed in pthread_mutex_unlock"));
+//            }
         }
 
         bool try_lock() BOOST_THREAD_TRY_ACQUIRE(true)
         {
-            int res = posix::pthread_mutex_trylock(&m);
+            int res;
+            do
+            {
+                res = posix::pthread_mutex_trylock(&m);
+            } while (res == EINTR);
             if (res==EBUSY)
             {
                 return false;
@@ -108,17 +124,17 @@ namespace lslboost
         BOOST_THREAD_NO_COPYABLE(timed_mutex)
         timed_mutex()
         {
-            int const res=posix::pthread_mutex_init(&m);
+            int const res=pthread_mutex_init(&m,NULL);
             if(res)
             {
                 lslboost::throw_exception(thread_resource_error(res, "lslboost:: timed_mutex constructor failed in pthread_mutex_init"));
             }
 #ifndef BOOST_THREAD_USES_PTHREAD_TIMEDLOCK
-            int const res2=posix::pthread_cond_init(&cond);
+            int const res2=pthread::cond_init(cond);
             if(res2)
             {
                 BOOST_VERIFY(!posix::pthread_mutex_destroy(&m));
-                lslboost::throw_exception(thread_resource_error(res2, "lslboost:: timed_mutex constructor failed in pthread_cond_init"));
+                lslboost::throw_exception(thread_resource_error(res2, "lslboost:: timed_mutex constructor failed in pthread::cond_init"));
             }
             is_locked=false;
 #endif
@@ -127,7 +143,7 @@ namespace lslboost
         {
             BOOST_VERIFY(!posix::pthread_mutex_destroy(&m));
 #ifndef BOOST_THREAD_USES_PTHREAD_TIMEDLOCK
-            BOOST_VERIFY(!posix::pthread_cond_destroy(&cond));
+            BOOST_VERIFY(!pthread_cond_destroy(&cond));
 #endif
         }
 
@@ -176,12 +192,22 @@ namespace lslboost
 
         void unlock()
         {
-            BOOST_VERIFY(!posix::pthread_mutex_unlock(&m));
+            int res = posix::pthread_mutex_unlock(&m);
+            (void)res;
+            BOOST_ASSERT(res == 0);
+//            if (res)
+//            {
+//                lslboost::throw_exception(lock_error(res,"boost: mutex unlock failed in pthread_mutex_unlock"));
+//            }
         }
 
         bool try_lock()
         {
-          int res = posix::pthread_mutex_trylock(&m);
+          int res;
+          do
+          {
+              res = posix::pthread_mutex_trylock(&m);
+          } while (res == EINTR);
           if (res==EBUSY)
           {
               return false;
@@ -235,7 +261,7 @@ namespace lslboost
             lslboost::pthread::pthread_mutex_scoped_lock const local_lock(&m);
             while(is_locked)
             {
-                int const cond_res=posix::pthread_cond_timedwait(&cond,&m,&timeout.getTs());
+                int const cond_res=pthread_cond_timedwait(&cond,&m,&timeout.getTs());
                 if(cond_res==ETIMEDOUT)
                 {
                     break;

@@ -23,7 +23,7 @@
 #if !defined(BOOST_NO_WREGEX) && !defined(BOOST_REGEX_NO_EXTERNAL_TEMPLATES)
 #define BOOST_REGEX_WIDE_INSTANTIATE
 
-#ifdef BOOST_BORLANDC
+#ifdef __BORLANDC__
 #pragma hrdstop
 #endif
 

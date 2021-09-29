@@ -18,17 +18,16 @@
 #include <boost/memory_order.hpp>
 #include <boost/atomic/detail/config.hpp>
 #include <boost/atomic/detail/bitwise_fp_cast.hpp>
-#include <boost/atomic/detail/storage_traits.hpp>
+#include <boost/atomic/detail/storage_type.hpp>
 #include <boost/atomic/detail/extra_fp_operations_fwd.hpp>
 #include <boost/atomic/detail/type_traits/is_iec559.hpp>
 #include <boost/atomic/detail/type_traits/is_integral.hpp>
-#include <boost/atomic/detail/header.hpp>
 
 #ifdef BOOST_HAS_PRAGMA_ONCE
 #pragma once
 #endif
 
-#if defined(BOOST_GCC) && BOOST_GCC >= 60000
+#if defined(BOOST_GCC) && (BOOST_GCC+0) >= 60000
 #pragma GCC diagnostic push
 // ignoring attributes on template argument X - this warning is because we need to pass storage_type as a template argument; no problem in this case
 #pragma GCC diagnostic ignored "-Wignored-attributes"
@@ -47,7 +46,7 @@ template<
     , bool = atomics::detail::is_iec559< Value >::value && atomics::detail::is_integral< typename Base::storage_type >::value
 #endif
 >
-struct extra_fp_negate_generic :
+struct generic_extra_fp_negate :
     public Base
 {
     typedef Base base_type;
@@ -94,7 +93,7 @@ struct extra_fp_negate_generic :
 
 //! Negate implementation for IEEE 754 / IEC 559 floating point types. We leverage the fact that the sign bit is the most significant bit in the value.
 template< typename Base, typename Value, std::size_t Size >
-struct extra_fp_negate_generic< Base, Value, Size, true > :
+struct generic_extra_fp_negate< Base, Value, Size, true > :
     public Base
 {
     typedef Base base_type;
@@ -124,10 +123,10 @@ struct extra_fp_negate_generic< Base, Value, Size, true > :
 
 //! Generic implementation of floating point operations
 template< typename Base, typename Value, std::size_t Size >
-struct extra_fp_operations_generic :
-    public extra_fp_negate_generic< Base, Value, Size >
+struct generic_extra_fp_operations :
+    public generic_extra_fp_negate< Base, Value, Size >
 {
-    typedef extra_fp_negate_generic< Base, Value, Size > base_type;
+    typedef generic_extra_fp_negate< Base, Value, Size > base_type;
     typedef typename base_type::storage_type storage_type;
     typedef Value value_type;
 
@@ -175,7 +174,7 @@ struct extra_fp_operations_generic :
 // Default extra_fp_operations template definition will be used unless specialized for a specific platform
 template< typename Base, typename Value, std::size_t Size >
 struct extra_fp_operations< Base, Value, Size, true > :
-    public extra_fp_operations_generic< Base, Value, Size >
+    public generic_extra_fp_operations< Base, Value, Size >
 {
 };
 
@@ -183,10 +182,8 @@ struct extra_fp_operations< Base, Value, Size, true > :
 } // namespace atomics
 } // namespace lslboost
 
-#if defined(BOOST_GCC) && BOOST_GCC >= 60000
+#if defined(BOOST_GCC) && (BOOST_GCC+0) >= 60000
 #pragma GCC diagnostic pop
 #endif
-
-#include <boost/atomic/detail/footer.hpp>
 
 #endif // BOOST_ATOMIC_DETAIL_FP_OPS_GENERIC_HPP_INCLUDED_

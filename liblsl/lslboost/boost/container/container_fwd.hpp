@@ -24,9 +24,7 @@
 //!   - lslboost::container::vector
 //!   - lslboost::container::stable_vector
 //!   - lslboost::container::static_vector
-//!   - lslboost::container::small_vector_base
 //!   - lslboost::container::small_vector
-//!   - lslboost::container::devector
 //!   - lslboost::container::slist
 //!   - lslboost::container::list
 //!   - lslboost::container::set
@@ -92,193 +90,101 @@ namespace container {
 
 #ifndef BOOST_CONTAINER_DOXYGEN_INVOKED
 
-template<class T1, class T2>
-struct pair;
-
 template<class T>
 class new_allocator;
 
 template <class T
-         ,class Allocator = void
-         ,class Options   = void>
+         ,class Allocator = new_allocator<T>
+         ,class Options = void>
 class vector;
 
 template <class T
-         ,class Allocator = void >
+         ,class Allocator = new_allocator<T> >
 class stable_vector;
 
-template < class T
-         , std::size_t Capacity
-         , class Options = void>
+template <class T, std::size_t Capacity>
 class static_vector;
 
-template < class T
-         , class Allocator = void
-         , class Options   = void >
-class small_vector_base;
-
-template < class T
-         , std::size_t N
-         , class Allocator = void
-         , class Options   = void  >
+template < class T, std::size_t N
+         , class Allocator= new_allocator<T> >
 class small_vector;
 
 template <class T
-         ,class Allocator = void
-         ,class Options   = void>
-class devector;
-
-template <class T
-         ,class Allocator = void
-         ,class Options   = void>
+         ,class Allocator = new_allocator<T> >
 class deque;
 
 template <class T
-         ,class Allocator = void >
+         ,class Allocator = new_allocator<T> >
 class list;
 
 template <class T
-         ,class Allocator = void >
+         ,class Allocator = new_allocator<T> >
 class slist;
 
 template <class Key
          ,class Compare  = std::less<Key>
-         ,class Allocator = void
+         ,class Allocator = new_allocator<Key>
          ,class Options = void>
 class set;
 
 template <class Key
          ,class Compare  = std::less<Key>
-         ,class Allocator = void
+         ,class Allocator = new_allocator<Key>
          ,class Options = void >
 class multiset;
 
 template <class Key
          ,class T
          ,class Compare  = std::less<Key>
-         ,class Allocator = void
+         ,class Allocator = new_allocator<std::pair<const Key, T> >
          ,class Options = void >
 class map;
 
 template <class Key
          ,class T
          ,class Compare  = std::less<Key>
-         ,class Allocator = void
+         ,class Allocator = new_allocator<std::pair<const Key, T> >
          ,class Options = void >
 class multimap;
 
 template <class Key
          ,class Compare  = std::less<Key>
-         ,class Allocator = void >
+         ,class Allocator = new_allocator<Key> >
 class flat_set;
 
 template <class Key
          ,class Compare  = std::less<Key>
-         ,class Allocator = void >
+         ,class Allocator = new_allocator<Key> >
 class flat_multiset;
 
 template <class Key
          ,class T
          ,class Compare  = std::less<Key>
-         ,class Allocator = void >
+         ,class Allocator = new_allocator<std::pair<Key, T> > >
 class flat_map;
 
 template <class Key
          ,class T
          ,class Compare  = std::less<Key>
-         ,class Allocator = void >
+         ,class Allocator = new_allocator<std::pair<Key, T> > >
 class flat_multimap;
-
-#ifndef BOOST_NO_CXX11_TEMPLATE_ALIASES
-
-//! Alias templates for small_flat_[multi]{set|map} using small_vector as container
-
-template < class Key
-         , std::size_t N
-         , class Compare  = std::less<Key>
-         , class SmallVectorAllocator = void
-         , class SmallVectorOptions   = void  >
-using small_flat_set = flat_set<Key, Compare, small_vector<Key, N, SmallVectorAllocator, SmallVectorOptions>>;
-
-template < class Key
-         , std::size_t N
-         , class Compare  = std::less<Key>
-         , class SmallVectorAllocator = void
-         , class SmallVectorOptions   = void  >
-using small_flat_multiset = flat_multiset<Key, Compare, small_vector<Key, N, SmallVectorAllocator, SmallVectorOptions>>;
-
-template < class Key
-         , class T
-         , std::size_t N
-         , class Compare  = std::less<Key>
-         , class SmallVectorAllocator = void
-         , class SmallVectorOptions   = void  >
-using small_flat_map = flat_map<Key, T, Compare, small_vector<std::pair<Key, T>, N, SmallVectorAllocator, SmallVectorOptions>>;
-
-template < class Key
-         , class T
-         , std::size_t N
-         , class Compare  = std::less<Key>
-         , class SmallVectorAllocator = void
-         , class SmallVectorOptions   = void  >
-using small_flat_multimap = flat_multimap<Key, T, Compare, small_vector<std::pair<Key, T>, N, SmallVectorAllocator, SmallVectorOptions>>;
-
-#endif // #ifndef BOOST_NO_CXX11_TEMPLATE_ALIASES
-
-
-//! A portable metafunction to obtain a small_flat_set
-template < class Key
-         , std::size_t N
-         , class Compare  = std::less<Key>
-         , class SmallVectorAllocator = void
-         , class SmallVectorOptions   = void  >
-struct small_flat_set_of
-{
-   typedef flat_set<Key, Compare, small_vector<Key, N, SmallVectorAllocator, SmallVectorOptions> > type;
-};
-
-//! A portable metafunction to obtain a small_flat_multiset
-template < class Key
-         , std::size_t N
-         , class Compare  = std::less<Key>
-         , class SmallVectorAllocator = void
-         , class SmallVectorOptions   = void  >
-struct small_flat_multiset_of
-{
-   typedef flat_multiset<Key, Compare, small_vector<Key, N, SmallVectorAllocator, SmallVectorOptions> > type;
-};
-
-//! A portable metafunction to obtain a small_flat_map
-template < class Key
-         , class T
-         , std::size_t N
-         , class Compare  = std::less<Key>
-         , class SmallVectorAllocator = void
-         , class SmallVectorOptions   = void  >
-struct small_flat_map_of
-{
-   typedef flat_map<Key, T, Compare, small_vector<std::pair<Key, T>, N, SmallVectorAllocator, SmallVectorOptions> > type;
-};
-
-//! A portable metafunction to obtain a small_flat_multimap
-template < class Key
-         , class T
-         , std::size_t N
-         , class Compare  = std::less<Key>
-         , class SmallVectorAllocator = void
-         , class SmallVectorOptions   = void  >
-struct small_flat_multimap_of
-{
-   typedef flat_multimap<Key, T, Compare, small_vector<std::pair<Key, T>, N, SmallVectorAllocator, SmallVectorOptions> > type;
-};
 
 template <class CharT
          ,class Traits = std::char_traits<CharT>
-         ,class Allocator  = void >
+         ,class Allocator  = new_allocator<CharT> >
 class basic_string;
 
-typedef basic_string <char>   string;
-typedef basic_string<wchar_t> wstring;
+typedef basic_string
+   <char
+   ,std::char_traits<char>
+   ,new_allocator<char> >
+string;
+
+typedef basic_string
+   <wchar_t
+   ,std::char_traits<wchar_t>
+   ,new_allocator<wchar_t> >
+wstring;
 
 static const std::size_t ADP_nodes_per_block    = 256u;
 static const std::size_t ADP_max_free_blocks    = 2u;

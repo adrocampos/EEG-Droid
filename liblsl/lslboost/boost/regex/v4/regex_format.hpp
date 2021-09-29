@@ -90,10 +90,6 @@ struct trivial_format_traits
    }
 };
 
-#ifdef BOOST_MSVC
-#  pragma warning(push)
-#pragma warning(disable:26812)
-#endif
 template <class OutputIterator, class Results, class traits, class ForwardIter>
 class basic_regex_formatter
 {
@@ -207,9 +203,6 @@ private:
    basic_regex_formatter(const basic_regex_formatter&);
    basic_regex_formatter& operator=(const basic_regex_formatter&);
 };
-#ifdef BOOST_MSVC
-#  pragma warning(pop)
-#endif
 
 template <class OutputIterator, class Results, class traits, class ForwardIter>
 OutputIterator basic_regex_formatter<OutputIterator, Results, traits, ForwardIter>::format(ForwardIter p1, ForwardIter p2, match_flag_type f)
