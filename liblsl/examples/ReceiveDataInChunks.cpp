@@ -1,6 +1,6 @@
-#include <stdint.h>
 #include <iostream>
 #include <lsl_cpp.h>
+#include <stdint.h>
 
 
 // define a packed sample struct (here a stereo sample).
@@ -9,11 +9,11 @@ struct stereo_sample {
 	int16_t l, r;
 };
 
-int main(int, char* []) {
+int main(int, char *[]) {
 	try {
 
 		// resolve the stream of interest & make an inlet
-		lsl::stream_inlet inlet(lsl::resolve_stream("name", "MyAudioStream")[0]);
+		lsl::stream_inlet inlet(lsl::resolve_stream("name", "MyAudioStream").at(0));
 
 		// and retrieve the chunks (note: this can of course also be done with pure std::vectors
 		// instead of stereo_samples)
@@ -23,7 +23,7 @@ int main(int, char* []) {
 				std::cout << timestamp << std::endl; // only showing the time stamps here
 		}
 
-	} catch (std::exception& e) { std::cerr << "Got an exception: " << e.what() << std::endl; }
+	} catch (std::exception &e) { std::cerr << "Got an exception: " << e.what() << std::endl; }
 	std::cout << "Press any key to exit. " << std::endl;
 	std::cin.get();
 	return 0;

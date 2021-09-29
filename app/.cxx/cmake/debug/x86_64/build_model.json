@@ -1,13 +1,13 @@
 {
   "abi": "X86_64",
-  "abiPlatformVersion": 21,
+  "abiPlatformVersion": 24,
   "buildSettings": {
     "environmentVariables": []
   },
   "cmake": {
-    "cmakeArtifactsBaseFolder": "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64",
-    "cmakeServerLogFile": "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64/cmake_server_log.txt",
-    "cmakeWrappingBaseFolder": "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cxx/debug/x86_64",
+    "cmakeArtifactsBaseFolder": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/debug/x86_64",
+    "cmakeServerLogFile": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/debug/x86_64/cmake_server_log.txt",
+    "cmakeWrappingBaseFolder": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cxx/debug/x86_64",
     "effectiveConfiguration": {
       "name": "traditional-android-studio-cmake-environment",
       "description": "Composite reified CMakeSettings configuration",
@@ -15,13 +15,13 @@
       "inheritEnvironments": [
         "ndk"
       ],
-      "buildRoot": "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64",
+      "buildRoot": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/debug/x86_64",
       "cmakeToolchain": "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake",
-      "cmakeExecutable": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/cmake",
+      "cmakeExecutable": "/home/mvidaldepalo/Android/Sdk/cmake/3.18.1/bin/cmake",
       "variables": [
         {
           "name": "CMAKE_FIND_ROOT_PATH",
-          "value": "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/prefab/x86_64/prefab"
+          "value": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/debug/prefab/x86_64/prefab"
         },
         {
           "name": "CMAKE_BUILD_TYPE",
@@ -53,11 +53,11 @@
         },
         {
           "name": "CMAKE_LIBRARY_OUTPUT_DIRECTORY",
-          "value": "/home/mvidaldepalo/github/EEG-Droid/app/build/intermediates/cmake/debug/obj/x86_64"
+          "value": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/build/intermediates/cmake/debug/obj/x86_64"
         },
         {
           "name": "CMAKE_MAKE_PROGRAM",
-          "value": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja"
+          "value": "/home/mvidaldepalo/Android/Sdk/cmake/3.18.1/bin/ninja"
         },
         {
           "name": "CMAKE_SYSTEM_NAME",
@@ -65,7 +65,7 @@
         },
         {
           "name": "CMAKE_SYSTEM_VERSION",
-          "value": "21"
+          "value": "24"
         },
         {
           "name": "ANDROID_CPP_FEATURES",
@@ -82,14 +82,14 @@
       ]
     }
   },
-  "cxxBuildFolder": "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64",
+  "cxxBuildFolder": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/debug/x86_64",
   "info": {
     "abi": "X86_64",
     "bitness": 64,
     "deprecated": false,
     "default": true
   },
-  "originalCxxBuildFolder": "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/x86_64",
+  "originalCxxBuildFolder": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/debug/x86_64",
   "variant": {
     "buildSystemArgumentList": [
       "-DANDROID_CPP_FEATURES\u003drtti exceptions",
@@ -107,17 +107,17 @@
     "module": {
       "buildSystem": "CMAKE",
       "cmake": {
-        "cmakeExe": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/cmake",
+        "cmakeExe": "/home/mvidaldepalo/Android/Sdk/cmake/3.18.1/bin/cmake",
         "minimumCmakeVersion": "3.12.0",
-        "ninjaExe": "/home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja"
+        "ninjaExe": "/home/mvidaldepalo/Android/Sdk/cmake/3.18.1/bin/ninja"
       },
       "cmakeToolchainFile": "/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/build/cmake/android.toolchain.cmake",
-      "cxxFolder": "/home/mvidaldepalo/github/EEG-Droid/app/.cxx",
+      "cxxFolder": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx",
       "gradleModulePathName": ":app",
-      "intermediatesFolder": "/home/mvidaldepalo/github/EEG-Droid/app/build/intermediates",
-      "makeFile": "/home/mvidaldepalo/github/EEG-Droid/liblsl/CMakeLists.txt",
-      "moduleBuildFile": "/home/mvidaldepalo/github/EEG-Droid/app/build.gradle",
-      "moduleRootFolder": "/home/mvidaldepalo/github/EEG-Droid/app",
+      "intermediatesFolder": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/build/intermediates",
+      "makeFile": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl/CMakeLists.txt",
+      "moduleBuildFile": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/build.gradle",
+      "moduleRootFolder": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app",
       "ndkDefaultAbiList": [
         "ARMEABI_V7A",
         "ARM64_V8A",
@@ -181,12 +181,12 @@
       "ndkDefaultStl": "LIBCXX_STATIC",
       "ndkVersion": "21.1.6352462",
       "project": {
-        "compilerSettingsCacheFolder": "/home/mvidaldepalo/github/EEG-Droid/.cxx",
-        "cxxFolder": "/home/mvidaldepalo/github/EEG-Droid/.cxx",
+        "compilerSettingsCacheFolder": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/.cxx",
+        "cxxFolder": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/.cxx",
         "isBuildOnlyTargetAbiEnabled": true,
         "isCmakeBuildCohabitationEnabled": false,
         "isNativeCompilerSettingsCacheEnabled": false,
-        "rootBuildGradleFolder": "/home/mvidaldepalo/github/EEG-Droid",
+        "rootBuildGradleFolder": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid",
         "sdkFolder": "/home/mvidaldepalo/Android/Sdk",
         "isPrefabEnabled": false
       },
@@ -203,7 +203,7 @@
         "SYSTEM": {}
       }
     },
-    "objFolder": "/home/mvidaldepalo/github/EEG-Droid/app/build/intermediates/cmake/debug/obj",
+    "objFolder": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/build/intermediates/cmake/debug/obj",
     "variantName": "debug",
     "validAbiList": [
       "ARMEABI_V7A",
@@ -211,8 +211,8 @@
       "X86",
       "X86_64"
     ],
-    "prefabDirectory": "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/prefab",
+    "prefabDirectory": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/debug/prefab",
     "prefabPackageDirectoryList": []
   },
-  "prefabFolder": "/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/prefab/x86_64"
+  "prefabFolder": "/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/debug/prefab/x86_64"
 }

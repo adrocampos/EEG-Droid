@@ -22,6 +22,16 @@ rule CUSTOM_COMMAND
 #############################################
 # Rule for compiling CXX files.
 
+rule CXX_COMPILER__lslobj_Debug
+  depfile = $DEP_FILE
+  deps = gcc
+  command = /home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ --target=aarch64-none-linux-android24 --gcc-toolchain=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
+  description = Building CXX object $out
+
+
+#############################################
+# Rule for compiling CXX files.
+
 rule CXX_COMPILER__lslboost_Debug
   depfile = $DEP_FILE
   deps = gcc
@@ -32,7 +42,7 @@ rule CXX_COMPILER__lslboost_Debug
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__lslobj_Debug
+rule CXX_COMPILER__lsl_Debug
   depfile = $DEP_FILE
   deps = gcc
   command = /home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ --target=aarch64-none-linux-android24 --gcc-toolchain=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/mvidaldepalo/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
@@ -71,7 +81,7 @@ rule C_EXECUTABLE_LINKER__lslver_Debug
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /home/mvidaldepalo/Android/Sdk/cmake/custom/bin/cmake --regenerate-during-build -S/home/mvidaldepalo/github/EEG-Droid/liblsl -B/home/mvidaldepalo/github/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a
+  command = /home/mvidaldepalo/Android/Sdk/cmake/3.18.1/bin/cmake --regenerate-during-build -S/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/liblsl -B/home/mvidaldepalo/github/eeg_droid_deniz/EEG-Droid/app/.cxx/cmake/debug/arm64-v8a
   description = Re-running CMake...
   generator = 1
 
@@ -80,7 +90,7 @@ rule RERUN_CMAKE
 # Rule for cleaning all built files.
 
 rule CLEAN
-  command = /home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja $FILE_ARG -t clean $TARGETS
+  command = /home/mvidaldepalo/Android/Sdk/cmake/3.18.1/bin/ninja $FILE_ARG -t clean $TARGETS
   description = Cleaning all built files...
 
 
@@ -88,6 +98,6 @@ rule CLEAN
 # Rule for printing all primary targets available.
 
 rule HELP
-  command = /home/mvidaldepalo/Android/Sdk/cmake/custom/bin/ninja -t targets
+  command = /home/mvidaldepalo/Android/Sdk/cmake/3.18.1/bin/ninja -t targets
   description = All primary targets available:
 

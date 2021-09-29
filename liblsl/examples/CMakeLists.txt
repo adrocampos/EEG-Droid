@@ -1,9 +1,15 @@
-cmake_minimum_required(VERSION 3.5)
-project(Examples
+cmake_minimum_required(VERSION 3.12)
+project(lslexamples
 	LANGUAGES C CXX
 	VERSION 0.2.0)
-list(INSERT LSL_INSTALL_ROOT 0 "${CMAKE_CURRENT_LIST_DIR}/../build/install/")
-include(Findliblsl.cmake)
+find_package(LSL REQUIRED
+	HINTS ${LSL_INSTALL_ROOT}
+	"${CMAKE_CURRENT_LIST_DIR}/../build"
+	"${CMAKE_CURRENT_LIST_DIR}/../out/x64-Release"
+	PATH_SUFFIXES share/LSL)
+get_filename_component(LSL_PATH ${LSL_CONFIG} DIRECTORY)
+message(STATUS "Found LSL lib in ${LSL_PATH}")
+message(STATUS "LSL BIN DIR: ${liblsl_BINARY_DIR} & ${LIBLSL_BINARY_DIR}")
 
 # convenience function to add an example file
 # this creates a target, links the necessary libraries and

@@ -75,15 +75,17 @@ de/uni_osnabrueck/ikw/eegdroid/TFAnalysis.java
  de.uni_osnabrueck.ikw.eegdroid.TFAnalysis$4
 de/uni_osnabrueck/ikw/eegdroid/DownloadImageTask.java
  de.uni_osnabrueck.ikw.eegdroid.DownloadImageTask
-de/uni_osnabrueck/ikw/eegdroid/TraumschreiberService.java
- de.uni_osnabrueck.ikw.eegdroid.TraumschreiberService
- de.uni_osnabrueck.ikw.eegdroid.TraumschreiberService$1
-de/uni_osnabrueck/ikw/eegdroid/utilities/FFTWWrapper.java
- de.uni_osnabrueck.ikw.eegdroid.utilities.FFTWWrapper
 de/uni_osnabrueck/ikw/eegdroid/utilities/ZoomableImageView.java
  de.uni_osnabrueck.ikw.eegdroid.utilities.ZoomableImageView
  de.uni_osnabrueck.ikw.eegdroid.utilities.ZoomableImageView$1
  de.uni_osnabrueck.ikw.eegdroid.utilities.ZoomableImageView$ScaleListener
+de/uni_osnabrueck/ikw/eegdroid/utilities/FFTWWrapper.java
+ de.uni_osnabrueck.ikw.eegdroid.utilities.FFTWWrapper
+de/uni_osnabrueck/ikw/eegdroid/TraumschreiberService.java
+ de.uni_osnabrueck.ikw.eegdroid.TraumschreiberService
+ de.uni_osnabrueck.ikw.eegdroid.TraumschreiberService$1
+de/uni_osnabrueck/ikw/eegdroid/utilities/CustomFFT.java
+ de.uni_osnabrueck.ikw.eegdroid.utilities.CustomFFT
 de/uni_osnabrueck/ikw/eegdroid/LSL.java
  de.uni_osnabrueck.ikw.eegdroid.LSL
  de.uni_osnabrueck.ikw.eegdroid.LSL$ArgumentException
@@ -99,8 +101,6 @@ de/uni_osnabrueck/ikw/eegdroid/LSL.java
  de.uni_osnabrueck.ikw.eegdroid.LSL$TimeoutException
  de.uni_osnabrueck.ikw.eegdroid.LSL$XMLElement
  de.uni_osnabrueck.ikw.eegdroid.LSL$dll
-de/uni_osnabrueck/ikw/eegdroid/utilities/CustomFFT.java
- de.uni_osnabrueck.ikw.eegdroid.utilities.CustomFFT
 de/uni_osnabrueck/ikw/eegdroid/Display.java
  de.uni_osnabrueck.ikw.eegdroid.Display
  de.uni_osnabrueck.ikw.eegdroid.Display$1
