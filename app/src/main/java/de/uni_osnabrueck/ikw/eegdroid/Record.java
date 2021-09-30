@@ -73,7 +73,7 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
-
+ 
 
 public class Record extends AppCompatActivity {
 
@@ -141,8 +141,6 @@ public class Record extends AppCompatActivity {
     private final CheckBox[] checkBoxes = new CheckBox[nChannels];
     private final TextView[] channelValueViews = new TextView[nChannels];
     private AlertDialog traumConfigDialog;
-    LSL.StreamInfo streamInfo;
-    LSL.StreamOutlet streamOutlet = null;
     private TextView mConnectionState;
     private TextView viewDeviceAddress;
     private boolean mNewDevice;
@@ -428,7 +426,7 @@ public class Record extends AppCompatActivity {
         if (togglingRequired) toggleNotifying();
 
         Log.d(TAG, "New Value of Config: " + Arrays.toString(configCharacteristic.getValue()));
-        //Toast.makeText(getApplicationContext(), "Succesfully applied configuration.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Applied configuration.", Toast.LENGTH_SHORT).show();
     }
 
     private void applyDefaultConfiguration(){
@@ -436,7 +434,7 @@ public class Record extends AppCompatActivity {
         // Declare bytearray
         byte[] configBytes = new byte[8];
         mTraumService.setNotifyingUUID(2);
-        configBytes = new byte[]{33, 0, 0, 35, 15, -127, 0, 0};
+        configBytes = new byte[]{-23, 0, 0, 35, 0, -128, 0, 0};
         configCharacteristic.setValue(configBytes);
         mBluetoothLeService.writeCharacteristic(configCharacteristic);
         BluetoothGattService bleService = mBluetoothLeService.getService(TraumschreiberService.serviceUUID);
@@ -740,11 +738,14 @@ public class Record extends AppCompatActivity {
         deleteTempFiles();
     }
 
+    LSL.StreamInfo streamInfo;
+    LSL.StreamOutlet streamOutlet = null;
     private void prepareLslStream(){
         final UUID uid = UUID.randomUUID();
 
         try {
-            streamInfo = new LSL.StreamInfo("Traumschreiber-EEG", "EEG", 24, LSL.IRREGULAR_RATE, LSL.ChannelFormat.float32, uid.toString());
+            streamInfo = new LSL.StreamInfo("Traumschreiber-EEG", "EEG", 24,
+                    LSL.IRREGULAR_RATE, LSL.ChannelFormat.float32, uid.toString());
             if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("eegLabels", true)){
                 LSL.XMLElement chns = streamInfo.desc().append_child("channels");
                 for (String label : channelLabels) {
@@ -850,10 +851,29 @@ public class Record extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        Log.d(TAG, "Called onBackPressed");
+
+        try {
+            if (streamOutlet != null){
+                streamOutlet.close();
+            };
+        } catch(Exception e) {
+            Log.w(TAG, e.toString());
+        }
+
+        finish();
+
+    }
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         try {
+
             unbindService(mServiceConnection);
+            Log.d(TAG, "Called onDestroy");
+            streamOutlet.close();
+
         } catch(Exception e) {
             Log.w(TAG, e.toString());
         }
@@ -1346,7 +1366,7 @@ public class Record extends AppCompatActivity {
      *  defined in strings.xml
      */
     private void resetTraumConfig(){
-        selectedGainPos = 0; // 1
+        selectedGainPos = 3; // = 8
         selectedBitsPerChPos = 2; //16 bit
         runningAverageFilterCheck = true;
         sendOnOneCharCheck = false;  // off

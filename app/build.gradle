@@ -15,7 +15,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
-        versionName '1.1'
+        versionName 'beta-2.6.7'
         vectorDrawables.useSupportLibrary = true
         // uncomment it for building liblsl.so (LSL) using cmake
         // specify cmake.dir=path-to-cmake on local.properties
