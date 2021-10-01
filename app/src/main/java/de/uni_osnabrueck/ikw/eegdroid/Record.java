@@ -1,5 +1,6 @@
 package de.uni_osnabrueck.ikw.eegdroid;
 // initial commits
+
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
@@ -30,7 +31,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,7 +73,7 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
- 
+
 
 public class Record extends AppCompatActivity {
 
@@ -82,19 +82,18 @@ public class Record extends AppCompatActivity {
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
     public static final String EXTRAS_DEVICE_MODEL = "DEVICE_MODEL"; // "2": old, "3": new
     private final static String TAG = Record.class.getSimpleName();
+    final String delimiter = ",";
+    final String lineBreak = "\n";
     private final Handler handler = new Handler();
     private final List<Float> timestamps = new ArrayList<>();
     private final List<Float> samplingTimes = new ArrayList<>();
     private final List<List<Float>> accumulatedSamples = new ArrayList<>();
     private final Float[] channelOffsets = new Float[24];
     private final int maxVisibleXRange = 8000;  // see 8s at the time on the plot
-    private final int leftAxisUpperLimit = (int) (2*Math.pow(10,6));
-    private final int leftAxisLowerLimit = (int) (-2*Math.pow(10,6));
+    private final int leftAxisUpperLimit = (int) (2 * Math.pow(10, 6));
+    private final int leftAxisLowerLimit = (int) (-2 * Math.pow(10, 6));
     private final ArrayList<Integer> pkgIDs = new ArrayList<>();
     private final int nChannels = 24;
-    private String[] channelLabels = new String[] {"FP1", "FPZ", "FP2", "F7", "F3", "Fz", "F4", "F8", "M1", "T7", "C3", "CZ", "C4", "T8", "M2", "P7", "P3", "Pz", "P4", "P8", "POZ", "O1", "OZ", "O2"};
-    private float samplingRate = 500/2f;  // alternative: 500, 500/2, 500/3, 500/4, etc.
-
     private final ArrayList<ArrayList<Entry>> plottingBuffer = new ArrayList<ArrayList<Entry>>() {
         {
             for (int i = 0; i < nChannels; i++) {
@@ -103,8 +102,17 @@ public class Record extends AppCompatActivity {
             }
         }
     };
-
-
+    private final int[] channelColors = new int[nChannels];
+    private final boolean[] channelsShown = new boolean[nChannels];
+    private final CheckBox[] checkBoxes = new CheckBox[nChannels];
+    private final TextView[] channelValueViews = new TextView[nChannels];
+    private final TraumschreiberService mTraumService = new TraumschreiberService();
+    private final ArrayList<Integer> adaptiveEncodingFlags = new ArrayList<>();
+    private final ArrayList<Integer> signalBitShifts = new ArrayList<>();
+    LSL.StreamInfo streamInfo;
+    LSL.StreamOutlet streamOutlet = null;
+    private final String[] channelLabels = new String[]{"FP1", "FPZ", "FP2", "F7", "F3", "Fz", "F4", "F8", "M1", "T7", "C3", "CZ", "C4", "T8", "M2", "P7", "P3", "Pz", "P4", "P8", "POZ", "O1", "OZ", "O2"};
+    private float samplingRate = 500 / 2f;  // alternative: 500, 500/2, 500/3, 500/4, etc.
     private BluetoothGattCharacteristic configCharacteristic;
     private BluetoothGattCharacteristic codeCharacteristic;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
@@ -124,7 +132,7 @@ public class Record extends AppCompatActivity {
     private byte o1HighpassB;
     private int o1HighpassPos = 0;
     private byte iirHighpassB;
-    private int  iirHighpassPos = 1;
+    private int iirHighpassPos = 1;
     private byte lowpassB;
     private int lowpassPos = 1;
     private byte filter50hzB;
@@ -135,18 +143,12 @@ public class Record extends AppCompatActivity {
     private int bitshiftMaxPos = 15;
     private byte encodingSafetyFactorB;
     private int encodingSafetyPos = 8;
-
-    private final int[] channelColors = new int[nChannels];
-    private final boolean[] channelsShown = new boolean[nChannels];
-    private final CheckBox[] checkBoxes = new CheckBox[nChannels];
-    private final TextView[] channelValueViews = new TextView[nChannels];
     private AlertDialog traumConfigDialog;
     private TextView mConnectionState;
     private TextView viewDeviceAddress;
     private boolean mNewDevice;
     private String mDeviceAddress;
     private BluetoothLeService mBluetoothLeService;
-    private final TraumschreiberService mTraumService = new TraumschreiberService();
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -168,7 +170,6 @@ public class Record extends AppCompatActivity {
             if (mBluetoothLeService != null) mBluetoothLeService = null;
         }
     };
-
     private boolean recording = false;
     private boolean notifying = false;
     private float resolutionTime;
@@ -180,52 +181,48 @@ public class Record extends AppCompatActivity {
     private boolean plotting = true;
     private androidx.appcompat.widget.SwitchCompat channelViewsSwitch;
     private boolean channelViewsEnabled = true;
-
+    private final CompoundButton.OnCheckedChangeListener channelViewsSwitchListener = (buttonView, isChecked) -> {
+        LinearLayout channelViewsContainer = findViewById(R.id.ChannelViewsContainer);
+        if (isChecked) {
+            channelViewsEnabled = true;
+            channelViewsContainer.setVisibility(View.VISIBLE);
+        } else {
+            channelViewsEnabled = false;
+            channelViewsContainer.setVisibility(View.GONE);
+        }
+    };
     private int plottedPkgCount = 0;
     private int enabledCheckboxes = 0;
-
     private LineChart mChart;
     private Button tapZoomButton;
     private int tapZoomExponent = 0;
     @SuppressLint("SetTextI18n")
     private final View.OnClickListener tapZoomButtonOnClickListener = v -> {
-        if(plottingBuffer.size() == 0){
-            Toast.makeText(getApplicationContext(),"Need Data First",Toast.LENGTH_SHORT).show();
+        if (plottingBuffer.size() == 0) {
+            Toast.makeText(getApplicationContext(), "Need Data First", Toast.LENGTH_SHORT).show();
             return;
         }
         tapZoomExponent++;
-        if (tapZoomExponent>4) tapZoomExponent = 0;
-        int yRange = (int) ((leftAxisUpperLimit*2) / Math.pow(10, tapZoomExponent));
+        if (tapZoomExponent > 4) tapZoomExponent = 0;
+        int yRange = (int) ((leftAxisUpperLimit * 2) / Math.pow(10, tapZoomExponent));
         Log.d(TAG, "Visible yRange + " + yRange);
         /* First constrain the yRange to the desired limits (e.g. 2000muV,-2000muV) */
         mChart.setVisibleYRangeMaximum(yRange, YAxis.AxisDependency.LEFT);
         /* Now that our view is limited to the desired range, we can relax it again, but it wont zoom out by itself.*/
-        mChart.setVisibleYRangeMaximum(leftAxisUpperLimit*2, YAxis.AxisDependency.LEFT);
-        if(tapZoomExponent==0) mChart.fitScreen();
-        mChart.moveViewTo(plottedPkgCount*1000/samplingRate, 0, YAxis.AxisDependency.LEFT);
-        tapZoomButton.setText("10^"+tapZoomExponent);
+        mChart.setVisibleYRangeMaximum(leftAxisUpperLimit * 2, YAxis.AxisDependency.LEFT);
+        if (tapZoomExponent == 0) mChart.fitScreen();
+        mChart.moveViewTo(plottedPkgCount * 1000 / samplingRate, 0, YAxis.AxisDependency.LEFT);
+        tapZoomButton.setText("10^" + tapZoomExponent);
     };
-
     private ImageButton recordingButton;
-    private final View.OnClickListener recordingButtonOnClickListener = v -> {
-        if (!recording) {
-            startRecording();
-        } else {
-            // Open Save Dialog
-            showSaveDialog();
-        }
-    };
-    
     private List<float[]> mainData;
     private int adaptiveEncodingFlag = 0; //Indicates whether adaptive encoding took place in this instant.
-    private final ArrayList<Integer> adaptiveEncodingFlags = new ArrayList<>();
     private int signalBitShift = 0;
-    private final ArrayList<Integer> signalBitShifts =  new ArrayList<>();
     private int pkgCountTotal;                //total count of packages that  arrived
-    private int  storedPkgCount;         //no. of samples added to the csv
+    private int storedPkgCount;         //no. of samples added to the csv
     private int lostPkgCountTotal;            // total count of lost samples based on info in header
     private float pkgLossPercent;       // proportion of currently lost packages
-    private float pkgLossLimit = 0.02f; // tolerance for this proportion of package loss
+    private final float pkgLossLimit = 0.02f; // tolerance for this proportion of package loss
     private boolean ignorePkgLoss = false;
     private float lastTimeStamp;
     private String start_time;
@@ -235,8 +232,6 @@ public class Record extends AppCompatActivity {
     private long start_timestamp;
     private long end_timestamp;
     private long plottingLastRefresh;
-    private long pkgArrivalTime;
-
     private final CompoundButton.OnCheckedChangeListener plotSwitchOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -255,17 +250,7 @@ public class Record extends AppCompatActivity {
             }
         }
     };
-    private final CompoundButton.OnCheckedChangeListener channelViewsSwitchListener = (buttonView, isChecked) -> {
-        LinearLayout channelViewsContainer = findViewById(R.id.ChannelViewsContainer);
-        if (isChecked) {
-            channelViewsEnabled = true;
-            channelViewsContainer.setVisibility(View.VISIBLE);
-        }
-        else  {
-            channelViewsEnabled = false;
-            channelViewsContainer.setVisibility(View.GONE);
-        }
-    };
+    private long pkgArrivalTime;
     private boolean deviceConnected = false;
     private boolean casting = false;
     private Menu menu;
@@ -274,6 +259,31 @@ public class Record extends AppCompatActivity {
     private BufferedReader in;
     private List<Float> microV;
     private CastThread caster;
+    private final List<Integer> pkgsLost = new ArrayList<>();
+    private int currentPkgLoss = 0;
+    private int currentPkgId = 0;
+    private int lastPkgId = 0;
+    private int currentBtPkgLoss = 0;
+    private Thread plottingThread;
+    private File recordingFile;
+    private String tempFileName;
+    private FileWriter fileWriter;
+    private final View.OnClickListener recordingButtonOnClickListener = v -> {
+        if (!recording) {
+            startRecording();
+        } else {
+            // Open Save Dialog
+            showSaveDialog();
+        }
+    };
+    private final int srmUpdateInterval = 5000; // ms
+    private boolean samplingRateMonitorRunning = false;
+    private Timer srmTimer;
+    private TimerTask srmTimerTask;
+    private boolean showingPkgLossWarning = false;
+    private final float[] hpFilteredNow = new float[nChannels];
+    private float[] hpFilteredPrevious = new float[nChannels];
+    private float[] samplePrevious = new float[nChannels];
     // Handles various events fired by the Service.
     private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
         @Override
@@ -285,7 +295,7 @@ public class Record extends AppCompatActivity {
                 buttons_prerecording();
                 setConnectionStatus(true);
                 storedPkgCount = 0;
-            // DISCONNECTION EVENT
+                // DISCONNECTION EVENT
             } else if (action.equals(BluetoothLeService.ACTION_GATT_DISCONNECTED)) {
                 deviceConnected = false;
                 setConnectionStatus(false);
@@ -297,7 +307,7 @@ public class Record extends AppCompatActivity {
                 }
                 samplingRateMonitorRunning = false;
 
-            // BLUETOOTH SERVICE REGISTRATION
+                // BLUETOOTH SERVICE REGISTRATION
             } else if (action.equals(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED)) {
                 BluetoothGattService bleService = mBluetoothLeService.getService(TraumschreiberService.serviceUUID);
                 mNotifyCharacteristic = bleService.getCharacteristic(TraumschreiberService.notifyingUUID);
@@ -310,24 +320,24 @@ public class Record extends AppCompatActivity {
                    the traumschreiber*/
                 applyDefaultConfiguration();
 
-            // HANDLE INCOMING STREAM
+                // HANDLE INCOMING STREAM
             } else if (action.equals(BluetoothLeService.ACTION_DATA_AVAILABLE)) {
-                
+
                 int[] data = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
 
                 // CONFIG DATA
                 if (data.length == 8) {
                     int[] configData = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
-                    Toast.makeText(getApplicationContext(),"Received Config Data", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Received Config Data", Toast.LENGTH_SHORT).show();
                     updateTraumConfigValues(configData);
-                    if(traumConfigDialog.isShowing()) displayTraumConfigValues();
+                    if (traumConfigDialog.isShowing()) displayTraumConfigValues();
                     return;
                 }
 
-                if(!notifying) return;
+                if (!notifying) return;
 
                 // ENCODING UPDATES
-                if (data[0] == 0xC0DE){
+                if (data[0] == 0xC0DE) {
                     signalBitShift = data[1];
                     //pkgLossCount = data[2];
                     //Log.v(TAG,"Updated signalBitshift of CH1: " + signalBitShift);
@@ -341,7 +351,7 @@ public class Record extends AppCompatActivity {
 
                 // CHANNEL DATA
                 // First, parse the header (if there is a header)
-                if (data.length > nChannels){
+                if (data.length > nChannels) {
                     currentPkgId = data[0];
                     currentPkgLoss = data[1];
                     currentBtPkgLoss = calculateBtPkgLoss();
@@ -352,7 +362,7 @@ public class Record extends AppCompatActivity {
                 if (!samplingRateMonitorRunning) startSamplingRateMonitoring();
 
                 microV = convertToMicroV(data);
-                if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("inAppFilter",true)) {
+                if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("inAppFilter", true)) {
                     microV = highPassFilter(microV);
                 }
                 streamData(microV);
@@ -362,20 +372,6 @@ public class Record extends AppCompatActivity {
             }
         }
     };
-
-
-    private List<Integer> pkgsLost = new ArrayList<>();
-    private int currentPkgLoss = 0;
-    private int currentPkgId  = 0;
-    private int lastPkgId = 0;
-    private int currentBtPkgLoss = 0;
-    private Thread plottingThread;
-    private File recordingFile;
-    private String tempFileName;
-    private FileWriter fileWriter;
-    final String delimiter = ",";
-    final String lineBreak = "\n";
-
 
     public Record() {
     }
@@ -390,13 +386,13 @@ public class Record extends AppCompatActivity {
         return intentFilter;
     }
 
-    private int calculateBtPkgLoss(){
+    private int calculateBtPkgLoss() {
         int btloss = 0;
-        if (storedPkgCount>0){
-            if (lastPkgId > currentPkgId){
+        if (storedPkgCount > 0) {
+            if (lastPkgId > currentPkgId) {
                 btloss = (15 - lastPkgId) + currentPkgId;
-            } else{
-                btloss = (currentPkgId-1) - lastPkgId;
+            } else {
+                btloss = (currentPkgId - 1) - lastPkgId;
             }
         }
         lastPkgId = currentPkgId;
@@ -408,7 +404,7 @@ public class Record extends AppCompatActivity {
         byte[] configBytes = new byte[8];
 
         // Concatenate binary strings
-        configBytes[0] = (byte) (selectedGainB| bitsPerChB | runningAverageFilterB | sendOnOneCharB | generateDataB | transmissionRateB);
+        configBytes[0] = (byte) (selectedGainB | bitsPerChB | runningAverageFilterB | sendOnOneCharB | generateDataB | transmissionRateB);
         configBytes[1] = (byte) 0; // Reserved
         configBytes[2] = (byte) (o1HighpassB | iirHighpassB);
         configBytes[3] = (byte) (lowpassB | filter50hzB);
@@ -429,11 +425,11 @@ public class Record extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Applied configuration.", Toast.LENGTH_SHORT).show();
     }
 
-    private void applyDefaultConfiguration(){
+    private void applyDefaultConfiguration() {
         resetTraumConfig();
         // Declare bytearray
         byte[] configBytes = new byte[8];
-        mTraumService.setNotifyingUUID(2);
+        TraumschreiberService.setNotifyingUUID(2);
         configBytes = new byte[]{-23, 0, 0, 35, 0, -128, 0, 0};
         configCharacteristic.setValue(configBytes);
         mBluetoothLeService.writeCharacteristic(configCharacteristic);
@@ -449,7 +445,7 @@ public class Record extends AppCompatActivity {
      * The settings encoded within 1 byte are listed right below it.
      * "x"'s indicate which bits of the byte are reserved for the corresponding setting.
      */
-    private void showConfigValues(){
+    private void showConfigValues() {
 
         // Byte Values of Config
         byte[] configValuesB = configCharacteristic.getValue();
@@ -546,11 +542,6 @@ public class Record extends AppCompatActivity {
         configInfoDialog.show();
     }
 
-    private int srmUpdateInterval = 5000; // ms
-    private boolean samplingRateMonitorRunning = false;
-
-    private Timer srmTimer;
-    private TimerTask srmTimerTask;
     private void startSamplingRateMonitoring() {
         //set a new Timer
         srmTimer = new Timer();
@@ -580,7 +571,7 @@ public class Record extends AppCompatActivity {
                     lostPkgCountSrm = lostPkgCountTotal - lostPkgCountSrm;
                     float expectedPkgs = (float) lostPkgCountSrm + pkgCountSrm;
                     pkgLossPercent = (float) lostPkgCountSrm / expectedPkgs;
-                    StringBuilder pkgLossDebug  = new StringBuilder();
+                    StringBuilder pkgLossDebug = new StringBuilder();
                     pkgLossDebug.append("Expected Pkgs: " + expectedPkgs);
                     pkgLossDebug.append("\nLost Packages: " + lostPkgCountSrm);
                     pkgLossDebug.append("\nPkg Loss %: " + pkgLossPercent);
@@ -607,39 +598,41 @@ public class Record extends AppCompatActivity {
         };
     }
 
-    private boolean showingPkgLossWarning = false;
-    private void showPkgLossWarning(){
+    private void showPkgLossWarning() {
         // Avoids stacking Warnings on top of each other
         if (showingPkgLossWarning || ignorePkgLoss) return;
 
-        String pkgLossPercentFormatted = String.format("%.02f", pkgLossPercent*100);
+        String pkgLossPercentFormatted = String.format("%.02f", pkgLossPercent * 100);
         AlertDialog.Builder PkgLossWarningBuilder = new AlertDialog.Builder(this)
                 .setTitle("Data Loss")
                 .setMessage(pkgLossPercentFormatted + "% of samples are being lost. Change to less demanding" +
-                        " settings?" )
+                        " settings?")
                 .setPositiveButton("Yes", (dialog, which) -> {
-                    showingPkgLossWarning=false;
+                    showingPkgLossWarning = false;
                     toggleNotifying();
                     showTraumConfigDialog();
                     highlightRelevantOptions();
                     unhighlightRelevantOptions();
-                } )
-                .setNegativeButton("No", (dialog, which) -> {showingPkgLossWarning=false;})
+                })
+                .setNegativeButton("No", (dialog, which) -> {
+                    showingPkgLossWarning = false;
+                })
                 .setNeutralButton("Ignore from now on", (dialog, which) -> {
                     showingPkgLossWarning = false;
-                    ignorePkgLoss = true;})
+                    ignorePkgLoss = true;
+                })
                 .setCancelable(false);
         AlertDialog pkgLossWarning = PkgLossWarningBuilder.create();
         pkgLossWarning.show();
         showingPkgLossWarning = true;
     }
 
-    private void highlightRelevantOptions(){
-        View bitsPerChRow =  traumConfigDialog.findViewById(R.id.config_row_bits_per_ch);
+    private void highlightRelevantOptions() {
+        View bitsPerChRow = traumConfigDialog.findViewById(R.id.config_row_bits_per_ch);
         bitsPerChRow.setBackgroundColor(getResources().getColor(R.color.colorAccent));
         bitsPerChRow.setAlpha(0.8f);
 
-        View transmissionRow =  traumConfigDialog.findViewById(R.id.config_row_transmission_rate);
+        View transmissionRow = traumConfigDialog.findViewById(R.id.config_row_transmission_rate);
         transmissionRow.setBackgroundColor(getResources().getColor(R.color.colorAccent));
         transmissionRow.setAlpha(0.8f);
     }
@@ -648,12 +641,12 @@ public class Record extends AppCompatActivity {
         new java.util.Timer().schedule(
                 new TimerTask() {
                     @Override
-                    public void run(){
-                        View bitsPerChRow =  traumConfigDialog.findViewById(R.id.config_row_bits_per_ch);
+                    public void run() {
+                        View bitsPerChRow = traumConfigDialog.findViewById(R.id.config_row_bits_per_ch);
                         bitsPerChRow.setBackgroundColor(getResources().getColor(R.color.design_default_color_background));
                         bitsPerChRow.setAlpha(1f);
 
-                        View transmissionRow =  traumConfigDialog.findViewById(R.id.config_row_transmission_rate);
+                        View transmissionRow = traumConfigDialog.findViewById(R.id.config_row_transmission_rate);
                         transmissionRow.setBackgroundColor(getResources().getColor(R.color.design_default_color_background));
                         transmissionRow.setAlpha(1f);
                     }
@@ -661,7 +654,7 @@ public class Record extends AppCompatActivity {
                 8000);
     }
 
-    private void endTimer(){
+    private void endTimer() {
         // End the Timer Task
         mDataResolution.setTextColor((int) R.color.defaultTextView);
         mDataResolution.setText(R.string.default_resolution_text);
@@ -671,7 +664,6 @@ public class Record extends AppCompatActivity {
         }
         pkgCountTotal = 0;
     }
-
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -717,7 +709,7 @@ public class Record extends AppCompatActivity {
             checkBoxRows[i / 8].addView(checkBoxes[i]);
         }
 
-        if(plotting) checkBoxes[0].setChecked(true);
+        if (plotting) checkBoxes[0].setChecked(true);
 
         createChart();
         TextView mXAxis = findViewById(R.id.XAxis_title);
@@ -728,7 +720,7 @@ public class Record extends AppCompatActivity {
 
         tapZoomButton = findViewById(R.id.tapZoomButton);
         tapZoomButton.setOnClickListener(tapZoomButtonOnClickListener);
-        
+
         // Traumschreiber Config Dialog
         traumConfigDialog = createTraumConfigDialog();
 
@@ -738,15 +730,13 @@ public class Record extends AppCompatActivity {
         deleteTempFiles();
     }
 
-    LSL.StreamInfo streamInfo;
-    LSL.StreamOutlet streamOutlet = null;
-    private void prepareLslStream(){
+    private void prepareLslStream() {
         final UUID uid = UUID.randomUUID();
 
         try {
             streamInfo = new LSL.StreamInfo("Traumschreiber-EEG", "EEG", 24,
                     LSL.IRREGULAR_RATE, LSL.ChannelFormat.float32, uid.toString());
-            if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("eegLabels", true)){
+            if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("eegLabels", true)) {
                 LSL.XMLElement chns = streamInfo.desc().append_child("channels");
                 for (String label : channelLabels) {
                     LSL.XMLElement ch = chns.append_child("channel");
@@ -755,9 +745,10 @@ public class Record extends AppCompatActivity {
                     ch.append_child_value("type", "EEG");
                 }
             } else {
-                for (int i=1;i<=24;i++) streamInfo.desc().append_child(String.format("Ch-%d",i));
+                for (int i = 1; i <= 24; i++)
+                    streamInfo.desc().append_child(String.format("Ch-%d", i));
             }
-        } catch (Error ex){
+        } catch (Error ex) {
             Log.e(TAG, " LSL issue: " + ex.getMessage());
         }
         try {
@@ -768,7 +759,7 @@ public class Record extends AppCompatActivity {
         }
     }
 
-    private TextView createChannelValueView (int i){
+    private TextView createChannelValueView(int i) {
         // Create View for Channel Value
         TextView channelValueView = new TextView(getApplicationContext());
         LinearLayout.LayoutParams valueLayout = new LinearLayout.LayoutParams(15, -1, 1f);
@@ -784,7 +775,8 @@ public class Record extends AppCompatActivity {
         // channelValueView.setGravity(0);
         return channelValueView;
     }
-    private CheckBox createPlottingCheckbox (int i) {
+
+    private CheckBox createPlottingCheckbox(int i) {
         int BoxIdRef = 94843913; //Just some pseudo random number to avoid confusion in onCheckedListener
         // Create Checkbox for displaying channel
         CheckBox box = new CheckBox(getApplicationContext());
@@ -793,10 +785,10 @@ public class Record extends AppCompatActivity {
         //boxLayout.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         //boxLayout.weight = 1;
         box.setLayoutParams(boxLayout);
-        box.setId(BoxIdRef+i);
+        box.setId(BoxIdRef + i);
         box.setText(Integer.toString(i + 1));
         box.setTextSize(6);
-        if(getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("eegLabels", true)){
+        if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("eegLabels", true)) {
             box.setText(channelLabels[i]);
         }
         box.setTextSize(8);
@@ -850,21 +842,31 @@ public class Record extends AppCompatActivity {
         unregisterReceiver(mGattUpdateReceiver);
     }
 
+    private void clearLSL() {
+        // close and delete the stream outlet and info if possible
+        if (streamOutlet != null) {
+            streamOutlet.close();
+            streamInfo.destroy();
+            streamOutlet = null;
+            streamInfo = null;
+            Log.d(TAG, "LSL stream closed and deleted.");
+        }
+    }
+
     @Override
     public void onBackPressed() {
         Log.d(TAG, "Called onBackPressed");
 
         try {
-            if (streamOutlet != null){
-                streamOutlet.close();
-            };
-        } catch(Exception e) {
+            clearLSL();
+        } catch (Exception e) {
             Log.w(TAG, e.toString());
         }
 
         finish();
 
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -872,9 +874,8 @@ public class Record extends AppCompatActivity {
 
             unbindService(mServiceConnection);
             Log.d(TAG, "Called onDestroy");
-            streamOutlet.close();
-
-        } catch(Exception e) {
+            clearLSL();
+        } catch (Exception e) {
             Log.w(TAG, e.toString());
         }
         mBluetoothLeService = null;
@@ -948,14 +949,14 @@ public class Record extends AppCompatActivity {
             }
         }
 
-        if (id==R.id.centering) {
+        if (id == R.id.centering) {
             Toast.makeText(getApplicationContext(),
                     "Centering Signal around 0 in 2 seconds",
                     Toast.LENGTH_LONG).show();
             mTraumService.initiateCentering();
         }
 
-        if (id==R.id.traumConfig) showTraumConfigDialog();
+        if (id == R.id.traumConfig) showTraumConfigDialog();
 
         return super.onOptionsItemSelected(item);
     }
@@ -985,20 +986,20 @@ public class Record extends AppCompatActivity {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         }
-        if(codeCharacteristic!=null) logDescriptorValue(codeCharacteristic);
+        if (codeCharacteristic != null) logDescriptorValue(codeCharacteristic);
         menuItemNotify.setEnabled(true);
     }
 
-    public void logDescriptorValue(BluetoothGattCharacteristic c){
-        String cId = c.getUuid().toString().substring(4,8);
+    public void logDescriptorValue(BluetoothGattCharacteristic c) {
+        String cId = c.getUuid().toString().substring(4, 8);
         BluetoothGattDescriptor descriptor = c.getDescriptor(
                 UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
         byte[] descVal = descriptor.getValue();
-        String descValS = (descVal==BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE) ? "NOTIFICATIONS DISABLED" : "NOTIFICATIONS ENABLED";
+        String descValS = (descVal == BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE) ? "NOTIFICATIONS DISABLED" : "NOTIFICATIONS ENABLED";
         Log.d(TAG, "Characteristic " + cId + " DESCRIPTOR VALUE: " + descValS);
     }
 
-    private AlertDialog createTraumConfigDialog(){
+    private AlertDialog createTraumConfigDialog() {
         // inflate the view
         View traumConfigView = getLayoutInflater().inflate(R.layout.traum_config_popup, null);
         // create the dialog
@@ -1008,14 +1009,16 @@ public class Record extends AppCompatActivity {
         return configDialogBuilder.create();
     }
 
-    private void showTraumConfigDialog(){
+    private void showTraumConfigDialog() {
 
         traumConfigDialog.show();
         // Link the Items to Functions
 
         // Link Close Button
         View closeConfig = traumConfigDialog.findViewById(R.id.traum_config_close_button);
-        closeConfig.setOnClickListener(v -> {traumConfigDialog.cancel();});
+        closeConfig.setOnClickListener(v -> {
+            traumConfigDialog.cancel();
+        });
 
 
         // Link gainSpinner
@@ -1026,11 +1029,12 @@ public class Record extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //Itempositions: {0,1,2,3} <=> {00,01,10,11} -- (<<6) --> {0b00..,0b01..,0b10..
                 selectedGainPos = position;
-                selectedGainB = (byte) ((position& 0x3) << 6);
-                selectedGain = (float) Math.pow(2,position);
+                selectedGainB = (byte) ((position & 0x3) << 6);
+                selectedGain = (float) Math.pow(2, position);
                 byte[] binaryString = {selectedGainB};
                 Log.d(TAG, "Binary rep of selected value: " + Arrays.toString(binaryString));
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
                 // nothing
@@ -1045,23 +1049,23 @@ public class Record extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //Itempositions: {0,1,2} <=> {00,01,10,11} -- (<<4) --> {0b0000,0b0001..,0b0010
                 selectedBitsPerChPos = position;
-                bitsPerChB = (byte) ((position& 0x3) << 4);
+                bitsPerChB = (byte) ((position & 0x3) << 4);
 
                 int bitsPerCh;
                 Log.d(TAG, "Position of BitsPerCh: " + position);
-                switch(position){
+                switch (position) {
                     case 0:
-                        bitsPerCh=10;
+                        bitsPerCh = 10;
                         break;
                     case 1:
-                        bitsPerCh=14;
+                        bitsPerCh = 14;
                         break;
                     case 2:
-                        bitsPerCh=16;
+                        bitsPerCh = 16;
                         break;
                     case 3:
                         position = 0;  // 3 and 0 have same effect, later we set NotifyingUUID, needs to be 0 instead of 3
-                        bitsPerCh=10;
+                        bitsPerCh = 10;
                         break;
 
                     default:
@@ -1070,11 +1074,11 @@ public class Record extends AppCompatActivity {
                 TraumschreiberService.bitsPerCh = bitsPerCh;
 
                 // Turn notifications off.
-                if(notifying) toggleNotifying();
-                
+                if (notifying) toggleNotifying();
+
                 //Update Characteristic on Which data is sent
                 TraumschreiberService.setNotifyingUUID(position); //0, 1 or 2
-                if(deviceConnected) {
+                if (deviceConnected) {
                     BluetoothGattService bleService = mBluetoothLeService.getService(TraumschreiberService.serviceUUID);
                     mNotifyCharacteristic = bleService.getCharacteristic(TraumschreiberService.notifyingUUID);
                 }
@@ -1082,6 +1086,7 @@ public class Record extends AppCompatActivity {
                 byte[] binaryString = {bitsPerChB};
                 Log.d(TAG, "Binary rep of selected value for bits per CH:  " + Arrays.toString(binaryString));
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
                 // nothing
@@ -1139,18 +1144,18 @@ public class Record extends AppCompatActivity {
                 transmissionRateB = (byte) (position); // its 0 or 1 anyways
 
                 // Small Extra for correct plotting timing
-                if(transmissionRateB == (byte) 1) samplingRate = 500/2f;
-                else samplingRate = 500/3f;
+                if (transmissionRateB == (byte) 1) samplingRate = 500 / 2f;
+                else samplingRate = 500 / 3f;
 
                 byte[] binaryString = {transmissionRateB};
                 Log.d(TAG, "Binary rep of selected value: " + Arrays.toString(binaryString));
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
                 // nothing
             }
         });
-
 
 
         // Link o1HighpassSpinner
@@ -1232,7 +1237,7 @@ public class Record extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 bitshiftMinPos = position;
-                bitshiftMinB = (byte)((position & 0xff) <<4);
+                bitshiftMinB = (byte) ((position & 0xff) << 4);
 
             }
 
@@ -1250,7 +1255,7 @@ public class Record extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 bitshiftMaxPos = position;
-                bitshiftMaxB = (byte)(position & 0xff);
+                bitshiftMaxB = (byte) (position & 0xff);
             }
 
             @Override
@@ -1283,16 +1288,18 @@ public class Record extends AppCompatActivity {
         // Link UpdateConfigButton
         Button updateConfigButton = traumConfigDialog.findViewById(R.id.apply_config_button);
         updateConfigButton.setOnClickListener(v -> {
-            if(deviceConnected) applyConfiguration();
-            else Toast.makeText(getApplicationContext(), "No Device Connected", Toast.LENGTH_SHORT).show();
+            if (deviceConnected) applyConfiguration();
+            else
+                Toast.makeText(getApplicationContext(), "No Device Connected", Toast.LENGTH_SHORT).show();
             // showConfigValues();  ONLY USED FOR DEBUGGING THE CONFIG MENU
         });
 
         // Link readConfigButton
         Button readConfigButton = traumConfigDialog.findViewById(R.id.read_config_button);
         readConfigButton.setOnClickListener(v -> {
-            if(deviceConnected) mBluetoothLeService.readCharacteristic(configCharacteristic, true);
-            else Toast.makeText(getApplicationContext(), "No Device Connected", Toast.LENGTH_SHORT).show();
+            if (deviceConnected) mBluetoothLeService.readCharacteristic(configCharacteristic, true);
+            else
+                Toast.makeText(getApplicationContext(), "No Device Connected", Toast.LENGTH_SHORT).show();
         });
 
         // Link ResetconfigButton
@@ -1306,31 +1313,31 @@ public class Record extends AppCompatActivity {
 
     }
 
-    private void updateTraumConfigValues(int[] configData){
+    private void updateTraumConfigValues(int[] configData) {
         selectedGainPos = (configData[0] & 0xff) >> 6; // 0bxx00 0000
         selectedBitsPerChPos = (configData[0] & 0x30) >> 4; // 0b00xx 0000
         runningAverageFilterCheck = (configData[0] & 0x8) > 1; //0b0000 x000
         sendOnOneCharCheck = (configData[0] & 0x4) > 1; // 0b0000 0x00
         generateDataCheck = (configData[0] & 0x2) > 1; // 0b0000 00x0
         selectedTransmissionRatePos = (configData[0] & 0x03); // 0b0000 000x
-        o1HighpassPos = (configData[2]&0xff) >> 4; // 0bxxxx 0000
-        iirHighpassPos = (configData[2]&0x0f); // 0b 0000 xxxx
-        lowpassPos = (configData[3]&0xff) >> 4; // 0bxxxx 0000
-        filter50hzPos = (configData[3]&0x0f); // 0b0000 xxx
-        bitshiftMinPos = (configData[4]&0xff) >> 4; // 0bxxxx 000
-        bitshiftMaxPos= (configData[4]&0x0f); // 0b0000 xxxx
-        encodingSafetyPos = (configData[5]&0xff) >> 4; // 0bxxxx 0000
+        o1HighpassPos = (configData[2] & 0xff) >> 4; // 0bxxxx 0000
+        iirHighpassPos = (configData[2] & 0x0f); // 0b 0000 xxxx
+        lowpassPos = (configData[3] & 0xff) >> 4; // 0bxxxx 0000
+        filter50hzPos = (configData[3] & 0x0f); // 0b0000 xxx
+        bitshiftMinPos = (configData[4] & 0xff) >> 4; // 0bxxxx 000
+        bitshiftMaxPos = (configData[4] & 0x0f); // 0b0000 xxxx
+        encodingSafetyPos = (configData[5] & 0xff) >> 4; // 0bxxxx 0000
 
 
-        float batteryValueF = ((configData[7]&0xff) << 4) + ((configData[6] & 0xf0)>>4);
-        float batteryValueuV = (float) (2 * batteryValueF*0.298);
-        float batteryValueV = (float) (batteryValueuV / Math.pow(10,6));
+        float batteryValueF = ((configData[7] & 0xff) << 4) + ((configData[6] & 0xf0) >> 4);
+        float batteryValueuV = (float) (2 * batteryValueF * 0.298);
+        float batteryValueV = (float) (batteryValueuV / Math.pow(10, 6));
         Log.d(TAG, "Battery Value in V " + batteryValueV);
-        batteryValue = (int) ((3.7f - batteryValueV)/ 0.7 ) * 100;
+        batteryValue = (int) ((3.7f - batteryValueV) / 0.7) * 100;
         mBatteryValue.setText(batteryValue + "%");
     }
 
-    private void displayTraumConfigValues(){
+    private void displayTraumConfigValues() {
         Spinner gainSpinner = traumConfigDialog.findViewById(R.id.gain_spinner);
         gainSpinner.setSelection(selectedGainPos);
         Spinner bitsPerChSpinner = traumConfigDialog.findViewById(R.id.bits_per_ch_spinner);
@@ -1360,12 +1367,12 @@ public class Record extends AppCompatActivity {
     }
 
     /**
-     *  Defines and sets all options of the traumschreiber config menu
-     *  Method defines the positions of the selected values in the drop down
-     *  menus of the config window. Values to corresponding positions are
-     *  defined in strings.xml
+     * Defines and sets all options of the traumschreiber config menu
+     * Method defines the positions of the selected values in the drop down
+     * menus of the config window. Values to corresponding positions are
+     * defined in strings.xml
      */
-    private void resetTraumConfig(){
+    private void resetTraumConfig() {
         selectedGainPos = 3; // = 8
         selectedBitsPerChPos = 2; //16 bit
         runningAverageFilterCheck = true;
@@ -1408,12 +1415,10 @@ public class Record extends AppCompatActivity {
             bitshiftMaxSpinner.setSelection(bitshiftMaxPos);
             Spinner encodingSafetySpinner = traumConfigDialog.findViewById(R.id.encoding_safety_spinner);
             encodingSafetySpinner.setSelection(encodingSafetyPos);
-        } catch (Exception e){
-            Log.w(TAG,e);
-        };
+        } catch (Exception e) {
+            Log.w(TAG, e);
+        }
     }
-    
-    
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -1434,7 +1439,7 @@ public class Record extends AppCompatActivity {
         }
     }
 
-    private void waitForBluetoothCallback(BluetoothLeService service){
+    private void waitForBluetoothCallback(BluetoothLeService service) {
         while (service.isBusy) {
             Handler handler = new Handler();
             handler.postDelayed(() -> Log.v(TAG, "Waiting for bluetooth operation to finish."), 300);
@@ -1457,23 +1462,20 @@ public class Record extends AppCompatActivity {
     private List<Float> convertToMicroV(int[] data) {
         // Conversion formula (new): V_in = X * (298 / (1000 * gain))
         List<Float> dataMicroV = new ArrayList<>();
-        for (float datapoint : data) dataMicroV.add(datapoint * 5/4 * 298/(1000*selectedGain));
+        for (float datapoint : data)
+            dataMicroV.add(datapoint * 5 / 4 * 298 / (1000 * selectedGain));
         return dataMicroV;
     }
 
-
-    private float[] hpFilteredNow = new float[nChannels];
-    private float[] hpFilteredPrevious = new float[nChannels];;
-    private float[] samplePrevious = new float[nChannels];;
     private List<Float> highPassFilter(List<Float> data) {
         Log.v(TAG, "HIGHPASSFILTERING");
         // Convert sample to float array
         float[] sampleNow = new float[data.size()];
-        for (int i=0; i<=data.size()-1;i++){
+        for (int i = 0; i <= data.size() - 1; i++) {
             sampleNow[i] = data.get(i);
         }
-        
-        for(int i=0; i<nChannels; i++){
+
+        for (int i = 0; i < nChannels; i++) {
             hpFilteredNow[i] = (float) (0.999 * (hpFilteredPrevious[i]
                     + sampleNow[i] - samplePrevious[i]));
         }
@@ -1518,8 +1520,7 @@ public class Record extends AppCompatActivity {
             streamOutlet.push_sample(sample);
         } catch (Exception ex) {
             Log.d("LSL issue", Objects.requireNonNull(ex.getMessage()));
-            streamOutlet.close();
-            streamInfo.destroy();
+            clearLSL();
         }
     }
 
@@ -1529,6 +1530,7 @@ public class Record extends AppCompatActivity {
             @Override
             public void onValueSelected(Entry entry, Highlight h) {
             }
+
             @Override
             public void onNothingSelected() {
             }
@@ -1599,21 +1601,21 @@ public class Record extends AppCompatActivity {
         Float[] lostSample = new Float[24];
         Arrays.fill(lostSample, Float.NaN);
         List<Float> lostSampleL = Arrays.asList(lostSample);
-        for (int i=0; i<currentBtPkgLoss;i++) accumulatedSamples.add(lostSampleL);
-        for (int i=0; i<currentPkgLoss;i++) accumulatedSamples.add(lostSampleL);
+        for (int i = 0; i < currentBtPkgLoss; i++) accumulatedSamples.add(lostSampleL);
+        for (int i = 0; i < currentPkgLoss; i++) accumulatedSamples.add(lostSampleL);
 
         accumulatedSamples.add(microV);
         pkgArrivalTime = System.currentTimeMillis();
         long plottingElapsed = pkgArrivalTime - plottingLastRefresh;
         int plottingFPS = 25;
-        if (plottingElapsed < 1000/ plottingFPS) {
+        if (plottingElapsed < 1000 / plottingFPS) {
             // only update the plot below if enough time has passed.
             return;
         }
 
         final List<ILineDataSet> plottableDatasets = new ArrayList<>();  // for adding multiple plots
         float t = 0;
-        float pkgInterval = 1000/samplingRate;
+        float pkgInterval = 1000 / samplingRate;
 
         /* Add all accumulatedSamples to the datasets that are used for plotting **/
         for (int i = 0; i < accumulatedSamples.size(); i++) {
@@ -1623,24 +1625,24 @@ public class Record extends AppCompatActivity {
             float lastChannelSigma = 0;
             float displayedChannelsBelow = 0;
             for (int ch = 0; ch < nChannels; ch++) {
-                channelOffsets[ch] = 40 * (lastChannelSigma+1) * displayedChannelsBelow;
+                channelOffsets[ch] = 40 * (lastChannelSigma + 1) * displayedChannelsBelow;
                 float plotValue = channelFloats.get(ch) + channelOffsets[ch];
                 plottingBuffer.get(ch).add(new Entry(t, plotValue));
 
-                if(channelsShown[ch]) {
+                if (channelsShown[ch]) {
                     lastChannelSigma = 2 << TraumschreiberService.signalBitShift[ch];
                     displayedChannelsBelow++;
                 }
             }
         }
-        
+
         // Remove old entries
-        if (plottingBuffer.get(0).size() > maxVisibleXRange/pkgInterval) {
+        if (plottingBuffer.get(0).size() > maxVisibleXRange / pkgInterval) {
             int start = accumulatedSamples.size();
-            int end = plottingBuffer.get(0).size() -1;
-            for(int ch=0; ch<nChannels; ch++){
-                ArrayList<Entry> trimmed = new ArrayList<>(plottingBuffer.get(ch).subList(start,end));
-                plottingBuffer.set(ch,trimmed);
+            int end = plottingBuffer.get(0).size() - 1;
+            for (int ch = 0; ch < nChannels; ch++) {
+                ArrayList<Entry> trimmed = new ArrayList<>(plottingBuffer.get(ch).subList(start, end));
+                plottingBuffer.set(ch, trimmed);
             }
         }
 
@@ -1704,12 +1706,12 @@ public class Record extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-    private void createRecordingFile(){
+    private void createRecordingFile() {
         //transmission time, sampling time, channel values, transmissionID, pkgslosses, resolution
         String date = new SimpleDateFormat("yyyyddMM_HH-mm-ss").format(new Date());
-        tempFileName = date+"_" + "recording.temp";
+        tempFileName = date + "_" + "recording.temp";
         try {
-            recordingFile = new File(MainActivity.getDirSessions(),tempFileName);
+            recordingFile = new File(MainActivity.getDirSessions(), tempFileName);
             // if file doesn't exists, then create it
             if (!recordingFile.exists())
                 recordingFile.createNewFile();
@@ -1719,21 +1721,20 @@ public class Record extends AppCompatActivity {
         }
 
 
-
         final StringBuilder header = new StringBuilder();
         header.append("time");
         header.append(delimiter + "sampling_time");
         //for (int i = 1; i <= nChannels; i++) header.append(delimiter + String.format("ch%d", i));
-        if(getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("eegLabels", true)){
+        if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("eegLabels", true)) {
             for (int i = 0; i < nChannels; i++) header.append(delimiter + channelLabels[i]);
-        } else{
-            for (int i = 1; i <= 1; i++) header.append(String.format("enc_ch%d,",i));
+        } else {
+            for (int i = 1; i <= 1; i++) header.append(String.format("enc_ch%d,", i));
         }
 
-        header.append(delimiter+"pkgid");
-        header.append(delimiter+"pkgloss_bluetooth");
-        header.append(delimiter+"pkgloss_internal");
-        header.append(delimiter+"transmission_rate");
+        header.append(delimiter + "pkgid");
+        header.append(delimiter + "pkgloss_bluetooth");
+        header.append(delimiter + "pkgloss_internal");
+        header.append(delimiter + "transmission_rate");
         header.append(lineBreak);
         try {
             fileWriter.append(header);
@@ -1767,14 +1768,14 @@ public class Record extends AppCompatActivity {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         // Show Debug Statistics
-        if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("showStats", false)){
+        if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("showStats", false)) {
             showStats();
-        };
+        }
 
 
     }
 
-    private void showStats(){
+    private void showStats() {
         StringBuilder statistics = new StringBuilder();
         statistics.append("Device: \t" + mDeviceAddress + "\n\n");
         statistics.append("Last Timestamp: \t" + lastTimeStamp + "\n");
@@ -1782,18 +1783,20 @@ public class Record extends AppCompatActivity {
         statistics.append("Bit resolution: \t" + TraumschreiberService.bitsPerCh + "\n");
         statistics.append("Total Number of PKGs: \t" + storedPkgCount + "\n");
         statistics.append("Total Number of Lost PKGs: \t" + lostPkgCountTotal + "\n");
-        if(storedPkgCount>0) {
+        if (storedPkgCount > 0) {
             statistics.append("Package Loss (%): " + (float) (lostPkgCountTotal * 100) / (float) storedPkgCount);
         }
         AlertDialog.Builder statsDialogBuilder = new AlertDialog.Builder(Record.this)
                 .setTitle("Recording statistics for debugging:")
                 .setMessage(statistics.toString())
                 .setCancelable(true)
-                .setPositiveButton("OK", (dialogInterface, i) -> {});
+                .setPositiveButton("OK", (dialogInterface, i) -> {
+                });
         AlertDialog statsDialog = statsDialogBuilder.create();
         statsDialog.show();
     }
-    private void showSaveDialog(){
+
+    private void showSaveDialog() {
         LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getApplicationContext());
         View mView = layoutInflaterAndroid.inflate(R.layout.input_dialog_string, null);
         AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(Record.this);
@@ -1842,8 +1845,10 @@ public class Record extends AppCompatActivity {
 
     }
 
-    /** Stores
+    /**
+     * Stores
      * transmission time, sampling time, channel values, transmissionID, pkgslosses, resolution
+     *
      * @param data_microV Voltages recorded by the Traumschreiber in micro Volts
      */
     private void storeData(List<Float> data_microV) {
@@ -1851,8 +1856,8 @@ public class Record extends AppCompatActivity {
         float[] f_microV = new float[nChannels];
         Arrays.fill(f_microV, Float.NaN);
         //NaN rows on top (uninitialized)
-        for (int i=0;i<currentPkgLoss; i++) writeSampleToCsv(f_microV);
-        for (int i=0;i<currentBtPkgLoss; i++) writeSampleToCsv(f_microV);
+        for (int i = 0; i < currentPkgLoss; i++) writeSampleToCsv(f_microV);
+        for (int i = 0; i < currentBtPkgLoss; i++) writeSampleToCsv(f_microV);
         // Channel Values
         int i = 0;
         for (Float f : data_microV)
@@ -1865,22 +1870,23 @@ public class Record extends AppCompatActivity {
     /**
      * Adds a row to the recording with columns in the following order
      * timestamp, samplingtime,channelvalues,pkgid,pkgsloss
+     *
      * @param sample float array with channel values
      */
-    private void writeSampleToCsv(float[] sample){
+    private void writeSampleToCsv(float[] sample) {
 
         // Real Time Stamps
         if (storedPkgCount == 0) startTime = System.currentTimeMillis();
         lastTimeStamp = System.currentTimeMillis() - startTime;
 
         // Expected Time Stamps
-        float samplingInterval = 1000/samplingRate;
-        float samplingTime = samplingInterval*storedPkgCount;
+        float samplingInterval = 1000 / samplingRate;
+        float samplingTime = samplingInterval * storedPkgCount;
 
         // Correct Pkg loss counts: NaN rows should have a pkg loss of 0.
         int NaNCorrectionBtLoss = 0;
         int NaNCorrectionInternalLoss = 0;
-        if (Float.isNaN(sample[0])){
+        if (Float.isNaN(sample[0])) {
             NaNCorrectionBtLoss = currentBtPkgLoss;
             NaNCorrectionInternalLoss = currentPkgLoss;
         }
@@ -1898,7 +1904,7 @@ public class Record extends AppCompatActivity {
             storedPkgCount++;
 
 
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
     }
@@ -1907,7 +1913,9 @@ public class Record extends AppCompatActivity {
         saveSession("default");
     }
 
-    /**Writes a footer with meta data to the end of the file and saves it acc. to user preferences**/
+    /**
+     * Writes a footer with meta data to the end of the file and saves it acc. to user preferences
+     **/
     @SuppressLint("DefaultLocale")
     private void saveSession(final String tag) throws IOException {
         // Column Names of Footer
@@ -1939,10 +1947,10 @@ public class Record extends AppCompatActivity {
 
         // rename your temp file to the desired tag
         String permFileName = date + "_" + tag + ".csv";
-        File tempFile = new File(MainActivity.getDirSessions(),tempFileName);
-        File permFile = new File(MainActivity.getDirSessions(),permFileName);
+        File tempFile = new File(MainActivity.getDirSessions(), tempFileName);
+        File permFile = new File(MainActivity.getDirSessions(), permFileName);
         tempFile.renameTo(permFile);
-        Toast.makeText(getApplicationContext(),"Stored Recording as " + permFileName, Toast.LENGTH_LONG
+        Toast.makeText(getApplicationContext(), "Stored Recording as " + permFileName, Toast.LENGTH_LONG
         ).show();
         fileWriter.close();
 
@@ -2022,9 +2030,9 @@ public class Record extends AppCompatActivity {
         channelColors[23] = ContextCompat.getColor(this, R.color.Ch24);
     }
 
-    public void deleteTempFiles(){
-        File dir = new File(MainActivity.getDirSessions(),"");
-        File [] files = dir.listFiles();
+    public void deleteTempFiles() {
+        File dir = new File(MainActivity.getDirSessions(), "");
+        File[] files = dir.listFiles();
         for (File tempFile : files) {
             if (tempFile.getName().endsWith(".temp")) {
                 tempFile.delete();
