@@ -27,6 +27,8 @@ import com.google.android.material.navigation.NavigationView;
 import java.io.File;
 import java.util.Objects;
 
+import us.feras.mdv.BuildConfig;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
