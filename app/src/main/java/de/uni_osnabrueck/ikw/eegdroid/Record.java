@@ -1512,8 +1512,6 @@ public class Record extends AppCompatActivity {
         for (int i = 0; i < data_microV.size(); i++) {
             sample[i] = data_microV.get(i);
         }
-        streamOutlet.push_sample(sample);
-        Log.v("LSL", "Sample sent!");
         try {
             streamOutlet.push_sample(sample);
         } catch (Exception ex) {
