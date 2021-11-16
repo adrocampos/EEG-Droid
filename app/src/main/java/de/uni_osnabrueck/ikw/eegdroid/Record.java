@@ -1704,7 +1704,8 @@ public class Record extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-    private void createRecordingFile() {
+    private boolean header = true;
+    private void createRecordingFile()  {
         //transmission time, sampling time, channel values, transmissionID, pkgslosses, resolution
         String date = new SimpleDateFormat("yyyyddMM_HH-mm-ss").format(new Date());
         tempFileName = date + "_" + "recording.temp";
@@ -1717,28 +1718,78 @@ public class Record extends AppCompatActivity {
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
         }
+        
+        //write a header with metadata
+        if(header) writeHeader(fileWriter);
 
-
-        final StringBuilder header = new StringBuilder();
-        header.append("time");
-        header.append(delimiter + "sampling_time");
-        //for (int i = 1; i <= nChannels; i++) header.append(delimiter + String.format("ch%d", i));
-        if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("eegLabels", true)) {
-            for (int i = 0; i < nChannels; i++) header.append(delimiter + channelLabels[i]);
+        // Specify column names here
+        final StringBuilder columnNames = new StringBuilder();
+        columnNames.append("time");
+        columnNames.append(delimiter + "sampling_time");
+        
+        // use electrode labels ("FP1", etc.) or channel numbers ("ch1")
+        boolean useChannelLabels = getSharedPreferences("userPreferences", MODE_PRIVATE)
+                .getBoolean("eegLabels", true);
+        if (useChannelLabels) {
+            for (int i = 0; i < nChannels; i++){
+                columnNames.append(delimiter + channelLabels[i]);
+            }
         } else {
-            for (int i = 1; i <= 1; i++) header.append(String.format("enc_ch%d,", i));
+            for (int i = 1; i <= nChannels; i++){
+                columnNames.append(String.format("ch%d,", i));
+            }
         }
 
-        header.append(delimiter + "pkgid");
-        header.append(delimiter + "pkgloss_bluetooth");
-        header.append(delimiter + "pkgloss_internal");
-        header.append(delimiter + "transmission_rate");
-        header.append(lineBreak);
+        columnNames.append(delimiter + "pkgid");
+        columnNames.append(delimiter + "pkgloss_bluetooth");
+        columnNames.append(delimiter + "pkgloss_internal");
+        columnNames.append(delimiter + "transmission_rate");
+        columnNames.append(lineBreak);
+
+        try{
+            fileWriter.append(columnNames);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+     
+    }
+    
+    private void writeHeader(FileWriter fileWriter) {
+        final StringBuilder header = new StringBuilder();
+        
+        // First Row
+        header.append("Username" + delimiter);
+        header.append("UserID" + delimiter);
+        header.append("SessionTag" + delimiter);
+        header.append("Date" + delimiter);
+        header.append("SamplingRate" + delimiter);
+        header.append("Bits" + delimiter);
+        header.append("unit" + delimiter);
+        header.append("\n");
+   
+     
+
+        final String username = getSharedPreferences("userPreferences", 0).getString("username", "user");
+        final String userID = getSharedPreferences("userPreferences", 0).getString("userID", "12345678");
+        String date = new SimpleDateFormat("yyyyddMMHHmmss").format(new Date());
+
+        // Second Row
+        header.append(username+ delimiter);
+        header.append(userID + delimiter);
+        header.append("SessionTag" + delimiter);
+        header.append(date + delimiter);
+        header.append(samplingRate + delimiter);
+        header.append(mTraumService.bitsPerCh + delimiter);
+        header.append("microVolt" + delimiter);
+        header.append("\n");
+
         try {
-            fileWriter.append(header);
+            fileWriter.write(header.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     //Finish a recording session
@@ -1914,8 +1965,28 @@ public class Record extends AppCompatActivity {
     /**
      * Writes a footer with meta data to the end of the file and saves it acc. to user preferences
      **/
+    private boolean footer = false;
     @SuppressLint("DefaultLocale")
     private void saveSession(final String tag) throws IOException {
+        if(footer) writeFooter(tag);
+        
+        //Get the date
+        String date = new SimpleDateFormat("yyyyddMMHHmmss").format(new Date());
+        
+        // give the temp file a proper file name
+        String permFileName = date + "_" + tag + ".csv";
+        File tempFile = new File(MainActivity.getDirSessions(), tempFileName);
+        File permFile = new File(MainActivity.getDirSessions(), permFileName);
+        tempFile.renameTo(permFile);
+        
+        Toast.makeText(getApplicationContext(), "Stored Recording as " + permFileName, Toast.LENGTH_LONG
+        ).show();
+        
+        fileWriter.close();
+    }
+    
+    private void writeFooter(String tag) throws IOException{
+        
         // Column Names of Footer
         final String footerLabels = "Username,User ID,Session ID,Session Tag,Date,Shape (rows x columns)," +
                 "Duration (ms),Starting Time,Ending Time,Sampling Rate,Bits per Channel," +
@@ -1942,16 +2013,6 @@ public class Record extends AppCompatActivity {
         fileWriter.append(delimiter + "µV");
         fileWriter.append(delimiter + start_timestamp);
         fileWriter.append(delimiter + end_timestamp);
-
-        // rename your temp file to the desired tag
-        String permFileName = date + "_" + tag + ".csv";
-        File tempFile = new File(MainActivity.getDirSessions(), tempFileName);
-        File permFile = new File(MainActivity.getDirSessions(), permFileName);
-        tempFile.renameTo(permFile);
-        Toast.makeText(getApplicationContext(), "Stored Recording as " + permFileName, Toast.LENGTH_LONG
-        ).show();
-        fileWriter.close();
-
     }
 
     private void buttons_nodata() {
