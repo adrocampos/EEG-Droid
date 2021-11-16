@@ -735,7 +735,7 @@ public class Record extends AppCompatActivity {
 
         try {
             streamInfo = new LSL.StreamInfo("Traumschreiber-EEG", "EEG", 24,
-                    LSL.IRREGULAR_RATE, LSL.ChannelFormat.float32, uid.toString());
+                    samplingRate, LSL.ChannelFormat.float32, uid.toString());
             if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("eegLabels", true)) {
                 LSL.XMLElement chns = streamInfo.desc().append_child("channels");
                 for (String label : channelLabels) {
