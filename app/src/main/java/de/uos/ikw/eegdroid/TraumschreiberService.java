@@ -1,4 +1,4 @@
-package de.uni_osnabrueck.ikw.eegdroid;
+package de.uos.ikw.eegdroid;
 
 import android.util.Log;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package de.uni_osnabrueck.ikw.eegdroid.utilities;
+package de.uos.ikw.eegdroid.utilities;
 
 import org.apache.commons.math3.complex.Complex;
 

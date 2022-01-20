@@ -1,4 +1,4 @@
-package de.uni_osnabrueck.ikw.eegdroid.utilities;
+package de.uos.ikw.eegdroid.utilities;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;

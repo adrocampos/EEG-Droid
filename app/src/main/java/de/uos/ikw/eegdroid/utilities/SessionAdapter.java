@@ -1,4 +1,4 @@
-package de.uni_osnabrueck.ikw.eegdroid.utilities;
+package de.uos.ikw.eegdroid.utilities;
 
 import android.content.Context;
 import android.util.Log;
@@ -20,7 +20,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
-import de.uni_osnabrueck.ikw.eegdroid.R;
+import de.uos.ikw.eegdroid.R;
 
 
 public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.PlanetViewHolder> {

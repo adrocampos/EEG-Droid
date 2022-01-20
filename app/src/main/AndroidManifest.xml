@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="de.uni_osnabrueck.ikw.eegdroid">
+    package="de.uos.ikw.eegdroid">
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -12,6 +12,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -48,7 +50,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Record"
+            android:name="de.uos.ikw.eegdroid.Record"
             android:screenOrientation="portrait"/>
         <activity
             android:name=".Display"
@@ -60,7 +62,7 @@
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".DeviceScanActivity"
+            android:name="de.uos.ikw.eegdroid.DeviceScanActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"/>
 

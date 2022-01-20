@@ -1,4 +1,4 @@
-package de.uni_osnabrueck.ikw.eegdroid;
+package de.uos.ikw.eegdroid;
 
 
 import android.content.DialogInterface;
@@ -29,7 +29,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.uni_osnabrueck.ikw.eegdroid.utilities.Utilities;
+import de.uos.ikw.eegdroid.utilities.Utilities;
 
 public class TFAnalysis extends AppCompatActivity {
 

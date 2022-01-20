@@ -1,4 +1,4 @@
-package de.uni_osnabrueck.ikw.eegdroid;
+package de.uos.ikw.eegdroid;
 
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
@@ -40,7 +40,7 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import de.uni_osnabrueck.ikw.eegdroid.utilities.MyXAxisValueFormatterTime;
+import de.uos.ikw.eegdroid.utilities.MyXAxisValueFormatterTime;
 
 /**
  * Activity for display and reproduce EEG Sessions

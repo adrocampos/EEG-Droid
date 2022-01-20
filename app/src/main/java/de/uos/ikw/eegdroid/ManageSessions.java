@@ -1,9 +1,8 @@
-package de.uni_osnabrueck.ikw.eegdroid;
+package de.uos.ikw.eegdroid;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,13 +21,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 
-import de.uni_osnabrueck.ikw.eegdroid.utilities.SessionAdapter;
+import de.uos.ikw.eegdroid.utilities.SessionAdapter;
 
 public class ManageSessions extends AppCompatActivity {
 

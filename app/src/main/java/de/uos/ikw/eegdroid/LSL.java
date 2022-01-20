@@ -1,4 +1,4 @@
-package de.uni_osnabrueck.ikw.eegdroid;
+package de.uos.ikw.eegdroid;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;

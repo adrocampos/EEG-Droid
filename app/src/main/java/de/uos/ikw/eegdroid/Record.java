@@ -1,4 +1,4 @@
-package de.uni_osnabrueck.ikw.eegdroid;
+package de.uos.ikw.eegdroid;
 // initial commits
 
 import android.annotation.SuppressLint;
@@ -81,17 +81,18 @@ public class Record extends AppCompatActivity {
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
     private final static String TAG = Record.class.getSimpleName();
+    public final List<Float> timestamps = new ArrayList<>();
+    public final List<Float> samplingTimes = new ArrayList<>();
+    public final ArrayList<Integer> pkgIDs = new ArrayList<>();
+    public final List<Integer> pkgsLost = new ArrayList<>();
     final String delimiter = ",";
     final String lineBreak = "\n";
     private final Handler handler = new Handler();
-    public final List<Float> timestamps = new ArrayList<>();
-    public final List<Float> samplingTimes = new ArrayList<>();
     private final List<List<Float>> accumulatedSamples = new ArrayList<>();
     private final Float[] channelOffsets = new Float[24];
     private final int maxVisibleXRange = 8000;  // see 8s at the time on the plot
     private final int leftAxisUpperLimit = (int) (2 * Math.pow(10, 6));
     private final int leftAxisLowerLimit = (int) (-2 * Math.pow(10, 6));
-    public final ArrayList<Integer> pkgIDs = new ArrayList<>();
     private final int nChannels = 24;
     private final ArrayList<ArrayList<Entry>> plottingBuffer = new ArrayList<ArrayList<Entry>>() {
         {
@@ -108,7 +109,6 @@ public class Record extends AppCompatActivity {
     private final TraumschreiberService mTraumService = new TraumschreiberService();
     private final String[] channelLabels = new String[]{"FP1", "FPZ", "FP2", "F7", "F3", "Fz", "F4", "F8", "M1", "T7", "C3", "CZ", "C4", "T8", "M2", "P7", "P3", "Pz", "P4", "P8", "POZ", "O1", "OZ", "O2"};
     private final float pkgLossLimit = 0.02f; // tolerance for this proportion of package loss
-    public final List<Integer> pkgsLost = new ArrayList<>();
     private final int srmUpdateInterval = 5000; // ms
     private final float[] hpFilteredNow = new float[nChannels];
     LSL.StreamInfo streamInfo;

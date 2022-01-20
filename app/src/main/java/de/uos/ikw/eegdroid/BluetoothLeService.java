@@ -1,4 +1,4 @@
-package de.uni_osnabrueck.ikw.eegdroid;
+package de.uos.ikw.eegdroid;
 /*
  * Copyright (C) 2013 The Android Open Source Project
  *
