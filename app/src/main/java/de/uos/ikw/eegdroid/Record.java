@@ -52,18 +52,16 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.MPPointD;
 import com.github.mikephil.charting.utils.MPPointF;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -241,12 +239,7 @@ public class Record extends AppCompatActivity {
         }
     };
     private boolean deviceConnected = false;
-    private final boolean casting = false;
     private Menu menu;
-    private Socket socket;
-    private PrintWriter out;
-    private BufferedReader in;
-    private List<Float> microV;
     private int currentPkgLoss = 0;
     private int currentPkgId = 0;
     private int lastPkgId = 0;
@@ -348,7 +341,7 @@ public class Record extends AppCompatActivity {
                     lostPkgCountTotal += (currentBtPkgLoss + currentPkgLoss);
                     if (!samplingRateMonitorRunning) startSamplingRateMonitoring();
 
-                    microV = convertToMicroV(data);
+                    List<Float> microV = convertToMicroV(data);
                     if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("inAppFilter", true)) {
                         microV = highPassFilter(microV);
                     }
@@ -535,7 +528,7 @@ public class Record extends AppCompatActivity {
         srmTimer = new Timer();
         initSrmTimerTask();
         srmTimer.schedule(srmTimerTask, srmUpdateInterval, srmUpdateInterval);
-        mDataResolution.setText("calculating");
+        mDataResolution.setText(R.string.calculating);
         samplingRateMonitorRunning = true;
     }
 
@@ -553,7 +546,7 @@ public class Record extends AppCompatActivity {
                     resolutionFrequency = pkgCountSrm / (float) (srmUpdateInterval / 1000);  // packages per second
 
                     String hertz = (int) resolutionFrequency + "Hz";
-                    String resolution = String.format("%.2f", resolutionTime) + "ms - ";
+                    String resolution = String.format(Locale.getDefault(), "%.2f", resolutionTime) + "ms - ";
                     String content = resolution + hertz;
 
                     lostPkgCountSrm = lostPkgCountTotal - lostPkgCountSrm;
@@ -565,12 +558,13 @@ public class Record extends AppCompatActivity {
                     Log.d(TAG, pkgLossDebug);
 
                     int color; //green, orange and red for good, moderate and bad sampling rates
-                    if (pkgLossPercent < 0.01) color = getResources().getColor(R.color.green);
+                    if (pkgLossPercent < 0.01)
+                        color = ContextCompat.getColor(getApplicationContext(), R.color.green);
                     else if (pkgLossPercent < pkgLossLimit)
-                        color = getResources().getColor(R.color.orange);
+                        color = ContextCompat.getColor(getApplicationContext(), R.color.orange);
                     else {
                         showPkgLossWarning();
-                        color = getResources().getColor(R.color.red);
+                        color = ContextCompat.getColor(getApplicationContext(), R.color.red);
                     }
 
                     if (pkgCountTotal > 0) {
@@ -589,7 +583,7 @@ public class Record extends AppCompatActivity {
         // Avoids stacking Warnings on top of each other
         if (showingPkgLossWarning || ignorePkgLoss) return;
 
-        String pkgLossPercentFormatted = String.format("%.02f", pkgLossPercent * 100);
+        String pkgLossPercentFormatted = String.format(Locale.getDefault(), "%.02f", pkgLossPercent * 100);
         AlertDialog.Builder PkgLossWarningBuilder = new AlertDialog.Builder(this)
                 .setTitle("Data Loss")
                 .setMessage(pkgLossPercentFormatted + "% of samples are being lost. Change to less demanding" +
@@ -601,9 +595,7 @@ public class Record extends AppCompatActivity {
                     highlightRelevantOptions();
                     unhighlightRelevantOptions();
                 })
-                .setNegativeButton("No", (dialog, which) -> {
-                    showingPkgLossWarning = false;
-                })
+                .setNegativeButton("No", (dialog, which) -> showingPkgLossWarning = false)
                 .setNeutralButton("Ignore from now on", (dialog, which) -> {
                     showingPkgLossWarning = false;
                     ignorePkgLoss = true;
@@ -616,11 +608,11 @@ public class Record extends AppCompatActivity {
 
     private void highlightRelevantOptions() {
         View bitsPerChRow = traumConfigDialog.findViewById(R.id.config_row_bits_per_ch);
-        bitsPerChRow.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+        bitsPerChRow.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
         bitsPerChRow.setAlpha(0.8f);
 
         View transmissionRow = traumConfigDialog.findViewById(R.id.config_row_transmission_rate);
-        transmissionRow.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+        transmissionRow.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
         transmissionRow.setAlpha(0.8f);
     }
 
@@ -630,11 +622,11 @@ public class Record extends AppCompatActivity {
                     @Override
                     public void run() {
                         View bitsPerChRow = traumConfigDialog.findViewById(R.id.config_row_bits_per_ch);
-                        bitsPerChRow.setBackgroundColor(getResources().getColor(R.color.design_default_color_background));
+                        bitsPerChRow.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.design_default_color_background));
                         bitsPerChRow.setAlpha(1f);
 
                         View transmissionRow = traumConfigDialog.findViewById(R.id.config_row_transmission_rate);
-                        transmissionRow.setBackgroundColor(getResources().getColor(R.color.design_default_color_background));
+                        transmissionRow.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.design_default_color_background));
                         transmissionRow.setAlpha(1f);
                     }
                 },
@@ -734,7 +726,7 @@ public class Record extends AppCompatActivity {
                 }
             } else {
                 for (int i = 1; i <= 24; i++)
-                    streamInfo.desc().append_child(String.format("Ch-%d", i));
+                    streamInfo.desc().append_child(String.format(Locale.getDefault(), "Ch-%d", i));
             }
         } catch (Error ex) {
             Log.e(TAG, " LSL issue: " + ex.getMessage());
@@ -763,6 +755,7 @@ public class Record extends AppCompatActivity {
         return channelValueView;
     }
 
+    @SuppressLint("SetTextI18n")
     private CheckBox createPlottingCheckbox(int i) {
         int BoxIdRef = 94843913; //Just some pseudo random number to avoid confusion in onCheckedListener
         // Create Checkbox for displaying channel
@@ -886,6 +879,8 @@ public class Record extends AppCompatActivity {
         if (id == R.id.scan) {
             if (!deviceConnected) {
                 Intent intent = new Intent(this, DeviceScanActivity.class);
+                // TODO: replace startActivityforResult method since is deprecated
+                //  https://stackoverflow.com/questions/62671106/onactivityresult-method-is-deprecated-what-is-the-alternative
                 startActivityForResult(intent, 1200);
             } else {
                 //Handles the Dialog to confirm the closing of the activity
@@ -943,7 +938,7 @@ public class Record extends AppCompatActivity {
             Log.d(TAG, "Notifications Button pressed: ENABLED");
             notifying = true;
             mTraumService.warmUp();
-            mDataResolution.setText("warming up");
+            mDataResolution.setText(R.string.warming_up);
             mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, true);
             menuItemNotify.setIcon(R.drawable.ic_notifications_active_blue_24dp);
             //Prevent Screen from turning off
@@ -989,9 +984,7 @@ public class Record extends AppCompatActivity {
 
         // Link Close Button
         View closeConfig = traumConfigDialog.findViewById(R.id.traum_config_close_button);
-        closeConfig.setOnClickListener(v -> {
-            traumConfigDialog.cancel();
-        });
+        closeConfig.setOnClickListener(v -> traumConfigDialog.cancel());
 
 
         // Link gainSpinner
@@ -1286,6 +1279,7 @@ public class Record extends AppCompatActivity {
 
     }
 
+    @SuppressLint("SetTextI18n")
     private void updateTraumConfigValues(int[] configData) {
         selectedGainPos = (configData[0] & 0xff) >> 6; // 0bxx00 0000
         selectedBitsPerChPos = (configData[0] & 0x30) >> 4; // 0b00xx 0000
@@ -1552,7 +1546,7 @@ public class Record extends AppCompatActivity {
 
     private LineDataSet createPlottableSet(int channelId) {
 
-        LineDataSet set = new LineDataSet(plottingBuffer.get(channelId), String.format("Ch-%d", channelId + 1));
+        LineDataSet set = new LineDataSet(plottingBuffer.get(channelId), String.format(Locale.getDefault(), "Ch-%d", channelId + 1));
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
         set.setColor(channelColors[channelId]);
         set.setDrawCircles(false);
@@ -1672,13 +1666,15 @@ public class Record extends AppCompatActivity {
 
     private void createRecordingFile() {
         //transmission time, sampling time, channel values, transmissionID, pkgslosses, resolution
-        String date = new SimpleDateFormat("yyyyddMM_HH-mm-ss").format(new Date());
+        String date = new SimpleDateFormat("yyyyddMM_HH-mm-ss", Locale.getDefault()).format(new Date());
         tempFileName = date + "_" + "recording.temp";
         try {
             File recordingFile = new File(MainActivity.getDirSessions(), tempFileName);
             // if file doesn't exists, then create it
-            if (!recordingFile.exists())
-                recordingFile.createNewFile();
+            if (!recordingFile.exists()) {
+                boolean newFile = recordingFile.createNewFile();
+                if (!newFile) Log.e(TAG, "Error creating new file.");
+            }
             fileWriter = new FileWriter(recordingFile);
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
@@ -1701,9 +1697,9 @@ public class Record extends AppCompatActivity {
                 columnNames.append(delimiter).append(channelLabels[i]);
             }
         } else {
-            for (int i = 1; i <= nChannels; i++) {
-                columnNames.append(String.format("ch%d,", i));
-            }
+            for (int i = 1; i <= nChannels; i++)
+                columnNames.append(String.format(Locale.getDefault(), "ch%d,", i));
+
         }
 
         columnNames.append(delimiter).append("pkgid");
@@ -1737,7 +1733,7 @@ public class Record extends AppCompatActivity {
 
         final String username = getSharedPreferences("userPreferences", 0).getString("username", "user");
         final String userID = getSharedPreferences("userPreferences", 0).getString("userID", "12345678");
-        String date = new SimpleDateFormat("yyyyddMMHHmmss").format(new Date());
+        String date = new SimpleDateFormat("yyyyddMMHHmmss", Locale.getDefault()).format(new Date());
 
         // Second Row
         header.append(username).append(delimiter);
@@ -1929,20 +1925,21 @@ public class Record extends AppCompatActivity {
 
     @SuppressLint("DefaultLocale")
     private void saveSession(final String tag) throws IOException {
-        /**
-         * Writes a footer with meta data to the end of the file and saves it acc. to user preferences
-         **/
+        /*
+          Writes a footer with meta data to the end of the file and saves it acc. to user preferences
+         */
         boolean footer = false;
         if (footer) writeFooter(tag);
 
         //Get the date
-        String date = new SimpleDateFormat("yyyyddMMHHmmss").format(new Date());
+        String date = new SimpleDateFormat("yyyyddMMHHmmss", Locale.getDefault()).format(new Date());
 
         // give the temp file a proper file name
         String permFileName = date + "_" + tag + ".csv";
         File tempFile = new File(MainActivity.getDirSessions(), tempFileName);
         File permFile = new File(MainActivity.getDirSessions(), permFileName);
-        tempFile.renameTo(permFile);
+        boolean storeResult = tempFile.renameTo(permFile);
+        if (!storeResult) Log.e(TAG, "Error saving recording.");
 
         Toast.makeText(getApplicationContext(), "Stored Recording as " + permFileName, Toast.LENGTH_LONG
         ).show();
@@ -1962,7 +1959,7 @@ public class Record extends AppCompatActivity {
         final String username = getSharedPreferences("userPreferences", 0).getString("username", "user");
         final String userID = getSharedPreferences("userPreferences", 0).getString("userID", "12345678");
         final UUID id = UUID.randomUUID();
-        String date = new SimpleDateFormat("yyyyddMMHHmmss").format(new Date());
+        String date = new SimpleDateFormat("yyyyddMMHHmmss", Locale.getDefault()).format(new Date());
 
         fileWriter.append(username);
         fileWriter.append(delimiter).append(userID);
@@ -2060,8 +2057,9 @@ public class Record extends AppCompatActivity {
         assert files != null;
         for (File tempFile : files) {
             if (tempFile.getName().endsWith(".temp")) {
-                tempFile.delete();
-                Log.d(TAG, "deleted temp file!");
+                boolean deleted = tempFile.delete();
+                if (!deleted) Log.e(TAG, "Failed to delete file.");
+                else Log.d(TAG, "deleted temp file!");
             }
         }
     }

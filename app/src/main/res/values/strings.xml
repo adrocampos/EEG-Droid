@@ -291,6 +291,8 @@
     <string name="menu_record_cast">Cast</string>
     <string name="menu_record_notify">Notify</string>
     <string name="permission_storage">The app needs permission to access storage</string>
+    <string name="calculating">calculating</string>
+    <string name="warming_up">warming up</string>
 
 
     <!-- Strings Related to Traumschreiber Configuration -->
