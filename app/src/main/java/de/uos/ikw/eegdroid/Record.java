@@ -80,19 +80,18 @@ public class Record extends AppCompatActivity {
 
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
-    public static final String EXTRAS_DEVICE_MODEL = "DEVICE_MODEL"; // "2": old, "3": new
     private final static String TAG = Record.class.getSimpleName();
     final String delimiter = ",";
     final String lineBreak = "\n";
     private final Handler handler = new Handler();
-    private final List<Float> timestamps = new ArrayList<>();
-    private final List<Float> samplingTimes = new ArrayList<>();
+    public final List<Float> timestamps = new ArrayList<>();
+    public final List<Float> samplingTimes = new ArrayList<>();
     private final List<List<Float>> accumulatedSamples = new ArrayList<>();
     private final Float[] channelOffsets = new Float[24];
     private final int maxVisibleXRange = 8000;  // see 8s at the time on the plot
     private final int leftAxisUpperLimit = (int) (2 * Math.pow(10, 6));
     private final int leftAxisLowerLimit = (int) (-2 * Math.pow(10, 6));
-    private final ArrayList<Integer> pkgIDs = new ArrayList<>();
+    public final ArrayList<Integer> pkgIDs = new ArrayList<>();
     private final int nChannels = 24;
     private final ArrayList<ArrayList<Entry>> plottingBuffer = new ArrayList<ArrayList<Entry>>() {
         {
@@ -107,11 +106,13 @@ public class Record extends AppCompatActivity {
     private final CheckBox[] checkBoxes = new CheckBox[nChannels];
     private final TextView[] channelValueViews = new TextView[nChannels];
     private final TraumschreiberService mTraumService = new TraumschreiberService();
-    private final ArrayList<Integer> adaptiveEncodingFlags = new ArrayList<>();
-    private final ArrayList<Integer> signalBitShifts = new ArrayList<>();
+    private final String[] channelLabels = new String[]{"FP1", "FPZ", "FP2", "F7", "F3", "Fz", "F4", "F8", "M1", "T7", "C3", "CZ", "C4", "T8", "M2", "P7", "P3", "Pz", "P4", "P8", "POZ", "O1", "OZ", "O2"};
+    private final float pkgLossLimit = 0.02f; // tolerance for this proportion of package loss
+    public final List<Integer> pkgsLost = new ArrayList<>();
+    private final int srmUpdateInterval = 5000; // ms
+    private final float[] hpFilteredNow = new float[nChannels];
     LSL.StreamInfo streamInfo;
     LSL.StreamOutlet streamOutlet = null;
-    private final String[] channelLabels = new String[]{"FP1", "FPZ", "FP2", "F7", "F3", "Fz", "F4", "F8", "M1", "T7", "C3", "CZ", "C4", "T8", "M2", "P7", "P3", "Pz", "P4", "P8", "POZ", "O1", "OZ", "O2"};
     private float samplingRate = 500 / 2f;  // alternative: 500, 500/2, 500/3, 500/4, etc.
     private BluetoothGattCharacteristic configCharacteristic;
     private BluetoothGattCharacteristic codeCharacteristic;
@@ -146,7 +147,6 @@ public class Record extends AppCompatActivity {
     private AlertDialog traumConfigDialog;
     private TextView mConnectionState;
     private TextView viewDeviceAddress;
-    private boolean mNewDevice;
     private String mDeviceAddress;
     private BluetoothLeService mBluetoothLeService;
     // Code to manage Service lifecycle.
@@ -175,11 +175,9 @@ public class Record extends AppCompatActivity {
     private float resolutionTime;
     private float resolutionFrequency;
     private TextView mDataResolution;
-    private int batteryValue;
     private TextView mBatteryValue;
     private androidx.appcompat.widget.SwitchCompat plotSwitch;
     private boolean plotting = true;
-    private androidx.appcompat.widget.SwitchCompat channelViewsSwitch;
     private boolean channelViewsEnabled = true;
     private final CompoundButton.OnCheckedChangeListener channelViewsSwitchListener = (buttonView, isChecked) -> {
         LinearLayout channelViewsContainer = findViewById(R.id.ChannelViewsContainer);
@@ -215,14 +213,11 @@ public class Record extends AppCompatActivity {
         tapZoomButton.setText("10^" + tapZoomExponent);
     };
     private ImageButton recordingButton;
-    private List<float[]> mainData;
     private int adaptiveEncodingFlag = 0; //Indicates whether adaptive encoding took place in this instant.
-    private int signalBitShift = 0;
     private int pkgCountTotal;                //total count of packages that  arrived
     private int storedPkgCount;         //no. of samples added to the csv
     private int lostPkgCountTotal;            // total count of lost samples based on info in header
     private float pkgLossPercent;       // proportion of currently lost packages
-    private final float pkgLossLimit = 0.02f; // tolerance for this proportion of package loss
     private boolean ignorePkgLoss = false;
     private float lastTimeStamp;
     private String start_time;
@@ -250,7 +245,6 @@ public class Record extends AppCompatActivity {
             }
         }
     };
-    private long pkgArrivalTime;
     private boolean deviceConnected = false;
     private boolean casting = false;
     private Menu menu;
@@ -259,13 +253,11 @@ public class Record extends AppCompatActivity {
     private BufferedReader in;
     private List<Float> microV;
     private CastThread caster;
-    private final List<Integer> pkgsLost = new ArrayList<>();
     private int currentPkgLoss = 0;
     private int currentPkgId = 0;
     private int lastPkgId = 0;
     private int currentBtPkgLoss = 0;
     private Thread plottingThread;
-    private File recordingFile;
     private String tempFileName;
     private FileWriter fileWriter;
     private final View.OnClickListener recordingButtonOnClickListener = v -> {
@@ -276,12 +268,10 @@ public class Record extends AppCompatActivity {
             showSaveDialog();
         }
     };
-    private final int srmUpdateInterval = 5000; // ms
     private boolean samplingRateMonitorRunning = false;
     private Timer srmTimer;
     private TimerTask srmTimerTask;
     private boolean showingPkgLossWarning = false;
-    private final float[] hpFilteredNow = new float[nChannels];
     private float[] hpFilteredPrevious = new float[nChannels];
     private float[] samplePrevious = new float[nChannels];
     // Handles various events fired by the Service.
@@ -290,85 +280,89 @@ public class Record extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             // CONNECTION EVENT
-            if (action.equals(BluetoothLeService.ACTION_GATT_CONNECTED)) {
-                deviceConnected = true;
-                buttons_prerecording();
-                setConnectionStatus(true);
-                storedPkgCount = 0;
-                // DISCONNECTION EVENT
-            } else if (action.equals(BluetoothLeService.ACTION_GATT_DISCONNECTED)) {
-                deviceConnected = false;
-                setConnectionStatus(false);
-                clearUI();
-                disableCheckboxes();
-                if (srmTimer != null) {
-                    srmTimer.cancel();
-                    srmTimer.purge();
-                }
-                samplingRateMonitorRunning = false;
+            switch (action) {
+                case BluetoothLeService.ACTION_GATT_CONNECTED:
+                    deviceConnected = true;
+                    buttons_prerecording();
+                    setConnectionStatus(true);
+                    storedPkgCount = 0;
+                    // DISCONNECTION EVENT
+                    break;
+                case BluetoothLeService.ACTION_GATT_DISCONNECTED:
+                    deviceConnected = false;
+                    setConnectionStatus(false);
+                    clearUI();
+                    disableCheckboxes();
+                    if (srmTimer != null) {
+                        srmTimer.cancel();
+                        srmTimer.purge();
+                    }
+                    samplingRateMonitorRunning = false;
 
-                // BLUETOOTH SERVICE REGISTRATION
-            } else if (action.equals(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED)) {
-                BluetoothGattService bleService = mBluetoothLeService.getService(TraumschreiberService.serviceUUID);
-                mNotifyCharacteristic = bleService.getCharacteristic(TraumschreiberService.notifyingUUID);
-                codeCharacteristic = bleService.getCharacteristic(TraumschreiberService.codeUUID);
-                configCharacteristic = bleService.getCharacteristic(TraumschreiberService.configUUID);
-                mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
-                waitForBluetoothCallback(mBluetoothLeService);
+                    // BLUETOOTH SERVICE REGISTRATION
+                    break;
+                case BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED:
+                    BluetoothGattService bleService = mBluetoothLeService.getService(TraumschreiberService.serviceUUID);
+                    mNotifyCharacteristic = bleService.getCharacteristic(TraumschreiberService.notifyingUUID);
+                    codeCharacteristic = bleService.getCharacteristic(TraumschreiberService.codeUUID);
+                    configCharacteristic = bleService.getCharacteristic(TraumschreiberService.configUUID);
+                    mBluetoothLeService.setCharacteristicNotification(codeCharacteristic, true);
+                    waitForBluetoothCallback(mBluetoothLeService);
                 /*Apply default configuration once we have the config characteristic;
                   A bit inelegant, but it is more tedious to change default values on by repgroamming
                    the traumschreiber*/
-                applyDefaultConfiguration();
+                    applyDefaultConfiguration();
 
-                // HANDLE INCOMING STREAM
-            } else if (action.equals(BluetoothLeService.ACTION_DATA_AVAILABLE)) {
+                    // HANDLE INCOMING STREAM
+                    break;
+                case BluetoothLeService.ACTION_DATA_AVAILABLE:
 
-                int[] data = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
+                    int[] data = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
 
-                // CONFIG DATA
-                if (data.length == 8) {
-                    int[] configData = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
-                    Toast.makeText(getApplicationContext(), "Received Config Data", Toast.LENGTH_SHORT).show();
-                    updateTraumConfigValues(configData);
-                    if (traumConfigDialog.isShowing()) displayTraumConfigValues();
-                    return;
-                }
+                    // CONFIG DATA
+                    if (data.length == 8) {
+                        int[] configData = intent.getIntArrayExtra(BluetoothLeService.EXTRA_DATA);
+                        Toast.makeText(getApplicationContext(), "Received Config Data", Toast.LENGTH_SHORT).show();
+                        updateTraumConfigValues(configData);
+                        if (traumConfigDialog.isShowing()) displayTraumConfigValues();
+                        return;
+                    }
 
-                if (!notifying) return;
+                    if (!notifying) return;
 
-                // ENCODING UPDATES
-                if (data[0] == 0xC0DE) {
-                    signalBitShift = data[1];
-                    //pkgLossCount = data[2];
-                    //Log.v(TAG,"Updated signalBitshift of CH1: " + signalBitShift);
-                    // Give the next row in our recording an adaptive encoding flag
-                    adaptiveEncodingFlag = 1;
-                    return; //prevent further processing
-                }
+                    // ENCODING UPDATES
+                    if (data[0] == 0xC0DE) {
+                        //pkgLossCount = data[2];
+                        //Log.v(TAG,"Updated signalBitshift of CH1: " + signalBitShift);
+                        // Give the next row in our recording an adaptive encoding flag
+                        adaptiveEncodingFlag = 1;
+                        return; //prevent further processing
+                    }
 
-                // no processing (for testing bluetooth transmission rates)
-                //if(data==null) return;
+                    // no processing (for testing bluetooth transmission rates)
+                    //if(data==null) return;
 
-                // CHANNEL DATA
-                // First, parse the header (if there is a header)
-                if (data.length > nChannels) {
-                    currentPkgId = data[0];
-                    currentPkgLoss = data[1];
-                    currentBtPkgLoss = calculateBtPkgLoss();
-                    data = Arrays.copyOfRange(data, 2, data.length);
-                }
-                pkgCountTotal++;
-                lostPkgCountTotal += (currentBtPkgLoss + currentPkgLoss);
-                if (!samplingRateMonitorRunning) startSamplingRateMonitoring();
+                    // CHANNEL DATA
+                    // First, parse the header (if there is a header)
+                    if (data.length > nChannels) {
+                        currentPkgId = data[0];
+                        currentPkgLoss = data[1];
+                        currentBtPkgLoss = calculateBtPkgLoss();
+                        data = Arrays.copyOfRange(data, 2, data.length);
+                    }
+                    pkgCountTotal++;
+                    lostPkgCountTotal += (currentBtPkgLoss + currentPkgLoss);
+                    if (!samplingRateMonitorRunning) startSamplingRateMonitoring();
 
-                microV = convertToMicroV(data);
-                if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("inAppFilter", true)) {
-                    microV = highPassFilter(microV);
-                }
-                streamData(microV);
-                if (channelViewsEnabled && pkgCountTotal % 100 == 0) displayNumerical(microV);
-                if (plotting) storeForPlotting(microV);
-                if (recording) storeData(microV);
+                    microV = convertToMicroV(data);
+                    if (getSharedPreferences("userPreferences", MODE_PRIVATE).getBoolean("inAppFilter", true)) {
+                        microV = highPassFilter(microV);
+                    }
+                    streamData(microV);
+                    if (channelViewsEnabled && pkgCountTotal % 100 == 0) displayNumerical(microV);
+                    if (plotting) storeForPlotting(microV);
+                    if (recording) storeData(microV);
+                    break;
             }
         }
     };
@@ -409,7 +403,7 @@ public class Record extends AppCompatActivity {
         configBytes[2] = (byte) (o1HighpassB | iirHighpassB);
         configBytes[3] = (byte) (lowpassB | filter50hzB);
         configBytes[4] = (byte) (bitshiftMinB | bitshiftMaxB);
-        configBytes[5] = (byte) encodingSafetyFactorB;
+        configBytes[5] = encodingSafetyFactorB;
         configBytes[6] = (byte) 0; // battery status
         configBytes[7] = (byte) 0; // battery status
 
@@ -428,7 +422,7 @@ public class Record extends AppCompatActivity {
     private void applyDefaultConfiguration() {
         resetTraumConfig();
         // Declare bytearray
-        byte[] configBytes = new byte[8];
+        byte[] configBytes;
         TraumschreiberService.setNotifyingUUID(2);
         configBytes = new byte[]{-23, 0, 0, 35, 0, -128, 0, 0};
         configCharacteristic.setValue(configBytes);
@@ -457,82 +451,82 @@ public class Record extends AppCompatActivity {
         configValuesString.append("Byte 0: \n");
         String configByteS = String.format("%8s", Integer.toBinaryString(configValuesB[0] & 0xFF))
                 .replace(' ', '0');
-        configValuesString.append(configByteS + "\n\n");
+        configValuesString.append(configByteS).append("\n\n");
 
         Spinner gainSpinner = traumConfigDialog.findViewById(R.id.gain_spinner);
-        configValuesString.append("Gain: " + gainSpinner.getSelectedItem().toString());
+        configValuesString.append("Gain: ").append(gainSpinner.getSelectedItem().toString());
         configValuesString.append("\nxx00 0000 (00: 1, 01: 2, 10: 4, 11:8)\n\n");
 
         Spinner bitsPerChSpinner = traumConfigDialog.findViewById(R.id.bits_per_ch_spinner);
-        configValuesString.append("Bits/Ch: " + bitsPerChSpinner.getSelectedItem().toString());
+        configValuesString.append("Bits/Ch: ").append(bitsPerChSpinner.getSelectedItem().toString());
         configValuesString.append("\n00xx 0000 (00: 10, 01: 14, 10: 16, 11:10)\n\n");
 
         SwitchCompat runningAvgSwitch = traumConfigDialog.findViewById(R.id.average_filter_switch);
         int isChecked = runningAvgSwitch.isChecked() ? 1 : 0;
-        configValuesString.append("Running Average Filter: " + isChecked);
+        configValuesString.append("Running Average Filter: ").append(isChecked);
         configValuesString.append("\n0000 x000 (0: off, 1: on)\n\n");
 
         SwitchCompat genData = traumConfigDialog.findViewById(R.id.generate_data_switch);
         isChecked = genData.isChecked() ? 1 : 0;
-        configValuesString.append("DummyData: " + isChecked);
+        configValuesString.append("DummyData: ").append(isChecked);
         configValuesString.append("\n0000 00x0 (0: off, 1: on)\n\n");
 
         Spinner tr = traumConfigDialog.findViewById(R.id.transmission_rate_spinner);
-        configValuesString.append("Transmission: " + tr.getSelectedItem().toString());
+        configValuesString.append("Transmission: ").append(tr.getSelectedItem().toString());
         configValuesString.append("\n0000 000x (0: 167, 1: 250)\n\n");
 
         configValuesString.append("Byte 1: \n");
         configByteS = String.format("%8s", Integer.toBinaryString(configValuesB[1] & 0xFF))
                 .replace(' ', '0');
-        configValuesString.append(configByteS + "\n\n");
+        configValuesString.append(configByteS).append("\n\n");
 
 
         configValuesString.append("Byte 2: \n");
         configByteS = String.format("%8s", Integer.toBinaryString(configValuesB[2] & 0xFF))
                 .replace(' ', '0');
-        configValuesString.append(configByteS + "\n\n");
+        configValuesString.append(configByteS).append("\n\n");
 
         Spinner hp = traumConfigDialog.findViewById(R.id.o1_highpass_spinner);
-        configValuesString.append("High Pass O1: " + hp.getSelectedItem().toString());
+        configValuesString.append("High Pass O1: ").append(hp.getSelectedItem().toString());
         configValuesString.append("\nxxxx 0000\n\n");
 
         Spinner iirhp = traumConfigDialog.findViewById(R.id.iir_highpass_spinner);
-        configValuesString.append("High Pass IIR: " + iirhp.getSelectedItem().toString());
+        configValuesString.append("High Pass IIR: ").append(iirhp.getSelectedItem().toString());
         configValuesString.append("\n0000 xxxx\n\n");
 
         configValuesString.append("Byte 3: \n");
         configByteS = String.format("%8s", Integer.toBinaryString(configValuesB[3] & 0xFF))
                 .replace(' ', '0');
-        configValuesString.append(configByteS + "\n\n");
+        configValuesString.append(configByteS).append("\n\n");
 
         Spinner lp = traumConfigDialog.findViewById(R.id.lowpass_spinner);
-        configValuesString.append("Low Pass: " + lp.getSelectedItem().toString());
+        configValuesString.append("Low Pass: ").append(lp.getSelectedItem().toString());
         configValuesString.append("\nxxxx 0000\n\n");
 
         Spinner f50 = traumConfigDialog.findViewById(R.id.filter50hz_spinner);
-        configValuesString.append("Filter 50hz: " + f50.getSelectedItem().toString());
+        configValuesString.append("Filter 50hz: ").append(f50.getSelectedItem().toString());
         configValuesString.append("\n0000 xxxx\n\n");
 
         configValuesString.append("Byte 4: \n");
         configByteS = String.format("%8s", Integer.toBinaryString(configValuesB[4] & 0xFF))
                 .replace(' ', '0');
-        configValuesString.append(configByteS + "\n\n");
+        configValuesString.append(configByteS).append("\n\n");
 
         Spinner bsMin = traumConfigDialog.findViewById(R.id.bitshift_min_spinner);
-        configValuesString.append("Bitshift Min: " + bsMin.getSelectedItem().toString());
+        configValuesString.append("Bitshift Min: ").append(bsMin.getSelectedItem().toString());
         configValuesString.append("\nxxxx 0000\n\n");
 
         Spinner bsMax = traumConfigDialog.findViewById(R.id.bitshift_max_spinner);
-        configValuesString.append("Bitshift Min: " + bsMax.getSelectedItem().toString());
+        configValuesString.append("Bitshift Min: ").append(bsMax.getSelectedItem().toString());
         configValuesString.append("\n0000 xxxx\n\n");
 
         configValuesString.append("Byte 5: \n");
         configByteS = String.format("%8s", Integer.toBinaryString(configValuesB[5] & 0xFF))
                 .replace(' ', '0');
-        configValuesString.append(configByteS + "\n\n");
+        configValuesString.append(configByteS).append("\n\n");
 
         Spinner enc = traumConfigDialog.findViewById(R.id.encoding_safety_spinner);
-        configValuesString.append("Encoding Safety: " + enc.getSelectedItem().toString());
+        configValuesString.append("Encoding Safety: ").append(enc.getSelectedItem().toString());
         configValuesString.append("\nxxxx 0000\n\n");
 
         AlertDialog.Builder configInfoBuilder = new AlertDialog.Builder(this)
@@ -571,11 +565,10 @@ public class Record extends AppCompatActivity {
                     lostPkgCountSrm = lostPkgCountTotal - lostPkgCountSrm;
                     float expectedPkgs = (float) lostPkgCountSrm + pkgCountSrm;
                     pkgLossPercent = (float) lostPkgCountSrm / expectedPkgs;
-                    StringBuilder pkgLossDebug = new StringBuilder();
-                    pkgLossDebug.append("Expected Pkgs: " + expectedPkgs);
-                    pkgLossDebug.append("\nLost Packages: " + lostPkgCountSrm);
-                    pkgLossDebug.append("\nPkg Loss %: " + pkgLossPercent);
-                    Log.d(TAG, pkgLossDebug.toString());
+                    String pkgLossDebug = "Expected Pkgs: " + expectedPkgs +
+                            "\nLost Packages: " + lostPkgCountSrm +
+                            "\nPkg Loss %: " + pkgLossPercent;
+                    Log.d(TAG, pkgLossDebug);
 
                     int color; //green, orange and red for good, moderate and bad sampling rates
                     if (pkgLossPercent < 0.01) color = getResources().getColor(R.color.green);
@@ -654,9 +647,10 @@ public class Record extends AppCompatActivity {
                 8000);
     }
 
+    @SuppressLint("ResourceAsColor")
     private void endTimer() {
         // End the Timer Task
-        mDataResolution.setTextColor((int) R.color.defaultTextView);
+        mDataResolution.setTextColor(R.color.defaultTextView);
         mDataResolution.setText(R.string.default_resolution_text);
         if (samplingRateMonitorRunning) {
             srmTimerTask.cancel();
@@ -683,7 +677,7 @@ public class Record extends AppCompatActivity {
         mBatteryValue = findViewById(R.id.battery_value);
 
         plotSwitch = findViewById(R.id.switch_plots);
-        channelViewsSwitch = findViewById(R.id.channel_views_switch);
+        SwitchCompat channelViewsSwitch = findViewById(R.id.channel_views_switch);
 
         plotSwitch.setOnCheckedChangeListener(plotSwitchOnCheckedChangeListener);
         channelViewsSwitch.setOnCheckedChangeListener(channelViewsSwitchListener);
@@ -755,7 +749,6 @@ public class Record extends AppCompatActivity {
             streamOutlet = new LSL.StreamOutlet(streamInfo);
         } catch (IOException ex) {
             Log.d("LSL issue:", Objects.requireNonNull(ex.getMessage()));
-            return;
         }
     }
 
@@ -1333,7 +1326,7 @@ public class Record extends AppCompatActivity {
         float batteryValueuV = (float) (2 * batteryValueF * 0.298);
         float batteryValueV = (float) (batteryValueuV / Math.pow(10, 6));
         Log.d(TAG, "Battery Value in V " + batteryValueV);
-        batteryValue = (int) ((3.7f - batteryValueV) / 0.7) * 100;
+        int batteryValue = (int) ((3.7f - batteryValueV) / 0.7) * 100;
         mBatteryValue.setText(batteryValue + "%");
     }
 
@@ -1429,10 +1422,7 @@ public class Record extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 // The user picked a contact.
                 // The Intent's data Uri identifies which contact was selected
-                String mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
                 mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
-                String model = intent.getStringExtra(EXTRAS_DEVICE_MODEL);
-                if (model != null) mNewDevice = model.equals("3");
                 Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
                 bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
             }
@@ -1522,7 +1512,6 @@ public class Record extends AppCompatActivity {
         }
     }
 
-
     private void createChart() {
         OnChartValueSelectedListener ol = new OnChartValueSelectedListener() {
             @Override
@@ -1603,7 +1592,7 @@ public class Record extends AppCompatActivity {
         for (int i = 0; i < currentPkgLoss; i++) accumulatedSamples.add(lostSampleL);
 
         accumulatedSamples.add(microV);
-        pkgArrivalTime = System.currentTimeMillis();
+        long pkgArrivalTime = System.currentTimeMillis();
         long plottingElapsed = pkgArrivalTime - plottingLastRefresh;
         int plottingFPS = 25;
         if (plottingElapsed < 1000 / plottingFPS) {
@@ -1649,8 +1638,6 @@ public class Record extends AppCompatActivity {
         final float centerX = t;
         final Runnable runnablePlottingThread = () -> {
             /* Create plottable datasets from plottingBuffer */
-            float lastChannelSigma = 0;
-            float displayedChannelsBelow = 0;
             for (int ch = 0; ch < nChannels; ch++) {
                 if (channelsShown[ch]) {
                     LineDataSet set = createPlottableSet(ch);
@@ -1688,7 +1675,6 @@ public class Record extends AppCompatActivity {
         plottedPkgCount = 0;
         storedPkgCount = 0;
         lostPkgCountTotal = 0;
-        mainData = new ArrayList<>();
         start_time = new SimpleDateFormat("HH:mm:ss.SSS").format(new Date());
         start_timestamp = new Timestamp(startTime).getTime();
         recording = true;
@@ -1704,13 +1690,12 @@ public class Record extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-    private boolean header = true;
-    private void createRecordingFile()  {
+    private void createRecordingFile() {
         //transmission time, sampling time, channel values, transmissionID, pkgslosses, resolution
         String date = new SimpleDateFormat("yyyyddMM_HH-mm-ss").format(new Date());
         tempFileName = date + "_" + "recording.temp";
         try {
-            recordingFile = new File(MainActivity.getDirSessions(), tempFileName);
+            File recordingFile = new File(MainActivity.getDirSessions(), tempFileName);
             // if file doesn't exists, then create it
             if (!recordingFile.exists())
                 recordingFile.createNewFile();
@@ -1718,46 +1703,47 @@ public class Record extends AppCompatActivity {
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
         }
-        
+
         //write a header with metadata
-        if(header) writeHeader(fileWriter);
+        boolean header = true;
+        if (header) writeHeader(fileWriter);
 
         // Specify column names here
         final StringBuilder columnNames = new StringBuilder();
         columnNames.append("time");
         columnNames.append(delimiter + "sampling_time");
-        
+
         // use electrode labels ("FP1", etc.) or channel numbers ("ch1")
         boolean useChannelLabels = getSharedPreferences("userPreferences", MODE_PRIVATE)
                 .getBoolean("eegLabels", true);
         if (useChannelLabels) {
-            for (int i = 0; i < nChannels; i++){
-                columnNames.append(delimiter + channelLabels[i]);
+            for (int i = 0; i < nChannels; i++) {
+                columnNames.append(delimiter).append(channelLabels[i]);
             }
         } else {
-            for (int i = 1; i <= nChannels; i++){
+            for (int i = 1; i <= nChannels; i++) {
                 columnNames.append(String.format("ch%d,", i));
             }
         }
 
-        columnNames.append(delimiter + "pkgid");
-        columnNames.append(delimiter + "pkgloss_bluetooth");
-        columnNames.append(delimiter + "pkgloss_internal");
-        columnNames.append(delimiter + "transmission_rate");
+        columnNames.append(delimiter).append("pkgid");
+        columnNames.append(delimiter).append("pkgloss_bluetooth");
+        columnNames.append(delimiter).append("pkgloss_internal");
+        columnNames.append(delimiter).append("transmission_rate");
         columnNames.append(lineBreak);
 
-        try{
+        try {
             fileWriter.append(columnNames);
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-     
+
     }
-    
+
     private void writeHeader(FileWriter fileWriter) {
         final StringBuilder header = new StringBuilder();
-        
+
         // First Row
         header.append("Username" + delimiter);
         header.append("UserID" + delimiter);
@@ -1767,21 +1753,20 @@ public class Record extends AppCompatActivity {
         header.append("Bits" + delimiter);
         header.append("unit" + delimiter);
         header.append("\n");
-   
-     
+
 
         final String username = getSharedPreferences("userPreferences", 0).getString("username", "user");
         final String userID = getSharedPreferences("userPreferences", 0).getString("userID", "12345678");
         String date = new SimpleDateFormat("yyyyddMMHHmmss").format(new Date());
 
         // Second Row
-        header.append(username+ delimiter);
-        header.append(userID + delimiter);
-        header.append("SessionTag" + delimiter);
-        header.append(date + delimiter);
-        header.append(samplingRate + delimiter);
-        header.append(mTraumService.bitsPerCh + delimiter);
-        header.append("microVolt" + delimiter);
+        header.append(username).append(delimiter);
+        header.append(userID).append(delimiter);
+        header.append("SessionTag").append(delimiter);
+        header.append(date).append(delimiter);
+        header.append(samplingRate).append(delimiter);
+        header.append(TraumschreiberService.bitsPerCh).append(delimiter);
+        header.append("microVolt").append(delimiter);
         header.append("\n");
 
         try {
@@ -1826,14 +1811,14 @@ public class Record extends AppCompatActivity {
 
     private void showStats() {
         StringBuilder statistics = new StringBuilder();
-        statistics.append("Device: \t" + mDeviceAddress + "\n\n");
-        statistics.append("Last Timestamp: \t" + lastTimeStamp + "\n");
-        statistics.append("Sampling Rate: \t" + samplingRate + "\n");
-        statistics.append("Bit resolution: \t" + TraumschreiberService.bitsPerCh + "\n");
-        statistics.append("Total Number of PKGs: \t" + storedPkgCount + "\n");
-        statistics.append("Total Number of Lost PKGs: \t" + lostPkgCountTotal + "\n");
+        statistics.append("Device: \t").append(mDeviceAddress).append("\n\n");
+        statistics.append("Last Timestamp: \t").append(lastTimeStamp).append("\n");
+        statistics.append("Sampling Rate: \t").append(samplingRate).append("\n");
+        statistics.append("Bit resolution: \t").append(TraumschreiberService.bitsPerCh).append("\n");
+        statistics.append("Total Number of PKGs: \t").append(storedPkgCount).append("\n");
+        statistics.append("Total Number of Lost PKGs: \t").append(lostPkgCountTotal).append("\n");
         if (storedPkgCount > 0) {
-            statistics.append("Package Loss (%): " + (float) (lostPkgCountTotal * 100) / (float) storedPkgCount);
+            statistics.append("Package Loss (%): ").append((float) (lostPkgCountTotal * 100) / (float) storedPkgCount);
         }
         AlertDialog.Builder statsDialogBuilder = new AlertDialog.Builder(Record.this)
                 .setTitle("Recording statistics for debugging:")
@@ -1941,14 +1926,14 @@ public class Record extends AppCompatActivity {
         }
         try {
             fileWriter.append(String.valueOf(lastTimeStamp));
-            fileWriter.append(delimiter + samplingTime);
+            fileWriter.append(delimiter).append(String.valueOf(samplingTime));
             for (int j = 0; j < nChannels; j++) {
-                fileWriter.append(delimiter + sample[j]);
+                fileWriter.append(delimiter).append(String.valueOf(sample[j]));
             }
-            fileWriter.append(delimiter + currentPkgId);
-            fileWriter.append(delimiter + (currentBtPkgLoss - NaNCorrectionBtLoss));      //Bluetooth loss
-            fileWriter.append(delimiter + (currentPkgLoss - NaNCorrectionInternalLoss)); //Internal loss
-            fileWriter.append(delimiter + resolutionFrequency);
+            fileWriter.append(delimiter).append(String.valueOf(currentPkgId));
+            fileWriter.append(delimiter).append(String.valueOf(currentBtPkgLoss - NaNCorrectionBtLoss));      //Bluetooth loss
+            fileWriter.append(delimiter).append(String.valueOf(currentPkgLoss - NaNCorrectionInternalLoss)); //Internal loss
+            fileWriter.append(delimiter).append(String.valueOf(resolutionFrequency));
             fileWriter.append("\n");
             storedPkgCount++;
 
@@ -1962,31 +1947,31 @@ public class Record extends AppCompatActivity {
         saveSession("default");
     }
 
-    /**
-     * Writes a footer with meta data to the end of the file and saves it acc. to user preferences
-     **/
-    private boolean footer = false;
     @SuppressLint("DefaultLocale")
     private void saveSession(final String tag) throws IOException {
-        if(footer) writeFooter(tag);
-        
+        /**
+         * Writes a footer with meta data to the end of the file and saves it acc. to user preferences
+         **/
+        boolean footer = false;
+        if (footer) writeFooter(tag);
+
         //Get the date
         String date = new SimpleDateFormat("yyyyddMMHHmmss").format(new Date());
-        
+
         // give the temp file a proper file name
         String permFileName = date + "_" + tag + ".csv";
         File tempFile = new File(MainActivity.getDirSessions(), tempFileName);
         File permFile = new File(MainActivity.getDirSessions(), permFileName);
         tempFile.renameTo(permFile);
-        
+
         Toast.makeText(getApplicationContext(), "Stored Recording as " + permFileName, Toast.LENGTH_LONG
         ).show();
-        
+
         fileWriter.close();
     }
-    
-    private void writeFooter(String tag) throws IOException{
-        
+
+    private void writeFooter(String tag) throws IOException {
+
         // Column Names of Footer
         final String footerLabels = "Username,User ID,Session ID,Session Tag,Date,Shape (rows x columns)," +
                 "Duration (ms),Starting Time,Ending Time,Sampling Rate,Bits per Channel," +
@@ -2000,19 +1985,19 @@ public class Record extends AppCompatActivity {
         String date = new SimpleDateFormat("yyyyddMMHHmmss").format(new Date());
 
         fileWriter.append(username);
-        fileWriter.append(delimiter + userID);
-        fileWriter.append(delimiter + id.toString());
-        fileWriter.append(delimiter + tag);
-        fileWriter.append(delimiter + date);
-        fileWriter.append(delimiter + (storedPkgCount + "x" + nChannels));
-        fileWriter.append(delimiter + recording_time);
-        fileWriter.append(delimiter + start_time);
-        fileWriter.append(delimiter + end_time);
-        fileWriter.append(delimiter + samplingRate);
-        fileWriter.append(delimiter + TraumschreiberService.bitsPerCh);
-        fileWriter.append(delimiter + "µV");
-        fileWriter.append(delimiter + start_timestamp);
-        fileWriter.append(delimiter + end_timestamp);
+        fileWriter.append(delimiter).append(userID);
+        fileWriter.append(delimiter).append(id.toString());
+        fileWriter.append(delimiter).append(tag);
+        fileWriter.append(delimiter).append(date);
+        fileWriter.append(delimiter).append(String.valueOf(storedPkgCount)).append("x").append(String.valueOf(nChannels));
+        fileWriter.append(delimiter).append(recording_time);
+        fileWriter.append(delimiter).append(start_time);
+        fileWriter.append(delimiter).append(end_time);
+        fileWriter.append(delimiter).append(String.valueOf(samplingRate));
+        fileWriter.append(delimiter).append(String.valueOf(TraumschreiberService.bitsPerCh));
+        fileWriter.append(delimiter).append("µV");
+        fileWriter.append(delimiter).append(String.valueOf(start_timestamp));
+        fileWriter.append(delimiter).append(String.valueOf(end_timestamp));
     }
 
     private void buttons_nodata() {
@@ -2092,6 +2077,7 @@ public class Record extends AppCompatActivity {
     public void deleteTempFiles() {
         File dir = new File(MainActivity.getDirSessions(), "");
         File[] files = dir.listFiles();
+        assert files != null;
         for (File tempFile : files) {
             if (tempFile.getName().endsWith(".temp")) {
                 tempFile.delete();

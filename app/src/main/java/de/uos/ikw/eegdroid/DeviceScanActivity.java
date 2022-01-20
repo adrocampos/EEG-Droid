@@ -193,7 +193,7 @@ public class DeviceScanActivity extends ListActivity {
 
     }
 
-    private void checkBluetoothEnabled(){
+    private void checkBluetoothEnabled() {
         // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
         // fire an intent to display a dialog asking the user to grant permission to enable it.
         if (!mBluetoothAdapter.isEnabled()) {
@@ -218,10 +218,10 @@ public class DeviceScanActivity extends ListActivity {
     }
 
 
-    private void checkLocationEnabled(){
+    private void checkLocationEnabled() {
 
         Context context = this;
-        LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+        LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         boolean gpsEnabled = false;
         boolean networkEnabled = false;
         boolean locationEnabled = false;
@@ -229,11 +229,13 @@ public class DeviceScanActivity extends ListActivity {
         try {
             gpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
             Log.d(TAG, "Gps enabled checked!: " + gpsEnabled);
-        } catch(Exception ex) {}
+        } catch (Exception ex) {
+        }
 
         try {
             networkEnabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        } catch(Exception ex) {}
+        } catch (Exception ex) {
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             locationEnabled = lm.isLocationEnabled();
@@ -244,7 +246,7 @@ public class DeviceScanActivity extends ListActivity {
             locationEnabled = (mode != Settings.Secure.LOCATION_MODE_OFF);
         }
 
-        if(!locationEnabled && !networkEnabled && !gpsEnabled) {
+        if (!locationEnabled && !networkEnabled && !gpsEnabled) {
             // notify user
             Log.d(TAG, "Actually Got into the path where user is notified about location services.");
             new AlertDialog.Builder(context)
@@ -257,14 +259,14 @@ public class DeviceScanActivity extends ListActivity {
                             context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                         }
                     })
-                            .setNegativeButton("Cancel",null)
-                            .show();
+                    .setNegativeButton("Cancel", null)
+                    .show();
         }
 
 
     }
 
-    private void checkPermissions(){
+    private void checkPermissions() {
         if (ContextCompat.checkSelfPermission(DeviceScanActivity.this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -312,7 +314,7 @@ public class DeviceScanActivity extends ListActivity {
         }
     }
 
-    private void checkBuildVersion(){
+    private void checkBuildVersion() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (ContextCompat.checkSelfPermission(DeviceScanActivity.this,
                     Manifest.permission.ACCESS_BACKGROUND_LOCATION)
@@ -350,10 +352,8 @@ public class DeviceScanActivity extends ListActivity {
         final BluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
         if (device == null) return;
         Intent intent = new Intent();
-        int model = (TraumschreiberService.isNewModel(device.getName())) ? 3 : 2;
         intent.putExtra(Record.EXTRAS_DEVICE_NAME, device.getName());
         intent.putExtra(Record.EXTRAS_DEVICE_ADDRESS, device.getAddress());
-        intent.putExtra(Record.EXTRAS_DEVICE_MODEL, Integer.toString(model));
         setResult(RESULT_OK, intent);
         if (mScanning) {
             mLEScanner.stopScan(mScanCallback);
