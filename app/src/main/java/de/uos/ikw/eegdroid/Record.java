@@ -52,17 +52,12 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.MPPointD;
 import com.github.mikephil.charting.utils.MPPointF;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -246,13 +241,12 @@ public class Record extends AppCompatActivity {
         }
     };
     private boolean deviceConnected = false;
-    private boolean casting = false;
+    private final boolean casting = false;
     private Menu menu;
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
     private List<Float> microV;
-    private CastThread caster;
     private int currentPkgLoss = 0;
     private int currentPkgId = 0;
     private int lastPkgId = 0;
@@ -927,20 +921,6 @@ public class Record extends AppCompatActivity {
         }
 
         if (id == R.id.notify) toggleNotifying();
-
-        if (id == R.id.cast) {
-            MenuItem menuItemCast = menu.findItem(R.id.cast);
-            if (!casting) {
-                casting = true;
-                caster = new CastThread();
-                caster.start();
-                menuItemCast.setIcon(R.drawable.ic_cast_blue_24dp);
-            } else {
-                casting = false;
-                caster.staph();
-                menuItemCast.setIcon(R.drawable.ic_cast_white_24dp);
-            }
-        }
 
         if (id == R.id.centering) {
             Toast.makeText(getApplicationContext(),
@@ -2084,67 +2064,6 @@ public class Record extends AppCompatActivity {
                 Log.d(TAG, "deleted temp file!");
             }
         }
-    }
-
-    // Streaming related
-    class CastThread extends Thread {
-        String IP = getSharedPreferences("userPreferences", 0).getString("IP", getResources().getString(R.string.default_IP));
-        String PORT = getSharedPreferences("userPreferences", 0).getString("port", getResources().getString(R.string.default_port));
-        // best way found until now to encode the values, a stringified JSON. Looks like:
-        JSONObject toSend = new JSONObject();
-//        private volatile boolean exit = false;
-        // {'pkg': 1, 'time': 1589880540884, '1': -149.85352, '2': -18.530273, '3': 191.74805, '4': -305.34668, '5': 0, '6': -142.60254, '7': -1.6113281, '8': -29.80957}
-
-        public void run() {
-            try {
-                WSClient c = new WSClient(new URI("ws://" + IP + ":" + PORT));
-                c.setReuseAddr(true);
-                // c.setConnectionLostTimeout(0); // default is 60 seconds
-                // TODO: check if TCP_NODELAY improves speed, also .connect() vs .connectBlocking()
-                // TODO: Add connect/disconnect control by cast button pressed and message received
-                c.setTcpNoDelay(true);
-                c.connectBlocking();
-                int pkg = 0;
-                List<Float> lastV = null; // store last octet of EEG values
-                while (c.isOpen()) {
-                    if (microV != null && lastV != microV) {
-                        toSend = new JSONObject();
-                        // timestamp in milliseconds since January 1, 1970, 00:00:00 GMT
-                        long time = new Date().getTime();
-                        toSend.put("pkg", pkg); // add pkg number
-                        toSend.put("time", time); // add time
-                        for (int i = 0; i < microV.size(); i++) {
-                            // add voltage amplitudes
-                            toSend.put(Integer.toString(i + 1), microV.get(i));
-                        }
-                        c.send(toSend.toString());
-                        lastV = microV; // store current as last
-                        pkg++; // increase package counter
-//                        Log.d("WS", "Sent: " + toSend.toString());
-                    }
-                }
-            } catch (URISyntaxException | JSONException | InterruptedException e) {
-                e.printStackTrace();
-                Log.d("WS", "URI error:" + e);
-            }
-        }
-
-        public void staph() {
-
-            Log.d("CastThread", "Stopped");
-//            exit = true;
-            if (out != null) {
-                out.close();
-            }
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
     }
 
 }
