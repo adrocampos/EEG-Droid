@@ -26,12 +26,12 @@
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher2"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher2_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:fullBackupContent="true">
+        android:theme="@style/AppTheme">
 
         <activity android:name=".Info" />
         <activity android:name=".Settings" />
@@ -41,8 +41,8 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -51,7 +51,7 @@
         </activity>
         <activity
             android:name="de.uos.ikw.eegdroid.Record"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Display"
             android:configChanges="orientation|screenSize" />
@@ -64,7 +64,7 @@
         <activity
             android:name="de.uos.ikw.eegdroid.DeviceScanActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".BluetoothLeService"
@@ -87,8 +87,8 @@
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
