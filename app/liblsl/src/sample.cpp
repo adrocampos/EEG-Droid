@@ -5,6 +5,10 @@
 
 using namespace lsl;
 
+#ifdef _MSC_VER
+#pragma warning(suppress : 4291)
+#endif
+
 sample::~sample() noexcept{
 	if (format_ != cft_string) return;
 	for (std::string *p = (std::string *)&data_, *e = p + num_channels_; p < e; ++p)
@@ -132,13 +136,13 @@ void load_raw(std::streambuf &sb, void *address, std::size_t count) {
 template <typename T> T load_value(std::streambuf &sb, int use_byte_order) {
 	T tmp;
 	load_raw(sb, &tmp, sizeof(T));
-	if (sizeof(T) > 1 && use_byte_order != BOOST_BYTE_ORDER) endian_reverse_inplace(tmp);
+	if (sizeof(T) > 1 && use_byte_order != LSL_BYTE_ORDER) endian_reverse_inplace(tmp);
 	return tmp;
 }
 
 /// Save a value to a stream buffer with correct endian treatment.
 template <typename T> void save_value(std::streambuf &sb, T v, int use_byte_order) {
-	if (use_byte_order != BOOST_BYTE_ORDER) endian_reverse_inplace(v);
+	if (use_byte_order != LSL_BYTE_ORDER) endian_reverse_inplace(v);
 	save_raw(sb, &v, sizeof(T));
 }
 
@@ -177,7 +181,7 @@ void sample::save_streambuf(
 		}
 	} else {
 		// write numeric data in binary
-		if (use_byte_order == BOOST_BYTE_ORDER || format_sizes[format_] == 1) {
+		if (use_byte_order == LSL_BYTE_ORDER || format_sizes[format_] == 1) {
 			save_raw(sb, &data_, datasize());
 		} else {
 			memcpy(scratchpad, &data_, datasize());
@@ -187,7 +191,8 @@ void sample::save_streambuf(
 	}
 }
 
-void sample::load_streambuf(std::streambuf &sb, int, int use_byte_order, bool suppress_subnormals) {
+void sample::load_streambuf(
+	std::streambuf &sb, int /*unused*/, int use_byte_order, bool suppress_subnormals) {
 	// read sample header
 	if (load_value<uint8_t>(sb, use_byte_order) == TAG_DEDUCED_TIMESTAMP)
 		// deduce the timestamp
@@ -222,7 +227,7 @@ void sample::load_streambuf(std::streambuf &sb, int, int use_byte_order, bool su
 	} else {
 		// read numeric channel data
 		load_raw(sb, &data_, datasize());
-		if (use_byte_order != BOOST_BYTE_ORDER && format_sizes[format_] > 1) convert_endian(&data_);
+		if (use_byte_order != LSL_BYTE_ORDER && format_sizes[format_] > 1) convert_endian(&data_);
 		if (suppress_subnormals && format_float[format_]) {
 			if (format_ == cft_float32) {
 				for (uint32_t *p = (uint32_t *)&data_, *e = p + num_channels_; p < e; p++)
@@ -239,7 +244,7 @@ void sample::load_streambuf(std::streambuf &sb, int, int use_byte_order, bool su
 	}
 }
 
-template <class Archive> void sample::serialize_channels(Archive &ar, const uint32_t) {
+template <class Archive> void sample::serialize_channels(Archive &ar, const uint32_t /*unused*/) {
 	switch (format_) {
 	case cft_float32:
 		for (float *p = (float *)&data_, *e = p + num_channels_; p < e; ar & *p++)
@@ -311,7 +316,7 @@ template <typename T> void test_pattern(T *data, uint32_t num_channels, int offs
 }
 
 sample &sample::assign_test_pattern(int offset) {
-	pushthrough = 1;
+	pushthrough = true;
 	timestamp = 123456.789;
 
 	switch (format_) {
@@ -365,7 +370,6 @@ factory::factory(lsl_channel_format_t fmt, uint32_t num_chans, uint32_t num_rese
 	// pre-construct an array of samples in the storage area and chain into a freelist
 	sample *s = nullptr;
 	for (char *p = storage_, *e = p + storage_size_; p < e;) {
-#pragma warning(suppress : 4291)
 		s = new (reinterpret_cast<sample *>(p)) sample(fmt, num_chans, this);
 		s->next_ = (sample *)(p += sample_size_);
 	}
@@ -377,7 +381,6 @@ factory::factory(lsl_channel_format_t fmt, uint32_t num_chans, uint32_t num_rese
 sample_p factory::new_sample(double timestamp, bool pushthrough) {
 	sample *result = pop_freelist();
 	if (!result)
-#pragma warning(suppress : 4291)
 		result = new (new char[sample_size_]) sample(fmt_, num_chans_, this);
 	result->timestamp = timestamp;
 	result->pushthrough = pushthrough;
