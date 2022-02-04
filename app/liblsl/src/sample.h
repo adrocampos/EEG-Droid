@@ -1,8 +1,8 @@
 #ifndef SAMPLE_H
 #define SAMPLE_H
-#include "cast.h"
 #include "common.h"
 #include "forward.h"
+#include "util/cast.hpp"
 #include <atomic>
 #include <boost/endian/conversion.hpp>
 #include <boost/serialization/split_member.hpp>
@@ -12,15 +12,10 @@
 #include <string>
 #include <type_traits>
 
-#ifndef BOOST_BYTE_ORDER
-#if BOOST_ENDIAN_BIG_BYTE
-const int BOOST_BYTE_ORDER = 4321;
-#elif BOOST_ENDIAN_LITTLE_BYTE
-const int BOOST_BYTE_ORDER = 1234;
-#elif BOOST_ENDIAN_LITTLE_WORD
-const int BOOST_BYTE_ORDER = 2134;
-#endif
-#endif
+// Determine target byte order / endianness
+using byteorder = lslboost::endian::order;
+static_assert(byteorder::native == byteorder::little || byteorder::native == byteorder::big, "Unsupported byteorder");
+const int LSL_BYTE_ORDER = (byteorder::native == byteorder::little) ? 1234 : 4321;
 
 // Boost.Endian has no functions to reverse floats, so we pretend they're ints of the same size.
 template <typename T> inline void endian_reverse_inplace(T &t) {

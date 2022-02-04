@@ -1,22 +1,18 @@
 #ifndef TCP_SERVER_H
 #define TCP_SERVER_H
 
-// (inefficiently converting int to bool in portable_oarchive instantiation...)
-#pragma warning(disable : 4800)
-
 #include "forward.h"
 #include <boost/asio/ip/tcp.hpp>
 #include <memory>
 #include <mutex>
 #include <set>
 
-using lslboost::asio::ip::tcp;
+using asio::ip::tcp;
 using lslboost::system::error_code;
+using err_t = const error_code &;
 
 namespace lsl {
 
-/// shared pointer to a string
-using string_p = std::shared_ptr<std::string>;
 /// shared pointer to a socket
 using tcp_socket_p = std::shared_ptr<tcp::socket>;
 /// shared pointer to an acceptor socket
@@ -51,8 +47,8 @@ public:
 	 * @param chunk_size The preferred chunk size, in samples. If 0, the pushthrough flag determines
 	 * the effective chunking.
 	 */
-	tcp_server(const stream_info_impl_p &info, const io_context_p &io, const send_buffer_p &sendbuf,
-		const factory_p &factory, tcp protocol, int chunk_size);
+	tcp_server(stream_info_impl_p info, io_context_p io, send_buffer_p sendbuf, factory_p factory,
+		tcp protocol, int chunk_size);
 
 	/**
 	 * Begin serving TCP connections.
@@ -76,7 +72,7 @@ private:
 	void accept_next_connection();
 
 	/// Handler that is called when the accept has finished.
-	void handle_accept_outcome(std::shared_ptr<class client_session> newsession, error_code err);
+	void handle_accept_outcome(std::shared_ptr<class client_session> newsession, err_t err);
 
 	/// Register an in-flight (active) session socket with the server (so that we can close it when
 	/// a shutdown is requested externally).

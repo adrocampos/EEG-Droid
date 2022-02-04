@@ -4,10 +4,9 @@
 #include "send_buffer.h"
 #include "tcp_server.h"
 #include "udp_server.h"
+#include <algorithm>
 #include <memory>
 #include <sstream>
-
-namespace asio = lslboost::asio;
 
 namespace lsl {
 
@@ -105,7 +104,7 @@ stream_outlet_impl::~stream_outlet_impl() {
 		// 4. waiting a bit and
 		// 5. detaching thread, i.e. letting it hang and continue tearing down
 		//    the outlet
-		for (auto &ios : ios_) lslboost::asio::post(*ios, [ios]() { ios->stop(); });
+		for (auto &ios : ios_) asio::post(*ios, [ios]() { ios->stop(); });
 		const char *name = this->info().name().c_str();
 		for (int try_nr = 0; try_nr <= 100; ++try_nr) {
 			switch (try_nr) {
@@ -128,7 +127,7 @@ stream_outlet_impl::~stream_outlet_impl() {
 
 			std::this_thread::sleep_for(std::chrono::milliseconds(25));
 			if (std::all_of(io_threads_.begin(), io_threads_.end(),
-					[](thread_p thread) { return thread->joinable(); })) {
+					[](const thread_p &thread) { return thread->joinable(); })) {
 				for (auto &thread : io_threads_) thread->join();
 				DLOG_F(INFO, "All of %s's IO threads were joined succesfully", name);
 				break;
