@@ -1,5 +1,4 @@
 package de.uos.ikw.eegdroid;
-// initial commits
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -55,17 +54,13 @@ import com.github.mikephil.charting.utils.MPPointF;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -110,9 +105,6 @@ public class Record extends AppCompatActivity {
     private final float[] hpFilteredNow = new float[nChannels];
     LSL.StreamInfo streamInfo;
     LSL.StreamOutlet streamOutlet = null;
-    LSL.StreamInfo[] results = null;
-    LSL.StreamInlet[] inlets = null;
-    Map<Integer, Map<String, String>> inletsInfo = new HashMap<>();
     private float samplingRate = 500 / 2f;  // alternative: 500, 500/2, 500/3, 500/4, etc.
     private BluetoothGattCharacteristic configCharacteristic;
     private BluetoothGattCharacteristic codeCharacteristic;
@@ -349,7 +341,6 @@ public class Record extends AppCompatActivity {
                         microV = highPassFilter(microV);
                     }
                     streamData(microV);
-                    receiveLslData();
                     if (channelViewsEnabled && pkgCountTotal % 100 == 0) displayNumerical(microV);
                     if (plotting) storeForPlotting(microV);
                     if (recording) storeData(microV);
@@ -812,17 +803,19 @@ public class Record extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
-        if (mBluetoothLeService != null) {
-            final boolean result = mBluetoothLeService.connect(mDeviceAddress);
-            Log.d(TAG, "Connect request result=" + result);
-        }
+        // uncomment to enforce the bluetooth connection to pause/resume on changing the activity
+//        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+//        if (mBluetoothLeService != null) {
+//            final boolean result = mBluetoothLeService.connect(mDeviceAddress);
+//            Log.d(TAG, "Connect request result=" + result);
+//        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(mGattUpdateReceiver);
+        // uncomment to enforce the bluetooth connection to pause/resume on changing the activity
+//         unregisterReceiver(mGattUpdateReceiver);
     }
 
     private void clearLSL() {
@@ -839,29 +832,43 @@ public class Record extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Log.d(TAG, "Called onBackPressed");
-
         try {
             clearLSL();
+            if (!notifying) {
+                notifying = true;
+                mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, true);
+            } else {
+                notifying = false;
+                mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, false);
+            }
+            unregisterReceiver(mGattUpdateReceiver);
+            unbindService(mServiceConnection);
+            mBluetoothLeService = null;
         } catch (Exception e) {
             Log.w(TAG, e.toString());
         }
-
         finish();
-
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "Called onDestroy");
         try {
-
-            unbindService(mServiceConnection);
-            Log.d(TAG, "Called onDestroy");
             clearLSL();
+            if (!notifying) {
+                notifying = true;
+                mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, true);
+            } else {
+                notifying = false;
+                mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, false);
+            }
+            unregisterReceiver(mGattUpdateReceiver);
+            unbindService(mServiceConnection);
+            mBluetoothLeService = null;
         } catch (Exception e) {
             Log.w(TAG, e.toString());
         }
-        mBluetoothLeService = null;
     }
 
     @Override
@@ -1504,101 +1511,6 @@ public class Record extends AppCompatActivity {
                 break;
         }
         return dataType;
-    }
-
-    private void collectLslStreams() {
-        try {
-            results = LSL.resolve_streams();
-            Log.d(TAG, "Total LSL Streams found: " + results.length);
-            inlets = new LSL.StreamInlet[results.length];
-            for (int i = 0; i < results.length; i++) {
-                String name = results[i].name();
-                int count = results[i].channel_count();
-                Log.d(TAG, "LSL Stream Name: " + name);
-                Log.d(TAG, "LSL Stream '" + name + "' count: " + count);
-                inlets[i] = new LSL.StreamInlet(results[i]);
-                // get stream channel format (data type)
-                String format = channelFormatToDataType(inlets[i].info().channel_format());
-                Log.d(TAG, "LSL Stream '" + name + "' format: " + format);
-                // get rid of the digit part of the type name
-                format = format.split("(?<=\\D)(?=\\d)")[0];
-                // get rid of 'cf_' of the type name
-                format = format.split("cf_")[1];
-                // get labels
-                StringBuilder sHeader = new StringBuilder();
-                LSL.XMLElement ch = inlets[i].info().desc().child("channels").child("channel");
-                for (int j = 0; j < count; j++) {
-                    sHeader.append(ch.child_value("label")).append(",");
-                    ch = ch.next_sibling();
-                }
-                // remove last extra comma
-                sHeader = new StringBuilder(sHeader.substring(0, sHeader.length() - 1));
-                Log.d(TAG, "LSL Stream '" + name + "' header: " + sHeader);
-                // store all collected info into a dict
-                HashMap<String, String> info = new HashMap<>();
-                info.put("name", name);
-                info.put("count", String.valueOf(count));
-                info.put("format", format);
-                info.put("header", sHeader.toString());
-                // store dict into a mother dict with stream indices as keys
-                inletsInfo.put(i, info);
-            }
-        } catch (Exception ex) {
-            Log.d(TAG, "LSL Error: " + ex.getMessage());
-        }
-    }
-
-    private void receiveLslData() {
-        // TODO: Different function call (maybe with new Thread) per stream detected
-        // TODO: Each function should write in a different temporal file, instead of debugging
-        // TODO: Also, how often should this function be called?
-        String filter = "Traumschreiber-EEG";
-        if (results == null) collectLslStreams();
-        try {
-            for (int i = 0; i < inlets.length; i++) {
-                Map<String, String> current = inletsInfo.get(i);
-                String sName = Objects.requireNonNull(current).get("name");
-                if (!Objects.equals(sName, filter)) {
-                    int channelCnt = Integer.parseInt(Objects.requireNonNull(current.get("count")));
-                    // get stream channel format (data type)
-                    String format = current.get("format");
-                    // possible types: "undefined", "float", "double", "string", "int"
-                    String value;
-                    double timestamp;
-                    switch (Objects.requireNonNull(format)) {
-                        case "undefined":
-                        case "string":
-                            String[] strSamples = new String[channelCnt];
-                            timestamp = inlets[i].pull_sample(strSamples);
-                            for (String sample : strSamples) {
-                                value = sample;
-                                Log.d(TAG, "LSL Stream '" + sName + "' @ " + timestamp + " -> Value received:" + value);
-                            }
-                            break;
-                        case "int":
-                            int[] intSamples = new int[channelCnt];
-                            timestamp = inlets[i].pull_sample(intSamples);
-                            for (int sample : intSamples) {
-                                value = BigInteger.valueOf(sample).toString();
-                                Log.d(TAG, "LSL Stream '" + sName + "' @ " + timestamp + " -> Value received:" + value);
-                            }
-                            break;
-                        case "float":
-                        case "double":
-                            double[] samples = new double[channelCnt];
-                            timestamp = inlets[i].pull_sample(samples);
-                            for (double sample : samples) {
-                                value = (sample % 1.0 != 0) ? BigDecimal.valueOf(sample).toPlainString() : String.format("%s", (int) sample);
-                                Log.d(TAG, "LSL Stream '" + sName + "' @ " + timestamp + " -> Value received:" + value);
-                            }
-                            break;
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            Log.d(TAG, "LSL Error: " + ex.getMessage());
-            receiveLslData();
-        }
     }
 
     private void streamData(List<Float> data_microV) {
