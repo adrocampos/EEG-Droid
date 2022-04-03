@@ -132,7 +132,7 @@ public class ManageSessions extends AppCompatActivity {
         for(int position : selectedPositions){
             Uri uri = FileProvider.getUriForFile(
                     this,
-                    "de.uni_osnabrueck.ikw.eegdroid.provider",
+                    "de.uos.ikw.eegdroid.provider",
                     arrayListOfFiles.get(position));
             files.add(uri);
         }
@@ -237,7 +237,7 @@ public class ManageSessions extends AppCompatActivity {
 
         // Get URI and MIME type of file
         Uri uri = FileProvider.getUriForFile(this,
-                "de.uni_osnabrueck.ikw.eegdroid.provider",
+                "de.uos.ikw.eegdroid.provider",
                 file);
         String mime = getContentResolver().getType(uri);
 

@@ -105,7 +105,12 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     packagingOptions {
-        pickFirst '**/lib/**'
+        jniLibs {
+            pickFirsts += ['**/lib/**']
+        }
+        resources {
+            pickFirsts += ['**/lib/**']
+        }
     }
     buildToolsVersion '32.0.0'
     ndkVersion '21.4.7075529'

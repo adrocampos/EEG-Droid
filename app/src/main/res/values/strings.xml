@@ -175,7 +175,7 @@
     <string name="menu_manage_send">Share</string>
     <string name="menu_manage_rename">Rename</string>
     <string name="menu_manage_delete">Delete</string>
-    <string name="menu_manage_filemanager">Open Directory</string>
+    <string name="menu_manage_filemanagermenu_manage_filemanager">Open Directory</string>
     <string name="menu_manage_open">Open</string>
 
 
@@ -259,7 +259,7 @@
 
     <string name="default_username">User</string>
     <string name="default_userID">1220000430</string>
-    <string name="default_folder">/recordings</string>
+    <string name="default_folder">/eegdroid/recordings</string>
     <string name="default_IP">192.168.1.125</string>
     <string name="default_port">65432</string>
     <string name="default_filtering">on</string>
@@ -293,6 +293,7 @@
     <string name="permission_storage">The app needs permission to access storage</string>
     <string name="calculating">calculating</string>
     <string name="warming_up">warming up</string>
+    <string name="menu_manage_filemanager">Manage</string>
 
 
     <!-- Strings Related to Traumschreiber Configuration -->

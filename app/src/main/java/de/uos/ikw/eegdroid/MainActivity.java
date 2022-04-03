@@ -56,6 +56,8 @@ public class MainActivity extends AppCompatActivity
         String username = sharedPreferences.getString("username", getResources().getString(R.string.default_username));
         String userID = sharedPreferences.getString("userID", getResources().getString(R.string.default_userID));
 
+        // TODO: Use new scoped storage api to make the folder accessible through laptop
+
         // File object to save the directory to save the EEG recordings
         dirSessions = new File(Objects.requireNonNull(this.getFilesDir()).getAbsolutePath() + saveDir);
         ManageSessions.createDirectory(dirSessions);
